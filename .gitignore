@@ -1,0 +1,97 @@
+# Node modules
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+logs/
+*.log
+log/
+*.pid
+*.seed
+*.pid.lock
+
+# Runtime data
+pids
+lib-cov
+coverage
+.nyc_output
+
+# Build directories
+dist/
+build/
+out/
+.cache/
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+data/
+
+# Uploads
+uploads/
+recordings/
+voicemail/
+temp/
+tmp/
+
+# Backup files
+*.bak
+backup/
+backups/
+
+# SSL certificates
+*.pem
+*.key
+*.crt
+*.csr
+ssl/
+
+# Docker
+docker-compose.override.yml
+.dockerignore
+
+# Testing
+test-results/
+jest-coverage/
+.jest/
+
+# OS Files
+Thumbs.db
+Desktop.ini
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Monitoring data
+grafana_data/
+prometheus_data/
+elasticsearch_data/
+
+# Redis dump
+dump.rdb
+
+# SSH Keys (except public keys needed for repo)
+*.pem
+id_rsa
+id_dsa
