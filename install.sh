@@ -3,7 +3,7 @@
 set -e
 
 INSTALL_DIR="/opt/flexpbx"
-REPO_URL="https://github.com/raywonder/flexpbx.git"
+REPO_URL="git@devine-creations.com:raywonder/flexpbx.git"
 SERVICE_NAME="flexpbx"
 
 echo "========================================="
@@ -107,7 +107,7 @@ echo "  Password: Check .env file"
 echo ""
 echo "SSH public key for GitHub:"
 echo "  Add the following key to your GitHub repository:"
-cat ~/.ssh/flexpbx_ed25519.pub 2>/dev/null || echo "  No SSH key found"
+cat ~/.ssh/devine_creations_ed25519.pub 2>/dev/null || echo "  No SSH key found"
 echo ""
 echo "To manage the service:"
 echo "  systemctl start $SERVICE_NAME"
@@ -119,4 +119,4 @@ echo "To view logs:"
 echo "  docker-compose logs -f"
 echo ""
 echo "For more information, visit:"
-echo "  https://github.com/raywonder/flexpbx"
+echo "  https://devine-creations.com/raywonder/flexpbx"
