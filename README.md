@@ -25,14 +25,14 @@ A flexible, cross-platform, open-source PBX server with built-in accessibility f
 ### One-Command Installation
 
 ```bash
-curl -sSL https://raw.devine-creations.com/raywonder/flexpbx/main/install.sh | sudo bash
+curl -sSL https://raw.githubusercontent.com/raywonder/flexpbx/main/install.sh | sudo bash
 ```
 
 ### Manual Installation
 
 1. **Clone the repository:**
 ```bash
-git clone git@devine-creations.com:raywonder/flexpbx.git
+git clone git@github.com:raywonder/flexpbx.git
 cd flexpbx
 ```
 
@@ -359,7 +359,7 @@ We welcome contributions, especially from the accessibility community!
 
 ```bash
 # Clone repository
-git clone git@devine-creations.com:raywonder/flexpbx.git
+git clone git@github.com:raywonder/flexpbx.git
 cd flexpbx
 
 # Install dependencies
