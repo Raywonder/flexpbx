@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="FlexPBX Desktop Manager">
+    <title>FlexPBX Desktop Manager</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" role="navigation" aria-label="Main navigation">
+            <div class="sidebar-header">
+                <img src="../../assets/logo.png" alt="FlexPBX Logo" class="logo">
+                <h1>FlexPBX Desktop</h1>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul role="menubar">
+                    <li role="none">
+                        <button role="menuitem" class="nav-item active" data-view="dashboard" aria-current="page">
+                            <span class="nav-icon">🏠</span>
+                            <span class="nav-text">Dashboard</span>
+                        </button>
+                    </li>
+                    <li role="none">
+                        <button role="menuitem" class="nav-item" data-view="local-install">
+                            <span class="nav-icon">💻</span>
+                            <span class="nav-text">Local Install</span>
+                        </button>
+                    </li>
+                    <li role="none">
+                        <button role="menuitem" class="nav-item" data-view="remote-deploy">
+                            <span class="nav-icon">🌐</span>
+                            <span class="nav-text">Remote Deploy</span>
+                        </button>
+                    </li>
+                    <li role="none">
+                        <button role="menuitem" class="nav-item" data-view="server-manager">
+                            <span class="nav-icon">🖥️</span>
+                            <span class="nav-text">Server Manager</span>
+                        </button>
+                    </li>
+                    <li role="none">
+                        <button role="menuitem" class="nav-item" data-view="nginx-config">
+                            <span class="nav-icon">⚙️</span>
+                            <span class="nav-text">Nginx Config</span>
+                        </button>
+                    </li>
+                    <li role="none">
+                        <button role="menuitem" class="nav-item" data-view="monitoring">
+                            <span class="nav-icon">📊</span>
+                            <span class="nav-text">Monitoring</span>
+                        </button>
+                    </li>
+                    <li role="none">
+                        <button role="menuitem" class="nav-item" data-view="settings">
+                            <span class="nav-icon">⚙️</span>
+                            <span class="nav-text">Settings</span>
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="system-status" id="system-status">
+                    <span class="status-indicator" id="status-indicator"></span>
+                    <span class="status-text" id="status-text">Checking...</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content" role="main">
+            <!-- Dashboard View -->
+            <div class="view active" id="dashboard-view">
+                <header class="view-header">
+                    <h2>FlexPBX Dashboard</h2>
+                    <p>Manage your FlexPBX installations and deployments</p>
+                </header>
+
+                <div class="dashboard-grid">
+                    <div class="dashboard-card">
+                        <h3>Quick Actions</h3>
+                        <div class="quick-actions">
+                            <button class="action-btn primary" id="new-local-btn">
+                                <span class="btn-icon">💻</span>
+                                New Local Installation
+                            </button>
+                            <button class="action-btn secondary" id="deploy-remote-btn">
+                                <span class="btn-icon">🌐</span>
+                                Deploy to Remote Server
+                            </button>
+                            <button class="action-btn secondary" id="connect-existing-btn">
+                                <span class="btn-icon">🔗</span>
+                                Connect to Existing Server
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <h3>System Requirements</h3>
+                        <div class="requirements-list" id="requirements-list">
+                            <div class="requirement-item" id="docker-requirement">
+                                <span class="requirement-icon">🐳</span>
+                                <span class="requirement-text">Docker</span>
+                                <span class="requirement-status" id="docker-status">Checking...</span>
+                            </div>
+                            <div class="requirement-item" id="disk-requirement">
+                                <span class="requirement-icon">💾</span>
+                                <span class="requirement-text">Disk Space</span>
+                                <span class="requirement-status" id="disk-status">Checking...</span>
+                            </div>
+                            <div class="requirement-item" id="permissions-requirement">
+                                <span class="requirement-icon">🔒</span>
+                                <span class="requirement-text">Permissions</span>
+                                <span class="requirement-status" id="permissions-status">Checking...</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-card full-width">
+                        <h3>Recent Installations</h3>
+                        <div class="installations-list" id="installations-list">
+                            <div class="empty-state">
+                                <p>No installations found. Create your first FlexPBX installation to get started.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Local Install View -->
+            <div class="view" id="local-install-view">
+                <header class="view-header">
+                    <h2>Local Docker Installation</h2>
+                    <p>Install FlexPBX locally using Docker</p>
+                </header>
+
+                <form class="install-form" id="local-install-form">
+                    <div class="form-section">
+                        <h3>Installation Configuration</h3>
+
+                        <div class="form-group">
+                            <label for="install-directory">Installation Directory</label>
+                            <div class="input-group">
+                                <input type="text" id="install-directory" placeholder="Select installation directory" readonly>
+                                <button type="button" id="browse-directory" class="btn-secondary">Browse</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="installation-name">Installation Name</label>
+                            <input type="text" id="installation-name" placeholder="My FlexPBX Server" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="domain-local">Domain/Hostname (Optional)</label>
+                            <input type="text" id="domain-local" placeholder="flexpbx.local">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="http-port">HTTP Port</label>
+                                <input type="number" id="http-port" value="3000" min="1" max="65535">
+                            </div>
+                            <div class="form-group">
+                                <label for="sip-port">SIP Port</label>
+                                <input type="number" id="sip-port" value="5060" min="1" max="65535">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Nginx Configuration</h3>
+
+                        <div class="form-group">
+                            <input type="checkbox" id="configure-nginx-local">
+                            <label for="configure-nginx-local">Configure Nginx reverse proxy</label>
+                        </div>
+
+                        <div class="nginx-options" id="nginx-options-local" style="display: none;">
+                            <div class="form-group">
+                                <label for="nginx-domain">Nginx Domain</label>
+                                <input type="text" id="nginx-domain" placeholder="flexpbx.example.com">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="install-location">Installation Location</label>
+                                <select id="install-location">
+                                    <option value="root">Root domain (example.com)</option>
+                                    <option value="subdomain">Subdomain (pbx.example.com)</option>
+                                    <option value="subdirectory">Subdirectory (example.com/pbx)</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group" id="subdirectory-path" style="display: none;">
+                                <label for="app-path">Application Path</label>
+                                <input type="text" id="app-path" placeholder="/pbx" value="/pbx">
+                            </div>
+
+                            <div class="form-group">
+                                <input type="checkbox" id="ssl-enabled-local">
+                                <label for="ssl-enabled-local">Enable SSL (Let's Encrypt)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" id="cancel-local-install">Cancel</button>
+                        <button type="submit" class="btn-primary" id="start-local-install">Start Installation</button>
+                    </div>
+                </form>
+
+                <div class="installation-progress" id="local-install-progress" style="display: none;">
+                    <h3>Installation Progress</h3>
+                    <div class="progress-steps" id="local-progress-steps">
+                        <!-- Progress steps will be populated dynamically -->
+                    </div>
+                    <div class="progress-log" id="local-progress-log">
+                        <!-- Installation log will appear here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Remote Deploy View -->
+            <div class="view" id="remote-deploy-view">
+                <header class="view-header">
+                    <h2>Remote Server Deployment</h2>
+                    <p>Deploy FlexPBX to a remote server via SSH, FTP, or WebDAV</p>
+                </header>
+
+                <div class="deployment-wizard" id="remote-deployment-wizard">
+                    <!-- This will load the existing server setup wizard -->
+                    <iframe src="../../../public/server-setup.html" frameborder="0" width="100%" height="600px"></iframe>
+                </div>
+            </div>
+
+            <!-- Server Manager View -->
+            <div class="view" id="server-manager-view">
+                <header class="view-header">
+                    <h2>Server Manager</h2>
+                    <p>Manage your FlexPBX server instances</p>
+                </header>
+
+                <div class="server-list" id="server-list">
+                    <!-- Server instances will be listed here -->
+                </div>
+            </div>
+
+            <!-- Nginx Config View -->
+            <div class="view" id="nginx-config-view">
+                <header class="view-header">
+                    <h2>Nginx Configuration</h2>
+                    <p>Manage Nginx reverse proxy configurations</p>
+                </header>
+
+                <div class="nginx-manager">
+                    <div class="config-editor">
+                        <h3>Configuration Generator</h3>
+                        <form class="nginx-form" id="nginx-config-form">
+                            <div class="form-group">
+                                <label for="nginx-server-name">Server Name</label>
+                                <input type="text" id="nginx-server-name" placeholder="example.com">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="nginx-backend-host">Backend Host</label>
+                                <input type="text" id="nginx-backend-host" value="localhost">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="nginx-backend-port">Backend Port</label>
+                                <input type="number" id="nginx-backend-port" value="3000">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="nginx-location-type">Location Type</label>
+                                <select id="nginx-location-type">
+                                    <option value="root">Root (/)</option>
+                                    <option value="subdirectory">Subdirectory</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group" id="nginx-subdirectory-group" style="display: none;">
+                                <label for="nginx-subdirectory">Subdirectory Path</label>
+                                <input type="text" id="nginx-subdirectory" placeholder="/pbx">
+                            </div>
+
+                            <div class="form-group">
+                                <input type="checkbox" id="nginx-ssl-enabled">
+                                <label for="nginx-ssl-enabled">Enable SSL</label>
+                            </div>
+
+                            <button type="button" class="btn-primary" id="generate-nginx-config">Generate Configuration</button>
+                        </form>
+
+                        <div class="config-output" id="nginx-config-output" style="display: none;">
+                            <h4>Generated Configuration</h4>
+                            <textarea id="nginx-config-text" readonly></textarea>
+                            <div class="config-actions">
+                                <button type="button" class="btn-secondary" id="copy-nginx-config">Copy to Clipboard</button>
+                                <button type="button" class="btn-secondary" id="save-nginx-config">Save to File</button>
+                                <button type="button" class="btn-primary" id="deploy-nginx-config">Deploy Configuration</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Monitoring View -->
+            <div class="view" id="monitoring-view">
+                <header class="view-header">
+                    <h2>Server Monitoring</h2>
+                    <p>Monitor your FlexPBX server performance and status</p>
+                </header>
+
+                <div class="monitoring-dashboard">
+                    <!-- Monitoring content will be loaded here -->
+                </div>
+            </div>
+
+            <!-- Settings View -->
+            <div class="view" id="settings-view">
+                <header class="view-header">
+                    <h2>Settings</h2>
+                    <p>Configure FlexPBX Desktop preferences</p>
+                </header>
+
+                <div class="settings-content">
+                    <div class="settings-section">
+                        <h3>General</h3>
+                        <div class="form-group">
+                            <input type="checkbox" id="start-at-login">
+                            <label for="start-at-login">Start at login</label>
+                        </div>
+                        <div class="form-group">
+                            <input type="checkbox" id="minimize-to-tray">
+                            <label for="minimize-to-tray">Minimize to system tray</label>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3>Default Paths</h3>
+                        <div class="form-group">
+                            <label for="default-install-path">Default Installation Directory</label>
+                            <div class="input-group">
+                                <input type="text" id="default-install-path" readonly>
+                                <button type="button" id="browse-default-path" class="btn-secondary">Browse</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <h3>About</h3>
+                        <div class="about-info">
+                            <p><strong>FlexPBX Desktop</strong></p>
+                            <p>Version: <span id="app-version">1.0.0</span></p>
+                            <p>Electron: <span id="electron-version">--</span></p>
+                            <p>Node.js: <span id="node-version">--</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loading-overlay">
+        <div class="loading-spinner"></div>
+        <p class="loading-text">Loading...</p>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <script src="app.js"></script>
+</body>
+</html>
