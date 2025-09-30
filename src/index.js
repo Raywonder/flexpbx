@@ -16,6 +16,7 @@ const logger = require('./utils/logger');
 const apiRoutes = require('./routes/api');
 const authRoutes = require('./routes/auth');
 const accessibilityRoutes = require('./routes/accessibility');
+const setupRoutes = require('./routes/setup');
 const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
@@ -72,6 +73,7 @@ app.use('/api', limiter);
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1', apiRoutes);
 app.use('/api/v1/accessibility', accessibilityRoutes);
+app.use('/api/v1/setup', setupRoutes);
 
 app.get('/health', (req, res) => {
   res.json({
@@ -96,6 +98,10 @@ app.get('/softphone', (req, res) => {
 
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/admin.html'));
+});
+
+app.get('/setup', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/server-setup.html'));
 });
 
 app.use(errorHandler);

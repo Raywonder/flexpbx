@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="FlexPBX Server Setup Wizard">
+    <title>FlexPBX Server Setup Wizard</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/accessibility.css">
+    <style>
+        .wizard-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .wizard-step {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .wizard-step.active {
+            display: block;
+        }
+
+        .wizard-progress {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .progress-step {
+            flex: 1;
+            text-align: center;
+            padding: 1rem;
+            border-radius: 4px;
+            background: var(--border-color);
+            margin: 0 0.5rem;
+            position: relative;
+        }
+
+        .progress-step.completed {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .progress-step.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .connection-type {
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .connection-type:hover,
+        .connection-type.selected {
+            border-color: var(--primary-color);
+            background: rgba(37, 99, 235, 0.1);
+        }
+
+        .connection-type input[type="radio"] {
+            display: none;
+        }
+
+        .log-output {
+            background: #1a1a1a;
+            color: #00ff00;
+            font-family: 'Courier New', monospace;
+            padding: 1rem;
+            border-radius: 4px;
+            height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            margin: 1rem 0;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+
+        .status-pending { background: var(--warning-color); }
+        .status-running { background: var(--primary-color); animation: pulse 1s infinite; }
+        .status-completed { background: var(--success-color); }
+        .status-failed { background: var(--error-color); }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body>
+    <header role="banner">
+        <nav role="navigation" aria-label="Main navigation">
+            <h1>FlexPBX Server Setup Wizard</h1>
+        </nav>
+    </header>
+
+    <main role="main">
+        <div class="wizard-container">
+            <div class="wizard-progress" role="progressbar" aria-valuenow="1" aria-valuemin="1" aria-valuemax="9">
+                <div class="progress-step active" data-step="1">
+                    <span>Connection</span>
+                </div>
+                <div class="progress-step" data-step="2">
+                    <span>Config</span>
+                </div>
+                <div class="progress-step" data-step="3">
+                    <span>Database</span>
+                </div>
+                <div class="progress-step" data-step="4">
+                    <span>Network</span>
+                </div>
+                <div class="progress-step" data-step="5">
+                    <span>Performance</span>
+                </div>
+                <div class="progress-step" data-step="6">
+                    <span>Review</span>
+                </div>
+                <div class="progress-step" data-step="7">
+                    <span>Deploy</span>
+                </div>
+                <div class="progress-step" data-step="8">
+                    <span>Progress</span>
+                </div>
+                <div class="progress-step" data-step="9">
+                    <span>Complete</span>
+                </div>
+            </div>
+
+            <!-- Step 1: Connection Configuration -->
+            <div class="wizard-step active" id="step1">
+                <h2>Server Connection Configuration</h2>
+                <p>Choose how to connect to your server for FlexPBX deployment.</p>
+
+                <div class="form-grid">
+                    <div class="connection-type" data-type="ssh">
+                        <input type="radio" name="connectionType" value="ssh" id="ssh" checked>
+                        <label for="ssh">
+                            <h3>🔐 SSH/SFTP</h3>
+                            <p>Secure shell connection with full server access. Recommended for complete deployment.</p>
+                            <small>Requires: SSH access, sudo privileges</small>
+                        </label>
+                    </div>
+
+                    <div class="connection-type" data-type="ftp">
+                        <input type="radio" name="connectionType" value="ftp" id="ftp">
+                        <label for="ftp">
+                            <h3>📁 FTP/FTPS</h3>
+                            <p>File transfer protocol for basic file deployment. Limited functionality.</p>
+                            <small>Requires: FTP access, web server setup</small>
+                        </label>
+                    </div>
+
+                    <div class="connection-type" data-type="webdav">
+                        <input type="radio" name="connectionType" value="webdav" id="webdav">
+                        <label for="webdav">
+                            <h3>🌐 WebDAV</h3>
+                            <p>Web-based file transfer for cloud and web hosting platforms.</p>
+                            <small>Requires: WebDAV access, web server</small>
+                        </label>
+                    </div>
+                </div>
+
+                <div id="connection-details">
+                    <!-- SSH Configuration -->
+                    <div id="ssh-config" class="connection-config">
+                        <h3>SSH Connection Details</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="ssh-host">Hostname/IP Address *</label>
+                                <input type="text" id="ssh-host" name="sshHost" required placeholder="192.168.1.100 or server.example.com">
+                            </div>
+                            <div class="form-group">
+                                <label for="ssh-port">SSH Port</label>
+                                <input type="number" id="ssh-port" name="sshPort" value="22" min="1" max="65535">
+                            </div>
+                            <div class="form-group">
+                                <label for="ssh-username">Username *</label>
+                                <input type="text" id="ssh-username" name="sshUsername" required placeholder="root or ubuntu">
+                            </div>
+                            <div class="form-group">
+                                <label for="auth-method">Authentication Method</label>
+                                <select id="auth-method" name="authMethod">
+                                    <option value="password">Password</option>
+                                    <option value="key">SSH Key</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div id="password-auth" class="auth-method-config">
+                            <div class="form-group">
+                                <label for="ssh-password">Password *</label>
+                                <input type="password" id="ssh-password" name="sshPassword" placeholder="Server password">
+                            </div>
+                            <div class="form-group">
+                                <label for="sudo-password">Sudo Password (if different)</label>
+                                <input type="password" id="sudo-password" name="sudoPassword" placeholder="Leave blank if same as login">
+                            </div>
+                        </div>
+
+                        <div id="key-auth" class="auth-method-config" style="display: none;">
+                            <div class="form-group">
+                                <label for="ssh-key">SSH Private Key Path</label>
+                                <input type="text" id="ssh-key" name="sshKey" placeholder="~/.ssh/id_rsa">
+                            </div>
+                            <div class="form-group">
+                                <label for="key-passphrase">Key Passphrase (if any)</label>
+                                <input type="password" id="key-passphrase" name="keyPassphrase" placeholder="SSH key passphrase">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- FTP Configuration -->
+                    <div id="ftp-config" class="connection-config" style="display: none;">
+                        <h3>FTP Connection Details</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="ftp-host">FTP Hostname *</label>
+                                <input type="text" id="ftp-host" name="ftpHost" placeholder="ftp.example.com">
+                            </div>
+                            <div class="form-group">
+                                <label for="ftp-port">FTP Port</label>
+                                <input type="number" id="ftp-port" name="ftpPort" value="21" min="1" max="65535">
+                            </div>
+                            <div class="form-group">
+                                <label for="ftp-username">Username *</label>
+                                <input type="text" id="ftp-username" name="ftpUsername" placeholder="FTP username">
+                            </div>
+                            <div class="form-group">
+                                <label for="ftp-password">Password *</label>
+                                <input type="password" id="ftp-password" name="ftpPassword" placeholder="FTP password">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <input type="checkbox" id="ftp-secure" name="ftpSecure">
+                            <label for="ftp-secure">Use FTPS (SSL/TLS)</label>
+                        </div>
+                    </div>
+
+                    <!-- WebDAV Configuration -->
+                    <div id="webdav-config" class="connection-config" style="display: none;">
+                        <h3>WebDAV Connection Details</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="webdav-url">WebDAV URL *</label>
+                                <input type="url" id="webdav-url" name="webdavUrl" placeholder="https://webdav.example.com/path">
+                            </div>
+                            <div class="form-group">
+                                <label for="webdav-username">Username *</label>
+                                <input type="text" id="webdav-username" name="webdavUsername" placeholder="WebDAV username">
+                            </div>
+                            <div class="form-group">
+                                <label for="webdav-password">Password *</label>
+                                <input type="password" id="webdav-password" name="webdavPassword" placeholder="WebDAV password">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="wizard-actions">
+                    <button type="button" class="btn-primary" onclick="testConnection()">Test Connection</button>
+                    <button type="button" class="btn-primary" onclick="nextStep()" id="next-step-1" disabled>Next: Configuration</button>
+                </div>
+
+                <div id="connection-status" role="status" aria-live="polite"></div>
+            </div>
+
+            <!-- Step 2: Deployment Configuration -->
+            <div class="wizard-step" id="step2">
+                <h2>Deployment Configuration</h2>
+                <p>Configure your FlexPBX deployment settings.</p>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="install-path">Installation Path</label>
+                        <input type="text" id="install-path" name="installPath" value="/opt/flexpbx" placeholder="/opt/flexpbx">
+                    </div>
+                    <div class="form-group">
+                        <label for="deployment-type">Deployment Type</label>
+                        <select id="deployment-type" name="deploymentType">
+                            <option value="standalone">Standalone Server</option>
+                            <option value="central">Central/Multi-tenant</option>
+                            <option value="cluster">Cluster Node</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="domain-name">Domain Name (Optional)</label>
+                        <input type="text" id="domain-name" name="domainName" placeholder="pbx.example.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="ssl-enabled">SSL Configuration</label>
+                        <select id="ssl-enabled" name="sslEnabled">
+                            <option value="false">No SSL</option>
+                            <option value="self">Self-signed Certificate</option>
+                            <option value="letsencrypt">Let's Encrypt</option>
+                            <option value="custom">Custom Certificate</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="wizard-actions">
+                    <button type="button" class="btn-secondary" onclick="prevStep()">Previous</button>
+                    <button type="button" class="btn-primary" onclick="nextStep()">Next: Database</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Database & Storage Configuration -->
+            <div class="wizard-step" id="step3">
+                <h2>Database & Storage Configuration</h2>
+                <p>Configure your database system and storage requirements.</p>
+
+                <div class="form-group">
+                    <label for="database-type">Database Type</label>
+                    <select id="database-type" name="databaseType" onchange="toggleDatabaseConfig()">
+                        <option value="sqlite">SQLite (Recommended for small deployments)</option>
+                        <option value="mysql">MySQL/MariaDB</option>
+                        <option value="postgres">PostgreSQL</option>
+                    </select>
+                </div>
+
+                <div id="external-db-config" style="display: none;">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="db-host">Database Host</label>
+                            <input type="text" id="db-host" name="dbHost" placeholder="localhost">
+                        </div>
+                        <div class="form-group">
+                            <label for="db-port">Database Port</label>
+                            <input type="number" id="db-port" name="dbPort" placeholder="3306">
+                        </div>
+                        <div class="form-group">
+                            <label for="db-name">Database Name</label>
+                            <input type="text" id="db-name" name="dbName" value="flexpbx">
+                        </div>
+                        <div class="form-group">
+                            <label for="db-username">Database Username</label>
+                            <input type="text" id="db-username" name="dbUsername" placeholder="flexpbx_admin">
+                        </div>
+                        <div class="form-group">
+                            <label for="db-password">Database Password</label>
+                            <input type="password" id="db-password" name="dbPassword" placeholder="Secure database password">
+                        </div>
+                    </div>
+                </div>
+
+                <h3>Storage Configuration</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="storage-path">Storage Root Path</label>
+                        <input type="text" id="storage-path" name="storagePath" value="/var/lib/flexpbx" placeholder="/var/lib/flexpbx">
+                        <small>Directory for recordings, voicemail, and backups</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="backup-retention">Backup Retention (Days)</label>
+                        <input type="number" id="backup-retention" name="backupRetention" value="30" min="1" max="365">
+                    </div>
+                    <div class="form-group">
+                        <label for="max-recording-size">Max Recording Size (MB)</label>
+                        <input type="number" id="max-recording-size" name="maxRecordingSize" value="100" min="10" max="1000">
+                    </div>
+                    <div class="form-group">
+                        <label for="storage-quota">Storage Quota (GB)</label>
+                        <input type="number" id="storage-quota" name="storageQuota" value="50" min="5" max="1000">
+                    </div>
+                </div>
+
+                <div class="wizard-actions">
+                    <button type="button" class="btn-secondary" onclick="prevStep()">Previous</button>
+                    <button type="button" class="btn-primary" onclick="nextStep()">Next: Network & Security</button>
+                </div>
+            </div>
+
+            <!-- Step 4: Network & Security Configuration -->
+            <div class="wizard-step" id="step4">
+                <h2>Network & Security Configuration</h2>
+                <p>Configure network settings, firewall rules, and security features.</p>
+
+                <h3>Network Configuration</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="external-ip">External IP Address</label>
+                        <input type="text" id="external-ip" name="externalIp" placeholder="Auto-detect or enter manually">
+                        <small>Public IP for SIP and RTP traffic</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="network-interface">Primary Network Interface</label>
+                        <select id="network-interface" name="networkInterface">
+                            <option value="auto">Auto-detect</option>
+                            <option value="eth0">eth0</option>
+                            <option value="ens160">ens160</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="sip-port-range">SIP Port Range</label>
+                        <input type="text" id="sip-port-range" name="sipPortRange" value="5060-5061" placeholder="5060-5061">
+                    </div>
+                    <div class="form-group">
+                        <label for="rtp-port-range">RTP Port Range</label>
+                        <input type="text" id="rtp-port-range" name="rtpPortRange" value="10000-20000" placeholder="10000-20000">
+                    </div>
+                </div>
+
+                <h3>Firewall Configuration</h3>
+                <div class="form-group">
+                    <input type="checkbox" id="configure-firewall" name="configureFirewall" checked>
+                    <label for="configure-firewall">Configure firewall automatically</label>
+                </div>
+                <div class="form-group">
+                    <input type="checkbox" id="fail2ban-enabled" name="fail2banEnabled" checked>
+                    <label for="fail2ban-enabled">Enable Fail2Ban intrusion prevention</label>
+                </div>
+
+                <h3>SSL/TLS Configuration</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="ssl-provider">SSL Certificate Provider</label>
+                        <select id="ssl-provider" name="sslProvider">
+                            <option value="none">No SSL</option>
+                            <option value="letsencrypt">Let's Encrypt (Free)</option>
+                            <option value="cloudflare">Cloudflare Origin Certificate</option>
+                            <option value="self-signed">Self-Signed Certificate</option>
+                            <option value="custom">Custom Certificate</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="letsencrypt-email-group" style="display: none;">
+                        <label for="letsencrypt-email">Let's Encrypt Email</label>
+                        <input type="email" id="letsencrypt-email" name="letsencryptEmail" placeholder="admin@yourdomain.com">
+                    </div>
+                </div>
+
+                <div class="wizard-actions">
+                    <button type="button" class="btn-secondary" onclick="prevStep()">Previous</button>
+                    <button type="button" class="btn-primary" onclick="nextStep()">Next: Performance & Monitoring</button>
+                </div>
+            </div>
+
+            <!-- Step 5: Performance & Monitoring -->
+            <div class="wizard-step" id="step5">
+                <h2>Performance & Monitoring Configuration</h2>
+                <p>Optimize performance settings and configure monitoring tools.</p>
+
+                <h3>Performance Settings</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="max-concurrent-calls">Maximum Concurrent Calls</label>
+                        <input type="number" id="max-concurrent-calls" name="maxConcurrentCalls" value="100" min="10" max="10000">
+                    </div>
+                    <div class="form-group">
+                        <label for="max-extensions">Maximum Extensions</label>
+                        <input type="number" id="max-extensions" name="maxExtensions" value="500" min="10" max="50000">
+                    </div>
+                    <div class="form-group">
+                        <label for="codec-preference">Preferred Audio Codec</label>
+                        <select id="codec-preference" name="codecPreference">
+                            <option value="ulaw">G.711 μ-law (North America)</option>
+                            <option value="alaw">G.711 A-law (International)</option>
+                            <option value="g722">G.722 (HD Audio)</option>
+                            <option value="opus">Opus (Best Quality)</option>
+                            <option value="auto">Auto-negotiate</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="worker-processes">Worker Processes</label>
+                        <select id="worker-processes" name="workerProcesses">
+                            <option value="auto">Auto (CPU cores)</option>
+                            <option value="1">1 Process</option>
+                            <option value="2">2 Processes</option>
+                            <option value="4">4 Processes</option>
+                            <option value="8">8 Processes</option>
+                        </select>
+                    </div>
+                </div>
+
+                <h3>Monitoring & Logging</h3>
+                <div class="form-group">
+                    <input type="checkbox" id="enable-monitoring" name="enableMonitoring" checked>
+                    <label for="enable-monitoring">Enable Prometheus + Grafana monitoring</label>
+                </div>
+                <div class="form-group">
+                    <input type="checkbox" id="enable-logging" name="enableLogging" checked>
+                    <label for="enable-logging">Enable centralized logging (ELK stack)</label>
+                </div>
+                <div class="form-group">
+                    <input type="checkbox" id="enable-call-recording" name="enableCallRecording">
+                    <label for="enable-call-recording">Enable automatic call recording</label>
+                </div>
+                <div class="form-group">
+                    <label for="log-level">Log Level</label>
+                    <select id="log-level" name="logLevel">
+                        <option value="error">Error</option>
+                        <option value="warn">Warning</option>
+                        <option value="info" selected>Info</option>
+                        <option value="debug">Debug</option>
+                    </select>
+                </div>
+
+                <h3>Backup Configuration</h3>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="backup-schedule">Backup Schedule</label>
+                        <select id="backup-schedule" name="backupSchedule">
+                            <option value="daily">Daily at 2 AM</option>
+                            <option value="weekly">Weekly on Sunday</option>
+                            <option value="monthly">Monthly on 1st</option>
+                            <option value="custom">Custom Schedule</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <input type="checkbox" id="s3-backup" name="s3Backup">
+                        <label for="s3-backup">Enable S3/Cloud backup</label>
+                    </div>
+                </div>
+
+                <div class="wizard-actions">
+                    <button type="button" class="btn-secondary" onclick="prevStep()">Previous</button>
+                    <button type="button" class="btn-primary" onclick="nextStep()">Next: Review & Deploy</button>
+                </div>
+            </div>
+
+            <!-- Step 6: Deployment Summary -->
+            <div class="wizard-step" id="step6">
+                <h2>Deployment Summary</h2>
+                <p>Review your complete configuration before deployment.</p>
+
+                <div id="deployment-summary">
+                    <!-- Summary will be populated by JavaScript -->
+                </div>
+
+                <div class="wizard-actions">
+                    <button type="button" class="btn-secondary" onclick="prevStep()">Previous</button>
+                    <button type="button" class="btn-primary" onclick="startDeployment()" id="start-deployment">Start Deployment</button>
+                </div>
+            </div>
+
+            <!-- Step 7: Deployment Execution -->
+            <div class="wizard-step" id="step7">
+                <h2>Start Deployment</h2>
+                <p>Review your configuration and start the deployment process.</p>
+
+                <div class="wizard-actions">
+                    <button type="button" class="btn-secondary" onclick="prevStep()">Previous</button>
+                    <button type="button" class="btn-primary" onclick="startDeployment()" id="start-deployment">Start Deployment</button>
+                </div>
+            </div>
+
+            <!-- Step 8: Deployment Progress -->
+            <div class="wizard-step" id="step8">
+                <h2>Deployment in Progress</h2>
+                <p>Please wait while FlexPBX is being deployed to your server.</p>
+
+                <div id="deployment-steps">
+                    <div class="deployment-step">
+                        <span class="status-indicator status-pending" id="status-prepare"></span>
+                        <span>Preparing server environment</span>
+                    </div>
+                    <div class="deployment-step">
+                        <span class="status-indicator status-pending" id="status-upload"></span>
+                        <span>Uploading FlexPBX files</span>
+                    </div>
+                    <div class="deployment-step">
+                        <span class="status-indicator status-pending" id="status-install"></span>
+                        <span>Installing dependencies</span>
+                    </div>
+                    <div class="deployment-step">
+                        <span class="status-indicator status-pending" id="status-configure"></span>
+                        <span>Configuring services</span>
+                    </div>
+                    <div class="deployment-step">
+                        <span class="status-indicator status-pending" id="status-database"></span>
+                        <span>Setting up database</span>
+                    </div>
+                    <div class="deployment-step">
+                        <span class="status-indicator status-pending" id="status-start"></span>
+                        <span>Starting services</span>
+                    </div>
+                    <div class="deployment-step">
+                        <span class="status-indicator status-pending" id="status-verify"></span>
+                        <span>Verifying deployment</span>
+                    </div>
+                </div>
+
+                <div class="log-output" id="deployment-log" role="log" aria-live="polite" aria-label="Deployment log output">
+                    Deployment log will appear here...
+                </div>
+            </div>
+
+            <!-- Step 9: Completion -->
+            <div class="wizard-step" id="step9">
+                <h2>🎉 Deployment Complete!</h2>
+                <p>Your FlexPBX server has been successfully deployed and configured.</p>
+
+                <div id="connection-info">
+                    <!-- Connection information will be populated -->
+                </div>
+
+                <div class="wizard-actions">
+                    <button type="button" class="btn-primary" onclick="openServer()">Open FlexPBX</button>
+                    <button type="button" class="btn-secondary" onclick="downloadConfig()">Download Configuration</button>
+                    <button type="button" class="btn-secondary" onclick="restartWizard()">Deploy Another Server</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="aria-live-region" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+    <script src="/js/server-setup.js"></script>
+</body>
+</html>

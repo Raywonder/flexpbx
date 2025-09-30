@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Accessible PBX - WCAG 2.1 AA Compliant Phone System">
-    <title>Accessible PBX</title>
+    <title>FlexPBX - Flexible, Accessible PBX System</title>
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/accessibility.css" id="accessibility-styles">
 </head>
@@ -13,11 +13,12 @@
 
     <header role="banner">
         <nav role="navigation" aria-label="Main navigation">
-            <h1>Accessible PBX System</h1>
+            <h1>FlexPBX System</h1>
             <ul class="nav-menu" role="menubar">
                 <li role="none"><a role="menuitem" href="/" aria-current="page">Home</a></li>
                 <li role="none"><a role="menuitem" href="/softphone">Softphone</a></li>
                 <li role="none"><a role="menuitem" href="/admin">Admin Panel</a></li>
+                <li role="none"><a role="menuitem" href="/setup">Server Setup</a></li>
                 <li role="none"><a role="menuitem" href="#" id="accessibility-menu-btn" aria-haspopup="true" aria-expanded="false">Accessibility</a></li>
             </ul>
         </nav>
@@ -93,8 +94,8 @@
     <main id="main-content" role="main">
         <div class="container">
             <section aria-labelledby="welcome-heading">
-                <h2 id="welcome-heading">Welcome to Accessible PBX</h2>
-                <p>A fully accessible phone system designed for everyone, with special focus on users with disabilities.</p>
+                <h2 id="welcome-heading">Welcome to FlexPBX</h2>
+                <p>A flexible, accessible phone system designed for everyone, with advanced deployment options and central server management.</p>
 
                 <div class="feature-cards" role="list">
                     <article class="feature-card" role="listitem">
@@ -115,6 +116,16 @@
                     <article class="feature-card" role="listitem">
                         <h3>Keyboard Navigation</h3>
                         <p>Full functionality accessible via keyboard shortcuts without requiring a mouse.</p>
+                    </article>
+
+                    <article class="feature-card" role="listitem">
+                        <h3>Remote Server Setup</h3>
+                        <p>Deploy FlexPBX to remote servers via SSH, FTP, or WebDAV with guided setup wizard.</p>
+                    </article>
+
+                    <article class="feature-card" role="listitem">
+                        <h3>Central Server Management</h3>
+                        <p>Multi-tenant hosting with load balancing, monitoring, and automated backups.</p>
                     </article>
                 </div>
             </section>
@@ -137,6 +148,10 @@
                     <button type="button" class="action-btn" id="directory-btn" aria-label="Open directory">
                         <span aria-hidden="true">📖</span>
                         Directory
+                    </button>
+                    <button type="button" class="action-btn" id="server-setup-btn" aria-label="Setup remote server" onclick="window.location.href='/setup'">
+                        <span aria-hidden="true">🖥️</span>
+                        Server Setup
                     </button>
                 </div>
             </section>
