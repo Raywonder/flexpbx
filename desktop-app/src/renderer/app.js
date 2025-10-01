@@ -4,6 +4,7 @@ class FlexPBXDesktopApp {
         this.installations = [];
         this.systemRequirements = {};
         this.isLoading = false;
+        this.defaultInstallDir = null;
 
         this.init();
     }
@@ -42,6 +43,9 @@ class FlexPBXDesktopApp {
         // Local installation form
         this.setupLocalInstallForm();
 
+        // Remote deployment form
+        this.setupRemoteDeployForm();
+
         // Nginx configuration form
         this.setupNginxConfigForm();
 
@@ -79,6 +83,15 @@ class FlexPBXDesktopApp {
             });
         }
 
+        // Mail server configuration
+        const mailServerType = document.getElementById('mail-server-type');
+        if (mailServerType) {
+            mailServerType.addEventListener('change', (e) => {
+                const externalMailOptions = document.getElementById('external-mail-options');
+                externalMailOptions.style.display = e.target.value === 'external' ? 'block' : 'none';
+            });
+        }
+
         if (cancelBtn) {
             cancelBtn.addEventListener('click', () => {
                 this.switchView('dashboard');
@@ -89,6 +102,58 @@ class FlexPBXDesktopApp {
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
                 await this.handleLocalInstall();
+            });
+        }
+    }
+
+    setupRemoteDeployForm() {
+        const form = document.getElementById('remote-deploy-form');
+        const deploymentMethod = document.getElementById('deployment-method');
+        const testConnectionBtn = document.getElementById('test-connection');
+        const browseSshKeyBtn = document.getElementById('browse-ssh-key');
+
+        // Handle deployment method changes
+        if (deploymentMethod) {
+            deploymentMethod.addEventListener('change', (e) => {
+                const method = e.target.value;
+
+                // Hide all config sections
+                document.getElementById('ssh-config').style.display = 'none';
+                document.getElementById('ftp-config').style.display = 'none';
+                document.getElementById('webdav-config').style.display = 'none';
+
+                // Show the selected method's config
+                document.getElementById(`${method}-config`).style.display = 'block';
+            });
+        }
+
+        // Browse SSH key
+        if (browseSshKeyBtn) {
+            browseSshKeyBtn.addEventListener('click', async () => {
+                const sshKeyPath = await window.electronAPI.selectFile({
+                    filters: [
+                        { name: 'SSH Keys', extensions: ['pem', 'key', 'pub'] },
+                        { name: 'All Files', extensions: ['*'] }
+                    ]
+                });
+                if (sshKeyPath) {
+                    document.getElementById('ssh-key-path').value = sshKeyPath;
+                }
+            });
+        }
+
+        // Test connection
+        if (testConnectionBtn) {
+            testConnectionBtn.addEventListener('click', async () => {
+                await this.testRemoteConnection();
+            });
+        }
+
+        // Form submission
+        if (form) {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                await this.handleRemoteDeployment();
             });
         }
     }
@@ -211,8 +276,21 @@ class FlexPBXDesktopApp {
             const systemInfo = await window.electronAPI.getSystemInfo();
             document.getElementById('electron-version').textContent = systemInfo.electronVersion;
             document.getElementById('node-version').textContent = systemInfo.nodeVersion;
+
+            // Set default installation directory
+            this.defaultInstallDir = systemInfo.homeDir + '/FlexPBX';
+            const installDirInput = document.getElementById('install-directory');
+            if (installDirInput) {
+                installDirInput.value = this.defaultInstallDir;
+            }
         } catch (error) {
             console.error('Failed to load system info:', error);
+            // Fallback default directory
+            this.defaultInstallDir = '~/FlexPBX';
+            const installDirInput = document.getElementById('install-directory');
+            if (installDirInput) {
+                installDirInput.value = this.defaultInstallDir;
+            }
         }
     }
 
@@ -290,7 +368,13 @@ class FlexPBXDesktopApp {
             nginxDomain: document.getElementById('nginx-domain').value,
             installLocation: document.getElementById('install-location').value,
             appPath: document.getElementById('app-path').value,
-            sslEnabled: document.getElementById('ssl-enabled-local').checked
+            sslEnabled: document.getElementById('ssl-enabled-local').checked,
+            mailServerType: document.getElementById('mail-server-type').value,
+            smtpHost: document.getElementById('smtp-host').value,
+            smtpPort: parseInt(document.getElementById('smtp-port').value) || 587,
+            smtpUsername: document.getElementById('smtp-username').value,
+            smtpPassword: document.getElementById('smtp-password').value,
+            smtpTls: document.getElementById('smtp-tls').checked
         };
 
         // Validate required fields
@@ -324,6 +408,174 @@ class FlexPBXDesktopApp {
         } finally {
             this.hideInstallationProgress();
         }
+    }
+
+    async testRemoteConnection() {
+        const method = document.getElementById('deployment-method').value;
+        let connectionConfig = {};
+
+        try {
+            if (method === 'ssh') {
+                connectionConfig = {
+                    host: document.getElementById('ssh-host').value,
+                    port: parseInt(document.getElementById('ssh-port').value),
+                    username: document.getElementById('ssh-username').value,
+                    password: document.getElementById('ssh-password').value,
+                    privateKeyPath: document.getElementById('ssh-key-path').value
+                };
+            } else if (method === 'ftp') {
+                connectionConfig = {
+                    host: document.getElementById('ftp-host').value,
+                    port: parseInt(document.getElementById('ftp-port').value),
+                    username: document.getElementById('ftp-username').value,
+                    password: document.getElementById('ftp-password').value,
+                    secure: document.getElementById('ftp-secure').checked
+                };
+            } else if (method === 'webdav') {
+                connectionConfig = {
+                    url: document.getElementById('webdav-url').value,
+                    username: document.getElementById('webdav-username').value,
+                    password: document.getElementById('webdav-password').value
+                };
+            }
+
+            const result = await window.electronAPI.testRemoteConnection({ method, connectionConfig });
+
+            if (result.success) {
+                this.showToast('Connection test successful!', 'success');
+            } else {
+                this.showToast(`Connection test failed: ${result.error}`, 'error');
+            }
+        } catch (error) {
+            this.showToast(`Connection test error: ${error.message}`, 'error');
+        }
+    }
+
+    async handleRemoteDeployment() {
+        const method = document.getElementById('deployment-method').value;
+        let connectionConfig = {};
+        let deploymentConfig = {};
+
+        try {
+            // Get connection config based on method
+            if (method === 'ssh') {
+                connectionConfig = {
+                    host: document.getElementById('ssh-host').value,
+                    port: parseInt(document.getElementById('ssh-port').value),
+                    username: document.getElementById('ssh-username').value,
+                    password: document.getElementById('ssh-password').value,
+                    privateKeyPath: document.getElementById('ssh-key-path').value,
+                    remotePath: document.getElementById('remote-path').value
+                };
+            } else if (method === 'ftp') {
+                connectionConfig = {
+                    host: document.getElementById('ftp-host').value,
+                    port: parseInt(document.getElementById('ftp-port').value),
+                    username: document.getElementById('ftp-username').value,
+                    password: document.getElementById('ftp-password').value,
+                    secure: document.getElementById('ftp-secure').checked,
+                    remotePath: document.getElementById('ftp-remote-path').value
+                };
+            } else if (method === 'webdav') {
+                connectionConfig = {
+                    url: document.getElementById('webdav-url').value,
+                    username: document.getElementById('webdav-username').value,
+                    password: document.getElementById('webdav-password').value,
+                    remotePath: document.getElementById('webdav-remote-path').value
+                };
+            }
+
+            // Get deployment configuration
+            deploymentConfig = {
+                domain: document.getElementById('remote-domain').value,
+                httpPort: parseInt(document.getElementById('remote-http-port').value),
+                sipPort: parseInt(document.getElementById('remote-sip-port').value),
+                sslEnabled: document.getElementById('remote-ssl-enabled').checked,
+                setupNginx: document.getElementById('remote-setup-nginx').checked,
+                mailServerType: document.getElementById('remote-mail-server').value
+            };
+
+            // Validate required fields
+            if (!connectionConfig.host && !connectionConfig.url) {
+                this.showToast('Please fill in connection details', 'error');
+                return;
+            }
+
+            if (!deploymentConfig.domain) {
+                this.showToast('Please enter a domain name', 'error');
+                return;
+            }
+
+            this.showRemoteDeploymentProgress();
+
+            const result = await window.electronAPI.deployToRemote({
+                method,
+                connectionConfig,
+                deploymentConfig
+            });
+
+            if (result.success) {
+                this.showToast('Remote deployment completed successfully!', 'success');
+                this.addInstallation({
+                    name: deploymentConfig.domain,
+                    path: connectionConfig.remotePath || connectionConfig.url,
+                    domain: deploymentConfig.domain,
+                    httpPort: deploymentConfig.httpPort,
+                    sipPort: deploymentConfig.sipPort,
+                    status: 'running',
+                    type: 'remote',
+                    method: method
+                });
+                this.switchView('dashboard');
+            } else {
+                this.showToast(`Remote deployment failed: ${result.error}`, 'error');
+            }
+        } catch (error) {
+            this.showToast(`Deployment error: ${error.message}`, 'error');
+        } finally {
+            this.hideRemoteDeploymentProgress();
+        }
+    }
+
+    showRemoteDeploymentProgress() {
+        const progressDiv = document.getElementById('remote-deploy-progress');
+        const form = document.getElementById('remote-deploy-form');
+
+        form.style.display = 'none';
+        progressDiv.style.display = 'block';
+
+        // Update progress steps
+        const stepsContainer = document.getElementById('remote-progress-steps');
+        stepsContainer.innerHTML = `
+            <div class="progress-step active">
+                <span class="step-number">1</span>
+                <span class="step-text">Testing connection...</span>
+            </div>
+            <div class="progress-step">
+                <span class="step-number">2</span>
+                <span class="step-text">Uploading files...</span>
+            </div>
+            <div class="progress-step">
+                <span class="step-number">3</span>
+                <span class="step-text">Installing dependencies...</span>
+            </div>
+            <div class="progress-step">
+                <span class="step-number">4</span>
+                <span class="step-text">Configuring services...</span>
+            </div>
+            <div class="progress-step">
+                <span class="step-number">5</span>
+                <span class="step-text">Starting services...</span>
+            </div>
+        `;
+    }
+
+    hideRemoteDeploymentProgress() {
+        const progressDiv = document.getElementById('remote-deploy-progress');
+        const form = document.getElementById('remote-deploy-form');
+
+        progressDiv.style.display = 'none';
+        form.style.display = 'block';
     }
 
     showInstallationProgress() {

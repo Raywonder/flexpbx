@@ -207,6 +207,48 @@
                         </div>
                     </div>
 
+                    <div class="form-section">
+                        <h3>Mail Server Configuration</h3>
+
+                        <div class="form-group">
+                            <label for="mail-server-type">Mail Server</label>
+                            <select id="mail-server-type">
+                                <option value="builtin">Built-in Mail Server (Recommended)</option>
+                                <option value="external">External SMTP Server</option>
+                                <option value="none">No Mail Server</option>
+                            </select>
+                        </div>
+
+                        <div class="mail-options" id="external-mail-options" style="display: none;">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="smtp-host">SMTP Host</label>
+                                    <input type="text" id="smtp-host" placeholder="smtp.gmail.com">
+                                </div>
+                                <div class="form-group">
+                                    <label for="smtp-port">SMTP Port</label>
+                                    <input type="number" id="smtp-port" value="587" min="1" max="65535">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="smtp-username">Username</label>
+                                    <input type="text" id="smtp-username" placeholder="your-email@example.com">
+                                </div>
+                                <div class="form-group">
+                                    <label for="smtp-password">Password</label>
+                                    <input type="password" id="smtp-password" placeholder="Your password or app password">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <input type="checkbox" id="smtp-tls">
+                                <label for="smtp-tls">Use TLS/SSL encryption</label>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="form-actions">
                         <button type="button" class="btn-secondary" id="cancel-local-install">Cancel</button>
                         <button type="submit" class="btn-primary" id="start-local-install">Start Installation</button>
@@ -231,9 +273,170 @@
                     <p>Deploy FlexPBX to a remote server via SSH, FTP, or WebDAV</p>
                 </header>
 
-                <div class="deployment-wizard" id="remote-deployment-wizard">
-                    <!-- This will load the existing server setup wizard -->
-                    <iframe src="../../../public/server-setup.html" frameborder="0" width="100%" height="600px"></iframe>
+                <form class="deployment-form" id="remote-deploy-form">
+                    <div class="form-section">
+                        <h3>Deployment Method</h3>
+
+                        <div class="form-group">
+                            <label for="deployment-method">Deployment Method</label>
+                            <select id="deployment-method">
+                                <option value="ssh">SSH (Recommended)</option>
+                                <option value="ftp">FTP</option>
+                                <option value="webdav">WebDAV</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-section" id="ssh-config">
+                        <h3>SSH Connection Details</h3>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="ssh-host">Host</label>
+                                <input type="text" id="ssh-host" placeholder="server.example.com" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="ssh-port">Port</label>
+                                <input type="number" id="ssh-port" value="22" min="1" max="65535">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="ssh-username">Username</label>
+                                <input type="text" id="ssh-username" placeholder="ubuntu" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="ssh-password">Password</label>
+                                <input type="password" id="ssh-password" placeholder="Leave blank if using SSH key">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ssh-key-path">SSH Private Key (Optional)</label>
+                            <div class="input-group">
+                                <input type="text" id="ssh-key-path" placeholder="Select SSH private key file" readonly>
+                                <button type="button" id="browse-ssh-key" class="btn-secondary">Browse</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="remote-path">Remote Directory</label>
+                            <input type="text" id="remote-path" placeholder="/var/www/flexpbx" required>
+                        </div>
+                    </div>
+
+                    <div class="form-section" id="ftp-config" style="display: none;">
+                        <h3>FTP Connection Details</h3>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="ftp-host">Host</label>
+                                <input type="text" id="ftp-host" placeholder="ftp.example.com">
+                            </div>
+                            <div class="form-group">
+                                <label for="ftp-port">Port</label>
+                                <input type="number" id="ftp-port" value="21" min="1" max="65535">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="ftp-username">Username</label>
+                                <input type="text" id="ftp-username" placeholder="ftpuser">
+                            </div>
+                            <div class="form-group">
+                                <label for="ftp-password">Password</label>
+                                <input type="password" id="ftp-password" placeholder="FTP password">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <input type="checkbox" id="ftp-secure">
+                            <label for="ftp-secure">Use SFTP (Secure FTP)</label>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="ftp-remote-path">Remote Directory</label>
+                            <input type="text" id="ftp-remote-path" placeholder="/public_html/flexpbx">
+                        </div>
+                    </div>
+
+                    <div class="form-section" id="webdav-config" style="display: none;">
+                        <h3>WebDAV Connection Details</h3>
+
+                        <div class="form-group">
+                            <label for="webdav-url">WebDAV URL</label>
+                            <input type="url" id="webdav-url" placeholder="https://example.com/webdav/">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="webdav-username">Username</label>
+                                <input type="text" id="webdav-username" placeholder="webdav-user">
+                            </div>
+                            <div class="form-group">
+                                <label for="webdav-password">Password</label>
+                                <input type="password" id="webdav-password" placeholder="WebDAV password">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="webdav-remote-path">Remote Directory</label>
+                            <input type="text" id="webdav-remote-path" placeholder="/flexpbx">
+                        </div>
+                    </div>
+
+                    <div class="form-section">
+                        <h3>Deployment Configuration</h3>
+
+                        <div class="form-group">
+                            <label for="remote-domain">Domain Name</label>
+                            <input type="text" id="remote-domain" placeholder="pbx.example.com" required>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="remote-http-port">HTTP Port</label>
+                                <input type="number" id="remote-http-port" value="3000" min="1" max="65535">
+                            </div>
+                            <div class="form-group">
+                                <label for="remote-sip-port">SIP Port</label>
+                                <input type="number" id="remote-sip-port" value="5060" min="1" max="65535">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <input type="checkbox" id="remote-ssl-enabled">
+                            <label for="remote-ssl-enabled">Enable SSL (Let's Encrypt)</label>
+                        </div>
+
+                        <div class="form-group">
+                            <input type="checkbox" id="remote-setup-nginx">
+                            <label for="remote-setup-nginx">Setup Nginx reverse proxy</label>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="remote-mail-server">Mail Server</label>
+                            <select id="remote-mail-server">
+                                <option value="builtin">Built-in Mail Server</option>
+                                <option value="external">External SMTP Server</option>
+                                <option value="none">No Mail Server</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="btn-secondary" id="test-connection">Test Connection</button>
+                        <button type="submit" class="btn-primary" id="start-remote-deploy">Start Deployment</button>
+                    </div>
+                </form>
+
+                <div class="deployment-progress" id="remote-deploy-progress" style="display: none;">
+                    <h3>Deployment Progress</h3>
+                    <div class="progress-steps" id="remote-progress-steps">
+                        <!-- Progress steps will be populated dynamically -->
+                    </div>
                 </div>
             </div>
 

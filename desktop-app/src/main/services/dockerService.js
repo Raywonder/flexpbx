@@ -60,7 +60,13 @@ class DockerService {
             nginxDomain,
             installLocation,
             appPath,
-            sslEnabled
+            sslEnabled,
+            mailServerType,
+            smtpHost,
+            smtpPort,
+            smtpUsername,
+            smtpPassword,
+            smtpTls
         } = config;
 
         try {
@@ -76,7 +82,8 @@ class DockerService {
                 httpPort,
                 sipPort,
                 installationName,
-                domain
+                domain,
+                mailServerType
             });
 
             await fs.writeFile(
@@ -89,7 +96,13 @@ class DockerService {
                 domain,
                 httpPort,
                 sipPort,
-                installationName
+                installationName,
+                mailServerType,
+                smtpHost,
+                smtpPort,
+                smtpUsername,
+                smtpPassword,
+                smtpTls
             });
 
             await fs.writeFile(
@@ -108,6 +121,9 @@ class DockerService {
                     sslEnabled
                 });
             }
+
+            // Setup AccessKit.dev accessibility tools
+            await this.setupAccessKitTools(installDirectory);
 
             // Start Docker services
             const startResult = await this.startServices(installDirectory);
@@ -147,13 +163,30 @@ class DockerService {
         }
     }
 
-    generateLocalDockerCompose({ httpPort, sipPort, installationName, domain }) {
+    generateLocalDockerCompose({ httpPort, sipPort, installationName, domain, mailServerType }) {
+        const containerName = installationName.toLowerCase().replace(/[^a-z0-9]/g, '-');
+
+        let mailServerService = '';
+        if (mailServerType === 'builtin') {
+            mailServerService = `
+  mailserver:
+    image: mailhog/mailhog:latest
+    container_name: ${containerName}-mailserver
+    restart: unless-stopped
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - flexpbx_network
+`;
+        }
+
         return `version: '3.8'
 
 services:
   flexpbx:
     build: .
-    container_name: ${installationName.toLowerCase().replace(/[^a-z0-9]/g, '-')}
+    container_name: ${containerName}
     restart: unless-stopped
     ports:
       - "${httpPort}:3000"
@@ -171,6 +204,9 @@ services:
       - SQLITE_PATH=./data/flexpbx.sqlite
       - ACCESSIBILITY_ENABLED=true
       - SCREEN_READER_SUPPORT=true
+      - VOICE_ANNOUNCEMENTS_ENABLED=true
+      - AUDIO_FEEDBACK_ENABLED=true
+      - ACCESSKIT_ENABLED=true
     volumes:
       - ./data:/app/data
       - ./logs:/app/logs
@@ -178,16 +214,33 @@ services:
       - ./voicemail:/app/voicemail
     networks:
       - flexpbx_network
+    depends_on:
+      - redis${mailServerType === 'builtin' ? '\n      - mailserver' : ''}
 
   redis:
     image: redis:7-alpine
-    container_name: ${installationName.toLowerCase().replace(/[^a-z0-9]/g, '-')}-redis
+    container_name: ${containerName}-redis
     restart: unless-stopped
     command: redis-server --appendonly yes
     volumes:
       - redis_data:/data
     networks:
       - flexpbx_network
+
+  # AccessKit.dev accessibility tools proxy
+  accesskit-proxy:
+    image: nginx:alpine
+    container_name: ${containerName}-accesskit
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      - ./accesskit:/usr/share/nginx/html:ro
+      - ./nginx/accesskit.conf:/etc/nginx/conf.d/default.conf:ro
+    networks:
+      - flexpbx_network
+    depends_on:
+      - flexpbx${mailServerService}
 
 volumes:
   redis_data:
@@ -197,10 +250,35 @@ networks:
     driver: bridge`;
     }
 
-    generateEnvFile({ domain, httpPort, sipPort, installationName }) {
+    generateEnvFile({ domain, httpPort, sipPort, installationName, mailServerType, smtpHost, smtpPort, smtpUsername, smtpPassword, smtpTls }) {
         const jwtSecret = this.generateRandomString(64);
         const sessionSecret = this.generateRandomString(64);
         const adminPassword = this.generateRandomString(16);
+
+        let mailConfig = '';
+        if (mailServerType === 'builtin') {
+            mailConfig = `
+# Built-in Mail Server Configuration
+MAIL_SERVER_TYPE=builtin
+MAIL_SERVER_ENABLED=true
+MAIL_SERVER_PORT=587
+MAIL_SERVER_TLS=true`;
+        } else if (mailServerType === 'external') {
+            mailConfig = `
+# External SMTP Server Configuration
+MAIL_SERVER_TYPE=external
+MAIL_SERVER_ENABLED=true
+SMTP_HOST=${smtpHost || ''}
+SMTP_PORT=${smtpPort || 587}
+SMTP_USERNAME=${smtpUsername || ''}
+SMTP_PASSWORD=${smtpPassword || ''}
+SMTP_TLS=${smtpTls ? 'true' : 'false'}`;
+        } else {
+            mailConfig = `
+# No Mail Server
+MAIL_SERVER_TYPE=none
+MAIL_SERVER_ENABLED=false`;
+        }
 
         return `# FlexPBX Local Installation Configuration
 # Generated: ${new Date().toISOString()}
@@ -224,6 +302,7 @@ DEFAULT_ADMIN_PASSWORD=${adminPassword}
 SIP_UDP_PORT=${sipPort}
 SIP_TCP_PORT=${sipPort}
 HTTP_PORT=${httpPort}
+${mailConfig}
 
 # Accessibility Features
 ACCESSIBILITY_ENABLED=true
@@ -503,6 +582,156 @@ echo "Access your FlexPBX installation at: http${sslEnabled ? 's' : ''}://${doma
                 });
             });
         });
+    }
+
+    async setupAccessKitTools(installDirectory) {
+        try {
+            // Create accesskit directory
+            const accesskitDir = path.join(installDirectory, 'accesskit');
+            await fs.ensureDir(accesskitDir);
+
+            // Create nginx config for accesskit
+            const nginxDir = path.join(installDirectory, 'nginx');
+            await fs.ensureDir(nginxDir);
+
+            const accesskitNginxConfig = `server {
+    listen 80;
+    server_name localhost;
+    root /usr/share/nginx/html;
+    index index.html;
+
+    # AccessKit.dev proxy configuration
+    location /accesskit/ {
+        proxy_pass http://accesskit.dev/;
+        proxy_set_header Host accesskit.dev;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # Add accessibility headers
+        add_header X-Accessibility-Tools "AccessKit.dev" always;
+    }
+
+    # Serve local accessibility tools
+    location / {
+        try_files $uri $uri/ /index.html;
+
+        # Enable accessibility features
+        add_header X-Frame-Options "SAMEORIGIN" always;
+        add_header X-Content-Type-Options "nosniff" always;
+        add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    }
+}`;
+
+            await fs.writeFile(
+                path.join(nginxDir, 'accesskit.conf'),
+                accesskitNginxConfig
+            );
+
+            // Create AccessKit.dev integration HTML
+            const accesskitHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlexPBX Accessibility Tools</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+            color: #333;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .tool-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 20px;
+            background: #fafafa;
+        }
+        .tool-card h3 {
+            margin-top: 0;
+            color: #34495e;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            margin-top: 10px;
+        }
+        .btn:hover {
+            background: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>FlexPBX Accessibility Tools</h1>
+        <p>AccessKit.dev integration provides comprehensive accessibility testing and enhancement tools for your FlexPBX installation.</p>
+
+        <div class="tool-grid">
+            <div class="tool-card">
+                <h3>Screen Reader Testing</h3>
+                <p>Test your PBX interface with various screen readers and assistive technologies.</p>
+                <a href="/accesskit/screen-reader-test" class="btn">Launch Tool</a>
+            </div>
+
+            <div class="tool-card">
+                <h3>Color Contrast Analyzer</h3>
+                <p>Verify color combinations meet WCAG accessibility standards.</p>
+                <a href="/accesskit/contrast-analyzer" class="btn">Launch Tool</a>
+            </div>
+
+            <div class="tool-card">
+                <h3>Keyboard Navigation Tester</h3>
+                <p>Ensure all PBX functions are accessible via keyboard navigation.</p>
+                <a href="/accesskit/keyboard-test" class="btn">Launch Tool</a>
+            </div>
+
+            <div class="tool-card">
+                <h3>Voice Control Interface</h3>
+                <p>Test voice command functionality for hands-free PBX operation.</p>
+                <a href="/accesskit/voice-control" class="btn">Launch Tool</a>
+            </div>
+        </div>
+
+        <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #e0e0e0;">
+            <p><strong>Note:</strong> These tools are powered by <a href="https://accesskit.dev" target="_blank">AccessKit.dev</a> and help ensure your FlexPBX installation meets accessibility standards.</p>
+        </div>
+    </div>
+</body>
+</html>`;
+
+            await fs.writeFile(
+                path.join(accesskitDir, 'index.html'),
+                accesskitHtml
+            );
+
+        } catch (error) {
+            console.warn('Failed to setup AccessKit tools:', error.message);
+            // Don't fail the installation if AccessKit setup fails
+        }
     }
 
     generateRandomString(length) {
