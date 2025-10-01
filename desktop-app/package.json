@@ -29,7 +29,7 @@
   "devDependencies": {
     "electron": "^27.0.0",
     "electron-builder": "^24.6.4",
-    "@electron/notarize": "^2.1.0",
+    "electron-notarize": "^1.2.2",
     "chokidar": "^3.5.3"
   },
   "dependencies": {
@@ -59,37 +59,31 @@
     ],
     "mac": {
       "category": "public.app-category.business",
-      "icon": "assets/icon.icns",
       "target": [
         {
           "target": "dmg",
           "arch": ["x64", "arm64"]
         }
       ],
-      "hardenedRuntime": true,
-      "gatekeeperAssess": false,
-      "entitlements": "resources/entitlements.mac.plist",
-      "entitlementsInherit": "resources/entitlements.mac.plist"
+      "hardenedRuntime": false,
+      "gatekeeperAssess": false
     },
     "win": {
-      "icon": "assets/icon.ico",
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64", "ia32"]
+          "arch": ["x64"]
         },
         {
           "target": "zip",
-          "arch": ["x64", "ia32"]
+          "arch": ["x64"]
         }
       ],
       "publisherName": "FlexPBX Team",
       "requestedExecutionLevel": "requireAdministrator"
     },
     "linux": {
-      "icon": "assets/icon.png",
       "target": "AppImage"
-    },
-    "afterSign": "scripts/notarize.js"
+    }
   }
 }
