@@ -258,6 +258,40 @@ create_documentation() {
 
     mkdir -p "$BUILD_DIR/$PACKAGE_NAME/docs"
 
+    # Copy existing guides from project root
+    if [ -f "$SCRIPT_DIR/../TESTING_GUIDE.md" ]; then
+        cp "$SCRIPT_DIR/../TESTING_GUIDE.md" "$BUILD_DIR/$PACKAGE_NAME/docs/"
+        log "✓ Testing guide included"
+    fi
+
+    if [ -f "$SCRIPT_DIR/../VPS_TESTING_GUIDE.md" ]; then
+        cp "$SCRIPT_DIR/../VPS_TESTING_GUIDE.md" "$BUILD_DIR/$PACKAGE_NAME/docs/"
+        log "✓ VPS testing guide included"
+    fi
+
+    if [ -f "$SCRIPT_DIR/../ACCESSIBILITY_TESTING_GUIDE.md" ]; then
+        cp "$SCRIPT_DIR/../ACCESSIBILITY_TESTING_GUIDE.md" "$BUILD_DIR/$PACKAGE_NAME/docs/"
+        log "✓ Accessibility guide included"
+    fi
+
+    if [ -f "$SCRIPT_DIR/../UPLOAD_METHODS_GUIDE.md" ]; then
+        cp "$SCRIPT_DIR/../UPLOAD_METHODS_GUIDE.md" "$BUILD_DIR/$PACKAGE_NAME/docs/"
+        log "✓ Upload methods guide included"
+    fi
+
+    # Copy test scripts
+    if [ -f "$SCRIPT_DIR/../test-suite.sh" ]; then
+        cp "$SCRIPT_DIR/../test-suite.sh" "$BUILD_DIR/$PACKAGE_NAME/"
+        chmod +x "$BUILD_DIR/$PACKAGE_NAME/test-suite.sh"
+        log "✓ Test suite included"
+    fi
+
+    if [ -f "$SCRIPT_DIR/../quick-test.sh" ]; then
+        cp "$SCRIPT_DIR/../quick-test.sh" "$BUILD_DIR/$PACKAGE_NAME/"
+        chmod +x "$BUILD_DIR/$PACKAGE_NAME/quick-test.sh"
+        log "✓ Quick test script included"
+    fi
+
     # Main README
     cat > "$BUILD_DIR/$PACKAGE_NAME/README.md" << 'EOF'
 # FlexPBX Complete Installation Package

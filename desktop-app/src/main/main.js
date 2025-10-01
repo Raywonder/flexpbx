@@ -10,6 +10,7 @@ const WebSocket = require('ws');
 const AutoInstaller = require('./installers/AutoInstaller');
 const UnifiedDeploymentService = require('./services/UnifiedDeploymentService');
 const FileUploadService = require('./services/FileUploadService');
+const TestingManagerService = require('./services/TestingManagerService');
 
 class FlexPBXUnifiedClient {
     constructor() {
@@ -22,6 +23,7 @@ class FlexPBXUnifiedClient {
         this.autoInstaller = new AutoInstaller();
         this.deploymentService = new UnifiedDeploymentService();
         this.uploadService = new FileUploadService();
+        this.testingManager = new TestingManagerService();
 
         // Configuration
         this.config = {
