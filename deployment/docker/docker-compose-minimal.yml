@@ -1,0 +1,42 @@
+version: '3.8'
+
+# FlexPBX Minimal Installation - Server Only
+# Contains only essential components for basic PBX functionality
+
+services:
+  flexpbx-server:
+    image: node:18-alpine
+    container_name: flexpbx-server
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+      - "5060:5060/udp"
+      - "5060:5060/tcp"
+    environment:
+      - NODE_ENV=production
+      - INSTALL_MODE=minimal
+      - PORT=3000
+    volumes:
+      - ./server:/app
+      - ./data:/app/data
+      - ./logs:/app/logs
+    working_dir: /app
+    command: npm start
+    networks:
+      - flexpbx_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: flexpbx-redis
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    networks:
+      - flexpbx_network
+
+volumes:
+  redis_data:
+
+networks:
+  flexpbx_network:
+    driver: bridge

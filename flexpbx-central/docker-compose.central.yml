@@ -1,0 +1,187 @@
+version: '3.8'
+
+services:
+  flexpbx-central:
+    build: .
+    container_name: flexpbx-central-server
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+      - "3443:3443"
+      - "5060-5061:5060-5061"
+      - "5060-5061:5060-5061/udp"
+      - "8088-8089:8088-8089"
+      - "10000-20000:10000-20000/udp"
+    environment:
+      - NODE_ENV=production
+      - SERVER_MODE=central
+      - MULTI_TENANT=true
+      - DB_TYPE=mysql
+      - DB_HOST=mysql-central
+      - DB_PORT=3306
+      - DB_NAME=flexpbx_central
+      - DB_USER=flexpbx_admin
+      - DB_PASSWORD=CentralFLexPBX2024!
+      - REDIS_HOST=redis-central
+      - REDIS_PORT=6379
+      - JWT_SECRET=Central_JWT_Secret_2024_Secure_Key_789abc123def456
+      - CENTRAL_API_KEY=Central_API_Master_Key_2024
+      - CLUSTER_MODE=true
+      - LOAD_BALANCER=true
+    volumes:
+      - ./config:/app/config
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - recordings-central:/app/recordings
+      - voicemail-central:/app/voicemail
+      - backups-central:/app/backups
+      - sounds-central:/app/sounds
+    networks:
+      - central_network
+    depends_on:
+      - mysql-central
+      - redis-central
+      - copyparty
+
+  mysql-central:
+    image: mariadb:10.11
+    container_name: mysql-central-server
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=CentralRootFLexPBX2024!
+      - MYSQL_DATABASE=flexpbx_central
+      - MYSQL_USER=flexpbx_admin
+      - MYSQL_PASSWORD=CentralFLexPBX2024!
+      - MARIADB_AUTO_UPGRADE=1
+    volumes:
+      - mysql_central_data:/var/lib/mysql
+      - ./sql/central:/docker-entrypoint-initdb.d
+    networks:
+      - central_network
+
+  redis-central:
+    image: redis:7-alpine
+    container_name: redis-central-server
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_central_data:/data
+    networks:
+      - central_network
+
+  copyparty:
+    image: copyparty/copyparty:latest
+    container_name: copyparty-server
+    restart: unless-stopped
+    ports:
+      - "3923:3923"
+    volumes:
+      - ./copyparty.conf:/cfg/copyparty.conf:ro
+      - ./config:/home/flexpbx/config
+      - recordings-central:/home/flexpbx/recordings
+      - voicemail-central:/home/flexpbx/voicemail
+      - backups-central:/home/flexpbx/backups
+      - ./logs:/home/flexpbx/logs
+      - sounds-central:/home/flexpbx/sounds
+      - ./public:/home/flexpbx/public
+    command: -c /cfg/copyparty.conf
+    networks:
+      - central_network
+
+  nginx-central:
+    image: nginx:alpine
+    container_name: nginx-central-server
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/central.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/sites-enabled:/etc/nginx/sites-enabled:ro
+      - ./ssl:/etc/nginx/ssl:ro
+      - ./public:/usr/share/nginx/html:ro
+    depends_on:
+      - flexpbx-central
+      - copyparty
+    networks:
+      - central_network
+
+  haproxy:
+    image: haproxy:alpine
+    container_name: haproxy-lb
+    restart: unless-stopped
+    ports:
+      - "5070:5070"
+      - "5070:5070/udp"
+      - "8080:8080"
+    volumes:
+      - ./haproxy/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
+    networks:
+      - central_network
+    depends_on:
+      - flexpbx-central
+
+  prometheus-central:
+    image: prom/prometheus:latest
+    container_name: prometheus-central-server
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus/central.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_central_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+    networks:
+      - central_network
+
+  grafana-central:
+    image: grafana/grafana:latest
+    container_name: grafana-central-server
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=GrafanaCentral2024!
+      - GF_INSTALL_PLUGINS=redis-datasource,mysql-datasource
+      - GF_SERVER_ROOT_URL=http://central.flexpbx.local:3001
+    volumes:
+      - grafana_central_data:/var/lib/grafana
+      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
+      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+    networks:
+      - central_network
+
+  backup-service:
+    image: alpine:latest
+    container_name: backup-service
+    restart: unless-stopped
+    volumes:
+      - ./scripts:/scripts
+      - ./data:/data
+      - backups-central:/backups
+      - mysql_central_data:/mysql_data:ro
+      - redis_central_data:/redis_data:ro
+    entrypoint: /scripts/backup-central.sh
+    networks:
+      - central_network
+
+volumes:
+  mysql_central_data:
+  redis_central_data:
+  grafana_central_data:
+  prometheus_central_data:
+  recordings-central:
+  voicemail-central:
+  backups-central:
+  sounds-central:
+
+networks:
+  central_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

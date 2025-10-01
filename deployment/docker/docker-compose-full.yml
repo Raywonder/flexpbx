@@ -1,0 +1,213 @@
+version: '3.8'
+
+# FlexPBX Full Installation - Complete PBX Stack
+# Includes all components: Server, Asterisk, FreePBX, Database, Mail Server, Monitoring
+
+services:
+  flexpbx-server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: flexpbx-server
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+      - "8080:8080"
+      - "8088:8088"
+    environment:
+      - NODE_ENV=production
+      - INSTALL_MODE=full
+      - PORT=3000
+      - DB_HOST=mariadb
+      - DB_PORT=3306
+      - DB_NAME=flexpbx
+      - DB_USER=flexpbx
+      - DB_PASS=flexpbx_pass
+      - REDIS_HOST=redis
+      - ASTERISK_HOST=asterisk
+      - FREEPBX_ENABLED=true
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./config:/app/config
+    depends_on:
+      - mariadb
+      - redis
+      - asterisk
+    networks:
+      - flexpbx_network
+
+  asterisk:
+    image: andrius/asterisk:18-current
+    container_name: flexpbx-asterisk
+    restart: unless-stopped
+    network_mode: host
+    cap_add:
+      - NET_ADMIN
+      - SYS_TIME
+    volumes:
+      - ./config/asterisk:/etc/asterisk
+      - ./data/sounds:/var/lib/asterisk/sounds
+      - ./data/voicemail:/var/spool/asterisk/voicemail
+      - ./logs/asterisk:/var/log/asterisk
+    environment:
+      - ASTERISK_UID=1000
+      - ASTERISK_GID=1000
+
+  freepbx:
+    image: tiredofit/freepbx:latest
+    container_name: flexpbx-freepbx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "5061:5061"
+      - "5161:5161"
+      - "8001:8001"
+      - "8003:8003"
+      - "8089:8089"
+      - "10000-10100:10000-10100/udp"
+    volumes:
+      - ./data/freepbx:/data
+      - ./logs/freepbx:/var/log
+      - ./config/freepbx:/etc/asterisk
+      - ./data/www:/var/www/html
+    environment:
+      - DB_EMBEDDED=FALSE
+      - DB_HOST=mariadb
+      - DB_PORT=3306
+      - DB_NAME=freepbx
+      - DB_USER=freepbx
+      - DB_PASS=freepbx_pass
+      - ENABLE_FAIL2BAN=TRUE
+      - ENABLE_FOP=TRUE
+      - ENABLE_XMPP=TRUE
+      - ADMIN_PASS=admin123
+      - HTTP_PORT=80
+      - HTTPS_PORT=443
+    depends_on:
+      - mariadb
+    networks:
+      - flexpbx_network
+
+  mariadb:
+    image: mariadb:10.11
+    container_name: flexpbx-mariadb
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root_password
+      - MYSQL_DATABASE=flexpbx
+      - MYSQL_USER=flexpbx
+      - MYSQL_PASSWORD=flexpbx_pass
+    volumes:
+      - mariadb_data:/var/lib/mysql
+      - ./config/mariadb:/etc/mysql/conf.d
+    networks:
+      - flexpbx_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: flexpbx-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass redis_password
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - flexpbx_network
+
+  mailserver:
+    image: mailhog/mailhog:latest
+    container_name: flexpbx-mailserver
+    restart: unless-stopped
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - flexpbx_network
+
+  nginx:
+    image: nginx:alpine
+    container_name: flexpbx-nginx
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+      - "4443:443"
+    volumes:
+      - ./config/nginx:/etc/nginx/conf.d
+      - ./data/www:/usr/share/nginx/html
+      - ./logs/nginx:/var/log/nginx
+    depends_on:
+      - flexpbx-server
+      - freepbx
+    networks:
+      - flexpbx_network
+
+  # Monitoring Stack
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: flexpbx-prometheus
+    restart: unless-stopped
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./config/prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    networks:
+      - flexpbx_network
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: flexpbx-grafana
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./config/grafana:/etc/grafana/provisioning
+    depends_on:
+      - prometheus
+    networks:
+      - flexpbx_network
+
+  # Backup Service
+  postgres-backup:
+    image: prodrigestivill/postgres-backup-local:latest
+    container_name: flexpbx-backup
+    restart: unless-stopped
+    volumes:
+      - ./backups:/backups
+    environment:
+      - POSTGRES_HOST=mariadb
+      - POSTGRES_DB=flexpbx
+      - POSTGRES_USER=flexpbx
+      - POSTGRES_PASSWORD=flexpbx_pass
+      - SCHEDULE=@daily
+      - BACKUP_KEEP_DAYS=7
+      - BACKUP_KEEP_WEEKS=4
+      - BACKUP_KEEP_MONTHS=6
+    networks:
+      - flexpbx_network
+
+volumes:
+  mariadb_data:
+  redis_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  flexpbx_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

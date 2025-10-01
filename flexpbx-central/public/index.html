@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Accessible PBX - WCAG 2.1 AA Compliant Phone System">
+    <title>Accessible PBX</title>
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/accessibility.css" id="accessibility-styles">
+</head>
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <header role="banner">
+        <nav role="navigation" aria-label="Main navigation">
+            <h1>Accessible PBX System</h1>
+            <ul class="nav-menu" role="menubar">
+                <li role="none"><a role="menuitem" href="/" aria-current="page">Home</a></li>
+                <li role="none"><a role="menuitem" href="/softphone">Softphone</a></li>
+                <li role="none"><a role="menuitem" href="/admin">Admin Panel</a></li>
+                <li role="none"><a role="menuitem" href="#" id="accessibility-menu-btn" aria-haspopup="true" aria-expanded="false">Accessibility</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div id="accessibility-panel" class="accessibility-panel" role="region" aria-label="Accessibility settings" hidden>
+        <h2>Accessibility Settings</h2>
+        <form id="accessibility-form">
+            <fieldset>
+                <legend>Visual Settings</legend>
+
+                <div class="form-group">
+                    <label for="theme-select">Theme:</label>
+                    <select id="theme-select" name="theme">
+                        <option value="default">Default</option>
+                        <option value="high-contrast">High Contrast</option>
+                        <option value="dark">Dark Mode</option>
+                        <option value="light">Light Mode</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="font-size">Font Size:</label>
+                    <input type="range" id="font-size" name="fontSize" min="12" max="24" value="16" aria-valuemin="12" aria-valuemax="24" aria-valuenow="16">
+                    <span id="font-size-value" aria-live="polite">16px</span>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Audio Settings</legend>
+
+                <div class="form-group">
+                    <input type="checkbox" id="screen-reader-mode" name="screenReader" checked>
+                    <label for="screen-reader-mode">Screen Reader Mode</label>
+                </div>
+
+                <div class="form-group">
+                    <input type="checkbox" id="voice-announcements" name="voiceAnnouncements" checked>
+                    <label for="voice-announcements">Voice Announcements</label>
+                </div>
+
+                <div class="form-group">
+                    <input type="checkbox" id="audio-feedback" name="audioFeedback" checked>
+                    <label for="audio-feedback">Audio Feedback</label>
+                </div>
+
+                <div class="form-group">
+                    <label for="voice-speed">Voice Speed:</label>
+                    <input type="range" id="voice-speed" name="voiceSpeed" min="50" max="300" value="150" aria-valuemin="50" aria-valuemax="300" aria-valuenow="150">
+                    <span id="voice-speed-value" aria-live="polite">150 wpm</span>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Keyboard Settings</legend>
+
+                <div class="form-group">
+                    <input type="checkbox" id="keyboard-nav" name="keyboardNav" checked>
+                    <label for="keyboard-nav">Enhanced Keyboard Navigation</label>
+                </div>
+
+                <div class="form-group">
+                    <input type="checkbox" id="sticky-keys" name="stickyKeys">
+                    <label for="sticky-keys">Sticky Keys</label>
+                </div>
+            </fieldset>
+
+            <button type="submit" class="btn-primary">Save Settings</button>
+            <button type="button" id="reset-settings" class="btn-secondary">Reset to Defaults</button>
+        </form>
+    </div>
+
+    <main id="main-content" role="main">
+        <div class="container">
+            <section aria-labelledby="welcome-heading">
+                <h2 id="welcome-heading">Welcome to Accessible PBX</h2>
+                <p>A fully accessible phone system designed for everyone, with special focus on users with disabilities.</p>
+
+                <div class="feature-cards" role="list">
+                    <article class="feature-card" role="listitem">
+                        <h3>WCAG 2.1 AA Compliant</h3>
+                        <p>Full compliance with web accessibility guidelines ensuring usability for all users.</p>
+                    </article>
+
+                    <article class="feature-card" role="listitem">
+                        <h3>Screen Reader Optimized</h3>
+                        <p>Tested with NVDA, JAWS, VoiceOver, and Orca for seamless screen reader experience.</p>
+                    </article>
+
+                    <article class="feature-card" role="listitem">
+                        <h3>Voice Control</h3>
+                        <p>Complete hands-free operation with voice commands and audio feedback.</p>
+                    </article>
+
+                    <article class="feature-card" role="listitem">
+                        <h3>Keyboard Navigation</h3>
+                        <p>Full functionality accessible via keyboard shortcuts without requiring a mouse.</p>
+                    </article>
+                </div>
+            </section>
+
+            <section aria-labelledby="quick-actions-heading">
+                <h2 id="quick-actions-heading">Quick Actions</h2>
+                <div class="action-buttons" role="group" aria-label="Quick action buttons">
+                    <button type="button" class="action-btn" id="make-call-btn" aria-label="Make a new call">
+                        <span aria-hidden="true">📞</span>
+                        Make Call
+                    </button>
+                    <button type="button" class="action-btn" id="check-voicemail-btn" aria-label="Check voicemail messages">
+                        <span aria-hidden="true">📮</span>
+                        Voicemail
+                    </button>
+                    <button type="button" class="action-btn" id="conference-btn" aria-label="Start or join conference">
+                        <span aria-hidden="true">👥</span>
+                        Conference
+                    </button>
+                    <button type="button" class="action-btn" id="directory-btn" aria-label="Open directory">
+                        <span aria-hidden="true">📖</span>
+                        Directory
+                    </button>
+                </div>
+            </section>
+
+            <section aria-labelledby="status-heading" class="status-section">
+                <h2 id="status-heading">System Status</h2>
+                <div id="status-container" role="status" aria-live="polite" aria-atomic="true">
+                    <p>Connecting to server...</p>
+                </div>
+            </section>
+
+            <section aria-labelledby="keyboard-shortcuts-heading">
+                <h2 id="keyboard-shortcuts-heading">Keyboard Shortcuts</h2>
+                <details>
+                    <summary>View keyboard shortcuts</summary>
+                    <table role="table" aria-label="Keyboard shortcuts">
+                        <thead>
+                            <tr>
+                                <th scope="col">Action</th>
+                                <th scope="col">Shortcut</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Make Call</td>
+                                <td><kbd>Alt</kbd> + <kbd>C</kbd></td>
+                            </tr>
+                            <tr>
+                                <td>Answer Call</td>
+                                <td><kbd>Alt</kbd> + <kbd>A</kbd></td>
+                            </tr>
+                            <tr>
+                                <td>End Call</td>
+                                <td><kbd>Alt</kbd> + <kbd>E</kbd></td>
+                            </tr>
+                            <tr>
+                                <td>Mute/Unmute</td>
+                                <td><kbd>Alt</kbd> + <kbd>M</kbd></td>
+                            </tr>
+                            <tr>
+                                <td>Hold/Unhold</td>
+                                <td><kbd>Alt</kbd> + <kbd>H</kbd></td>
+                            </tr>
+                            <tr>
+                                <td>Transfer Call</td>
+                                <td><kbd>Alt</kbd> + <kbd>T</kbd></td>
+                            </tr>
+                            <tr>
+                                <td>Open Voicemail</td>
+                                <td><kbd>Alt</kbd> + <kbd>V</kbd></td>
+                            </tr>
+                            <tr>
+                                <td>Toggle Accessibility Panel</td>
+                                <td><kbd>Alt</kbd> + <kbd>S</kbd></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </details>
+            </section>
+        </div>
+    </main>
+
+    <footer role="contentinfo">
+        <p>&copy; 2024 Accessible PBX. All rights reserved.</p>
+        <p>For support, email <a href="mailto:support@accessible-pbx.com">support@accessible-pbx.com</a></p>
+    </footer>
+
+    <div id="aria-live-region" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+    <div id="aria-alert-region" class="sr-only" role="alert" aria-live="assertive" aria-atomic="true"></div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/accessibility.js"></script>
+    <script src="/js/main.js"></script>
+</body>
+</html>
