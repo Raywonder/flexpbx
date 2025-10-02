@@ -1,0 +1,16 @@
+{
+  "name": "SIP Trunk Management",
+  "version": "1.0.0",
+  "description": "SIP trunk configuration and management",
+  "main": "index.js",
+  "dependencies": [
+    "sip.js",
+    "axios"
+  ],
+  "exports": [
+    "SIPTrunkService",
+    "ProviderManager"
+  ],
+  "checksum": "54f693df2acd89a13e5566bce70d645824ca5e96e94cc0eab2dc50a199ab1ddd",
+  "created": "2025-10-02T15:23:44.057Z"
+}

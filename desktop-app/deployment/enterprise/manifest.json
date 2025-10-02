@@ -1,0 +1,65 @@
+{
+  "name": "FlexPBX Enterprise",
+  "version": "1.0.0",
+  "type": "enterprise",
+  "features": [
+    "multi-tenant",
+    "clustering",
+    "ha-failover",
+    "advanced-analytics"
+  ],
+  "requirements": {
+    "minRAM": "8GB",
+    "minCPU": "4 cores",
+    "minStorage": "100GB",
+    "database": "PostgreSQL 13+",
+    "redis": "Required",
+    "clustering": "Supported"
+  },
+  "modules": [
+    "core",
+    "pbx-engine",
+    "sip-trunk",
+    "extensions",
+    "voicemail",
+    "ivr",
+    "conference",
+    "recording",
+    "analytics",
+    "licensing"
+  ],
+  "configuration": {
+    "pbx": {
+      "maxExtensions": 10000,
+      "maxConcurrentCalls": 5000,
+      "recordingEnabled": false,
+      "voicemailEnabled": true
+    },
+    "sip": {
+      "providers": [
+        "flexpbx",
+        "callcentric",
+        "voipms",
+        "twilio"
+      ],
+      "codecs": [
+        "G.711",
+        "G.729",
+        "Opus"
+      ],
+      "transport": [
+        "UDP",
+        "TCP",
+        "TLS"
+      ]
+    },
+    "security": {
+      "encryption": "required",
+      "firewall": true,
+      "rateLimiting": true,
+      "audit": true
+    }
+  },
+  "created": "2025-10-02T15:23:43.573Z",
+  "checksum": "c6a221a9a7f1bed75410b2f2fc977fd33842b55c222e8c381a6e773aad900fbf"
+}

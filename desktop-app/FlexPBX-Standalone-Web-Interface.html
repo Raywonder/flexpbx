@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlexPBX v1.0 - Standalone Web PBX Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .status-online { background: #27ae60; }
+        .status-warning { background: #f39c12; }
+        .status-offline { background: #e74c3c; }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 300px 1fr 300px;
+            gap: 20px;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            height: fit-content;
+        }
+
+        .panel h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .extension-card, .call-card, .phone-config {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            transition: transform 0.2s ease;
+        }
+
+        .extension-card:hover, .call-card:hover, .phone-config:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .extension-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .extension-number {
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #2c3e50;
+        }
+
+        .extension-status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .status-available { background: #d4edda; color: #155724; }
+        .status-busy { background: #f8d7da; color: #721c24; }
+        .status-away { background: #fff3cd; color: #856404; }
+        .status-offline { background: #f1f3f4; color: #6c757d; }
+
+        .controls {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-primary { background: #007bff; color: white; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-warning { background: #ffc107; color: #212529; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-info { background: #17a2b8; color: white; }
+        .btn-secondary { background: #6c757d; color: white; }
+
+        .volume-control {
+            margin: 15px 0;
+        }
+
+        .volume-control label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .volume-slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: #ddd;
+            outline: none;
+            appearance: none;
+        }
+
+        .volume-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #007bff;
+            cursor: pointer;
+        }
+
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-radius: 8px 8px 0 0;
+            overflow: hidden;
+            margin-bottom: 0;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px 15px;
+            background: #e9ecef;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.3s ease;
+        }
+
+        .tab.active {
+            background: #007bff;
+            color: white;
+        }
+
+        .tab-content {
+            background: white;
+            padding: 20px;
+            border-radius: 0 0 8px 8px;
+            border: 1px solid #dee2e6;
+            border-top: none;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .sip-phone-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .phone-brand {
+            text-align: center;
+            padding: 20px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .phone-brand:hover {
+            border-color: #007bff;
+            background: #f8f9fa;
+        }
+
+        .phone-brand.selected {
+            border-color: #007bff;
+            background: #e3f2fd;
+        }
+
+        .config-generator {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .config-output {
+            background: #2d3748;
+            color: #68d391;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            overflow-x: auto;
+            margin: 15px 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .form-group {
+            margin: 15px 0;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ced4da;
+            border-radius: 6px;
+            font-size: 0.9em;
+        }
+
+        .call-queue {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .queue-position {
+            font-size: 2em;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .hold-music-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .status-bar {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .main-container {
+                padding: 10px;
+            }
+        }
+
+        /* Accessibility Enhancements */
+        .accessibility-mode .btn {
+            min-height: 44px;
+            font-size: 1.1em;
+        }
+
+        .accessibility-mode .form-control {
+            min-height: 44px;
+            font-size: 1.1em;
+        }
+
+        .high-contrast {
+            filter: contrast(150%);
+        }
+
+        .large-text {
+            font-size: 1.2em;
+        }
+
+        .voice-control-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+        }
+
+        .transcription-overlay {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            max-height: 150px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <!-- Voice Control Indicator -->
+    <div id="voice-indicator" class="voice-control-indicator hidden">
+        🎤 Voice Control Active
+    </div>
+
+    <!-- Live Transcription Overlay -->
+    <div id="transcription" class="transcription-overlay hidden">
+        <strong>Live Transcription:</strong>
+        <div id="transcription-content"></div>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <h1>📞 FlexPBX v1.0 - Web PBX Management</h1>
+        <div class="subtitle">Professional Telephony System - Standalone Web Interface</div>
+
+        <div class="status-bar">
+            <div class="status-item">
+                <span class="status-indicator status-online"></span>
+                <span>SIP Server: Active</span>
+            </div>
+            <div class="status-item">
+                <span class="status-indicator status-online"></span>
+                <span>Extensions: 15 Active</span>
+            </div>
+            <div class="status-item">
+                <span class="status-indicator status-warning"></span>
+                <span>Queue: 3 Waiting</span>
+            </div>
+            <div class="status-item">
+                <span class="status-indicator status-online"></span>
+                <span>Recording: Active</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Left Panel: Extensions & SIP Phones -->
+        <div class="panel">
+            <h3>📱 Extensions & SIP Phones</h3>
+
+            <!-- Tabs for different views -->
+            <div class="tabs">
+                <button class="tab active" onclick="showExtensionTab('extensions')">Extensions</button>
+                <button class="tab" onclick="showExtensionTab('sipphones')">SIP Phones</button>
+                <button class="tab" onclick="showExtensionTab('config')">Config Gen</button>
+            </div>
+
+            <!-- Extensions Tab -->
+            <div id="extensions-tab" class="tab-content">
+                <div class="extension-card">
+                    <div class="extension-header">
+                        <span class="extension-number">Ext 101</span>
+                        <span class="extension-status status-available">Available</span>
+                    </div>
+                    <div><strong>Sales Rep 1</strong></div>
+                    <div>User: john.sales@company.com</div>
+                    <div>SIP Phone: Cisco 8841</div>
+                    <div class="controls">
+                        <button class="btn btn-primary" onclick="callExtension(101)">Call</button>
+                        <button class="btn btn-warning" onclick="setDND(101)">DND</button>
+                        <button class="btn btn-info" onclick="monitorExtension(101)">Monitor</button>
+                    </div>
+                </div>
+
+                <div class="extension-card">
+                    <div class="extension-header">
+                        <span class="extension-number">Ext 203</span>
+                        <span class="extension-status status-busy">On Call</span>
+                    </div>
+                    <div><strong>Accessibility Support</strong></div>
+                    <div>User: accessibility@company.com</div>
+                    <div>SIP Phone: Grandstream GXP2170</div>
+                    <div>Call Duration: 12:34</div>
+                    <div class="controls">
+                        <button class="btn btn-success" onclick="whisperCoach(203)">Whisper</button>
+                        <button class="btn btn-warning" onclick="bargeCall(203)">Barge</button>
+                        <button class="btn btn-danger" onclick="hangupExtension(203)">Hangup</button>
+                    </div>
+                </div>
+
+                <div class="extension-card">
+                    <div class="extension-header">
+                        <span class="extension-number">Ext 8000</span>
+                        <span class="extension-status status-available">Conference</span>
+                    </div>
+                    <div><strong>Main Conference Room</strong></div>
+                    <div>Participants: 7/50</div>
+                    <div>Features: Recording, Transcription</div>
+                    <div class="controls">
+                        <button class="btn btn-success" onclick="joinConference(8000)">Join</button>
+                        <button class="btn btn-primary" onclick="conferenceControls(8000)">Controls</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SIP Phones Tab -->
+            <div id="sipphones-tab" class="tab-content hidden">
+                <h4>🔧 Supported SIP Phone Brands</h4>
+                <div class="sip-phone-grid">
+                    <div class="phone-brand" onclick="selectPhoneBrand('cisco')">
+                        <h5>📞 Cisco</h5>
+                        <p>8841, 8851, 8861<br>SPA series</p>
+                    </div>
+                    <div class="phone-brand" onclick="selectPhoneBrand('grandstream')">
+                        <h5>📞 Grandstream</h5>
+                        <p>GXP2170, GXP2160<br>GXV series</p>
+                    </div>
+                    <div class="phone-brand" onclick="selectPhoneBrand('yealink')">
+                        <h5>📞 Yealink</h5>
+                        <p>T46G, T48G, T56A<br>CP series</p>
+                    </div>
+                    <div class="phone-brand" onclick="selectPhoneBrand('polycom')">
+                        <h5>📞 Polycom</h5>
+                        <p>VVX series<br>SoundPoint IP</p>
+                    </div>
+                    <div class="phone-brand" onclick="selectPhoneBrand('panasonic')">
+                        <h5>📞 Panasonic</h5>
+                        <p>KX-TGP600<br>KX-HDV series</p>
+                    </div>
+                    <div class="phone-brand" onclick="selectPhoneBrand('softphone')">
+                        <h5>💻 Softphones</h5>
+                        <p>X-Lite, Zoiper<br>3CX Phone</p>
+                    </div>
+                </div>
+
+                <div id="phone-details" class="phone-config hidden">
+                    <h5>Selected: <span id="selected-brand"></span></h5>
+                    <div id="phone-features"></div>
+                </div>
+            </div>
+
+            <!-- Config Generator Tab -->
+            <div id="config-tab" class="tab-content hidden">
+                <h4>🔧 Auto-Config Generator</h4>
+                <div class="form-group">
+                    <label>Phone Brand:</label>
+                    <select class="form-control" id="config-brand">
+                        <option value="cisco">Cisco</option>
+                        <option value="grandstream">Grandstream</option>
+                        <option value="yealink">Yealink</option>
+                        <option value="polycom">Polycom</option>
+                        <option value="softphone">Softphone</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Extension Number:</label>
+                    <input type="number" class="form-control" id="config-extension" placeholder="101">
+                </div>
+                <div class="form-group">
+                    <label>User Name:</label>
+                    <input type="text" class="form-control" id="config-username" placeholder="john.doe">
+                </div>
+                <div class="form-group">
+                    <label>Password:</label>
+                    <input type="text" class="form-control" id="config-password" placeholder="secure123">
+                </div>
+                <button class="btn btn-success" onclick="generatePhoneConfig()">Generate Config</button>
+
+                <div id="config-output" class="config-output hidden"></div>
+            </div>
+
+            <!-- Audio Controls -->
+            <div style="margin-top: 30px;">
+                <h4>🎵 Audio Controls</h4>
+                <div class="volume-control">
+                    <label>Master Volume:</label>
+                    <input type="range" class="volume-slider" min="0" max="100" value="75"
+                           onchange="updateVolume('master', this.value)">
+                    <span id="master-volume">75%</span>
+                </div>
+                <div class="volume-control">
+                    <label>Hold Music Volume:</label>
+                    <input type="range" class="volume-slider" min="0" max="100" value="60"
+                           onchange="updateVolume('hold', this.value)">
+                    <span id="hold-volume">60%</span>
+                </div>
+                <div class="volume-control">
+                    <label>Ring Volume:</label>
+                    <input type="range" class="volume-slider" min="0" max="100" value="80"
+                           onchange="updateVolume('ring', this.value)">
+                    <span id="ring-volume">80%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Center Panel: Active Calls & Call Management -->
+        <div class="panel">
+            <h3>📋 Active Calls & Call Management</h3>
+
+            <!-- Call Queue -->
+            <div class="call-queue">
+                <div class="queue-position">3</div>
+                <div style="text-align: center;">Callers in Queue</div>
+                <div style="text-align: center; margin-top: 10px;">
+                    <button class="btn btn-warning" onclick="viewQueue()">Manage Queue</button>
+                </div>
+            </div>
+
+            <!-- Active Calls -->
+            <div class="call-card">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <span class="status-indicator status-online"></span>
+                        <strong>Call #1001</strong> - Inbound
+                    </div>
+                    <div style="font-weight: bold; color: #28a745;">12:34</div>
+                </div>
+                <div>📞 +1-555-0123 → Ext 101 (Sales Rep 1)</div>
+                <div>🎙️ Recording: ON | Quality: HD (G.722)</div>
+                <div class="controls">
+                    <button class="btn btn-warning" onclick="holdCall('1001')">Hold</button>
+                    <button class="btn btn-success" onclick="transferCall('1001')">Transfer</button>
+                    <button class="btn btn-info" onclick="recordCall('1001')">Record</button>
+                    <button class="btn btn-primary" onclick="monitorCall('1001')">Monitor</button>
+                    <button class="btn btn-danger" onclick="hangupCall('1001')">End Call</button>
+                </div>
+            </div>
+
+            <div class="call-card">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <span class="status-indicator status-warning"></span>
+                        <strong>Call #1002</strong> - On Hold
+                    </div>
+                    <div style="font-weight: bold; color: #ffc107;">On Hold 2:15</div>
+                </div>
+                <div>📞 +1-555-0456 → Hold Queue</div>
+                <div>🎵 Hold Music: Classical | Announcements: Every 30s</div>
+                <div class="controls">
+                    <button class="btn btn-success" onclick="resumeCall('1002')">Resume</button>
+                    <button class="btn btn-primary" onclick="changeHoldMusic('1002')">Change Music</button>
+                    <button class="btn btn-warning" onclick="announcePosition('1002')">Announce Position</button>
+                </div>
+            </div>
+
+            <div class="call-card">
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <span class="status-indicator status-online"></span>
+                        <strong>Conference #8000</strong> - Active
+                    </div>
+                    <div style="font-weight: bold; color: #17a2b8;">7 Participants</div>
+                </div>
+                <div>🏢 Main Conference Room | Recording: YES</div>
+                <div>♿ Accessibility: Transcription ON, Voice Navigation</div>
+                <div class="controls">
+                    <button class="btn btn-success" onclick="joinConference(8000)">Join</button>
+                    <button class="btn btn-warning" onclick="muteAll(8000)">Mute All</button>
+                    <button class="btn btn-primary" onclick="recordConference(8000)">Record</button>
+                    <button class="btn btn-info" onclick="transcribeConference(8000)">Transcribe</button>
+                </div>
+            </div>
+
+            <!-- Hold Music Controls -->
+            <h4 style="margin-top: 30px;">🎵 Hold Music Management</h4>
+            <div class="hold-music-controls">
+                <button class="btn btn-primary" onclick="uploadHoldMusic()">Upload Music</button>
+                <button class="btn btn-success" onclick="recordCustomPrompt()">Record Prompt</button>
+                <button class="btn btn-warning" onclick="testHoldSystem()">Test Hold System</button>
+                <button class="btn btn-info" onclick="scheduleAnnouncements()">Schedule Announcements</button>
+            </div>
+
+            <!-- IVR Management -->
+            <h4>🤖 IVR System</h4>
+            <div class="controls">
+                <button class="btn btn-primary" onclick="editIVR()">Edit IVR Menu</button>
+                <button class="btn btn-success" onclick="testIVR()">Test IVR</button>
+                <button class="btn btn-warning" onclick="ivrStatistics()">IVR Stats</button>
+                <button class="btn btn-info" onclick="voiceNavigationSettings()">Voice Navigation</button>
+            </div>
+        </div>
+
+        <!-- Right Panel: System Status & Management -->
+        <div class="panel">
+            <h3>📊 System Status & Management</h3>
+
+            <!-- System Health -->
+            <div class="extension-card">
+                <h5>🖥️ System Health</h5>
+                <div>CPU Usage: <strong>12%</strong></div>
+                <div>Memory: <strong>2.1GB / 8GB</strong></div>
+                <div>Active Channels: <strong>12 / 100</strong></div>
+                <div>Uptime: <strong>7 days, 3 hours</strong></div>
+                <div style="margin-top: 10px;">
+                    <span class="status-indicator status-online"></span>
+                    <strong>All Systems Operational</strong>
+                </div>
+            </div>
+
+            <!-- SIP Status -->
+            <div class="extension-card">
+                <h5>📡 SIP Server Status</h5>
+                <div>Port 5060: <span style="color: #28a745; font-weight: bold;">LISTENING</span></div>
+                <div>Registered Phones: <strong>15 / 25</strong></div>
+                <div>TLS Security: <span style="color: #28a745; font-weight: bold;">ENABLED</span></div>
+                <div>Codec: <strong>G.722 (HD Audio)</strong></div>
+                <button class="btn btn-primary" onclick="sipDiagnostics()">SIP Diagnostics</button>
+            </div>
+
+            <!-- Recording System -->
+            <div class="extension-card">
+                <h5>🎙️ Recording System</h5>
+                <div>Active Recordings: <strong>3</strong></div>
+                <div>Storage Used: <strong>15.2GB / 500GB</strong></div>
+                <div>Retention Period: <strong>90 days</strong></div>
+                <div>Auto-Transcription: <strong>ON</strong></div>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="accessRecordings()">Access Recordings</button>
+                    <button class="btn btn-success" onclick="exportRecordings()">Export</button>
+                </div>
+            </div>
+
+            <!-- Multi-User Management -->
+            <div class="extension-card">
+                <h5>👥 Multi-User Management</h5>
+                <div><strong>Sales Group</strong> (Owner: sales@company.com)</div>
+                <div>Extensions: 101-103 | Users: 3</div>
+                <div><strong>Support Group</strong> (Owner: support@company.com)</div>
+                <div>Extensions: 201-204 | Users: 4</div>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="manageGroups()">Manage Groups</button>
+                    <button class="btn btn-success" onclick="addUser()">Add User</button>
+                </div>
+            </div>
+
+            <!-- Accessibility Features -->
+            <div class="extension-card" style="background: #e3f2fd; border-color: #2196f3;">
+                <h5>♿ Accessibility Features</h5>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="enableVoiceNavigation()">Voice Navigation</button>
+                    <button class="btn btn-success" onclick="toggleTranscription()">Live Transcription</button>
+                    <button class="btn btn-warning" onclick="accessibilityMode()">Accessibility Mode</button>
+                    <button class="btn btn-info" onclick="screenReaderSupport()">Screen Reader</button>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <h4 style="margin-top: 30px;">⚡ Quick Actions</h4>
+            <div class="controls">
+                <button class="btn btn-success" onclick="makeCall()">Make Call</button>
+                <button class="btn btn-primary" onclick="createConference()">Create Conference</button>
+                <button class="btn btn-warning" onclick="systemRestart()">Restart Services</button>
+                <button class="btn btn-danger" onclick="emergencyShutdown()">Emergency Stop</button>
+            </div>
+
+            <!-- Deployment Status -->
+            <div class="extension-card" style="margin-top: 20px;">
+                <h5>🚀 Deployment Info</h5>
+                <div>Version: <strong>FlexPBX v1.0</strong></div>
+                <div>Platform: <strong>Standalone Web</strong></div>
+                <div>Deployment: <strong>Remote Server</strong></div>
+                <div>License: <strong>Professional</strong></div>
+                <button class="btn btn-info" onclick="viewLicense()">View License</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state management
+        let currentPhoneBrand = null;
+        let voiceNavigationEnabled = false;
+        let transcriptionEnabled = false;
+        let accessibilityMode = false;
+
+        // Extension Management Functions
+        function showExtensionTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.remove('hidden');
+            event.target.classList.add('active');
+
+            speak(\`Switched to \${tabName} tab\`);
+        }
+
+        // SIP Phone Management
+        function selectPhoneBrand(brand) {
+            currentPhoneBrand = brand;
+
+            // Update UI
+            document.querySelectorAll('.phone-brand').forEach(el => {
+                el.classList.remove('selected');
+            });
+            event.target.classList.add('selected');
+
+            // Show phone details
+            const detailsEl = document.getElementById('phone-details');
+            const brandEl = document.getElementById('selected-brand');
+            const featuresEl = document.getElementById('phone-features');
+
+            brandEl.textContent = brand.charAt(0).toUpperCase() + brand.slice(1);
+
+            const phoneFeatures = {
+                cisco: [
+                    'HD Audio (G.722)',
+                    'Power over Ethernet',
+                    'Programmable Buttons',
+                    'Color Display',
+                    'XML Applications',
+                    'Security Features'
+                ],
+                grandstream: [
+                    'HD Audio (G.722, Opus)',
+                    'Bluetooth Support',
+                    'Wi-Fi Connectivity',
+                    'Android OS',
+                    'Video Calling',
+                    'Dual Gigabit Ports'
+                ],
+                yealink: [
+                    'HD Audio',
+                    'Expansion Modules',
+                    'Bluetooth',
+                    'USB Headset Support',
+                    'Paper Label Support',
+                    'Wall Mountable'
+                ],
+                polycom: [
+                    'HD Voice (G.722)',
+                    'Acoustic Clarity',
+                    'Zero Touch Provisioning',
+                    'Integrated PoE',
+                    'Flexible Line Appearance',
+                    'Advanced Call Handling'
+                ],
+                softphone: [
+                    'Cross-Platform Support',
+                    'Video Calling',
+                    'Screen Sharing',
+                    'Instant Messaging',
+                    'Presence Information',
+                    'WebRTC Support'
+                ]
+            };
+
+            featuresEl.innerHTML = phoneFeatures[brand].map(feature =>
+                \`<div>✅ \${feature}</div>\`
+            ).join('');
+
+            detailsEl.classList.remove('hidden');
+
+            speak(\`Selected \${brand} phones with \${phoneFeatures[brand].length} features\`);
+        }
+
+        // Configuration Generator
+        function generatePhoneConfig() {
+            const brand = document.getElementById('config-brand').value;
+            const extension = document.getElementById('config-extension').value;
+            const username = document.getElementById('config-username').value;
+            const password = document.getElementById('config-password').value;
+
+            if (!extension || !username || !password) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            const configs = {
+                cisco: generateCiscoConfig(extension, username, password),
+                grandstream: generateGrandstreamConfig(extension, username, password),
+                yealink: generateYealinkConfig(extension, username, password),
+                polycom: generatePolycomConfig(extension, username, password),
+                softphone: generateSoftphoneConfig(extension, username, password)
+            };
+
+            const outputEl = document.getElementById('config-output');
+            outputEl.textContent = configs[brand];
+            outputEl.classList.remove('hidden');
+
+            speak(\`Generated \${brand} configuration for extension \${extension}\`);
+        }
+
+        function generateCiscoConfig(ext, user, pass) {
+            return \`# Cisco SIP Phone Configuration for Extension \${ext}
+# Filename: SIP\${ext}.cnf
+
+# Network Settings
+proxy1_address: "flexpbx.yourserver.com"
+proxy1_port: 5060
+
+# Authentication
+line1_name: "\${user}"
+line1_displayname: "Extension \${ext}"
+line1_authname: "\${user}"
+line1_password: "\${pass}"
+
+# Audio Settings
+preferred_codec: g722
+dtmf_relay: rtp_2833
+
+# Features
+call_hold_ringback: 1
+auto_answer: 0
+call_waiting: 1
+callerid_blocking: 0
+
+# Accessibility Features
+volume_gain_handset: 0
+volume_gain_speaker: 0
+contrast: 10
+
+# Directory Services
+directory_url: "http://flexpbx.yourserver.com/directory"
+
+# Time Zone
+time_zone: EST
+dst_config: 1\`;
+        }
+
+        function generateGrandstreamConfig(ext, user, pass) {
+            return \`# Grandstream Configuration for Extension \${ext}
+# Auto-provision via HTTP
+
+# Account 1 Settings
+P271 = \${user}        # SIP User ID
+P270 = \${user}        # Account Name
+P273 = \${pass}        # SIP Password
+P47 = flexpbx.yourserver.com  # SIP Server
+P48 = 5060             # SIP Port
+
+# Codec Settings
+P57 = 9                # Preferred Codec (G722)
+P58 = 0                # Second Choice (PCMU)
+P59 = 8                # Third Choice (PCMA)
+
+# DTMF Settings
+P79 = 1                # DTMF Method (RFC2833)
+
+# Audio Settings
+P23 = 4                # Speaker Volume
+P22 = 4                # Handset Volume
+P25 = 4                # Headset Volume
+
+# Accessibility Features
+P85 = 1                # Enable Hearing Aid Compatibility
+P86 = 0                # Noise Reduction
+P90 = 10               # Display Contrast
+
+# Call Features
+P35 = 1                # Call Waiting
+P29 = 1                # Auto Answer (0=disabled)
+P298 = 1               # Call Hold
+
+# Provisioning
+P212 = http://flexpbx.yourserver.com/provision/\${user}.cfg
+P145 = 1               # Disable firmware upgrade via TFTP\`;
+        }
+
+        function generateYealinkConfig(ext, user, pass) {
+            return \`# Yealink Phone Configuration for Extension \${ext}
+# File: y000000000000.cfg (MAC address specific)
+
+#!version:1.0.0.1
+
+# Account Settings
+account.1.enable = 1
+account.1.label = Extension \${ext}
+account.1.display_name = \${user}
+account.1.auth_name = \${user}
+account.1.password = \${pass}
+account.1.sip_server.1.address = flexpbx.yourserver.com
+account.1.sip_server.1.port = 5060
+
+# Audio Settings
+voice.handfree.mic_gain = 0
+voice.handfree.spk_gain = 0
+voice.handset.mic_gain = 0
+voice.handset.spk_gain = 0
+
+# Codec Settings
+account.1.codec.1.enable = 1
+account.1.codec.1.payload_type = G722
+account.1.codec.2.enable = 1
+account.1.codec.2.payload_type = PCMU
+
+# DTMF Settings
+account.1.dtmf.type = 2                # RFC2833
+
+# Feature Settings
+features.call_waiting.enable = 1
+features.call_hold.enable = 1
+features.auto_answer.enable = 0
+
+# Accessibility
+phone.setting.contrast = 10
+phone.setting.brightness = 10
+
+# Provisioning
+auto_provision.server.url = http://flexpbx.yourserver.com/provision/
+auto_provision.repeat.enable = 1
+auto_provision.weekly.enable = 1\`;
+        }
+
+        function generatePolycomConfig(ext, user, pass) {
+            return \`<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!-- Polycom Configuration for Extension \${ext} -->
+<reginfo>
+    <reg reg.1.server.1.address="flexpbx.yourserver.com"
+         reg.1.server.1.port="5060"
+         reg.1.displayName="\${user}"
+         reg.1.address="\${user}"
+         reg.1.auth.userId="\${user}"
+         reg.1.auth.password="\${pass}"
+         reg.1.label="Extension \${ext}"/>
+</reginfo>
+
+<!-- Audio Settings -->
+<voice voice.volume.persist.handset="4"
+       voice.volume.persist.headset="4"
+       voice.volume.persist.handsfree="4">
+
+    <!-- Codec Preferences -->
+    <audioProfile voice.audioProfile.G722="1"
+                  voice.audioProfile.PCMU="1"
+                  voice.audioProfile.PCMA="1"/>
+</voice>
+
+<!-- Feature Settings -->
+<call call.hold.localReminder="1"
+      call.waiting.enable="1"
+      call.autoAnswer.enable="0"/>
+
+<!-- DTMF Settings -->
+<tone tone.dtmf.rfc2833Control="1"/>
+
+<!-- Accessibility -->
+<display se.rt.displayMode.contrast="10"
+         se.rt.displayMode.backlight.intensity="10"/>
+
+<!-- Provisioning -->
+<device device.set="1"
+        device.sntp.serverName="pool.ntp.org"
+        device.prov.serverName="flexpbx.yourserver.com"
+        device.prov.serverType="HTTP"/>\`;
+        }
+
+        function generateSoftphoneConfig(ext, user, pass) {
+            return \`# Softphone Configuration for Extension \${ext}
+# Compatible with X-Lite, Zoiper, 3CX Phone
+
+[Account Settings]
+Display Name: Extension \${ext}
+Username: \${user}
+Password: \${pass}
+Domain: flexpbx.yourserver.com
+Proxy: flexpbx.yourserver.com:5060
+Register: Yes
+
+[Audio Settings]
+Preferred Codec: G.722 (HD Audio)
+Alternative Codecs: PCMU, PCMA
+DTMF Method: RFC2833
+Echo Cancellation: Enabled
+Noise Suppression: Enabled
+Automatic Gain Control: Enabled
+
+[Network Settings]
+Transport: UDP (Primary), TCP (Backup)
+STUN Server: stun.l.google.com:19302
+ICE: Enabled
+RTCP: Enabled
+
+[Features]
+Call Waiting: Enabled
+Call Hold: Enabled
+Call Transfer: Enabled
+Conference: 3-way
+Auto Answer: Disabled
+Do Not Disturb: Available
+
+[Accessibility Features]
+Screen Reader Compatible: Yes
+Keyboard Navigation: Full
+High Contrast Mode: Available
+Font Size: Adjustable
+Voice Prompts: Enabled
+
+[WebRTC Settings] (for browser-based softphones)
+Secure RTP: Required
+DTLS: Enabled
+ICE Candidates: All
+Media Constraints: Audio Only
+
+[Provisioning URL]
+Auto-Config: http://flexpbx.yourserver.com/softphone/\${user}.xml
+Update Check: Daily\`;
+        }
+
+        // Call Management Functions
+        function callExtension(ext) {
+            speak(\`Calling extension \${ext}\`);
+            console.log(\`Initiating call to extension \${ext}\`);
+        }
+
+        function holdCall(callId) {
+            speak(\`Putting call \${callId} on hold with music\`);
+            console.log(\`Hold call \${callId}\`);
+        }
+
+        function transferCall(callId) {
+            const target = prompt('Transfer to extension:');
+            if (target) {
+                speak(\`Transferring call \${callId} to extension \${target}\`);
+                console.log(\`Transfer call \${callId} to \${target}\`);
+            }
+        }
+
+        function hangupCall(callId) {
+            speak(\`Ending call \${callId}\`);
+            console.log(\`Hangup call \${callId}\`);
+        }
+
+        function monitorCall(callId) {
+            speak(\`Starting call monitoring for call \${callId}\`);
+            console.log(\`Monitor call \${callId}\`);
+        }
+
+        // Audio Control Functions
+        function updateVolume(type, value) {
+            document.getElementById(\`\${type}-volume\`).textContent = \`\${value}%\`;
+            speak(\`\${type} volume set to \${value} percent\`);
+        }
+
+        // Accessibility Functions
+        function enableVoiceNavigation() {
+            voiceNavigationEnabled = !voiceNavigationEnabled;
+            const indicator = document.getElementById('voice-indicator');
+
+            if (voiceNavigationEnabled) {
+                indicator.classList.remove('hidden');
+                speak('Voice navigation enabled. Say commands like call extension 101 or transfer call');
+            } else {
+                indicator.classList.add('hidden');
+                speak('Voice navigation disabled');
+            }
+        }
+
+        function toggleTranscription() {
+            transcriptionEnabled = !transcriptionEnabled;
+            const overlay = document.getElementById('transcription');
+
+            if (transcriptionEnabled) {
+                overlay.classList.remove('hidden');
+                document.getElementById('transcription-content').textContent = 'Live transcription started...';
+                speak('Live call transcription enabled for accessibility');
+            } else {
+                overlay.classList.add('hidden');
+                speak('Live transcription disabled');
+            }
+        }
+
+        function accessibilityMode() {
+            accessibilityMode = !accessibilityMode;
+
+            if (accessibilityMode) {
+                document.body.classList.add('accessibility-mode', 'high-contrast', 'large-text');
+                speak('Accessibility mode enabled with high contrast and large text');
+            } else {
+                document.body.classList.remove('accessibility-mode', 'high-contrast', 'large-text');
+                speak('Accessibility mode disabled');
+            }
+        }
+
+        // Utility Functions
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 1.1;
+                utterance.pitch = 1.0;
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Conference Management
+        function joinConference(roomId) {
+            speak(\`Joining conference room \${roomId}\`);
+            console.log(\`Join conference \${roomId}\`);
+        }
+
+        function createConference() {
+            const roomId = prompt('Enter conference room number (8000-8999):');
+            if (roomId && roomId >= 8000 && roomId <= 8999) {
+                speak(\`Creating conference room \${roomId}\`);
+                console.log(\`Create conference \${roomId}\`);
+            }
+        }
+
+        // System Management
+        function sipDiagnostics() {
+            speak('Running SIP server diagnostics');
+            alert('SIP Diagnostics:\\n\\n✅ Port 5060: Listening\\n✅ Registered Phones: 15/25\\n✅ TLS: Enabled\\n✅ Call Quality: HD Audio\\n⚠️  High bandwidth usage detected');
+        }
+
+        function systemRestart() {
+            if (confirm('Restart all PBX services? This will briefly interrupt active calls.')) {
+                speak('Restarting PBX services');
+                console.log('System restart initiated');
+            }
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            speak('FlexPBX web interface loaded. Professional telephony system ready with accessibility features enabled');
+
+            // Simulate real-time updates
+            setInterval(updateSystemStatus, 30000); // Every 30 seconds
+
+            // Enable keyboard navigation
+            document.addEventListener('keydown', handleKeyboardNavigation);
+        });
+
+        function updateSystemStatus() {
+            // Update call durations, system metrics, etc.
+            console.log('Updating system status...');
+        }
+
+        function handleKeyboardNavigation(event) {
+            // Implement keyboard shortcuts for accessibility
+            if (event.ctrlKey) {
+                switch(event.key) {
+                    case '1':
+                        enableVoiceNavigation();
+                        break;
+                    case '2':
+                        toggleTranscription();
+                        break;
+                    case '3':
+                        accessibilityMode();
+                        break;
+                }
+            }
+        }
+
+        // Additional PBX Functions (placeholders for full implementation)
+        function uploadHoldMusic() { speak('Opening hold music upload interface'); }
+        function recordCustomPrompt() { speak('Starting custom prompt recording'); }
+        function testHoldSystem() { speak('Testing hold music and announcement system'); }
+        function editIVR() { speak('Opening IVR menu editor'); }
+        function testIVR() { speak('Testing IVR system with sample call'); }
+        function manageGroups() { speak('Opening multi-user group management'); }
+        function accessRecordings() { speak('Opening call recordings archive'); }
+        function makeCall() {
+            const number = prompt('Enter number to call:');
+            if (number) speak(\`Calling \${number}\`);
+        }
+    </script>
+</body>
+</html>

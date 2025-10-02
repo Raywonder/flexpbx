@@ -1,0 +1,156 @@
+{
+  "version": "1.0.0",
+  "modules": [
+    {
+      "id": "pbx-engine",
+      "name": "PBX Core Engine",
+      "version": "1.0.0",
+      "description": "Core PBX functionality and call routing",
+      "files": [
+        "src/main/services/PBXEngine.js",
+        "src/main/services/CallRouter.js",
+        "src/main/services/ExtensionManager.js"
+      ],
+      "dependencies": [
+        "sip.js",
+        "ws"
+      ],
+      "exports": [
+        "PBXEngine",
+        "CallRouter",
+        "ExtensionManager"
+      ],
+      "path": "modules/pbx-engine",
+      "enabled": true
+    },
+    {
+      "id": "sip-trunk",
+      "name": "SIP Trunk Management",
+      "version": "1.0.0",
+      "description": "SIP trunk configuration and management",
+      "files": [
+        "src/main/services/SIPTrunkService.js",
+        "src/main/services/ProviderManager.js"
+      ],
+      "dependencies": [
+        "sip.js",
+        "axios"
+      ],
+      "exports": [
+        "SIPTrunkService",
+        "ProviderManager"
+      ],
+      "path": "modules/sip-trunk",
+      "enabled": true
+    },
+    {
+      "id": "extensions",
+      "name": "Extension System",
+      "version": "1.0.0",
+      "description": "Extension management and configuration",
+      "files": [
+        "src/main/services/ExtensionService.js",
+        "src/main/services/ExtensionDatabase.js"
+      ],
+      "dependencies": [
+        "sqlite3"
+      ],
+      "exports": [
+        "ExtensionService",
+        "ExtensionDatabase"
+      ],
+      "path": "modules/extensions",
+      "enabled": true
+    },
+    {
+      "id": "voicemail",
+      "name": "Voicemail System",
+      "version": "1.0.0",
+      "description": "Voicemail recording and management",
+      "files": [
+        "src/main/services/VoicemailService.js",
+        "src/main/services/MessageStore.js"
+      ],
+      "dependencies": [
+        "node-record-lpcm16"
+      ],
+      "exports": [
+        "VoicemailService",
+        "MessageStore"
+      ],
+      "path": "modules/voicemail",
+      "enabled": true
+    },
+    {
+      "id": "ivr",
+      "name": "Interactive Voice Response",
+      "version": "1.0.0",
+      "description": "IVR menu system and call flow",
+      "files": [
+        "src/main/services/IVRService.js",
+        "src/main/services/MenuBuilder.js"
+      ],
+      "dependencies": [
+        "text-to-speech"
+      ],
+      "exports": [
+        "IVRService",
+        "MenuBuilder"
+      ],
+      "path": "modules/ivr",
+      "enabled": true
+    },
+    {
+      "id": "licensing",
+      "name": "License Management",
+      "version": "1.0.0",
+      "description": "License validation and feature management",
+      "files": [
+        "src/main/services/LicensingService.js",
+        "src/main/services/LicenseValidator.js"
+      ],
+      "dependencies": [
+        "crypto",
+        "axios"
+      ],
+      "exports": [
+        "LicensingService",
+        "LicenseValidator"
+      ],
+      "path": "modules/licensing",
+      "enabled": true
+    }
+  ],
+  "dependencies": {
+    "pbx-engine": [
+      "sip.js",
+      "ws"
+    ],
+    "sip-trunk": [
+      "sip.js",
+      "axios"
+    ],
+    "extensions": [
+      "sqlite3"
+    ],
+    "voicemail": [
+      "node-record-lpcm16"
+    ],
+    "ivr": [
+      "text-to-speech"
+    ],
+    "licensing": [
+      "crypto",
+      "axios"
+    ]
+  },
+  "loadOrder": [
+    "pbx-engine",
+    "sip-trunk",
+    "extensions",
+    "voicemail",
+    "ivr",
+    "licensing"
+  ],
+  "created": "2025-10-02T15:23:44.065Z"
+}

@@ -1,0 +1,17 @@
+{
+  "name": "PBX Core Engine",
+  "version": "1.0.0",
+  "description": "Core PBX functionality and call routing",
+  "main": "index.js",
+  "dependencies": [
+    "sip.js",
+    "ws"
+  ],
+  "exports": [
+    "PBXEngine",
+    "CallRouter",
+    "ExtensionManager"
+  ],
+  "checksum": "d79150bc52d51af6626ccab3fa3e9a891c38fd7ed9d540986b2a0e406e4179d2",
+  "created": "2025-10-02T15:23:44.055Z"
+}

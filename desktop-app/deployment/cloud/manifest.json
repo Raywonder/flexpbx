@@ -1,0 +1,71 @@
+{
+  "name": "FlexPBX Cloud",
+  "version": "1.0.0",
+  "type": "cloud",
+  "features": [
+    "multi-region",
+    "auto-scaling",
+    "cloud-storage",
+    "api-gateway"
+  ],
+  "requirements": {
+    "minRAM": "Auto-scaling",
+    "minCPU": "Auto-scaling",
+    "minStorage": "Unlimited",
+    "database": "Cloud SQL",
+    "redis": "Managed Redis",
+    "clustering": "Auto-managed"
+  },
+  "modules": [
+    "core",
+    "pbx-engine",
+    "sip-trunk",
+    "extensions",
+    "voicemail",
+    "ivr",
+    "conference",
+    "recording",
+    "analytics",
+    "licensing",
+    "cloud-sync",
+    "api-gateway",
+    "multi-region"
+  ],
+  "configuration": {
+    "pbx": {
+      "maxExtensions": "unlimited",
+      "maxConcurrentCalls": "auto-scale",
+      "recordingEnabled": false,
+      "voicemailEnabled": true
+    },
+    "sip": {
+      "providers": [
+        "flexpbx",
+        "callcentric",
+        "voipms",
+        "twilio"
+      ],
+      "codecs": [
+        "G.711",
+        "G.729",
+        "Opus"
+      ],
+      "transport": [
+        "UDP",
+        "TCP",
+        "TLS"
+      ]
+    },
+    "security": {
+      "encryption": "optional",
+      "firewall": true,
+      "rateLimiting": true
+    },
+    "cloudFeatures": {
+      "autoBackup": true,
+      "geoRedundancy": true
+    }
+  },
+  "created": "2025-10-02T15:23:43.803Z",
+  "checksum": "af083e2488881ec4db1ae813352da659e6a948fef3119a38248d4203b001b69f"
+}

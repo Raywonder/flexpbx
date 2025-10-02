@@ -1,0 +1,21 @@
+{
+  "id": "PRO-DEMO-1234-5678-9ABC",
+  "type": "PROFESSIONAL",
+  "customerId": "dcc9548a14deca02c9cac6e2372cc823",
+  "customerEmail": "demo@flexpbx.local",
+  "issuedDate": "2025-10-02T11:28:36.819Z",
+  "expiryDate": "2026-10-02T11:28:36.819Z",
+  "hardwareId": "dc505dadba03c9a0",
+  "features": {
+    "maxExtensions": 100,
+    "maxConcurrentCalls": 50,
+    "callRecording": true,
+    "advancedRouting": true,
+    "apiAccess": true,
+    "support": "priority",
+    "googleVoice": true,
+    "callCentric": true,
+    "multiTenant": true
+  },
+  "signature": "f39deee303be7e17a29525acda73499504c0b9e163f7bfe612fd275e4686bd0d"
+}

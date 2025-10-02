@@ -1,0 +1,31 @@
+# FlexPBX Extension 2002 - Tech Support L2
+# Department: support
+
+[Account Settings]
+Display Name: Tech Support L2
+Username: techsupport2
+Password: Support2002!
+Extension: 2002
+
+[Server Settings]
+SIP Server: flexpbx.local:5070
+Domain: flexpbx.local
+Transport: UDP
+
+[Features Available]
+- Internal calling: All extensions
+- External calling: No
+- Call recording: No
+- Call transfer: No
+- Conference: No
+- Voicemail: No
+
+[Department Contacts]
+
+Support Team: 2000-2009
+
+[Quick Dial Codes]
+- 101: Main IVR
+- *97: Personal voicemail
+- 9196: Echo test
+- *60: Time/date

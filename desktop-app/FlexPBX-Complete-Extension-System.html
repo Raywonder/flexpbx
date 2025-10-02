@@ -1,0 +1,831 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlexPBX Complete Extension System</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .extension-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .extension-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            border-left: 4px solid #007bff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .extension-card.test {
+            border-left-color: #28a745;
+            background: #e8f5e8;
+        }
+
+        .extension-card.ivr {
+            border-left-color: #dc3545;
+            background: #fce8e6;
+        }
+
+        .extension-card.sales {
+            border-left-color: #ffc107;
+            background: #fff9e6;
+        }
+
+        .extension-card.support {
+            border-left-color: #17a2b8;
+            background: #e6f9fc;
+        }
+
+        .extension-card.conference {
+            border-left-color: #6f42c1;
+            background: #f0e6fc;
+        }
+
+        .ext-number {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .ext-name {
+            font-size: 1.1em;
+            margin: 5px 0;
+            color: #495057;
+        }
+
+        .ext-details {
+            font-size: 0.9em;
+            color: #6c757d;
+            margin: 10px 0;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            margin: 2px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary { background: #007bff; color: white; }
+        .btn-success { background: #28a745; color: white; }
+        .btn-warning { background: #ffc107; color: #212529; }
+        .btn-info { background: #17a2b8; color: white; }
+
+        .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        .ivr-flow {
+            background: #2d3748;
+            color: #68d391;
+            padding: 20px;
+            border-radius: 12px;
+            font-family: 'Monaco', 'Courier New', monospace;
+            margin: 30px 0;
+        }
+
+        .test-instructions {
+            background: #e3f2fd;
+            border: 2px solid #2196f3;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+
+        .department-section {
+            margin: 40px 0;
+        }
+
+        .department-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        @media (max-width: 768px) {
+            .extension-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📞 FlexPBX Complete Extension System</h1>
+            <p>20 Extensions + Main IVR System Ready for Testing</p>
+        </div>
+
+        <div class="test-instructions">
+            <h2>🎯 Your Test Extension: 2001</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+                <div>
+                    <h4>SIP Client Settings:</h4>
+                    <ul>
+                        <li><strong>Server:</strong> flexpbx.local:5070</li>
+                        <li><strong>Username:</strong> testuser</li>
+                        <li><strong>Password:</strong> FlexPBX2001!</li>
+                        <li><strong>Extension:</strong> 2001</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4>Test Scenarios:</h4>
+                    <ul>
+                        <li>Call <strong>101</strong> → Main IVR System</li>
+                        <li>Try all IVR options (1-9, *, 0, #)</li>
+                        <li>Test hold music and queues</li>
+                        <li>Call direct extensions</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="department-section">
+            <div class="department-title">🎯 Main IVR System (Extension 101)</div>
+            <div class="extension-card ivr">
+                <div class="ext-number">101</div>
+                <div class="ext-name">Main IVR System</div>
+                <div class="ext-details">
+                    <strong>Call Flow:</strong> Routes to departments with hold music and voicemail<br>
+                    <strong>Features:</strong> Full menu tree, queue management, callback options
+                </div>
+                <div class="ivr-flow">
+Main IVR Menu (Dial 101):
+├── Press 1: Sales Queue (Corporate Hold Music)
+├── Press 2: Support Queue (Ambient Hold Music)
+├── Press 3: Billing Submenu
+├── Press 4: Test Extension (2001)
+├── Press 5: Conference Directory
+├── Press 7: Accessibility Support
+├── Press 8: Company Directory
+├── Press 9: Repeat Menu
+├── Press 0: Operator (2001)
+├── Press *: General Voicemail
+└── Press #: Request Callback
+                </div>
+                <button class="btn btn-primary" onclick="testIVR()">Test IVR System</button>
+                <button class="btn btn-success" onclick="dialExtension('101')">Call 101</button>
+            </div>
+        </div>
+
+        <div class="department-section">
+            <div class="department-title">👤 Your Test Extension</div>
+            <div class="extension-card test">
+                <div class="ext-number">2001</div>
+                <div class="ext-name">FlexPBX Test User (YOUR EXTENSION)</div>
+                <div class="ext-details">
+                    <strong>Username:</strong> testuser<br>
+                    <strong>Password:</strong> FlexPBX2001!<br>
+                    <strong>SIP Server:</strong> flexpbx.local:5070<br>
+                    <strong>Features:</strong> Full access, recording, transfer, conference
+                </div>
+                <button class="btn btn-success" onclick="downloadConfig('2001')">Download Config</button>
+                <button class="btn btn-info" onclick="testExtension('2001')">Test Features</button>
+            </div>
+        </div>
+
+        <div class="department-section">
+            <div class="department-title">💼 Sales Department (1000-1009)</div>
+            <div class="extension-grid" id="sales-extensions">
+                <!-- Sales extensions populated by JavaScript -->
+            </div>
+        </div>
+
+        <div class="department-section">
+            <div class="department-title">🛠️ Support Department (2000-2009)</div>
+            <div class="extension-grid" id="support-extensions">
+                <!-- Support extensions populated by JavaScript -->
+            </div>
+        </div>
+
+        <div class="department-section">
+            <div class="department-title">🏢 Conference Rooms (8000-8009)</div>
+            <div class="extension-grid" id="conference-rooms">
+                <!-- Conference rooms populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Extension data
+        const extensions = [
+  [
+    "101",
+    {
+      "extension": "101",
+      "type": "ivr",
+      "name": "Main IVR System",
+      "description": "Primary incoming call handler with full IVR menu",
+      "features": [
+        "ivr",
+        "hold_music",
+        "voicemail",
+        "call_routing",
+        "queue_management"
+      ]
+    }
+  ],
+  [
+    "2001",
+    {
+      "extension": "2001",
+      "username": "techsupport1",
+      "password": "Support2001!",
+      "displayName": "Senior Tech Support",
+      "email": "techsupport1@flexpbx.local",
+      "department": "support",
+      "title": "Senior Tech",
+      "type": "user",
+      "sipServer": "flexpbx.local:5070",
+      "callGroup": "support",
+      "pickupGroup": "support"
+    }
+  ],
+  [
+    "1000",
+    {
+      "extension": "1000",
+      "username": "salesmanager",
+      "password": "Sales1000!",
+      "displayName": "Sales Manager",
+      "email": "salesmanager@flexpbx.local",
+      "department": "sales",
+      "title": "Manager",
+      "type": "user",
+      "sipServer": "flexpbx.local:5070",
+      "callGroup": "sales",
+      "pickupGroup": "sales"
+    }
+  ],
+  [
+    "1001",
+    {
+      "extension": "1001",
+      "username": "salesrep1",
+      "password": "Sales1001!",
+      "displayName": "Senior Sales Rep",
+      "email": "salesrep1@flexpbx.local",
+      "department": "sales",
+      "title": "Senior Rep",
+      "type": "user",
+      "sipServer": "flexpbx.local:5070",
+      "callGroup": "sales",
+      "pickupGroup": "sales"
+    }
+  ],
+  [
+    "1002",
+    {
+      "extension": "1002",
+      "username": "salesrep2",
+      "password": "Sales1002!",
+      "displayName": "Sales Rep 2",
+      "email": "salesrep2@flexpbx.local",
+      "department": "sales",
+      "title": "Sales Rep",
+      "type": "user",
+      "sipServer": "flexpbx.local:5070",
+      "callGroup": "sales",
+      "pickupGroup": "sales"
+    }
+  ],
+  [
+    "1003",
+    {
+      "extension": "1003",
+      "username": "salesrep3",
+      "password": "Sales1003!",
+      "displayName": "Sales Rep 3",
+      "email": "salesrep3@flexpbx.local",
+      "department": "sales",
+      "title": "Sales Rep",
+      "type": "user",
+      "sipServer": "flexpbx.local:5070",
+      "callGroup": "sales",
+      "pickupGroup": "sales"
+    }
+  ],
+  [
+    "1004",
+    {
+      "extension": "1004",
+      "username": "insidesales",
+      "password": "Sales1004!",
+      "displayName": "Inside Sales",
+      "email": "insidesales@flexpbx.local",
+      "department": "sales",
+      "title": "Inside Sales",
+      "type": "user",
+      "sipServer": "flexpbx.local:5070",
+      "callGroup": "sales",
+      "pickupGroup": "sales"
+    }
+  ],
+  [
+    "1005",
+    {
+      "extension": "1005",
+      "username": "outsidesales",
+      "password": "Sales1005!",
+      "displayName": "Outside Sales",
+      "email": "outsidesales@flexpbx.local",
+      "department": "sales",
+      "title": "Outside Sales",
+      "type": "user",
+      "sipServer": "flexpbx.local:5070",
+      "callGroup": "sales",
+      "pickupGroup": "sales"
+    }
+  ],
+  [
+    "1006",
+    {
+      "extension": "1006",
+      "username": "salessupport",
+      "password": "Sales1006!",
+      "displayName": "Sales Support",
+      "email": "salessupport@flexpbx.local",
+      "department": "sales",
+      "title": "Support",
+      "type": "user",
+      "sipServer": "flexpbx.local:5070",
+      "callGroup": "sales",
+      "pickupGroup": "sales"
+    }
+  ],
+  [
+    "1007",
+    {
+      "extension": "1007",
+      "username": "leadqualifier",
+      "password": "Sales1007!",
+      "displayName": "Lead Qualifier",
+      "email": "leadqualifier@flexpbx.local",
+      "department": "sales",
+      "title": "Qualifier",
+      "type": "user",
+      "sipServer": "flexpbx.local:5070",
+      "callGroup": "sales",
+      "pickupGroup": "sales"
+    }
+  ],
+  [
+    "1008",
+    {
+      "extension": "1008",
+      "username": "accountexec",
+      "password": "Sales1008!",
+      "displayName": "Account Executive",
+      "email": "accountexec@flexpbx.local",
+      "department": "sales",
+      "title": "Account Exec",
+      "type": "user",
+      "sipServer": "flexpbx.local:5070",
+      "callGroup": "sales",
+      "pickupGroup": "sales"
+    }
+  ],
+  [
+    "1009",
+    {
+      "extension": "1009",
+      "username": "salesassist",
+      "password": "Sales1009!",
+      "displayName": "Sales Assistant",
+      "email": "salesassist@flexpbx.local",
+      "department": "sales",
+      "title": "Assistant",
+      "type": "user",
+      "sipServer": "flexpbx.local:5070",
+      "callGroup": "sales",
+      "pickupGroup": "sales"
+    }
+  ],
+  [
+    "2000",
+    {
+      "extension": "2000",
+      "username": "supportmanager",
+      "password": "Support2000!",
+      "displayName": "Support Manager",
+      "email": "supportmanager@flexpbx.local",
+      "department": "support",
+      "title": "Manager",
+      "type": "user",
+      "sipServer": "flexpbx.local:5070",
+      "callGroup": "support",
+      "pickupGroup": "support"
+    }
+  ],
+  [
+    "2002",
+    {
+      "extension": "2002",
+      "username": "techsupport2",
+      "password": "Support2002!",
+      "displayName": "Tech Support L2",
+      "email": "techsupport2@flexpbx.local",
+      "department": "support",
+      "title": "Tech L2",
+      "type": "user",
+      "sipServer": "flexpbx.local:5070",
+      "callGroup": "support",
+      "pickupGroup": "support"
+    }
+  ],
+  [
+    "2003",
+    {
+      "extension": "2003",
+      "username": "techsupport3",
+      "password": "Support2003!",
+      "displayName": "Tech Support L1",
+      "email": "techsupport3@flexpbx.local",
+      "department": "support",
+      "title": "Tech L1",
+      "type": "user",
+      "sipServer": "flexpbx.local:5070",
+      "callGroup": "support",
+      "pickupGroup": "support"
+    }
+  ],
+  [
+    "2004",
+    {
+      "extension": "2004",
+      "username": "accessibility",
+      "password": "Support2004!",
+      "displayName": "Accessibility Support",
+      "email": "accessibility@flexpbx.local",
+      "department": "support",
+      "title": "Accessibility",
+      "type": "user",
+      "sipServer": "flexpbx.local:5070",
+      "callGroup": "support",
+      "pickupGroup": "support"
+    }
+  ],
+  [
+    "2005",
+    {
+      "extension": "2005",
+      "username": "networksupport",
+      "password": "Support2005!",
+      "displayName": "Network Support",
+      "email": "networksupport@flexpbx.local",
+      "department": "support",
+      "title": "Network",
+      "type": "user",
+      "sipServer": "flexpbx.local:5070",
+      "callGroup": "support",
+      "pickupGroup": "support"
+    }
+  ],
+  [
+    "2006",
+    {
+      "extension": "2006",
+      "username": "softwaresupport",
+      "password": "Support2006!",
+      "displayName": "Software Support",
+      "email": "softwaresupport@flexpbx.local",
+      "department": "support",
+      "title": "Software",
+      "type": "user",
+      "sipServer": "flexpbx.local:5070",
+      "callGroup": "support",
+      "pickupGroup": "support"
+    }
+  ],
+  [
+    "2007",
+    {
+      "extension": "2007",
+      "username": "hardwaresupport",
+      "password": "Support2007!",
+      "displayName": "Hardware Support",
+      "email": "hardwaresupport@flexpbx.local",
+      "department": "support",
+      "title": "Hardware",
+      "type": "user",
+      "sipServer": "flexpbx.local:5070",
+      "callGroup": "support",
+      "pickupGroup": "support"
+    }
+  ],
+  [
+    "2008",
+    {
+      "extension": "2008",
+      "username": "customersuccess",
+      "password": "Support2008!",
+      "displayName": "Customer Success",
+      "email": "customersuccess@flexpbx.local",
+      "department": "support",
+      "title": "Success",
+      "type": "user",
+      "sipServer": "flexpbx.local:5070",
+      "callGroup": "support",
+      "pickupGroup": "support"
+    }
+  ],
+  [
+    "2009",
+    {
+      "extension": "2009",
+      "username": "supportassist",
+      "password": "Support2009!",
+      "displayName": "Support Assistant",
+      "email": "supportassist@flexpbx.local",
+      "department": "support",
+      "title": "Assistant",
+      "type": "user",
+      "sipServer": "flexpbx.local:5070",
+      "callGroup": "support",
+      "pickupGroup": "support"
+    }
+  ],
+  [
+    "8000",
+    {
+      "extension": "8000",
+      "name": "Main Conference",
+      "type": "conference",
+      "capacity": 50,
+      "features": [
+        "recording",
+        "transcription"
+      ],
+      "moderationRequired": false,
+      "recordingEnabled": true
+    }
+  ],
+  [
+    "8001",
+    {
+      "extension": "8001",
+      "name": "Sales Conference",
+      "type": "conference",
+      "capacity": 20,
+      "features": [
+        "recording"
+      ],
+      "moderationRequired": false,
+      "recordingEnabled": true
+    }
+  ],
+  [
+    "8002",
+    {
+      "extension": "8002",
+      "name": "Support Conference",
+      "type": "conference",
+      "capacity": 15,
+      "features": [
+        "recording",
+        "screen_share"
+      ],
+      "moderationRequired": false,
+      "recordingEnabled": true
+    }
+  ],
+  [
+    "8003",
+    {
+      "extension": "8003",
+      "name": "Executive Conference",
+      "type": "conference",
+      "capacity": 10,
+      "features": [
+        "recording",
+        "encryption"
+      ],
+      "moderationRequired": true,
+      "recordingEnabled": true
+    }
+  ],
+  [
+    "8004",
+    {
+      "extension": "8004",
+      "name": "Training Room",
+      "type": "conference",
+      "capacity": 30,
+      "features": [
+        "recording",
+        "breakout_rooms"
+      ],
+      "moderationRequired": false,
+      "recordingEnabled": true
+    }
+  ],
+  [
+    "8005",
+    {
+      "extension": "8005",
+      "name": "Customer Demo",
+      "type": "conference",
+      "capacity": 25,
+      "features": [
+        "recording",
+        "screen_share"
+      ],
+      "moderationRequired": false,
+      "recordingEnabled": true
+    }
+  ],
+  [
+    "8006",
+    {
+      "extension": "8006",
+      "name": "All Hands",
+      "type": "conference",
+      "capacity": 100,
+      "features": [
+        "recording",
+        "transcription",
+        "broadcast"
+      ],
+      "moderationRequired": false,
+      "recordingEnabled": true
+    }
+  ],
+  [
+    "8007",
+    {
+      "extension": "8007",
+      "name": "Board Room",
+      "type": "conference",
+      "capacity": 8,
+      "features": [
+        "recording",
+        "encryption",
+        "privacy"
+      ],
+      "moderationRequired": true,
+      "recordingEnabled": true
+    }
+  ],
+  [
+    "8008",
+    {
+      "extension": "8008",
+      "name": "Interview Room",
+      "type": "conference",
+      "capacity": 5,
+      "features": [
+        "recording"
+      ],
+      "moderationRequired": false,
+      "recordingEnabled": true
+    }
+  ],
+  [
+    "8009",
+    {
+      "extension": "8009",
+      "name": "Quick Sync",
+      "type": "conference",
+      "capacity": 10,
+      "features": [],
+      "moderationRequired": false,
+      "recordingEnabled": false
+    }
+  ]
+];
+
+        function populateExtensions() {
+            const salesContainer = document.getElementById('sales-extensions');
+            const supportContainer = document.getElementById('support-extensions');
+            const conferenceContainer = document.getElementById('conference-rooms');
+
+            extensions.forEach(([extNum, ext]) => {
+                if (ext.department === 'sales') {
+                    salesContainer.appendChild(createExtensionCard(extNum, ext, 'sales'));
+                } else if (ext.department === 'support') {
+                    supportContainer.appendChild(createExtensionCard(extNum, ext, 'support'));
+                } else if (ext.type === 'conference') {
+                    conferenceContainer.appendChild(createConferenceCard(extNum, ext));
+                }
+            });
+        }
+
+        function createExtensionCard(extNum, ext, type) {
+            const card = document.createElement('div');
+            card.className = `extension-card ${type}`;
+
+            card.innerHTML = `
+                <div class="ext-number">${extNum}</div>
+                <div class="ext-name">${ext.displayName}</div>
+                <div class="ext-details">
+                    <strong>Username:</strong> ${ext.username}<br>
+                    <strong>Title:</strong> ${ext.title}<br>
+                    <strong>Email:</strong> ${ext.email}
+                </div>
+                <button class="btn btn-primary" onclick="dialExtension('${extNum}')">Call</button>
+                <button class="btn btn-info" onclick="downloadConfig('${extNum}')">Config</button>
+                <button class="btn btn-warning" onclick="testFeatures('${extNum}')">Test</button>
+            `;
+
+            return card;
+        }
+
+        function createConferenceCard(extNum, conf) {
+            const card = document.createElement('div');
+            card.className = 'extension-card conference';
+
+            card.innerHTML = `
+                <div class="ext-number">${extNum}</div>
+                <div class="ext-name">${conf.name}</div>
+                <div class="ext-details">
+                    <strong>Capacity:</strong> ${conf.capacity} participants<br>
+                    <strong>Features:</strong> ${conf.features.join(', ')}
+                </div>
+                <button class="btn btn-primary" onclick="joinConference('${extNum}')">Join</button>
+                <button class="btn btn-success" onclick="testConference('${extNum}')">Test</button>
+            `;
+
+            return card;
+        }
+
+        // Interactive functions
+        function testIVR() {
+            console.log('Testing IVR system...');
+            speak('Testing FlexPBX IVR system. Dial 101 to access the main menu.');
+        }
+
+        function dialExtension(ext) {
+            console.log(`Dialing extension ${ext}`);
+            speak(`Dialing extension ${ext}`);
+        }
+
+        function downloadConfig(ext) {
+            console.log(`Downloading config for extension ${ext}`);
+            speak(`Downloading SIP configuration for extension ${ext}`);
+        }
+
+        function testExtension(ext) {
+            console.log(`Testing extension ${ext}`);
+            speak(`Testing all features for extension ${ext}`);
+        }
+
+        function joinConference(room) {
+            console.log(`Joining conference room ${room}`);
+            speak(`Joining conference room ${room}`);
+        }
+
+        function speak(text) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.rate = 1.1;
+                speechSynthesis.speak(utterance);
+            }
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            populateExtensions();
+            speak('FlexPBX complete extension system loaded. 20 extensions plus main IVR ready for testing.');
+        });
+    </script>
+</body>
+</html>
+        

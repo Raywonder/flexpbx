@@ -1,0 +1,15 @@
+{
+  "name": "Extension System",
+  "version": "1.0.0",
+  "description": "Extension management and configuration",
+  "main": "index.js",
+  "dependencies": [
+    "sqlite3"
+  ],
+  "exports": [
+    "ExtensionService",
+    "ExtensionDatabase"
+  ],
+  "checksum": "b908c50066152b2b4c87194c5330e8b364584bce237eda936822a9e97ed67066",
+  "created": "2025-10-02T15:23:44.058Z"
+}

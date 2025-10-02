@@ -1,0 +1,59 @@
+{
+  "timestamp": "2025-10-02T15:38:52.492Z",
+  "overallStatus": "PARTIAL",
+  "successRate": 83,
+  "summary": {
+    "passed": 7,
+    "partial": 1,
+    "warning": 1,
+    "failed": 0,
+    "total": 9
+  },
+  "results": [
+    {
+      "name": "TTS Service Initialization",
+      "status": "passed",
+      "details": "Service initialized without errors"
+    },
+    {
+      "name": "Basic Text Synthesis",
+      "status": "passed",
+      "details": "4/4 synthesis tests passed"
+    },
+    {
+      "name": "Chatterbox Compatibility",
+      "status": "passed",
+      "details": "4/4 Chatterbox voices working"
+    },
+    {
+      "name": "PBX-Specific Features",
+      "status": "passed",
+      "details": "4/4 PBX features working"
+    },
+    {
+      "name": "Voice Profiles",
+      "status": "passed",
+      "details": "5/5 voice profiles working"
+    },
+    {
+      "name": "tappedin.fm Connectivity",
+      "status": "warning",
+      "details": "Service not connected, using fallback methods"
+    },
+    {
+      "name": "Cache System",
+      "status": "passed",
+      "details": "Cache working with 1 files (0.24MB)"
+    },
+    {
+      "name": "Error Handling",
+      "status": "partial",
+      "details": "0/4 error cases handled properly"
+    },
+    {
+      "name": "Performance",
+      "status": "passed",
+      "details": "3 syntheses in 13ms (avg: 4.3ms)"
+    }
+  ]
+}

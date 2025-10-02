@@ -1,0 +1,16 @@
+{
+  "name": "License Management",
+  "version": "1.0.0",
+  "description": "License validation and feature management",
+  "main": "index.js",
+  "dependencies": [
+    "crypto",
+    "axios"
+  ],
+  "exports": [
+    "LicensingService",
+    "LicenseValidator"
+  ],
+  "checksum": "2bd6d617da4eebcef469248a0ac218e2955c09d041907c2a1f4efe8eda73d4da",
+  "created": "2025-10-02T15:23:44.062Z"
+}

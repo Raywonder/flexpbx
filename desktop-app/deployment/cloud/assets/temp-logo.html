@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .logo-container {
+            width: 256px;
+            height: 256px;
+            background: linear-gradient(135deg, #007AFF 0%, #34C759 100%);
+            border-radius: 32px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            box-shadow: 0 8px 32px rgba(0, 122, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo-icon {
+            font-size: 64px;
+            margin-bottom: 8px;
+        }
+
+        .logo-text {
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-subtitle {
+            font-size: 14px;
+            font-weight: 400;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+
+        .circuit-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0.1;
+            background-image:
+                radial-gradient(circle at 20% 80%, white 2px, transparent 2px),
+                radial-gradient(circle at 80% 20%, white 2px, transparent 2px),
+                radial-gradient(circle at 40% 40%, white 1px, transparent 1px);
+            background-size: 40px 40px, 60px 60px, 30px 30px;
+        }
+    </style>
+</head>
+<body style="margin: 0; padding: 40px; background: #f0f0f0; display: flex; justify-content: center; align-items: center; height: 100vh;">
+    <div class="logo-container">
+        <div class="circuit-bg"></div>
+        <div class="logo-icon">📞</div>
+        <div class="logo-text">FlexPBX</div>
+        <div class="logo-subtitle">Unified Communications</div>
+    </div>
+</body>
+</html>

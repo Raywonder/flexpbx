@@ -1,0 +1,15 @@
+{
+  "name": "Interactive Voice Response",
+  "version": "1.0.0",
+  "description": "IVR menu system and call flow",
+  "main": "index.js",
+  "dependencies": [
+    "text-to-speech"
+  ],
+  "exports": [
+    "IVRService",
+    "MenuBuilder"
+  ],
+  "checksum": "477c29387bd2db88e3dc22dacac8f0c2a95fa87a1eab407541727a6ad09786cc",
+  "created": "2025-10-02T15:23:44.060Z"
+}

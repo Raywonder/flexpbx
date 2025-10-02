@@ -1,0 +1,55 @@
+{
+  "copyParty": {
+    "class": "CopyPartyService",
+    "port": 8080,
+    "features": [
+      "file-sharing",
+      "encryption",
+      "unique-credentials"
+    ]
+  },
+  "messaging": {
+    "class": "RichMessagingService",
+    "port": 41238,
+    "features": [
+      "rich-content",
+      "encryption",
+      "real-time",
+      "accessibility"
+    ]
+  },
+  "accessibility": {
+    "class": "RemoteAccessibilityService",
+    "port": 41237,
+    "features": [
+      "screen-reader-control",
+      "audio-streaming",
+      "cross-platform"
+    ]
+  },
+  "dns": {
+    "class": "DNSManagerService",
+    "features": [
+      "bind",
+      "powerdns",
+      "unbound",
+      "cloud-sync"
+    ]
+  },
+  "updates": {
+    "class": "SoftwareUpdateService",
+    "features": [
+      "silent-updates",
+      "rollback",
+      "remote-deployment"
+    ]
+  },
+  "sound": {
+    "class": "SoundManager",
+    "features": [
+      "cross-platform",
+      "volume-control",
+      "event-sounds"
+    ]
+  }
+}

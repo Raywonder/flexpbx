@@ -1,0 +1,62 @@
+{
+  "name": "FlexPBX Hybrid",
+  "version": "1.0.0",
+  "type": "hybrid",
+  "features": [
+    "on-premise-core",
+    "cloud-backup",
+    "hybrid-routing"
+  ],
+  "requirements": {
+    "minRAM": "4GB",
+    "minCPU": "2 cores",
+    "minStorage": "50GB",
+    "database": "PostgreSQL or MySQL",
+    "redis": "Recommended",
+    "clustering": "Limited"
+  },
+  "modules": [
+    "core",
+    "pbx-engine",
+    "sip-trunk",
+    "extensions",
+    "voicemail",
+    "ivr",
+    "conference",
+    "recording",
+    "licensing"
+  ],
+  "configuration": {
+    "pbx": {
+      "maxExtensions": 100,
+      "maxConcurrentCalls": 50,
+      "recordingEnabled": false,
+      "voicemailEnabled": true
+    },
+    "sip": {
+      "providers": [
+        "flexpbx",
+        "callcentric",
+        "voipms",
+        "twilio"
+      ],
+      "codecs": [
+        "G.711",
+        "G.729",
+        "Opus"
+      ],
+      "transport": [
+        "UDP",
+        "TCP",
+        "TLS"
+      ]
+    },
+    "security": {
+      "encryption": "optional",
+      "firewall": true,
+      "rateLimiting": true
+    }
+  },
+  "created": "2025-10-02T15:23:43.934Z",
+  "checksum": "4c0626c5bd646a17b1e64657829f4963972249ca1e578835144ef7835b8cd9aa"
+}

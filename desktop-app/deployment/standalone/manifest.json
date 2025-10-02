@@ -1,0 +1,58 @@
+{
+  "name": "FlexPBX Standalone",
+  "version": "1.0.0",
+  "type": "standalone",
+  "features": [
+    "single-instance",
+    "local-storage",
+    "basic-analytics"
+  ],
+  "requirements": {
+    "minRAM": "2GB",
+    "minCPU": "2 cores",
+    "minStorage": "20GB",
+    "database": "SQLite",
+    "redis": "Optional",
+    "clustering": "Not supported"
+  },
+  "modules": [
+    "core",
+    "pbx-engine",
+    "sip-trunk",
+    "extensions",
+    "voicemail"
+  ],
+  "configuration": {
+    "pbx": {
+      "maxExtensions": 100,
+      "maxConcurrentCalls": 50,
+      "recordingEnabled": false,
+      "voicemailEnabled": true
+    },
+    "sip": {
+      "providers": [
+        "flexpbx",
+        "callcentric",
+        "voipms",
+        "twilio"
+      ],
+      "codecs": [
+        "G.711",
+        "G.729",
+        "Opus"
+      ],
+      "transport": [
+        "UDP",
+        "TCP",
+        "TLS"
+      ]
+    },
+    "security": {
+      "encryption": "optional",
+      "firewall": true,
+      "rateLimiting": true
+    }
+  },
+  "created": "2025-10-02T15:23:43.699Z",
+  "checksum": "7271f0987a07758ac19eef9b44ebff6ed7e206f11821d95a347b04a4a83273d2"
+}

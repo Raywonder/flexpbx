@@ -1,0 +1,31 @@
+# FlexPBX Extension 1002 - Sales Rep 2
+# Department: sales
+
+[Account Settings]
+Display Name: Sales Rep 2
+Username: salesrep2
+Password: Sales1002!
+Extension: 1002
+
+[Server Settings]
+SIP Server: flexpbx.local:5070
+Domain: flexpbx.local
+Transport: UDP
+
+[Features Available]
+- Internal calling: All extensions
+- External calling: No
+- Call recording: No
+- Call transfer: No
+- Conference: No
+- Voicemail: No
+
+[Department Contacts]
+Sales Team: 1000-1009
+
+
+[Quick Dial Codes]
+- 101: Main IVR
+- *97: Personal voicemail
+- 9196: Echo test
+- *60: Time/date

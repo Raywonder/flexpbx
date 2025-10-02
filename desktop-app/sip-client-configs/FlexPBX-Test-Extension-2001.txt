@@ -1,0 +1,74 @@
+# 🎯 FlexPBX Test Extension 2001 - YOUR EXTENSION
+# ================================================
+# Use this configuration in your SIP client to test FlexPBX
+
+[Account Information]
+Display Name: Senior Tech Support
+Username: techsupport1
+Password: Support2001!
+Extension: 2001
+
+[Server Settings]
+SIP Server: flexpbx.local
+Port: 5070
+Domain: flexpbx.local
+Transport: UDP (Primary), TCP (Secondary)
+Registration: Required
+
+[Complete SIP URI]
+sip:techsupport1@flexpbx.local:5070
+
+[Audio Settings]
+Preferred Codecs: G.722 (HD), PCMU, PCMA
+DTMF Method: RFC2833
+Echo Cancellation: Enabled
+Noise Suppression: Enabled
+
+[Testing Scenarios]
+1. Call 101 → Main IVR System
+   - Test full IVR menu navigation
+   - Try all menu options (1-9, *, 0, #)
+   - Test hold music and announcements
+
+2. Call Sales Team: 1000-1009
+   - Test direct extension dialing
+   - Try call transfer between sales reps
+
+3. Call Support Team: 2000-2009
+   - Test queue system
+   - Try accessibility support (2004)
+
+4. Conference Rooms: 8000-8009
+   - Join conference rooms
+   - Test conference features
+
+5. Special Codes:
+   - *97: Voicemail access
+   - 9196: Echo test
+   - *60: Time/date service
+
+[IVR Testing Guide]
+When you call 101:
+- Press 1: Sales queue with corporate hold music
+- Press 2: Support queue with ambient hold music
+- Press 3: Billing submenu
+- Press 4: Direct to your extension (2001)
+- Press 5: Conference room directory
+- Press 7: Accessibility support menu
+- Press 8: Company directory
+- Press 9: Repeat menu
+- Press 0: Operator (routes to 2001)
+- Press *: General voicemail
+- Press #: Request callback
+
+[Expected Features]
+✅ Full duplex audio (both directions)
+✅ HD audio quality (G.722 codec)
+✅ DTMF tone transmission
+✅ Call hold with music
+✅ Call transfer capabilities
+✅ Conference room access
+✅ Voicemail system
+✅ Queue position announcements
+✅ Professional hold music
+✅ Accessibility features
