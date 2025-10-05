@@ -10,8 +10,8 @@ const { exec } = require('child_process');
 class FlexPBXTestCallSystem {
     constructor() {
         this.callcentricConfig = {
-            yourExtension: '17778171572101', // Dominique (Your CallCentric Ext 101)
-            testExtension: '17778171572102', // FlexPBX Test (Ext 102)
+            yourExtension: 'YOUR_CALLCENTRIC_DID101', // Dominique (Your CallCentric Ext 101)
+            testExtension: 'YOUR_CALLCENTRIC_DID102', // FlexPBX Test (Ext 102)
             server: 'sip.callcentric.com',
             port: 5060
         };

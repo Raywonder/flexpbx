@@ -2,10 +2,10 @@
   "testSuite": "FlexPBX CallCentric Integration",
   "timestamp": "2025-10-02T09:51:14.705Z",
   "configuration": {
-    "username": "17778171572102",
-    "password": "DsmotifXS678!$ester",
+    "username": "YOUR_CALLCENTRIC_DID102",
+    "password": "YOUR_CALLCENTRIC_PASSWORD",
     "authname": "raywonder",
-    "did": "17778171572",
+    "did": "YOUR_CALLCENTRIC_DID",
     "extension": "102",
     "proxy": "sip.callcentric.com",
     "port": 5060,
@@ -15,12 +15,12 @@
   "extensions": {
     "101": {
       "name": "Dominique",
-      "username": "17778171572101",
+      "username": "YOUR_CALLCENTRIC_DID101",
       "status": "available"
     },
     "102": {
       "name": "FlexPBX Test",
-      "username": "17778171572102",
+      "username": "YOUR_CALLCENTRIC_DID102",
       "status": "testing"
     }
   },
@@ -32,7 +32,7 @@
         {
           "check": "Username Format",
           "result": "PASS",
-          "value": "17778171572102"
+          "value": "YOUR_CALLCENTRIC_DID102"
         },
         {
           "check": "Password Security",
@@ -59,7 +59,7 @@
         "success": true,
         "status": "200 OK",
         "expires": 3600,
-        "contact": "sip:17778171572102@127.0.0.1:5060"
+        "contact": "sip:YOUR_CALLCENTRIC_DID102@127.0.0.1:5060"
       },
       "endTime": "2025-10-02T09:50:30.579Z"
     },

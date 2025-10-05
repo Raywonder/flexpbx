@@ -38,6 +38,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
     // File operations
     selectDirectory: () => ipcRenderer.invoke('select-directory'),
     selectFile: (options) => ipcRenderer.invoke('select-file', options),
+    selectBackupFile: () => ipcRenderer.invoke('select-backup-file'),
+    saveBackupFile: () => ipcRenderer.invoke('save-backup-file'),
 
     // External operations
     openExternal: (url) => ipcRenderer.invoke('open-external', url),

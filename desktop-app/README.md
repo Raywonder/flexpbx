@@ -1,35 +1,58 @@
 # FlexPBX Desktop
 
-A cross-platform desktop application for managing FlexPBX installations and deployments.
+Enhanced cross-platform desktop application for comprehensive FlexPBX installations, deployments, and management with advanced accessibility features.
 
-## Features
+## ✨ **Major Enhancements**
 
-### 🚀 Local Installations
+### 🎯 **Accessibility First**
+- **Full VoiceOver Support**: Complete screen reader compatibility with ARIA attributes and role definitions
+- **Keyboard Navigation**: Full keyboard accessibility for all interface elements
+- **Screen Reader Classes**: Dedicated classes for assistive technologies
+- **High Contrast Themes**: Support for accessibility color schemes
+- **WCAG 2.1 AA Compliance**: Meets accessibility standards
+
+### 🔧 **Advanced PBX Management**
+- **Single Instance Enforcement**: Prevents multiple app instances using `app.requestSingleInstanceLock()`
+- **Services Tab**: Comprehensive module management with 15 organized categories
+- **Feature Codes**: Complete *number command system for SIP client access (40+ codes)
+- **Per-Extension Settings**: Advanced configuration with mini-tabs for each extension
+- **Archive System**: Support for .flx, .flxx, .mod formats with file integrity preservation
+
+### 🔐 **Enhanced Security Features**
+- **PIN Codes**: 4-64 digit PIN support for account protection and unlocking
+- **Vacation Mode**: Automated settings for temporary unavailability
+- **Account Recovery**: Multiple recovery methods for lost credentials
+- **2FA Support**: Two-factor authentication integration
+- **Account Protection**: Advanced security settings per extension
+
+### 🌐 **API Integration & External Services**
+- **Built-in API Support**: Integration for api.tappedin.fm, api.devinecreations.net, api.devine-creations.com
+- **Real-time Testing**: Connection testing and validation with comprehensive error handling
+- **Authentication Management**: Secure credential storage and token management
+- **Request/Response Logging**: Complete API interaction tracking
+
+### 📁 **Smart Path Management**
+- **PBX Name-Based Paths**: Automatic folder structure: `~/servers/[PBX-NAME]/modules/type/modulename`
+- **Real-time Previews**: Live path validation and domain preview systems
+- **Manual Path Input**: Text input support for custom file path locations
+- **Auto-Path Checking**: Validates paths before creation and usage
+
+### 📊 **Comprehensive Logging System**
+- **Multiple Log Types**: Success, failure, and metadata tracking
+- **Logs Tab**: Dedicated interface for viewing and filtering logs
+- **Real-time Updates**: Live log streaming during operations
+- **Search & Filter**: Advanced log searching and categorization
+- **Troubleshooting Support**: Detailed error tracking for installation and runtime problems
+
+### 🚀 **Original Features Enhanced**
 - **Docker Integration**: Seamlessly install FlexPBX locally using Docker
 - **Auto Configuration**: Automatically generates docker-compose.yml and environment files
 - **Service Management**: Start, stop, and monitor Docker services directly from the app
-
-### 🌐 Remote Deployments
 - **Multiple Protocols**: Deploy via SSH, FTP, or WebDAV
 - **Server Compatibility**: Supports standard Linux servers and cPanel/WHM environments
-- **Automated Setup**: Handles file uploads, configuration generation, and service startup
-
-### ⚙️ Nginx Configuration
-- **Visual Config Builder**: Generate Nginx configurations through an intuitive interface
-- **Multiple Deployment Types**: Support for root domain, subdomain, and subdirectory installations
-- **SSL Integration**: Built-in Let's Encrypt SSL certificate management
-- **cPanel Compatibility**: Detects and configures for cPanel/WHM environments
-
-### 🌍 DNS Management
-- **Multi-Provider Support**: Cloudflare, DigitalOcean, Namecheap, GoDaddy
-- **A Record Creation**: Automatically create DNS A records for your installations
-- **Verification**: Built-in DNS propagation verification
-- **Public IP Detection**: Automatically detects your public IP address
-
-### 📊 Server Monitoring
-- **Real-time Status**: Monitor server health and service status
-- **Log Viewing**: Access Docker container logs directly from the app
-- **Installation Management**: Centralized view of all your FlexPBX installations
+- **Nginx Configuration**: Visual config builder with SSL integration
+- **DNS Management**: Multi-provider support (Cloudflare, DigitalOcean, Namecheap, GoDaddy)
+- **Real-time Monitoring**: Server health and service status tracking
 
 ## System Requirements
 
@@ -162,24 +185,90 @@ npm run build-win
 npm run build-linux
 ```
 
-## Architecture
+## 📋 **Module Categories**
+
+The Services tab organizes modules into 15 comprehensive categories:
+
+1. **Core**: Essential PBX functionality and base system components
+2. **Extensions**: Extension management, configuration, and advanced settings
+3. **Trunks**: SIP trunk configuration, ownership, and management
+4. **IVR**: Interactive Voice Response systems and menu configuration
+5. **Voicemail**: Voicemail handling, notifications, and configuration
+6. **Recording**: Call recording functionality and playback systems
+7. **Conferencing**: Conference room management and bridge configuration
+8. **Fax**: Fax server integration and T.38 support
+9. **CRM**: Customer Relationship Management integration
+10. **Reporting**: Analytics, CDR analysis, and reporting tools
+11. **Security**: Security modules, firewall, and access control
+12. **Custom**: User-defined custom modules and integrations
+13. **Themes**: UI themes and visual customization
+14. **Plugins**: Third-party plugin support and API extensions
+15. **Addons**: Additional feature extensions and enhancements
+
+## 📞 **Feature Codes**
+
+Comprehensive *number command system for SIP client access:
+
+### **Voicemail & Messages**
+- **\*97** - Check Voicemail
+- **\*98** - Voicemail Login
+- **\*99** - Voicemail Admin
+
+### **Call Forwarding**
+- **\*67** - Call Forwarding Enable
+- **\*87** - Call Forwarding Disable
+- **\*72** - Call Forwarding All
+- **\*73** - Call Forwarding Cancel
+- **\*21** - Forward All Calls
+- **\*61** - Forward No Answer
+- **\*62** - Forward Busy
+
+### **Do Not Disturb**
+- **\*78** - Do Not Disturb Enable
+- **\*79** - Do Not Disturb Disable
+
+### **Call Management**
+- **\*69** - Call Return (Last Caller)
+- **\*66** - Call Busy Retry
+- **\*82** - Call Unblock
+- **\*65** - Call Block
+- **\*57** - Call Trace
+- **\*77** - Anonymous Call Block
+
+### **Conference & Transfer**
+- **\*0** - Operator
+- **\*43** - Conference Join
+- **\*3** - Three-Way Calling
+- **\*90** - Busy Override
+
+### **System Features**
+- **\*70** - Call Waiting Disable
+- **\*71** - Call Waiting Enable
+- **\*60** - Call Screening
+- **\*80** - Call Pickup
+- **\*8** - Direct Call Pickup
+
+## 🏗️ **Enhanced Architecture**
 
 ### Main Process (`src/main/`)
-- **main.js**: Entry point and window management
-- **services/**: Backend services for Docker, SSH, DNS, etc.
+- **main.js**: Enhanced entry point with single instance lock and backup operations
+- **services/**: Extended backend services for Docker, SSH, DNS, API integration
 
 ### Renderer Process (`src/renderer/`)
-- **index.html**: Main UI layout
-- **styles.css**: Application styling
-- **app.js**: Frontend application logic
-- **preload.js**: Secure API bridge
+- **index.html**: Completely reorganized UI with Services, Admin Management, and Logs tabs
+- **styles.css**: Comprehensive styling for all new components and accessibility features
+- **app.js**: Extended frontend logic with archive support, path management, and API integration
+- **preload.js**: Enhanced secure API bridge with backup file operations
 
-### Key Services
-- **DockerService**: Local Docker installation management
-- **SSHService**: Remote server connections and deployments
-- **NginxService**: Web server configuration
-- **DNSService**: DNS provider integrations
-- **DeploymentService**: Multi-protocol file deployment
+### Key Services Enhanced
+- **DockerService**: Local Docker installation management with logging
+- **SSHService**: Remote server connections and deployments with retry logic
+- **NginxService**: Web server configuration with domain previews
+- **DNSService**: DNS provider integrations with real-time testing
+- **DeploymentService**: Multi-protocol file deployment with progress tracking
+- **ArchiveService**: New .flx/.flxx/.mod archive format support
+- **APIService**: External API integration and authentication management
+- **LoggingService**: Comprehensive logging system with filtering and search
 
 ## Security
 
@@ -240,7 +329,80 @@ MIT License - see [LICENSE](../LICENSE) file for details.
 - 🐛 Issues: [GitHub Issues](https://github.com/raywonder/flexpbx/issues)
 - 💬 Discussions: [GitHub Discussions](https://github.com/raywonder/flexpbx/discussions)
 
-## Changelog
+## 📋 **Archive Formats**
+
+### .flx (FlexPBX Configuration)
+Basic configuration archives containing:
+- Extension settings and basic configuration
+- User preferences and permissions
+- Core PBX settings
+
+### .flxx (Extended FlexPBX)
+Extended archives including:
+- Complete system configuration
+- Module settings and customizations
+- User data and preferences
+- Security settings and credentials
+
+### .mod (Module Archive)
+Module-specific archives containing:
+- Module code and assets
+- Configuration files and dependencies
+- Documentation and installation scripts
+- Version information and metadata
+
+## 🔗 **Path Structure**
+
+### Default Local Structure
+```
+~/servers/
+├── [PBX-NAME]/
+│   ├── modules/
+│   │   ├── core/
+│   │   ├── extensions/
+│   │   ├── trunks/
+│   │   ├── ivr/
+│   │   ├── voicemail/
+│   │   ├── recording/
+│   │   ├── conferencing/
+│   │   ├── fax/
+│   │   ├── crm/
+│   │   ├── reporting/
+│   │   ├── security/
+│   │   ├── custom/
+│   │   ├── themes/
+│   │   ├── plugins/
+│   │   └── addons/
+│   ├── backups/
+│   ├── config/
+│   └── logs/
+```
+
+### Remote Server Structure
+```
+/home/user/app-install-path/server/
+├── [PBX-NAME]/
+│   ├── modules/[type]/[module-name]/
+│   ├── backups/
+│   ├── config/
+│   └── logs/
+```
+
+## 📝 **Changelog**
+
+### Version 2.0.0 (Enhanced Release)
+- 🎯 **Full VoiceOver accessibility support** with ARIA attributes and screen reader compatibility
+- 🔧 **Single instance enforcement** using `app.requestSingleInstanceLock()`
+- 📋 **Complete UI reorganization** with Services, Admin Management, and Logs tabs
+- 🔐 **Advanced security features** including 4-64 digit PIN codes and vacation mode
+- 📞 **Feature Codes system** with 40+ *number commands for SIP client access
+- 📁 **Archive format support** for .flx, .flxx, .mod with file integrity preservation
+- 🌐 **API integration** for api.tappedin.fm, api.devinecreations.net, api.devine-creations.com
+- 📊 **Comprehensive logging system** with success/failure tracking and metadata
+- 🗂️ **WordPress-style module organization** with 15 categories
+- 📍 **PBX name-based path management** with real-time previews
+- ⚙️ **Per-extension advanced settings** with mini-tabs and configuration options
+- 🎨 **Enhanced UI components** with improved styling and navigation
 
 ### Version 1.0.0 (Initial Release)
 - ✨ Local Docker installation support
@@ -250,4 +412,4 @@ MIT License - see [LICENSE](../LICENSE) file for details.
 - ✨ cPanel/WHM compatibility
 - ✨ Cross-platform support (macOS, Windows, Linux)
 - ✨ Comprehensive server monitoring
-- ✨ Accessibility features and WCAG 2.1 AA compliance
+- ✨ Basic accessibility features

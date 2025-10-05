@@ -13,12 +13,12 @@ class FlexPBXCallCentricTest {
         this.sipProvider = new SIPProviderService();
         this.testResults = [];
 
-        // CallCentric Test Configuration
+        // CallCentric Test Configuration - UPDATE WITH YOUR CREDENTIALS
         this.callcentricConfig = {
-            username: '17778171572102',
-            password: 'DsmotifXS678!$ester',
-            authname: 'raywonder',
-            did: '17778171572',
+            username: 'YOUR_CALLCENTRIC_USERNAME', // e.g., '1777XXXXXXX102'
+            password: 'YOUR_CALLCENTRIC_PASSWORD', // Your CallCentric password
+            authname: 'your-authname',
+            did: 'YOUR_DID_NUMBER',     // e.g., '1777XXXXXXX'
             extension: '102',
             proxy: 'sip.callcentric.com',
             port: 5060,
@@ -26,16 +26,16 @@ class FlexPBXCallCentricTest {
             registration: true
         };
 
-        // Test Extensions
+        // Test Extensions - UPDATE WITH YOUR EXTENSIONS
         this.testExtensions = {
             101: {
-                name: 'Dominique',
-                username: '17778171572101',
+                name: 'Extension 101',
+                username: 'YOUR_CALLCENTRIC_USERNAME_101', // e.g., '1777XXXXXXX101'
                 status: 'available'
             },
             102: {
                 name: 'FlexPBX Test',
-                username: '17778171572102',
+                username: 'YOUR_CALLCENTRIC_USERNAME_102', // e.g., '1777XXXXXXX102'
                 status: 'testing'
             }
         };

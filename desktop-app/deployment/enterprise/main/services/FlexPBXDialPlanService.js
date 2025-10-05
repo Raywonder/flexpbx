@@ -44,13 +44,13 @@ class FlexPBXDialPlanService extends EventEmitter {
         this.callcentricExtensions = {
             dominique: {
                 internal: 101,              // Local reference number
-                external: '17778171572101', // Full CallCentric extension
+                external: 'YOUR_CALLCENTRIC_DID101', // Full CallCentric extension
                 name: 'Dominique',
                 type: 'callcentric'
             },
             flexpbx_operator: {
                 internal: 102,              // Routes to logged-in operator
-                external: '17778171572102',
+                external: 'YOUR_CALLCENTRIC_DID102',
                 name: 'FlexPBX Operator',
                 type: 'callcentric',
                 routeTo: 'operator'         // Special routing to operator or IVR

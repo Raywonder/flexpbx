@@ -122,6 +122,22 @@ class FlexPBXUnifiedClient {
     }
 
     setupApp() {
+        // Ensure single instance
+        const gotTheLock = app.requestSingleInstanceLock();
+        if (!gotTheLock) {
+            app.quit();
+            return;
+        }
+
+        app.on('second-instance', () => {
+            // Someone tried to run a second instance, focus our window instead
+            if (this.mainWindow) {
+                if (this.mainWindow.isMinimized()) this.mainWindow.restore();
+                this.mainWindow.focus();
+                this.mainWindow.show();
+            }
+        });
+
         app.whenReady().then(async () => {
             console.log('App is ready, initializing...');
 
@@ -465,12 +481,41 @@ class FlexPBXUnifiedClient {
     }
 
     setupIPC() {
-        // File selection
+        // File selection with permissions check
         ipcMain.handle('select-directory', async () => {
-            const result = await dialog.showOpenDialog(this.mainWindow, {
-                properties: ['openDirectory']
-            });
-            return result.filePaths[0];
+            try {
+                console.log('🗂️ Directory selection requested');
+
+                const result = await dialog.showOpenDialog(this.mainWindow, {
+                    properties: ['openDirectory', 'createDirectory'],
+                    defaultPath: '/Applications',
+                    message: 'Choose FlexPBX Installation Directory'
+                });
+
+                console.log('🗂️ Dialog result:', result);
+
+                if (!result.canceled && result.filePaths.length > 0) {
+                    const selectedPath = result.filePaths[0];
+                    console.log('✅ Directory selected:', selectedPath);
+
+                    // Check write permissions
+                    const fs = require('fs');
+                    try {
+                        await fs.promises.access(selectedPath, fs.constants.W_OK);
+                        console.log('✅ Directory is writable');
+                        return selectedPath;
+                    } catch (permError) {
+                        console.log('⚠️ Directory not writable, returning anyway:', permError.message);
+                        return selectedPath; // Return anyway, user may want to create subdirectory
+                    }
+                } else {
+                    console.log('❌ Directory selection canceled');
+                    return null;
+                }
+            } catch (error) {
+                console.error('❌ Failed to open directory dialog:', error);
+                throw error;
+            }
         });
 
         ipcMain.handle('select-files', async () => {
@@ -478,6 +523,65 @@ class FlexPBXUnifiedClient {
                 properties: ['openFile', 'multiSelections']
             });
             return result.filePaths;
+        });
+
+        // Backup file operations
+        ipcMain.handle('select-backup-file', async () => {
+            try {
+                console.log('📂 Backup file selection requested');
+
+                const result = await dialog.showOpenDialog(this.mainWindow, {
+                    properties: ['openFile'],
+                    filters: [
+                        { name: 'FlexPBX Backup Files', extensions: ['flx', 'flxx'] },
+                        { name: 'All Files', extensions: ['*'] }
+                    ],
+                    message: 'Select FlexPBX Backup File to Import'
+                });
+
+                console.log('📂 Backup file dialog result:', result);
+
+                if (!result.canceled && result.filePaths.length > 0) {
+                    const selectedFile = result.filePaths[0];
+                    console.log('✅ Backup file selected:', selectedFile);
+                    return selectedFile;
+                } else {
+                    console.log('❌ Backup file selection canceled');
+                    return null;
+                }
+            } catch (error) {
+                console.error('❌ Failed to open backup file dialog:', error);
+                throw error;
+            }
+        });
+
+        ipcMain.handle('save-backup-file', async () => {
+            try {
+                console.log('💾 Backup save dialog requested');
+
+                const result = await dialog.showSaveDialog(this.mainWindow, {
+                    filters: [
+                        { name: 'FlexPBX Backup Files', extensions: ['flx'] },
+                        { name: 'FlexPBX Extended Backup', extensions: ['flxx'] }
+                    ],
+                    defaultPath: `FlexPBX-Backup-${new Date().toISOString().split('T')[0]}.flx`,
+                    message: 'Save FlexPBX Backup File'
+                });
+
+                console.log('💾 Backup save dialog result:', result);
+
+                if (!result.canceled && result.filePath) {
+                    const savePath = result.filePath;
+                    console.log('✅ Backup save path:', savePath);
+                    return savePath;
+                } else {
+                    console.log('❌ Backup save canceled');
+                    return null;
+                }
+            } catch (error) {
+                console.error('❌ Failed to open backup save dialog:', error);
+                throw error;
+            }
         });
 
         // Server deployment

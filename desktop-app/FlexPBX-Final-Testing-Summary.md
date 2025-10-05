@@ -19,7 +19,7 @@ FlexPBX v1.0 is now a **complete professional call center platform** with all ad
 ### **CallCentric Extension (101 - Dominique)**
 - **Status**: 🟢 **ACTIVE & MAINTAINED**
 - **Purpose**: Cross-device testing with your SIP phones
-- **Username**: `17778171572101`
+- **Username**: `YOUR_CALLCENTRIC_DID101`
 - **Server**: `sip.callcentric.com:5060`
 - **Note**: This connection stays active for testing real calls
 
