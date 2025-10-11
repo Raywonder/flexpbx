@@ -1,8 +1,8 @@
 {
   "name": "flexpbx-desktop",
-  "version": "2.0.0",
+  "version": "1.0.0",
   "description": "FlexPBX Unified Desktop Client - Complete PBX Management Suite",
-  "main": "src/main/main.js",
+  "main": "src/main/AdminMain.js",
   "scripts": {
     "start": "electron .",
     "dev": "node scripts/dev.js",

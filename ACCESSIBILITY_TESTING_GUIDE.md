@@ -11,7 +11,7 @@ This guide provides simple, step-by-step instructions for screen reader users to
 ### Step 1: Get the Installation Package
 The FlexPBX installation package is a single ZIP file located at:
 ```
-/Users/administrator/dev/apps/flex pbx/flexpbx/deployment/build/FlexPBX-Complete-v2.0.0.zip
+/Users/administrator/dev/apps/flex pbx/flexpbx/deployment/build/FlexPBX-Complete-v1.0.0.zip
 ```
 
 File size: Approximately 667 megabytes
@@ -21,25 +21,25 @@ File size: Approximately 667 megabytes
 #### Option A: Home Directory Upload
 ```bash
 # Upload to user's home directory
-scp FlexPBX-Complete-v2.0.0.zip username@your-server.com:/home/username/
+scp FlexPBX-Complete-v1.0.0.zip username@your-server.com:/home/username/
 
 # Alternative using rsync (with progress)
-rsync -avP FlexPBX-Complete-v2.0.0.zip username@your-server.com:/home/username/
+rsync -avP FlexPBX-Complete-v1.0.0.zip username@your-server.com:/home/username/
 ```
 
 #### Option B: Public Web Directory Upload
 ```bash
 # Upload to web accessible directory
-scp FlexPBX-Complete-v2.0.0.zip username@your-server.com:/home/username/public_html/
+scp FlexPBX-Complete-v1.0.0.zip username@your-server.com:/home/username/public_html/
 
 # For cPanel accounts
-scp FlexPBX-Complete-v2.0.0.zip username@your-server.com:/home/username/public_html/downloads/
+scp FlexPBX-Complete-v1.0.0.zip username@your-server.com:/home/username/public_html/downloads/
 ```
 
 #### Option C: Custom Directory Upload
 ```bash
 # Upload to any directory you prefer
-scp FlexPBX-Complete-v2.0.0.zip username@your-server.com:/home/username/flexpbx/
+scp FlexPBX-Complete-v1.0.0.zip username@your-server.com:/home/username/flexpbx/
 ```
 
 ### Step 3: Connect to Your Server
@@ -64,10 +64,10 @@ ssh username@your-server.com
 cd /home/username
 
 # Extract the package
-unzip FlexPBX-Complete-v2.0.0.zip
+unzip FlexPBX-Complete-v1.0.0.zip
 
 # Navigate to extracted folder
-cd FlexPBX-Complete-v2.0.0
+cd FlexPBX-Complete-v1.0.0
 
 # Make installation script executable
 chmod +x install.sh
@@ -82,10 +82,10 @@ chmod +x install.sh
 cd /home/username/public_html
 
 # Extract the package
-unzip FlexPBX-Complete-v2.0.0.zip
+unzip FlexPBX-Complete-v1.0.0.zip
 
 # Navigate and install
-cd FlexPBX-Complete-v2.0.0
+cd FlexPBX-Complete-v1.0.0
 chmod +x install.sh
 ./install.sh local --accessible --web-root /home/username/public_html
 ```
@@ -95,19 +95,19 @@ chmod +x install.sh
 #### Step 2.1: Extract Files
 ```bash
 # Check if file exists
-ls -la FlexPBX-Complete-v2.0.0.zip
+ls -la FlexPBX-Complete-v1.0.0.zip
 
 # Output will announce:
-# File found: FlexPBX-Complete-v2.0.0.zip (667MB)
+# File found: FlexPBX-Complete-v1.0.0.zip (667MB)
 
 # Extract with progress
-unzip -v FlexPBX-Complete-v2.0.0.zip
+unzip -v FlexPBX-Complete-v1.0.0.zip
 ```
 
 #### Step 2.2: Review Contents
 ```bash
 # List extracted contents
-ls -la FlexPBX-Complete-v2.0.0/
+ls -la FlexPBX-Complete-v1.0.0/
 
 # You will hear:
 # Directory listing with 10 items:
@@ -121,7 +121,7 @@ ls -la FlexPBX-Complete-v2.0.0/
 #### Step 2.3: Run Installation
 ```bash
 # Navigate to installation directory
-cd FlexPBX-Complete-v2.0.0
+cd FlexPBX-Complete-v1.0.0
 
 # Check installer help
 ./install.sh --help
@@ -217,13 +217,13 @@ The FlexPBX web interface includes:
 # Find the WHMCS module
 find /home/username -name "flexpbx" -type d
 
-# Output: /home/username/FlexPBX-Complete-v2.0.0/whmcs-module/flexpbx
+# Output: /home/username/FlexPBX-Complete-v1.0.0/whmcs-module/flexpbx
 ```
 
 #### Step 2: Upload to WHMCS
 ```bash
 # Copy to WHMCS modules directory
-cp -r /home/username/FlexPBX-Complete-v2.0.0/whmcs-module/flexpbx /home/username/public_html/whmcs/modules/addons/
+cp -r /home/username/FlexPBX-Complete-v1.0.0/whmcs-module/flexpbx /home/username/public_html/whmcs/modules/addons/
 
 # Set proper permissions
 chown -R username:username /home/username/public_html/whmcs/modules/addons/flexpbx
@@ -251,7 +251,7 @@ The 2FA setup interface includes:
 ### macOS Desktop App
 ```bash
 # Launch desktop app
-open "/home/username/FlexPBX-Complete-v2.0.0/desktop-apps/mac/FlexPBX Desktop.app"
+open "/home/username/FlexPBX-Complete-v1.0.0/desktop-apps/mac/FlexPBX Desktop.app"
 
 # Or from command line with accessibility
 ./FlexPBX\ Desktop --enable-accessibility
@@ -260,14 +260,14 @@ open "/home/username/FlexPBX-Complete-v2.0.0/desktop-apps/mac/FlexPBX Desktop.ap
 ### Windows Desktop App
 ```bash
 # On Windows server
-cd "C:\Users\username\FlexPBX-Complete-v2.0.0\desktop-apps\win-unpacked"
+cd "C:\Users\username\FlexPBX-Complete-v1.0.0\desktop-apps\win-unpacked"
 "FlexPBX Desktop.exe" --enable-accessibility
 ```
 
 ### Linux Desktop App
 ```bash
 # On Linux server
-cd /home/username/FlexPBX-Complete-v2.0.0/desktop-apps/linux
+cd /home/username/FlexPBX-Complete-v1.0.0/desktop-apps/linux
 chmod +x FlexPBX-Desktop.AppImage
 ./FlexPBX-Desktop.AppImage --enable-accessibility
 ```
@@ -348,10 +348,10 @@ curl -s http://localhost:3000 | grep -E "aria-|role=|alt="
 less /var/log/flexpbx-install.log
 
 # Check system status
-./FlexPBX-Complete-v2.0.0/server/status.sh --accessible
+./FlexPBX-Complete-v1.0.0/server/status.sh --accessible
 
 # Get support information
-cat /home/username/FlexPBX-Complete-v2.0.0/docs/SUPPORT.md
+cat /home/username/FlexPBX-Complete-v1.0.0/docs/SUPPORT.md
 ```
 
 ---
@@ -361,15 +361,15 @@ cat /home/username/FlexPBX-Complete-v2.0.0/docs/SUPPORT.md
 ### 30-Second Setup
 ```bash
 # 1. Upload file to your preferred directory
-scp FlexPBX-Complete-v2.0.0.zip username@server.com:/home/username/
+scp FlexPBX-Complete-v1.0.0.zip username@server.com:/home/username/
 
 # 2. Connect and extract
 ssh username@server.com
 cd /home/username
-unzip FlexPBX-Complete-v2.0.0.zip
+unzip FlexPBX-Complete-v1.0.0.zip
 
 # 3. Install with accessibility
-cd FlexPBX-Complete-v2.0.0
+cd FlexPBX-Complete-v1.0.0
 chmod +x install.sh
 ./install.sh local --accessible
 

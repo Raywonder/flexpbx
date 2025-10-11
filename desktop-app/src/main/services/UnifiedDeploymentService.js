@@ -242,7 +242,7 @@ if [ "${deploymentConfig.useSubdomain}" = "true" ]; then
 fi
 
 # Configure DNS
-/usr/local/cpanel/bin/uapi --user=${deploymentConfig.cpanelUser} DNS add_record domain=${DOMAIN} name=pbx type=A address=$(hostname -I | awk '{print $1}')
+/usr/local/cpanel/bin/uapi --user=${deploymentConfig.cpanelUser} DNS add_record domain=${deploymentConfig.rootDomain} name=pbx type=A address=$(hostname -I | awk '{print $1}')
 `;
 
         await ssh.execCommand(`echo '${hookScript}' > ${installPath}/cpanel-hook.sh && chmod +x ${installPath}/cpanel-hook.sh`);

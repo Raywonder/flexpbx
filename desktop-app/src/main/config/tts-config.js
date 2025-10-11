@@ -292,7 +292,7 @@ module.exports = {
     validateInput: true,
     sanitizeText: true,
     maxInputLength: 10000,
-    allowedCharacters: /^[a-zA-Z0-9\s\.\,\!\?\-\:\;\(\)\'\"]+$/,
+    allowedCharacters: /^[a-zA-Z0-9\s.,!?:;()'"+-]+$/,
     rateLimiting: {
       enabled: true,
       maxRequestsPerMinute: 100,

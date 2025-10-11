@@ -5,7 +5,7 @@ const Store = require('electron-store');
 const BackupHandler = require('./backup-handler');
 
 // Conditional imports for services that might not exist
-let AutoInstaller, UnifiedDeploymentService, FileUploadService, TestingManagerService, BackgroundServiceManager, CopyPartyService, SoundManager, TTSService;
+let AutoInstaller, UnifiedDeploymentService, FileUploadService, TestingManagerService, BackgroundServiceManager, CopyPartyService, SoundManager, TTSService, PortManager, HoldMusicServer, CrossPlatformSpeech, SupportTicketSystem, AppLockSystem, LocalTTSServer;
 
 try {
     AutoInstaller = require('./installers/AutoInstaller');
@@ -89,6 +89,81 @@ try {
     };
 }
 
+try {
+    PortManager = require('./services/PortManager');
+} catch (e) {
+    console.log('PortManager not found, using mock');
+    PortManager = class {
+        async init() { return this; }
+        async getAvailablePort(service) { return 8080 + Math.floor(Math.random() * 100); }
+        async allocatePortsForServices() { return {}; }
+        getAssignedPort(service) { return 8080; }
+    };
+}
+
+try {
+    HoldMusicServer = require('./services/HoldMusicServer');
+} catch (e) {
+    console.log('HoldMusicServer not found, using mock');
+    HoldMusicServer = class {
+        constructor() { this.port = 8081; }
+        async init() { return true; }
+        getServerInfo() { return { port: 8081, url: 'http://localhost:8081' }; }
+        stop() { return true; }
+    };
+}
+
+try {
+    CrossPlatformSpeech = require('./services/CrossPlatformSpeech');
+} catch (e) {
+    console.log('CrossPlatformSpeech not found, using mock');
+    CrossPlatformSpeech = class {
+        async init() { return true; }
+        speak(message) { console.log(`🔊 ${message}`); }
+        announceHoldMusicEvent(event, details) { console.log(`🎵 ${event}:`, details); }
+        announceSystemEvent(event, details) { console.log(`⚙️ ${event}:`, details); }
+        testSpeech() { console.log('🔊 Speech test'); }
+    };
+}
+
+try {
+    SupportTicketSystem = require('./services/SupportTicketSystem');
+} catch (e) {
+    console.log('SupportTicketSystem not found, using mock');
+    SupportTicketSystem = class {
+        constructor() { this.port = 8082; }
+        async init() { return true; }
+        getServerInfo() { return { port: 8082, url: 'http://localhost:8082' }; }
+        stop() { return true; }
+    };
+}
+
+try {
+    AppLockSystem = require('./services/AppLockSystem');
+} catch (e) {
+    console.log('AppLockSystem not found, using mock');
+    AppLockSystem = class {
+        constructor() {}
+        hasPermission(permission) { return true; }
+        canAccessFeature(feature) { return true; }
+        getSystemInfo() { return { isLocked: false, lockType: 'none' }; }
+        lockApp() { console.log('🔒 App lock simulated'); }
+        unlockApp() { console.log('🔓 App unlock simulated'); }
+    };
+}
+
+try {
+    LocalTTSServer = require('./services/LocalTTSServer');
+} catch (e) {
+    console.log('LocalTTSServer not found, using mock');
+    LocalTTSServer = class {
+        constructor() {}
+        async init() { return true; }
+        getStatus() { return { running: false }; }
+        async stop() {}
+    };
+}
+
 class FlexPBXUnifiedClient {
     constructor() {
         this.mainWindow = null;
@@ -111,6 +186,14 @@ class FlexPBXUnifiedClient {
             chatterboxEnabled: true
         });
 
+        // New Services
+        this.portManager = null;
+        this.holdMusicServer = null;
+        this.crossPlatformSpeech = new CrossPlatformSpeech();
+        this.supportTicketSystem = null;
+        this.appLockSystem = new AppLockSystem(this.crossPlatformSpeech);
+        this.localTTSServer = null;
+
         // Configuration
         this.config = {
             localMode: true,
@@ -122,6 +205,12 @@ class FlexPBXUnifiedClient {
     }
 
     setupApp() {
+        // Add memory optimization command line switches
+        app.commandLine.appendSwitch('max-old-space-size', '4096');
+        app.commandLine.appendSwitch('no-sandbox');
+        app.commandLine.appendSwitch('disable-dev-shm-usage');
+        app.commandLine.appendSwitch('js-flags', '--max-old-space-size=4096');
+
         // Ensure single instance
         const gotTheLock = app.requestSingleInstanceLock();
         if (!gotTheLock) {
@@ -201,7 +290,12 @@ class FlexPBXUnifiedClient {
             webPreferences: {
                 nodeIntegration: true,
                 contextIsolation: false,
-                webSecurity: false
+                webSecurity: false,
+                additionalArguments: [
+                    '--max-old-space-size=4096',
+                    '--no-sandbox',
+                    '--disable-dev-shm-usage'
+                ]
             },
             icon: path.join(__dirname, '../../assets/icon.png'),
             title: 'FlexPBX Desktop Manager',
@@ -317,6 +411,18 @@ class FlexPBXUnifiedClient {
                         click: () => this.toggleCopyParty()
                     },
                     {
+                        label: 'Hold Music Server',
+                        click: () => this.openHoldMusicServer()
+                    },
+                    {
+                        label: 'Support Ticket System',
+                        click: () => this.openSupportTicketSystem()
+                    },
+                    {
+                        label: 'App Lock Manager',
+                        click: () => this.openAppLockManager()
+                    },
+                    {
                         label: 'Connection Manager',
                         click: () => this.showConnectionManager()
                     }
@@ -333,6 +439,22 @@ class FlexPBXUnifiedClient {
                     {
                         label: 'Open CopyParty',
                         click: () => shell.openExternal('http://localhost:3923')
+                    },
+                    {
+                        label: 'Open Hold Music Server',
+                        click: () => this.openHoldMusicServer()
+                    },
+                    {
+                        label: 'Real-time Hold Music Monitor',
+                        click: () => this.openHoldMusicMonitor()
+                    },
+                    {
+                        label: 'Open Support Ticket System',
+                        click: () => this.openSupportTicketSystem()
+                    },
+                    {
+                        label: 'Open App Lock Manager',
+                        click: () => this.openAppLockManager()
                     }
                 ]
             },
@@ -380,7 +502,78 @@ class FlexPBXUnifiedClient {
         console.log('🚀 Starting background services...');
 
         try {
+            // Initialize Cross-Platform Speech first
+            console.log('🔊 Initializing TTS Service...');
+            await this.crossPlatformSpeech.init();
+
+            // Initialize Port Manager
+            console.log('🔍 Initializing Port Manager...');
+            this.portManager = new PortManager();
+            await this.portManager.init();
+
+            // Initialize Hold Music Server
+            console.log('🎵 Initializing Hold Music Server...');
+            this.holdMusicServer = new HoldMusicServer(this.portManager);
+            const holdMusicResult = await this.holdMusicServer.init();
+
+            if (holdMusicResult) {
+                const holdMusicInfo = this.holdMusicServer.getServerInfo();
+                console.log(`✅ Hold Music Server running at ${holdMusicInfo.url}`);
+                console.log(`📡 Real-time monitor: ${holdMusicInfo.monitorUrl}`);
+
+                // Announce hold music server startup
+                this.crossPlatformSpeech.announceSystemEvent('startup', {
+                    service: 'Hold Music Server',
+                    port: holdMusicInfo.port
+                });
+            }
+
+            // Initialize Support Ticket System
+            console.log('🎫 Initializing Support Ticket System...');
+            this.supportTicketSystem = new SupportTicketSystem(this.portManager, this.crossPlatformSpeech);
+            const ticketSystemResult = await this.supportTicketSystem.init();
+
+            if (ticketSystemResult) {
+                const ticketSystemInfo = this.supportTicketSystem.getServerInfo();
+                console.log(`✅ Support Ticket System running at ${ticketSystemInfo.url}`);
+
+                // Announce ticket system startup
+                this.crossPlatformSpeech.announceSystemEvent('startup', {
+                    service: 'Support Ticket System',
+                    port: ticketSystemInfo.port
+                });
+            }
+
+            // Initialize Local TTS Server
+            console.log('🔊 Initializing Local TTS Server...');
+            this.localTTSServer = new LocalTTSServer(this.portManager, this.crossPlatformSpeech);
+            const ttsServerResult = await this.localTTSServer.init();
+
+            if (ttsServerResult) {
+                const ttsServerInfo = this.localTTSServer.getStatus();
+                console.log(`✅ Local TTS Server running at ${ttsServerInfo.url}`);
+
+                // Announce TTS server startup
+                this.crossPlatformSpeech.announceSystemEvent('startup', {
+                    service: 'Local TTS Server',
+                    port: ttsServerInfo.port
+                });
+            }
+
+            // Initialize App Lock System
+            console.log('🔒 Initializing App Lock System...');
+            const appLockResult = await this.appLockSystem.init();
+            if (appLockResult) {
+                console.log('✅ App Lock System initialized');
+
+                // Announce app lock system startup
+                this.crossPlatformSpeech.announceSystemEvent('startup', {
+                    service: 'App Lock System'
+                });
+            }
+
             // Start main background service manager
+            console.log('🚀 Starting all background services...');
             const serviceResult = await this.backgroundServiceManager.startAll();
             console.log('Background services result:', serviceResult);
 
@@ -390,19 +583,48 @@ class FlexPBXUnifiedClient {
                 console.log('CopyParty service result:', copyPartyResult);
 
                 if (copyPartyResult.success) {
+                    // Queue the CopyParty sound with lower priority
                     setTimeout(() => this.soundManager.playCopyPartyStartedSound(), 500);
                 }
             }
 
-            // Update tray tooltip
-            this.tray?.setToolTip('FlexPBX Desktop - All Services Running');
+            // Announce system ready
+            this.crossPlatformSpeech.announceSystemEvent('ready');
 
-            // Play services started sound
-            setTimeout(() => this.soundManager.playServiceStartedSound(), 1500);
+            // Update tray tooltip with service info
+            const holdMusicInfo = this.holdMusicServer ? this.holdMusicServer.getServerInfo() : null;
+            const ticketSystemInfo = this.supportTicketSystem ? this.supportTicketSystem.getServerInfo() : null;
+            const appLockInfo = this.appLockSystem ? this.appLockSystem.getSystemInfo() : null;
 
-            return { success: true, message: 'All background services started' };
+            let tooltipLines = ['FlexPBX Desktop - All Services Running'];
+            if (holdMusicInfo) tooltipLines.push(`Hold Music: ${holdMusicInfo.url}`);
+            if (ticketSystemInfo) tooltipLines.push(`Support Tickets: ${ticketSystemInfo.url}`);
+            if (appLockInfo && appLockInfo.isLocked) tooltipLines.push(`App Lock: ${appLockInfo.lockType}`);
+
+            this.tray?.setToolTip(tooltipLines.join('\n'));
+
+            // Play primary services started sound with highest priority
+            setTimeout(() => this.soundManager.playServiceStartedSound(), 2000);
+
+            return {
+                success: true,
+                message: 'All background services started',
+                services: {
+                    holdMusic: holdMusicInfo,
+                    supportTickets: this.supportTicketSystem ? this.supportTicketSystem.getServerInfo() : null,
+                    appLock: this.appLockSystem ? this.appLockSystem.getSystemInfo() : null,
+                    ports: this.portManager.getAllAssignedPorts()
+                }
+            };
         } catch (error) {
             console.error('Failed to start background services:', error);
+
+            // Announce error
+            this.crossPlatformSpeech.announceSystemEvent('error', {
+                service: 'Background Services',
+                error: error.message
+            });
+
             return { success: false, error: error.message };
         }
     }
@@ -464,6 +686,49 @@ class FlexPBXUnifiedClient {
         this.showMainWindow();
         if (this.mainWindow) {
             this.mainWindow.webContents.send('navigate-to', 'servers');
+        }
+    }
+
+    openHoldMusicServer() {
+        if (this.holdMusicServer) {
+            const holdMusicInfo = this.holdMusicServer.getServerInfo();
+            shell.openExternal(holdMusicInfo.url);
+            this.crossPlatformSpeech.speak('Hold music server dashboard opened');
+        } else {
+            this.crossPlatformSpeech.speak('Hold music server not available');
+        }
+    }
+
+    openHoldMusicMonitor() {
+        if (this.holdMusicServer) {
+            const holdMusicInfo = this.holdMusicServer.getServerInfo();
+            shell.openExternal(holdMusicInfo.monitorUrl);
+            this.crossPlatformSpeech.speak('Hold music monitor opened');
+        } else {
+            this.crossPlatformSpeech.speak('Hold music monitor not available');
+        }
+    }
+
+    openSupportTicketSystem() {
+        if (this.supportTicketSystem) {
+            const ticketSystemInfo = this.supportTicketSystem.getServerInfo();
+            shell.openExternal(ticketSystemInfo.url);
+            this.crossPlatformSpeech.speak('Support ticket system opened');
+        } else {
+            this.crossPlatformSpeech.speak('Support ticket system not available');
+        }
+    }
+
+    openAppLockManager() {
+        if (this.appLockSystem) {
+            const systemInfo = this.appLockSystem.getSystemInfo();
+            this.showMainWindow();
+            if (this.mainWindow) {
+                this.mainWindow.webContents.send('open-app-lock-manager', systemInfo);
+            }
+            this.crossPlatformSpeech.speak('App lock manager opened');
+        } else {
+            this.crossPlatformSpeech.speak('App lock manager not available');
         }
     }
 
@@ -810,6 +1075,79 @@ class FlexPBXUnifiedClient {
             return await this.ttsService.healthCheck();
         });
 
+        // Hold Music Server handlers
+        ipcMain.handle('hold-music-get-info', async () => {
+            return this.holdMusicServer ? this.holdMusicServer.getServerInfo() : null;
+        });
+
+        ipcMain.handle('hold-music-open-monitor', async () => {
+            this.openHoldMusicMonitor();
+            return { success: true };
+        });
+
+        // Support Ticket System handlers
+        ipcMain.handle('support-tickets-get-info', async () => {
+            return this.supportTicketSystem ? this.supportTicketSystem.getServerInfo() : null;
+        });
+
+        ipcMain.handle('support-tickets-open', async () => {
+            this.openSupportTicketSystem();
+            return { success: true };
+        });
+
+        // App Lock System handlers
+        ipcMain.handle('app-lock-get-status', async () => {
+            return this.appLockSystem ? this.appLockSystem.getSystemInfo() : { isLocked: false, lockType: 'none' };
+        });
+
+        ipcMain.handle('app-lock-check-permission', async (event, permission) => {
+            return this.appLockSystem ? this.appLockSystem.hasPermission(permission) : true;
+        });
+
+        ipcMain.handle('app-lock-can-access-feature', async (event, feature) => {
+            return this.appLockSystem ? this.appLockSystem.canAccessFeature(feature) : true;
+        });
+
+        ipcMain.handle('app-lock-lock-app', async () => {
+            if (this.appLockSystem) {
+                this.appLockSystem.lockApp();
+                return { success: true };
+            }
+            return { success: false, error: 'App lock system not available' };
+        });
+
+        ipcMain.handle('app-lock-unlock-app', async () => {
+            if (this.appLockSystem) {
+                this.appLockSystem.unlockApp();
+                return { success: true };
+            }
+            return { success: false, error: 'App lock system not available' };
+        });
+
+        // Cross-Platform Speech handlers
+        ipcMain.handle('speech-test', async () => {
+            this.crossPlatformSpeech.testSpeech();
+            return { success: true };
+        });
+
+        ipcMain.handle('speech-speak', async (event, messageKey, customMessage) => {
+            this.crossPlatformSpeech.speak(messageKey, customMessage);
+            return { success: true };
+        });
+
+        ipcMain.handle('speech-get-voices', async () => {
+            return this.crossPlatformSpeech.getAvailableVoices();
+        });
+
+        ipcMain.handle('speech-update-settings', async (event, settings) => {
+            this.crossPlatformSpeech.updateSettings(settings);
+            return { success: true };
+        });
+
+        ipcMain.handle('speech-get-settings', async () => {
+            return this.crossPlatformSpeech.getSettings();
+        });
+
         // tappedin.fm specific handlers
         ipcMain.handle('tts-tappedin-status', async () => {
             return {
@@ -940,7 +1278,7 @@ class FlexPBXUnifiedClient {
         dialog.showMessageBox(this.mainWindow, {
             type: 'info',
             title: 'About FlexPBX Desktop',
-            message: 'FlexPBX Desktop Manager v2.0.0',
+            message: 'FlexPBX Desktop Manager v1.0.0',
             detail: 'Unified PBX management platform for FreePBX and Asterisk systems.\n\n© 2024 FlexPBX Team',
             buttons: ['OK']
         });

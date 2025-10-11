@@ -366,7 +366,7 @@ class WebUIService extends EventEmitter {
 
                 // Setup communication with desktop app
                 window.flexpbxDesktop = {
-                    version: '2.0.0',
+                    version: '1.0.0',
                     platform: '${process.platform}',
                     panelType: '${panelType}',
                     ssoEnabled: ${enableSSO},

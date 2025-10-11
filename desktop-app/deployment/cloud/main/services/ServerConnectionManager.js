@@ -509,7 +509,7 @@ case "$1" in
         # Create cPanel app configuration
         cat > /var/cpanel/apps/flexpbx.conf << EOF
 name=FlexPBX
-version=2.0.0
+version=1.0.0
 vendor=FlexPBX Team
 url=http://localhost:3000
 icon=flexpbx.png

@@ -762,7 +762,7 @@ class FlexPBXUnifiedClient {
         dialog.showMessageBox(this.mainWindow, {
             type: 'info',
             title: 'About FlexPBX Desktop',
-            message: 'FlexPBX Desktop Manager v2.0.0',
+            message: 'FlexPBX Desktop Manager v1.0.0',
             detail: 'Unified PBX management platform for FreePBX and Asterisk systems.\n\n© 2024 FlexPBX Team',
             buttons: ['OK']
         });

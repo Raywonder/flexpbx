@@ -191,7 +191,7 @@ class SoftwareUpdateService extends EventEmitter {
         // Check for FlexPBX server version
         try {
             // This would check actual server installation
-            return '2.0.0';
+            return '1.0.0';
         } catch (error) {
             return '0.0.0';
         }
@@ -212,12 +212,12 @@ class SoftwareUpdateService extends EventEmitter {
 
     async getDNSVersion() {
         // DNS service version (internal)
-        return '2.0.0';
+        return '1.0.0';
     }
 
     async getHooksVersion() {
         // Hooks version (internal)
-        return '2.0.0';
+        return '1.0.0';
     }
 
     async fetchLatestVersion(type, channel) {
@@ -782,7 +782,7 @@ class SoftwareUpdateService extends EventEmitter {
             type: 'client',
             name: 'FlexPBX Desktop',
             latestVersion: '2.1.0',
-            currentVersion: '2.0.0',
+            currentVersion: '1.0.0',
             restart: true
         };
     }

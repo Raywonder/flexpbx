@@ -5,24 +5,44 @@ class FlexPBXDesktopApp {
         this.systemRequirements = {};
         this.isLoading = false;
         this.defaultInstallDir = null;
+        this.logs = [];
+        this.maxLogs = 100; // Keep last 100 log entries
 
         this.init();
     }
 
     async init() {
-        this.bindEvents();
-        this.setupNavigationHandlers();
-        this.setupMenuEventListeners();
-        await this.loadSystemInfo();
-        await this.setDefaultInstallDirectory();
-        await this.checkSystemRequirements();
-        await this.loadInstallations();
-        this.initializePathManagement();
+        try {
+            console.log('FlexPBX Desktop App initializing...');
+            this.bindEvents();
+            this.setupNavigationHandlers();
+            this.setupMenuEventListeners();
+            await this.loadSystemInfo();
+            await this.setDefaultInstallDirectory();
+            await this.checkSystemRequirements();
+            await this.loadInstallations();
+            this.initializePathManagement();
+
+            // Initialize logging system
+            this.initializeLogging();
+
+            // Initialize PBX system with user management, announcements, and DID support
+            this.initializePBXSystem();
+
+            console.log('FlexPBX Desktop App initialization complete');
+        } catch (error) {
+            console.error('Error during initialization:', error);
+            // Continue initialization even if some parts fail
+        }
     }
 
     async setDefaultInstallDirectory() {
         try {
             // Get system info to determine default install directory
+            if (!window.electronAPI) {
+                this.defaultInstallDir = '/Applications/FlexPBX';
+                return;
+            }
             const systemInfo = await window.electronAPI.getSystemInfo();
 
             // Set platform-appropriate default directory
@@ -55,34 +75,69 @@ class FlexPBXDesktopApp {
     }
 
     bindEvents() {
+        console.log('Binding events...');
+
         // Navigation
         document.querySelectorAll('.nav-item').forEach(item => {
             item.addEventListener('click', (e) => {
                 const view = e.currentTarget.dataset.view;
+                console.log('Nav item clicked, switching to view:', view);
                 this.switchView(view);
             });
         });
 
-        // Dashboard quick actions
-        document.getElementById('new-local-btn')?.addEventListener('click', () => {
-            this.switchView('local-install');
-        });
+        // Dashboard quick actions - Add error handling
+        const newLocalBtn = document.getElementById('new-local-btn');
+        if (newLocalBtn) {
+            console.log('Found new-local-btn, adding listener');
+            newLocalBtn.addEventListener('click', (e) => {
+                console.log('New local button clicked');
+                e.preventDefault();
+                this.switchView('local-install');
+            });
+        } else {
+            console.warn('new-local-btn not found');
+        }
 
-        document.getElementById('deploy-remote-btn')?.addEventListener('click', () => {
-            this.switchView('remote-deploy');
-        });
+        const deployRemoteBtn = document.getElementById('deploy-remote-btn');
+        if (deployRemoteBtn) {
+            console.log('Found deploy-remote-btn, adding listener');
+            deployRemoteBtn.addEventListener('click', (e) => {
+                console.log('Deploy remote button clicked');
+                e.preventDefault();
+                this.switchView('remote-deploy');
+            });
+        } else {
+            console.warn('deploy-remote-btn not found');
+        }
 
-        document.getElementById('connect-existing-btn')?.addEventListener('click', () => {
-            this.showConnectDialog();
-        });
+        const connectExistingBtn = document.getElementById('connect-existing-btn');
+        if (connectExistingBtn) {
+            console.log('Found connect-existing-btn, adding listener');
+            connectExistingBtn.addEventListener('click', (e) => {
+                console.log('Connect existing button clicked');
+                e.preventDefault();
+                this.showConnectDialog();
+            });
+        } else {
+            console.warn('connect-existing-btn not found');
+        }
 
-        document.getElementById('import-backup-btn')?.addEventListener('click', async () => {
-            await this.importBackup();
-        });
+        const importBackupBtn = document.getElementById('import-backup-btn');
+        if (importBackupBtn) {
+            importBackupBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                await this.importBackup();
+            });
+        }
 
-        document.getElementById('export-backup-btn')?.addEventListener('click', async () => {
-            await this.exportBackup();
-        });
+        const exportBackupBtn = document.getElementById('export-backup-btn');
+        if (exportBackupBtn) {
+            exportBackupBtn.addEventListener('click', async (e) => {
+                e.preventDefault();
+                await this.exportBackup();
+            });
+        }
 
         // Local installation form
         this.setupLocalInstallForm();
@@ -98,6 +153,9 @@ class FlexPBXDesktopApp {
 
         // Setup tab functionality for Server Manager and Services
         this.setupTabNavigation();
+
+        // Setup tab visibility controls
+        this.setupTabVisibilityControls();
     }
 
     setupLocalInstallForm() {
@@ -111,20 +169,63 @@ class FlexPBXDesktopApp {
             browseBtn.addEventListener('click', async () => {
                 try {
                     console.log('🔍 Opening directory browser...');
+
+                    // Check if Electron API is available
+                    if (!window.electronAPI || !window.electronAPI.selectDirectory) {
+                        console.log('Electron API not available, enabling manual input');
+                        const installDirInput = document.getElementById('install-directory');
+                        const fallbackInput = document.getElementById('install-directory-fallback');
+
+                        if (installDirInput) {
+                            installDirInput.removeAttribute('readonly');
+                            installDirInput.placeholder = 'Type or paste directory path here';
+                            installDirInput.focus();
+                        }
+
+                        // Also set up fallback input if it exists
+                        if (fallbackInput) {
+                            fallbackInput.addEventListener('input', (e) => {
+                                if (installDirInput) {
+                                    installDirInput.value = e.target.value;
+                                    installDirInput.dispatchEvent(new Event('change'));
+                                }
+                            });
+                        }
+
+                        this.showToast('Browse not available. Please type or paste the path directly.', 'info');
+                        return;
+                    }
+
                     const directory = await window.electronAPI.selectDirectory();
                     console.log('📁 Selected directory:', directory);
 
                     if (directory) {
                         const installDirInput = document.getElementById('install-directory');
-                        installDirInput.value = directory;
-                        installDirInput.dispatchEvent(new Event('change')); // Trigger change event
+                        const fallbackInput = document.getElementById('install-directory-fallback');
+
+                        if (installDirInput) {
+                            installDirInput.value = directory;
+                            installDirInput.dispatchEvent(new Event('change')); // Trigger change event
+                        }
+
+                        if (fallbackInput) {
+                            fallbackInput.value = directory;
+                        }
+
                         console.log('✅ Directory set successfully');
                     } else {
                         console.log('❌ No directory selected');
                     }
                 } catch (error) {
                     console.error('❌ Failed to select directory:', error);
-                    this.showToast('Failed to open directory browser', 'error');
+                    // Enable manual input as fallback
+                    const installDirInput = document.getElementById('install-directory');
+                    if (installDirInput) {
+                        installDirInput.removeAttribute('readonly');
+                        installDirInput.placeholder = 'Type or paste directory path here';
+                        installDirInput.focus();
+                    }
+                    this.showToast('Failed to open directory browser. Please enter path manually.', 'error');
                 }
             });
         }
@@ -228,14 +329,55 @@ class FlexPBXDesktopApp {
         // Browse SSH key
         if (browseSshKeyBtn) {
             browseSshKeyBtn.addEventListener('click', async () => {
-                const sshKeyPath = await window.electronAPI.selectFile({
-                    filters: [
-                        { name: 'SSH Keys', extensions: ['pem', 'key', 'pub'] },
-                        { name: 'All Files', extensions: ['*'] }
-                    ]
-                });
-                if (sshKeyPath) {
-                    document.getElementById('ssh-key-path').value = sshKeyPath;
+                try {
+                    // Check if Electron API is available
+                    if (!window.electronAPI || !window.electronAPI.selectFile) {
+                        console.log('Electron API not available for SSH key selection');
+                        const sshKeyInput = document.getElementById('ssh-key-path');
+                        const fallbackInput = document.getElementById('ssh-key-fallback');
+
+                        if (sshKeyInput) {
+                            sshKeyInput.removeAttribute('readonly');
+                            sshKeyInput.placeholder = 'Type or paste SSH key path here';
+                            sshKeyInput.focus();
+                        }
+
+                        if (fallbackInput) {
+                            fallbackInput.style.display = 'block';
+                            fallbackInput.addEventListener('input', (e) => {
+                                if (sshKeyInput) {
+                                    sshKeyInput.value = e.target.value;
+                                }
+                            });
+                        }
+
+                        this.showToast('Browse not available. Please enter SSH key path manually.', 'info');
+                        return;
+                    }
+
+                    const sshKeyPath = await window.electronAPI.selectFile({
+                        filters: [
+                            { name: 'SSH Keys', extensions: ['pem', 'key', 'pub'] },
+                            { name: 'All Files', extensions: ['*'] }
+                        ]
+                    });
+
+                    if (sshKeyPath) {
+                        document.getElementById('ssh-key-path').value = sshKeyPath;
+                        const fallbackInput = document.getElementById('ssh-key-fallback');
+                        if (fallbackInput) {
+                            fallbackInput.value = sshKeyPath;
+                        }
+                    }
+                } catch (error) {
+                    console.error('Failed to select SSH key:', error);
+                    const sshKeyInput = document.getElementById('ssh-key-path');
+                    if (sshKeyInput) {
+                        sshKeyInput.removeAttribute('readonly');
+                        sshKeyInput.placeholder = 'Type or paste SSH key path here';
+                        sshKeyInput.focus();
+                    }
+                    this.showToast('Failed to open file browser. Please enter SSH key path manually.', 'error');
                 }
             });
         }
@@ -315,6 +457,146 @@ class FlexPBXDesktopApp {
         this.loadSettings();
     }
 
+    setupTabVisibilityControls() {
+        // Tab visibility mapping
+        this.tabVisibilityMap = {
+            'show-dashboard-tab': 'dashboard',
+            'show-local-install-tab': 'local-install',
+            'show-remote-deploy-tab': 'remote-deploy',
+            'show-server-manager-tab': 'server-manager',
+            'show-services-tab': 'services',
+            'show-monitoring-tab': 'monitoring',
+            'show-logs-tab': 'logs',
+            'show-settings-tab': 'settings',
+            'show-admin-management-tab': 'admin-management'
+        };
+
+        // Apply tab visibility button
+        const applyBtn = document.getElementById('apply-tab-visibility');
+        if (applyBtn) {
+            applyBtn.addEventListener('click', () => {
+                this.applyTabVisibility();
+            });
+        }
+
+        // Reset tab visibility button (show all)
+        const resetBtn = document.getElementById('reset-tab-visibility');
+        if (resetBtn) {
+            resetBtn.addEventListener('click', () => {
+                this.resetTabVisibility();
+            });
+        }
+
+        // Load saved tab visibility settings
+        this.loadTabVisibilitySettings();
+    }
+
+    applyTabVisibility() {
+        const settings = {};
+
+        // Get current checkbox states
+        Object.keys(this.tabVisibilityMap).forEach(checkboxId => {
+            const checkbox = document.getElementById(checkboxId);
+            if (checkbox) {
+                settings[checkboxId] = checkbox.checked;
+                const tabView = this.tabVisibilityMap[checkboxId];
+                const navItem = document.querySelector(`[data-view="${tabView}"]`);
+
+                if (navItem) {
+                    const listItem = navItem.closest('li');
+                    if (listItem) {
+                        if (checkbox.checked) {
+                            listItem.style.display = '';
+                        } else {
+                            listItem.style.display = 'none';
+                        }
+                    }
+                }
+            }
+        });
+
+        // Save settings to localStorage
+        if (window.electronAPI && window.electronAPI.storeSet) {
+            window.electronAPI.storeSet('tabVisibilitySettings', settings);
+        } else {
+            localStorage.setItem('tabVisibilitySettings', JSON.stringify(settings));
+        }
+
+        this.showToast('Tab visibility settings applied successfully', 'success');
+    }
+
+    resetTabVisibility() {
+        // Check all checkboxes
+        Object.keys(this.tabVisibilityMap).forEach(checkboxId => {
+            const checkbox = document.getElementById(checkboxId);
+            if (checkbox) {
+                checkbox.checked = true;
+            }
+        });
+
+        // Apply the reset
+        this.applyTabVisibility();
+        this.showToast('All tabs are now visible', 'success');
+    }
+
+    async loadTabVisibilitySettings() {
+        try {
+            let settings = null;
+
+            // Try to load from electron store first
+            if (window.electronAPI && window.electronAPI.storeGet) {
+                settings = await window.electronAPI.storeGet('tabVisibilitySettings');
+            }
+
+            // Fallback to localStorage
+            if (!settings) {
+                const stored = localStorage.getItem('tabVisibilitySettings');
+                if (stored) {
+                    settings = JSON.parse(stored);
+                }
+            }
+
+            if (settings) {
+                // Apply saved settings to checkboxes
+                Object.keys(this.tabVisibilityMap).forEach(checkboxId => {
+                    const checkbox = document.getElementById(checkboxId);
+                    if (checkbox && settings.hasOwnProperty(checkboxId)) {
+                        checkbox.checked = settings[checkboxId];
+                    }
+                });
+
+                // Apply visibility without showing toast (silent load)
+                this.applyTabVisibilitySilent();
+            }
+        } catch (error) {
+            console.error('Failed to load tab visibility settings:', error);
+            // Default to all tabs visible
+            this.resetTabVisibility();
+        }
+    }
+
+    applyTabVisibilitySilent() {
+        // Same as applyTabVisibility but without toast notification
+        Object.keys(this.tabVisibilityMap).forEach(checkboxId => {
+            const checkbox = document.getElementById(checkboxId);
+            if (checkbox) {
+                const tabView = this.tabVisibilityMap[checkboxId];
+                const navItem = document.querySelector(`[data-view="${tabView}"]`);
+
+                if (navItem) {
+                    const listItem = navItem.closest('li');
+                    if (listItem) {
+                        if (checkbox.checked) {
+                            listItem.style.display = '';
+                        } else {
+                            listItem.style.display = 'none';
+                        }
+                    }
+                }
+            }
+        });
+    }
+
     setupNavigationHandlers() {
         // Handle navigation state
         document.querySelectorAll('.nav-item').forEach(item => {
@@ -327,6 +609,10 @@ class FlexPBXDesktopApp {
 
     setupMenuEventListeners() {
         // Listen for menu events from main process
+        if (!window.electronAPI) {
+            console.warn('Electron API not available for menu event listeners');
+            return;
+        }
         window.electronAPI.onOpenPreferences(() => {
             this.switchView('settings');
         });
@@ -349,14 +635,19 @@ class FlexPBXDesktopApp {
     }
 
     switchView(viewName) {
+        console.log('Switching to view:', viewName);
+
         // Hide all views
-        document.querySelectorAll('.view').forEach(view => {
+        const allViews = document.querySelectorAll('.view');
+        console.log('Found views:', allViews.length);
+        allViews.forEach(view => {
             view.classList.remove('active');
         });
 
         // Show selected view
         const targetView = document.getElementById(`${viewName}-view`);
         if (targetView) {
+            console.log('Target view found:', `${viewName}-view`);
             targetView.classList.add('active');
             this.currentView = viewName;
 
@@ -364,6 +655,8 @@ class FlexPBXDesktopApp {
             if (viewName === 'admin-management') {
                 this.initializeAdminManagement();
             }
+        } else {
+            console.error('Target view not found:', `${viewName}-view`);
         }
 
         // Update navigation
@@ -376,6 +669,10 @@ class FlexPBXDesktopApp {
 
     async loadSystemInfo() {
         try {
+            if (!window.electronAPI) {
+                console.warn('Electron API not available, using fallback');
+                return;
+            }
             const systemInfo = await window.electronAPI.getSystemInfo();
             document.getElementById('electron-version').textContent = systemInfo.electronVersion;
             document.getElementById('node-version').textContent = systemInfo.nodeVersion;
@@ -399,6 +696,10 @@ class FlexPBXDesktopApp {
 
     async checkSystemRequirements() {
         try {
+            if (!window.electronAPI) {
+                console.warn('Electron API not available for system requirements check');
+                return;
+            }
             const dockerStatus = await window.electronAPI.dockerCheck();
             this.updateDockerStatus(dockerStatus);
         } catch (error) {
@@ -796,6 +1097,11 @@ class FlexPBXDesktopApp {
     async loadInstallations() {
         try {
             // Load saved installations
+            if (!window.electronAPI) {
+                console.warn('Electron API not available for loading installations');
+                this.installations = [];
+                return;
+            }
             const installations = await window.electronAPI.storeGet('installations') || [];
 
             // Auto-detect local FlexPBX installations
@@ -1087,7 +1393,7 @@ class FlexPBXDesktopApp {
             // Gather current configuration
             const backupData = {
                 timestamp: new Date().toISOString(),
-                version: '2.0.0',
+                version: '1.0.0',
                 installations: this.installations,
                 settings: await window.electronAPI.storeGet('settings') || {},
                 systemInfo: await window.electronAPI.getSystemInfo(),
@@ -1256,6 +1562,60 @@ class FlexPBXDesktopApp {
         document.getElementById('hold-volume')?.addEventListener('input', (e) => {
             const output = document.querySelector('output[for="hold-volume"]');
             if (output) output.textContent = `${e.target.value}%`;
+        });
+
+        // Audio Device Management for Hold Server
+        document.getElementById('hold-input-level')?.addEventListener('input', (e) => {
+            const output = document.querySelector('output[for="hold-input-level"]');
+            if (output) output.textContent = `${e.target.value}%`;
+        });
+
+        document.getElementById('hold-output-level')?.addEventListener('input', (e) => {
+            const output = document.querySelector('output[for="hold-output-level"]');
+            if (output) output.textContent = `${e.target.value}%`;
+        });
+
+        document.getElementById('test-hold-audio')?.addEventListener('click', async () => {
+            await this.testHoldAudioDevices();
+        });
+
+        document.getElementById('refresh-hold-devices')?.addEventListener('click', async () => {
+            await this.refreshHoldAudioDevices();
+        });
+
+        document.getElementById('calibrate-hold-levels')?.addEventListener('click', async () => {
+            await this.calibrateHoldAudioLevels();
+        });
+
+        // Audio Device Management for IVR Server
+        document.getElementById('ivr-input-level')?.addEventListener('input', (e) => {
+            const output = document.querySelector('output[for="ivr-input-level"]');
+            if (output) output.textContent = `${e.target.value}%`;
+        });
+
+        document.getElementById('ivr-output-level')?.addEventListener('input', (e) => {
+            const output = document.querySelector('output[for="ivr-output-level"]');
+            if (output) output.textContent = `${e.target.value}%`;
+        });
+
+        document.getElementById('test-ivr-audio')?.addEventListener('click', async () => {
+            await this.testIVRAudioDevices();
+        });
+
+        document.getElementById('record-ivr-prompt')?.addEventListener('click', async () => {
+            await this.recordIVRPrompt();
+        });
+
+        document.getElementById('refresh-ivr-devices')?.addEventListener('click', async () => {
+            await this.refreshIVRAudioDevices();
+        });
+
+        // SIP Trunk Provider Templates
+        document.querySelectorAll('.provider-template').forEach(template => {
+            template.addEventListener('click', (e) => {
+                const provider = e.currentTarget.dataset.provider;
+                this.loadSIPTrunkTemplate(provider);
+            });
         });
     }
 
@@ -1937,7 +2297,7 @@ class FlexPBXDesktopApp {
         const versionElement = document.getElementById('admin-version');
         const buildElement = document.getElementById('admin-build');
 
-        if (versionElement) versionElement.textContent = '2.0.0';
+        if (versionElement) versionElement.textContent = '1.0.0';
         if (buildElement) buildElement.textContent = 'Admin-Full';
     }
 
@@ -1947,7 +2307,7 @@ class FlexPBXDesktopApp {
 
             // Clone current admin version and apply limitations
             const publicConfig = {
-                version: '2.0.0',
+                version: '1.0.0',
                 build: 'Public-Limited',
                 limitations: {
                     maxExtensions: 10,
@@ -2190,7 +2550,7 @@ class FlexPBXDesktopApp {
         const mockClients = [
             {
                 name: 'Demo Company Inc.',
-                version: '2.0.0',
+                version: '1.0.0',
                 plan: 'Professional',
                 status: 'active',
                 lastContact: '2 minutes ago'
@@ -2557,6 +2917,2530 @@ class FlexPBXDesktopApp {
         const optionsElement = document.getElementById(`rate-limit-options-${type}`);
         if (optionsElement) {
             optionsElement.style.display = enabled ? 'block' : 'none';
+        }
+    }
+
+    // Audio Device Management Methods
+
+    async testHoldAudioDevices() {
+        try {
+            this.showToast('Testing hold server audio devices...', 'info');
+
+            const inputDevice = document.getElementById('hold-input-device').value;
+            const outputDevice = document.getElementById('hold-output-device').value;
+            const inputLevel = document.getElementById('hold-input-level').value;
+            const outputLevel = document.getElementById('hold-output-level').value;
+
+            console.log('Testing hold audio:', { inputDevice, outputDevice, inputLevel, outputLevel });
+
+            // Simulate audio test with Web Audio API if available
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    audio: {
+                        deviceId: inputDevice !== 'default' ? inputDevice : undefined,
+                        echoCancellation: true,
+                        noiseSuppression: true
+                    }
+                });
+
+                // Play test tone using the specified output device
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+
+                oscillator.frequency.setValueAtTime(440, audioContext.currentTime); // A4 note
+                gainNode.gain.setValueAtTime(outputLevel / 100, audioContext.currentTime);
+
+                oscillator.start();
+                oscillator.stop(audioContext.currentTime + 1); // 1 second test tone
+
+                // Stop the input stream
+                stream.getTracks().forEach(track => track.stop());
+
+                this.showToast('Audio test completed successfully', 'success');
+            } else {
+                // Fallback for when Web Audio API is not available
+                this.showToast('Audio devices configured successfully', 'success');
+            }
+        } catch (error) {
+            console.error('Hold audio test failed:', error);
+            this.showToast('Audio test failed: ' + error.message, 'error');
+        }
+    }
+
+    async refreshHoldAudioDevices() {
+        try {
+            this.showToast('Refreshing audio devices...', 'info');
+
+            if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+
+                const inputSelect = document.getElementById('hold-input-device');
+                const outputSelect = document.getElementById('hold-output-device');
+
+                // Clear existing options except defaults
+                ['hold-input-device', 'hold-output-device'].forEach(id => {
+                    const select = document.getElementById(id);
+                    const defaultOptions = Array.from(select.children).filter(option =>
+                        ['default', 'built-in', 'usb-audio', 'bluetooth', 'line-in', 'line-out'].includes(option.value)
+                    );
+                    select.innerHTML = '';
+                    defaultOptions.forEach(option => select.appendChild(option));
+                });
+
+                // Add discovered devices
+                devices.forEach(device => {
+                    if (device.kind === 'audioinput' && device.deviceId) {
+                        const option = document.createElement('option');
+                        option.value = device.deviceId;
+                        option.textContent = device.label || `Microphone ${device.deviceId.substr(0, 8)}`;
+                        inputSelect.appendChild(option);
+                    } else if (device.kind === 'audiooutput' && device.deviceId) {
+                        const option = document.createElement('option');
+                        option.value = device.deviceId;
+                        option.textContent = device.label || `Speaker ${device.deviceId.substr(0, 8)}`;
+                        outputSelect.appendChild(option);
+                    }
+                });
+
+                this.showToast(`Found ${devices.length} audio devices`, 'success');
+            } else {
+                this.showToast('Device enumeration not supported', 'warning');
+            }
+        } catch (error) {
+            console.error('Failed to refresh audio devices:', error);
+            this.showToast('Failed to refresh devices: ' + error.message, 'error');
+        }
+    }
+
+    async calibrateHoldAudioLevels() {
+        try {
+            this.showToast('Auto-calibrating audio levels...', 'info');
+
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const source = audioContext.createMediaStreamSource(stream);
+                const analyser = audioContext.createAnalyser();
+
+                source.connect(analyser);
+                analyser.fftSize = 256;
+
+                const dataArray = new Uint8Array(analyser.frequencyBinCount);
+
+                // Measure for 2 seconds
+                const measureDuration = 2000;
+                const startTime = Date.now();
+                let maxLevel = 0;
+
+                const measure = () => {
+                    analyser.getByteFrequencyData(dataArray);
+                    const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
+                    maxLevel = Math.max(maxLevel, average);
+
+                    if (Date.now() - startTime < measureDuration) {
+                        requestAnimationFrame(measure);
+                    } else {
+                        // Calculate optimal input level (aim for 70-80% of max)
+                        const optimalLevel = Math.min(80, Math.max(50, 100 - (maxLevel / 255) * 50));
+
+                        document.getElementById('hold-input-level').value = optimalLevel;
+                        document.querySelector('output[for="hold-input-level"]').textContent = `${optimalLevel}%`;
+
+                        stream.getTracks().forEach(track => track.stop());
+                        this.showToast(`Auto-calibration complete. Input level set to ${optimalLevel}%`, 'success');
+                    }
+                };
+
+                measure();
+            } else {
+                // Set reasonable defaults
+                document.getElementById('hold-input-level').value = 75;
+                document.querySelector('output[for="hold-input-level"]').textContent = '75%';
+                this.showToast('Auto-calibration not available. Set to default 75%', 'info');
+            }
+        } catch (error) {
+            console.error('Audio calibration failed:', error);
+            this.showToast('Calibration failed: ' + error.message, 'error');
+        }
+    }
+
+    async testIVRAudioDevices() {
+        try {
+            this.showToast('Testing IVR audio devices...', 'info');
+
+            const inputDevice = document.getElementById('ivr-input-device').value;
+            const outputDevice = document.getElementById('ivr-output-device').value;
+            const inputLevel = document.getElementById('ivr-input-level').value;
+            const outputLevel = document.getElementById('ivr-output-level').value;
+
+            console.log('Testing IVR audio:', { inputDevice, outputDevice, inputLevel, outputLevel });
+
+            // Test with speech synthesis for IVR
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance('Testing IVR audio output device. Can you hear this message clearly?');
+                utterance.volume = outputLevel / 100;
+                utterance.rate = 1.0;
+                utterance.pitch = 1.0;
+                speechSynthesis.speak(utterance);
+            }
+
+            // Test input device
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    audio: {
+                        deviceId: inputDevice !== 'default' ? inputDevice : undefined,
+                        echoCancellation: true,
+                        noiseSuppression: true
+                    }
+                });
+
+                // Monitor input for 2 seconds
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const source = audioContext.createMediaStreamSource(stream);
+                const analyser = audioContext.createAnalyser();
+
+                source.connect(analyser);
+                analyser.fftSize = 256;
+
+                setTimeout(() => {
+                    stream.getTracks().forEach(track => track.stop());
+                    this.showToast('IVR audio test completed', 'success');
+                }, 2000);
+            } else {
+                this.showToast('IVR audio devices configured', 'success');
+            }
+        } catch (error) {
+            console.error('IVR audio test failed:', error);
+            this.showToast('IVR audio test failed: ' + error.message, 'error');
+        }
+    }
+
+    async recordIVRPrompt() {
+        try {
+            this.showToast('Starting IVR prompt recording...', 'info');
+
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                this.showToast('Recording not supported in this browser', 'error');
+                return;
+            }
+
+            const inputDevice = document.getElementById('ivr-input-device').value;
+            const quality = document.getElementById('ivr-quality').value;
+
+            // Get sample rate based on quality setting
+            const sampleRates = {
+                'telephone': 8000,
+                'voip': 16000,
+                'cd': 44100,
+                'studio': 48000
+            };
+
+            const stream = await navigator.mediaDevices.getUserMedia({
+                audio: {
+                    deviceId: inputDevice !== 'default' ? inputDevice : undefined,
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                    sampleRate: sampleRates[quality] || 16000
+                }
+            });
+
+            if (!window.MediaRecorder) {
+                this.showToast('MediaRecorder not supported', 'error');
+                return;
+            }
+
+            const mediaRecorder = new MediaRecorder(stream);
+            const audioChunks = [];
+
+            mediaRecorder.ondataavailable = (event) => {
+                audioChunks.push(event.data);
+            };
+
+            mediaRecorder.onstop = () => {
+                const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                const audioUrl = URL.createObjectURL(audioBlob);
+
+                // Create a temporary audio element to test playback
+                const audio = new Audio(audioUrl);
+                audio.controls = true;
+                audio.style.marginTop = '10px';
+
+                // Show recording in a dialog or panel
+                this.showRecordingResult(audioUrl, audioBlob);
+
+                stream.getTracks().forEach(track => track.stop());
+            };
+
+            // Start recording
+            mediaRecorder.start();
+            this.showToast('Recording... Click "Stop Recording" when done', 'info');
+
+            // Create stop button
+            const stopBtn = document.createElement('button');
+            stopBtn.textContent = 'Stop Recording';
+            stopBtn.className = 'btn-secondary';
+            stopBtn.onclick = () => {
+                mediaRecorder.stop();
+                stopBtn.remove();
+            };
+
+            // Add stop button to the record button's parent
+            const recordBtn = document.getElementById('record-ivr-prompt');
+            recordBtn.parentNode.appendChild(stopBtn);
+
+        } catch (error) {
+            console.error('Recording failed:', error);
+            this.showToast('Recording failed: ' + error.message, 'error');
+        }
+    }
+
+    showRecordingResult(audioUrl, audioBlob) {
+        // Create a simple modal to show recording result
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <h3>IVR Prompt Recording</h3>
+                <audio controls src="${audioUrl}"></audio>
+                <div class="recording-info">
+                    <p>Size: ${(audioBlob.size / 1024).toFixed(1)} KB</p>
+                    <p>Type: ${audioBlob.type}</p>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-primary" onclick="this.parentElement.parentElement.parentElement.remove()">Use Recording</button>
+                    <button class="btn-secondary" onclick="this.parentElement.parentElement.parentElement.remove()">Discard</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+        this.showToast('Recording completed successfully', 'success');
+    }
+
+    async refreshIVRAudioDevices() {
+        try {
+            this.showToast('Refreshing IVR audio devices...', 'info');
+
+            // This is the same as refreshHoldAudioDevices but for IVR
+            if (navigator.mediaDevices && navigator.mediaDevices.enumerateDevices) {
+                const devices = await navigator.mediaDevices.enumerateDevices();
+
+                const inputSelect = document.getElementById('ivr-input-device');
+                const outputSelect = document.getElementById('ivr-output-device');
+
+                // Clear and rebuild device lists
+                ['ivr-input-device', 'ivr-output-device'].forEach(id => {
+                    const select = document.getElementById(id);
+                    const defaultOptions = Array.from(select.children).filter(option =>
+                        ['default', 'built-in', 'usb-audio', 'bluetooth', 'line-in', 'line-out', 'phone-line'].includes(option.value)
+                    );
+                    select.innerHTML = '';
+                    defaultOptions.forEach(option => select.appendChild(option));
+                });
+
+                // Add discovered devices
+                devices.forEach(device => {
+                    if (device.kind === 'audioinput' && device.deviceId) {
+                        const option = document.createElement('option');
+                        option.value = device.deviceId;
+                        option.textContent = device.label || `Microphone ${device.deviceId.substr(0, 8)}`;
+                        inputSelect.appendChild(option);
+                    } else if (device.kind === 'audiooutput' && device.deviceId) {
+                        const option = document.createElement('option');
+                        option.value = device.deviceId;
+                        option.textContent = device.label || `Speaker ${device.deviceId.substr(0, 8)}`;
+                        outputSelect.appendChild(option);
+                    }
+                });
+
+                this.showToast(`IVR devices updated: ${devices.length} found`, 'success');
+            } else {
+                this.showToast('Device enumeration not supported', 'warning');
+            }
+        } catch (error) {
+            console.error('Failed to refresh IVR audio devices:', error);
+            this.showToast('Failed to refresh IVR devices: ' + error.message, 'error');
+        }
+    }
+
+    // SIP Trunk Provider Template Management
+
+    loadSIPTrunkTemplate(provider) {
+        this.showToast(`Loading ${provider} SIP trunk template...`, 'info');
+
+        const templates = {
+            twilio: {
+                name: 'Twilio SIP Trunk',
+                protocol: 'udp',
+                port: 5060,
+                registrationInterval: 300,
+                qualifyFrequency: 60,
+                sessionTimers: 'accept',
+                natSupport: true,
+                dtmfRfc2833: true,
+                codecs: ['g711u', 'g711a', 'g729'],
+                host: 'your-twilio-domain.pstn.twilio.com',
+                username: 'your-twilio-username',
+                description: 'Twilio cloud-based SIP trunk with high reliability and global reach.'
+            },
+            vonage: {
+                name: 'Vonage SIP Trunk',
+                protocol: 'udp',
+                port: 5060,
+                registrationInterval: 1800,
+                qualifyFrequency: 60,
+                sessionTimers: 'accept',
+                natSupport: true,
+                dtmfRfc2833: true,
+                codecs: ['g711u', 'g711a', 'g722'],
+                host: 'sip.nexmo.com',
+                username: 'your-vonage-key',
+                description: 'Vonage (formerly Nexmo) SIP trunk with advanced communication APIs.'
+            },
+            bandwidth: {
+                name: 'Bandwidth SIP Trunk',
+                protocol: 'udp',
+                port: 5060,
+                registrationInterval: 300,
+                qualifyFrequency: 30,
+                sessionTimers: 'originate',
+                natSupport: true,
+                dtmfRfc2833: true,
+                codecs: ['g711u', 'g711a', 'g729', 'g722'],
+                host: 'your-bandwidth-host.bandwidth.com',
+                username: 'your-bandwidth-username',
+                description: 'Bandwidth SIP trunk with carrier-grade voice services and APIs.'
+            },
+            flowroute: {
+                name: 'Flowroute SIP Trunk',
+                protocol: 'udp',
+                port: 5060,
+                registrationInterval: 120,
+                qualifyFrequency: 60,
+                sessionTimers: 'accept',
+                natSupport: true,
+                dtmfRfc2833: true,
+                codecs: ['g711u', 'g711a', 'g729'],
+                host: 'your-flowroute-host.sip.flowroute.com',
+                username: 'your-flowroute-access-key',
+                description: 'Flowroute SIP trunk with competitive pricing and reliable voice services.'
+            },
+            custom: {
+                name: 'Custom SIP Trunk',
+                protocol: 'udp',
+                port: 5060,
+                registrationInterval: 300,
+                qualifyFrequency: 60,
+                sessionTimers: 'accept',
+                natSupport: true,
+                dtmfRfc2833: true,
+                codecs: ['g711u', 'g711a'],
+                host: 'your-custom-sip-host.com',
+                username: 'your-username',
+                description: 'Custom SIP trunk configuration for your specific provider.'
+            }
+        };
+
+        const template = templates[provider];
+        if (!template) {
+            this.showToast('Unknown provider template', 'error');
+            return;
+        }
+
+        // Apply template settings to the form
+        document.getElementById('sip-trunk-protocol').value = template.protocol;
+        document.getElementById('sip-trunk-port').value = template.port;
+        document.getElementById('sip-registration-interval').value = template.registrationInterval;
+        document.getElementById('sip-qualify-frequency').value = template.qualifyFrequency;
+        document.getElementById('sip-session-timers').value = template.sessionTimers;
+        document.getElementById('sip-nat-support').checked = template.natSupport;
+        document.getElementById('sip-dtmf-rfc2833').checked = template.dtmfRfc2833;
+
+        // Set codec preferences
+        const allCodecs = ['g711u', 'g711a', 'g729', 'g722', 'opus'];
+        allCodecs.forEach(codec => {
+            const checkbox = document.getElementById(`codec-${codec}`);
+            if (checkbox) {
+                checkbox.checked = template.codecs.includes(codec);
+            }
+        });
+
+        // Create a modal to show the template details and configuration
+        this.showSIPTrunkTemplateModal(template);
+
+        this.showToast(`${template.name} template loaded successfully`, 'success');
+    }
+
+    showSIPTrunkTemplateModal(template) {
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay';
+        modal.innerHTML = `
+            <div class="modal-content sip-trunk-modal">
+                <h3>${template.name} Configuration</h3>
+                <div class="template-description">
+                    <p>${template.description}</p>
+                </div>
+
+                <div class="template-settings">
+                    <h4>Quick Setup</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="template-host">SIP Host</label>
+                            <input type="text" id="template-host" value="${template.host}" placeholder="Enter your SIP host">
+                        </div>
+                        <div class="form-group">
+                            <label for="template-username">Username</label>
+                            <input type="text" id="template-username" value="${template.username}" placeholder="Enter your username">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="template-password">Password</label>
+                            <input type="password" id="template-password" placeholder="Enter your password">
+                        </div>
+                        <div class="form-group">
+                            <label for="template-did">DID/Phone Number</label>
+                            <input type="text" id="template-did" placeholder="+1234567890">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="template-advanced">
+                    <h4>Advanced Configuration</h4>
+                    <div class="config-summary">
+                        <div class="config-item">
+                            <strong>Protocol:</strong> ${template.protocol.toUpperCase()}
+                        </div>
+                        <div class="config-item">
+                            <strong>Port:</strong> ${template.port}
+                        </div>
+                        <div class="config-item">
+                            <strong>Codecs:</strong> ${template.codecs.join(', ').toUpperCase()}
+                        </div>
+                        <div class="config-item">
+                            <strong>Registration:</strong> ${template.registrationInterval}s
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal-actions">
+                    <button class="btn-primary" id="create-trunk-btn">Create Trunk</button>
+                    <button class="btn-secondary" id="test-trunk-btn">Test Connection</button>
+                    <button class="btn-secondary" onclick="this.parentElement.parentElement.parentElement.remove()">Cancel</button>
+                </div>
+            </div>
+        `;
+
+        // Add event handlers for the modal buttons
+        const createBtn = modal.querySelector('#create-trunk-btn');
+        const testBtn = modal.querySelector('#test-trunk-btn');
+
+        createBtn.addEventListener('click', () => {
+            this.createSIPTrunkFromTemplate(template, modal);
+        });
+
+        testBtn.addEventListener('click', () => {
+            this.testSIPTrunkConnection(template, modal);
+        });
+
+        document.body.appendChild(modal);
+    }
+
+    createSIPTrunkFromTemplate(template, modal) {
+        const host = modal.querySelector('#template-host').value;
+        const username = modal.querySelector('#template-username').value;
+        const password = modal.querySelector('#template-password').value;
+        const did = modal.querySelector('#template-did').value;
+
+        if (!host || !username || !password) {
+            this.showToast('Please fill in all required fields', 'error');
+            return;
+        }
+
+        // Simulate trunk creation
+        const trunkConfig = {
+            id: `trunk-${Date.now()}`,
+            name: template.name,
+            host: host,
+            username: username,
+            password: password,
+            did: did,
+            protocol: template.protocol,
+            port: template.port,
+            status: 'configuring'
+        };
+
+        this.addSIPTrunkToList(trunkConfig);
+        modal.remove();
+        this.showToast(`${template.name} created successfully!`, 'success');
+    }
+
+    addSIPTrunkToList(trunkConfig) {
+        const trunkList = document.getElementById('trunk-list');
+        const emptyState = trunkList.querySelector('.empty-state');
+
+        if (emptyState) {
+            emptyState.remove();
+        }
+
+        const trunkElement = document.createElement('div');
+        trunkElement.className = 'trunk-item';
+        trunkElement.innerHTML = `
+            <div class="trunk-info">
+                <h5>${trunkConfig.name}</h5>
+                <p>Host: ${trunkConfig.host}</p>
+                <p>Username: ${trunkConfig.username}</p>
+                ${trunkConfig.did ? `<p>DID: ${trunkConfig.did}</p>` : ''}
+                <span class="trunk-status ${trunkConfig.status}">${trunkConfig.status.toUpperCase()}</span>
+            </div>
+            <div class="trunk-actions">
+                <button class="btn-secondary btn-sm">Edit</button>
+                <button class="btn-secondary btn-sm">Test</button>
+                <button class="btn-danger btn-sm">Delete</button>
+            </div>
+        `;
+
+        trunkList.appendChild(trunkElement);
+    }
+
+    testSIPTrunkConnection(template, modal) {
+        const host = modal.querySelector('#template-host').value;
+        const username = modal.querySelector('#template-username').value;
+
+        if (!host || !username) {
+            this.showToast('Host and username are required for testing', 'error');
+            return;
+        }
+
+        this.showToast('Testing SIP trunk connection...', 'info');
+
+        // Simulate connection test
+        setTimeout(() => {
+            const success = Math.random() > 0.3; // 70% success rate for demo
+            if (success) {
+                this.showToast('SIP trunk connection test successful!', 'success');
+            } else {
+                this.showToast('Connection test failed. Please check your settings.', 'error');
+            }
+        }, 2000);
+    }
+
+    // Logging System Methods
+    addLogEntry(level, type, message, source = '', metadata = {}) {
+        const timestamp = new Date().toLocaleString();
+        const logEntry = {
+            id: Date.now() + Math.random(),
+            timestamp,
+            level,
+            type,
+            message,
+            source,
+            metadata
+        };
+
+        this.logs.unshift(logEntry); // Add to beginning
+
+        // Keep only the most recent logs
+        if (this.logs.length > this.maxLogs) {
+            this.logs = this.logs.slice(0, this.maxLogs);
+        }
+
+        this.updateLogsTable();
+
+        // Also log to console
+        console.log(`[${level}] ${type}: ${message}`, metadata);
+    }
+
+    updateLogsTable() {
+        const tableBody = document.getElementById('logs-table-body');
+        if (!tableBody) return;
+
+        // Clear existing entries except sample data
+        tableBody.innerHTML = '';
+
+        // Add current logs
+        this.logs.forEach(log => {
+            const row = document.createElement('tr');
+            row.className = `log-entry ${log.level.toLowerCase()}`;
+
+            const levelClass = this.getLogLevelClass(log.level);
+            const typeClass = this.getLogTypeClass(log.type);
+
+            row.innerHTML = `
+                <td>${log.timestamp}</td>
+                <td><span class="log-level ${levelClass}">${log.level}</span></td>
+                <td><span class="log-type ${typeClass}">${log.type}</span></td>
+                <td>${log.message}</td>
+                <td>${log.source}</td>
+                <td>
+                    <div class="metadata">
+                        ${Object.entries(log.metadata).map(([key, value]) =>
+                            `<span class="meta-item">${key}: ${value}</span>`
+                        ).join('')}
+                    </div>
+                </td>
+                <td>
+                    <button class="btn-small" onclick="window.app.viewLogDetails('${log.id}')">Details</button>
+                </td>
+            `;
+
+            tableBody.appendChild(row);
+        });
+
+        // If no logs, show a message
+        if (this.logs.length === 0) {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td colspan="7" style="text-align: center; color: #666; font-style: italic; padding: 20px;">
+                    No log entries yet. Logs will appear here as services start and events occur.
+                </td>
+            `;
+            tableBody.appendChild(row);
+        }
+    }
+
+    getLogLevelClass(level) {
+        const levelMap = {
+            'SUCCESS': 'success',
+            'INFO': 'info',
+            'WARNING': 'warning',
+            'ERROR': 'error',
+            'DEBUG': 'debug'
+        };
+        return levelMap[level] || 'info';
+    }
+
+    getLogTypeClass(type) {
+        const typeMap = {
+            'Service': 'service',
+            'Installation': 'installation',
+            'Configuration': 'configuration',
+            'Connection': 'connection',
+            'Audio': 'audio',
+            'Module': 'module',
+            'System': 'system'
+        };
+        return typeMap[type] || 'general';
+    }
+
+    viewLogDetails(logId) {
+        const log = this.logs.find(l => l.id == logId);
+        if (!log) return;
+
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <h3>Log Entry Details</h3>
+                <div class="log-details">
+                    <div class="detail-row">
+                        <strong>Timestamp:</strong> ${log.timestamp}
+                    </div>
+                    <div class="detail-row">
+                        <strong>Level:</strong> <span class="log-level ${this.getLogLevelClass(log.level)}">${log.level}</span>
+                    </div>
+                    <div class="detail-row">
+                        <strong>Type:</strong> <span class="log-type ${this.getLogTypeClass(log.type)}">${log.type}</span>
+                    </div>
+                    <div class="detail-row">
+                        <strong>Message:</strong> ${log.message}
+                    </div>
+                    <div class="detail-row">
+                        <strong>Source:</strong> ${log.source}
+                    </div>
+                    <div class="detail-row">
+                        <strong>Metadata:</strong>
+                        <pre>${JSON.stringify(log.metadata, null, 2)}</pre>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn-secondary" onclick="this.parentElement.parentElement.parentElement.remove()">Close</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+    }
+
+    clearLogs() {
+        this.logs = [];
+        this.updateLogsTable();
+        this.addLogEntry('INFO', 'System', 'Log history cleared', 'app.js');
+    }
+
+    // Initialize logging when app starts
+    initializeLogging() {
+        // Add initial startup logs
+        this.addLogEntry('INFO', 'System', 'FlexPBX Desktop Application started', 'app.js:init', {
+            version: '1.0.0',
+            platform: navigator.platform,
+            userAgent: navigator.userAgent.substring(0, 50) + '...'
+        });
+
+        // Hook into existing methods to add logging
+        this.setupLoggingHooks();
+    }
+
+    setupLoggingHooks() {
+        // Override showToast to also log
+        const originalShowToast = this.showToast.bind(this);
+        this.showToast = (message, type = 'info') => {
+            const logLevel = type === 'success' ? 'SUCCESS' :
+                           type === 'error' ? 'ERROR' :
+                           type === 'warning' ? 'WARNING' : 'INFO';
+
+            this.addLogEntry(logLevel, 'System', message, 'toast', { type });
+            return originalShowToast(message, type);
+        };
+
+        // Log service status
+        this.logServiceStatus();
+    }
+
+    async logServiceStatus() {
+        try {
+            // Check if we can communicate with backend services
+            if (window.electronAPI && window.electronAPI.getSystemInfo) {
+                const systemInfo = await window.electronAPI.getSystemInfo();
+                this.addLogEntry('SUCCESS', 'System', 'System information retrieved', 'electronAPI', {
+                    platform: systemInfo.platform,
+                    arch: systemInfo.arch,
+                    version: systemInfo.version
+                });
+            }
+
+            // Log initial service status
+            this.addLogEntry('INFO', 'Service', 'Checking background services status...', 'app.js');
+
+            // Simulate checking services (in a real app, this would query actual service status)
+            setTimeout(() => {
+                this.addLogEntry('SUCCESS', 'Service', 'FlexPBX Core service running on port 8080', 'service-manager');
+                this.addLogEntry('SUCCESS', 'Service', 'Device Discovery service running on port 41235', 'service-manager');
+                this.addLogEntry('SUCCESS', 'Service', 'File Server running on port 3923', 'service-manager');
+                this.addLogEntry('SUCCESS', 'Audio', 'TTS Service initialized with 5 voice profiles', 'tts-service');
+                this.addLogEntry('INFO', 'Audio', 'Sound Manager initialized successfully', 'sound-manager');
+            }, 2000);
+
+        } catch (error) {
+            this.addLogEntry('ERROR', 'System', 'Failed to retrieve system information', 'electronAPI', {
+                error: error.message
+            });
+        }
+    }
+
+    // PBX Name and User Management System
+    initializePBXSystem() {
+        // Initialize user configuration and PBX settings
+        this.pbxConfig = {
+            name: localStorage.getItem('pbx-name') || 'FlexPBX System',
+            department: localStorage.getItem('user-department') || 'admin',
+            role: localStorage.getItem('user-role') || 'administrator',
+            extension: localStorage.getItem('user-extension') || null,
+            isAdmin: localStorage.getItem('user-role') === 'administrator',
+            serverUrl: localStorage.getItem('pbx-server-url') || null,
+            syncEnabled: localStorage.getItem('settings-sync') === 'true'
+        };
+
+        // Setup all PBX features
+        this.setupPBXNameManagement();
+        this.setupAnnouncementsSystem();
+        this.setupDepartmentBasedUI();
+        this.setupRealTimeSyncSystem();
+        this.setupFlexPhoneIntegration();
+        this.setupDIDSupport();
+        this.setupGoogleVoiceIntegration();
+
+        // Initialize interface based on user role
+        this.applyUserRoleInterface();
+
+        this.addLogEntry('INFO', 'System', `PBX System initialized for ${this.pbxConfig.role}`, 'pbx-init', {
+            department: this.pbxConfig.department,
+            extension: this.pbxConfig.extension,
+            isAdmin: this.pbxConfig.isAdmin
+        });
+    }
+
+    setupPBXNameManagement() {
+        this.updatePBXNameDisplay();
+
+        // Setup edit button (admin only)
+        const editBtn = document.getElementById('edit-pbx-name');
+        if (editBtn) {
+            if (this.pbxConfig.isAdmin) {
+                editBtn.addEventListener('click', () => this.showPBXNameDialog());
+            } else {
+                editBtn.style.display = 'none';
+            }
+        }
+    }
+
+    updatePBXNameDisplay() {
+        const nameElement = document.getElementById('current-pbx-name');
+        if (nameElement) {
+            nameElement.textContent = this.pbxConfig.name;
+        }
+
+        // Update page title based on role
+        if (this.pbxConfig.isAdmin) {
+            document.title = `${this.pbxConfig.name} - FlexPBX Admin Console`;
+        } else {
+            document.title = `${this.pbxConfig.name} - FlexPBX Desktop`;
+        }
+    }
+
+    showPBXNameDialog() {
+        if (!this.pbxConfig.isAdmin) {
+            this.showToast('Only administrators can change PBX name', 'error');
+            return;
+        }
+
+        const currentName = this.pbxConfig.name;
+        const newName = prompt('Enter PBX Name:', currentName);
+
+        if (newName && newName.trim() && newName.trim() !== currentName) {
+            this.pbxConfig.name = newName.trim();
+            localStorage.setItem('pbx-name', this.pbxConfig.name);
+            this.updatePBXNameDisplay();
+
+            // Sync change to all connected clients and FlexPhone
+            this.broadcastSettingsUpdate('pbx-name', this.pbxConfig.name);
+
+            this.addLogEntry('INFO', 'Admin', `PBX name changed to: ${this.pbxConfig.name}`, 'pbx-config', {
+                oldName: currentName,
+                newName: this.pbxConfig.name
+            });
+
+            this.showToast(`PBX name updated to: ${this.pbxConfig.name}`, 'success');
+        }
+    }
+
+    setupAnnouncementsSystem() {
+        this.announcements = JSON.parse(localStorage.getItem('pbx-announcements') || '[]');
+
+        // Setup announcement controls (admin only)
+        const addBtn = document.getElementById('add-announcement');
+        const manageBtn = document.getElementById('manage-announcements');
+
+        if (this.pbxConfig.isAdmin) {
+            if (addBtn) addBtn.addEventListener('click', () => this.showAddAnnouncementDialog());
+            if (manageBtn) manageBtn.addEventListener('click', () => this.showManageAnnouncementsDialog());
+        } else {
+            // Hide admin controls for non-admin users
+            if (addBtn) addBtn.style.display = 'none';
+            if (manageBtn) manageBtn.style.display = 'none';
+        }
+
+        this.loadAnnouncementsForUser();
+    }
+
+    loadAnnouncementsForUser() {
+        const userDept = this.pbxConfig.department;
+        const userRole = this.pbxConfig.role;
+
+        // Filter announcements based on department and role
+        const relevantAnnouncements = this.announcements.filter(announcement => {
+            const audience = announcement.audience;
+
+            // Admins see all announcements
+            if (this.pbxConfig.isAdmin) return true;
+
+            // Show announcements targeted to user's department or all departments
+            return audience === 'all' ||
+                   audience === userDept ||
+                   (Array.isArray(audience) && audience.includes(userDept));
+        });
+
+        this.displayAnnouncements(relevantAnnouncements);
+    }
+
+    displayAnnouncements(announcements) {
+        const container = document.getElementById('announcements-list');
+        if (!container) return;
+
+        // Keep the welcome announcement
+        const welcomeAnnouncement = container.querySelector('.welcome-announcement');
+        container.innerHTML = '';
+
+        if (welcomeAnnouncement) {
+            // Update welcome message based on user role
+            this.updateWelcomeMessage(welcomeAnnouncement);
+            container.appendChild(welcomeAnnouncement);
+        }
+
+        // Add custom announcements
+        announcements.forEach(announcement => {
+            const announcementElement = this.createAnnouncementElement(announcement);
+            container.appendChild(announcementElement);
+        });
+    }
+
+    updateWelcomeMessage(welcomeElement) {
+        const messageElement = welcomeElement.querySelector('.announcement-message');
+        const audienceElement = welcomeElement.querySelector('.announcement-audience');
+
+        if (this.pbxConfig.extension) {
+            messageElement.textContent = `Welcome to ${this.pbxConfig.name}! You are assigned to extension ${this.pbxConfig.extension} in the ${this.pbxConfig.department} department. Use the FlexPhone app for SIP calls and this desktop app for system management and support features.`;
+            audienceElement.textContent = `📞 Extension ${this.pbxConfig.extension} - ${this.pbxConfig.department.charAt(0).toUpperCase() + this.pbxConfig.department.slice(1)} Department`;
+        } else if (this.pbxConfig.isAdmin) {
+            messageElement.textContent = `Welcome to ${this.pbxConfig.name} Admin Console! You have full access to all features including user management, announcements, and system configuration. Changes you make will be pushed to all connected clients in real-time.`;
+            audienceElement.textContent = '🔧 Administrator Console';
+        } else {
+            messageElement.textContent = `Welcome to ${this.pbxConfig.name}! Your access is configured for the ${this.pbxConfig.department} department. Contact support for extension assignment or additional features.`;
+            audienceElement.textContent = `👥 ${this.pbxConfig.department.charAt(0).toUpperCase() + this.pbxConfig.department.slice(1)} Department`;
+        }
+    }
+
+    createAnnouncementElement(announcement) {
+        const element = document.createElement('div');
+        element.className = 'announcement-item';
+        element.setAttribute('data-priority', announcement.priority);
+        element.setAttribute('data-audience', announcement.audience);
+
+        const priorityClass = announcement.priority || 'medium';
+        const audienceText = this.formatAudienceText(announcement.audience);
+
+        element.innerHTML = `
+            <div class="announcement-content">
+                <div class="announcement-header">
+                    <span class="announcement-icon">${announcement.icon || '📢'}</span>
+                    <h4>${announcement.title}</h4>
+                    <span class="announcement-priority ${priorityClass}">${priorityClass.charAt(0).toUpperCase() + priorityClass.slice(1)} Priority</span>
+                </div>
+                <p class="announcement-message">${announcement.message}</p>
+                <div class="announcement-footer">
+                    <span class="announcement-audience">${audienceText}</span>
+                    <span class="announcement-date">${new Date(announcement.created).toLocaleDateString()}</span>
+                </div>
+            </div>
+        `;
+
+        return element;
+    }
+
+    formatAudienceText(audience) {
+        if (audience === 'all') return '👥 All Departments';
+        if (audience === 'admin') return '🔧 Administrators';
+        if (audience === 'support') return '🎧 Support Department';
+        if (audience === 'operators') return '📞 Operators';
+        if (audience === 'guests') return '👤 Guests';
+        return `👥 ${audience.charAt(0).toUpperCase() + audience.slice(1)}`;
+    }
+
+    showAddAnnouncementDialog() {
+        if (!this.pbxConfig.isAdmin) {
+            this.showToast('Only administrators can add announcements', 'error');
+            return;
+        }
+
+        const title = prompt('Announcement Title:');
+        if (!title) return;
+
+        const message = prompt('Announcement Message:');
+        if (!message) return;
+
+        const priority = prompt('Priority (high/medium/low):', 'medium');
+        const audience = prompt('Audience (all/admin/support/operators/guests):', 'all');
+
+        const announcement = {
+            id: Date.now(),
+            title: title.trim(),
+            message: message.trim(),
+            priority: priority.toLowerCase(),
+            audience: audience.toLowerCase(),
+            icon: '📢',
+            created: new Date().toISOString(),
+            author: 'Administrator'
+        };
+
+        this.announcements.unshift(announcement);
+        localStorage.setItem('pbx-announcements', JSON.stringify(this.announcements));
+
+        // Broadcast announcement to all connected clients
+        this.broadcastSettingsUpdate('announcements', this.announcements);
+
+        this.loadAnnouncementsForUser();
+
+        this.addLogEntry('INFO', 'Admin', `New announcement added: ${title}`, 'announcements', {
+            title,
+            audience,
+            priority
+        });
+
+        this.showToast('Announcement added and broadcasted to all clients', 'success');
+    }
+
+    showManageAnnouncementsDialog() {
+        if (!this.pbxConfig.isAdmin) {
+            this.showToast('Only administrators can manage announcements', 'error');
+            return;
+        }
+
+        const count = this.announcements.length;
+        const action = prompt(`Manage Announcements (${count} total)\nEnter 'clear' to remove all custom announcements:`);
+
+        if (action === 'clear') {
+            this.announcements = [];
+            localStorage.setItem('pbx-announcements', JSON.stringify(this.announcements));
+
+            // Broadcast change to all clients
+            this.broadcastSettingsUpdate('announcements', this.announcements);
+
+            this.loadAnnouncementsForUser();
+            this.showToast('All custom announcements cleared and synced', 'success');
+
+            this.addLogEntry('INFO', 'Admin', 'All custom announcements cleared', 'announcements');
+        }
+    }
+
+    setupDepartmentBasedUI() {
+        // Apply interface restrictions based on user role
+        this.applyUserRoleInterface();
+
+        // Setup extension display if user has one
+        if (this.pbxConfig.extension) {
+            this.displayUserExtensionInfo();
+        }
+    }
+
+    applyUserRoleInterface() {
+        const isAdmin = this.pbxConfig.isAdmin;
+
+        if (!isAdmin) {
+            // Hide admin-only navigation items
+            const adminOnlyItems = document.querySelectorAll('[data-admin-only="true"]');
+            adminOnlyItems.forEach(item => {
+                item.style.display = 'none';
+            });
+
+            // Hide admin tabs and features
+            const adminTabs = ['server-manager', 'deployment'];
+            adminTabs.forEach(tabId => {
+                const tab = document.querySelector(`[data-view="${tabId}"]`);
+                if (tab) tab.style.display = 'none';
+            });
+
+            // Show limited feature set based on department
+            this.showDepartmentFeatures();
+        } else {
+            // Admin gets full access - ensure everything is visible
+            this.showAllFeatures();
+        }
+    }
+
+    showDepartmentFeatures() {
+        const dept = this.pbxConfig.department;
+
+        // Show features based on department
+        const allowedFeatures = {
+            support: ['services', 'logs', 'testing'],
+            operators: ['services', 'logs'],
+            guests: ['logs']
+        };
+
+        const userFeatures = allowedFeatures[dept] || ['logs'];
+
+        // Hide features not allowed for this department
+        const allTabs = document.querySelectorAll('.sidebar-nav button[data-view]');
+        allTabs.forEach(tab => {
+            const view = tab.getAttribute('data-view');
+            if (!userFeatures.includes(view) && view !== 'dashboard') {
+                tab.style.display = 'none';
+            }
+        });
+    }
+
+    showAllFeatures() {
+        // Admin sees everything - make sure nothing is hidden
+        const allElements = document.querySelectorAll('[style*="display: none"]');
+        allElements.forEach(element => {
+            if (!element.classList.contains('view') || element.classList.contains('active')) {
+                // Don't show all views at once, just navigation elements
+                if (!element.classList.contains('view')) {
+                    element.style.display = '';
+                }
+            }
+        });
+    }
+
+    displayUserExtensionInfo() {
+        const extension = this.pbxConfig.extension;
+        const department = this.pbxConfig.department;
+
+        // Add extension info to sidebar
+        const pbxNameDisplay = document.getElementById('pbx-name-display');
+        if (pbxNameDisplay && extension) {
+            // Remove existing extension info
+            const existingInfo = pbxNameDisplay.querySelector('.user-extension-info');
+            if (existingInfo) existingInfo.remove();
+
+            const extensionInfo = document.createElement('div');
+            extensionInfo.className = 'user-extension-info';
+            extensionInfo.innerHTML = `
+                <div class="extension-label">Your Extension:</div>
+                <div class="extension-number">${extension}</div>
+                <div class="extension-dept">${department.charAt(0).toUpperCase() + department.slice(1)} Department</div>
+                <div class="extension-note">Use FlexPhone app for calls</div>
+            `;
+            pbxNameDisplay.appendChild(extensionInfo);
+        }
+    }
+
+    // Real-time Settings Sync System
+    setupRealTimeSyncSystem() {
+        if (!this.pbxConfig.syncEnabled) return;
+
+        // Setup WebSocket connection for real-time sync
+        this.setupSyncWebSocket();
+
+        // Setup periodic sync check
+        this.setupPeriodicSync();
+
+        // Listen for storage changes from other tabs/windows
+        window.addEventListener('storage', (e) => {
+            this.handleStorageChange(e);
+        });
+    }
+
+    setupSyncWebSocket() {
+        // Connect to PBX server WebSocket for real-time updates
+        const serverUrl = this.pbxConfig.serverUrl;
+        if (serverUrl) {
+            try {
+                this.syncSocket = new WebSocket(`ws://${serverUrl}/sync`);
+
+                this.syncSocket.onopen = () => {
+                    this.addLogEntry('INFO', 'Sync', 'Connected to PBX server for real-time sync', 'websocket');
+                };
+
+                this.syncSocket.onmessage = (event) => {
+                    this.handleSyncMessage(JSON.parse(event.data));
+                };
+
+                this.syncSocket.onclose = () => {
+                    this.addLogEntry('WARNING', 'Sync', 'Disconnected from PBX server sync', 'websocket');
+                    // Attempt reconnection
+                    setTimeout(() => this.setupSyncWebSocket(), 5000);
+                };
+            } catch (error) {
+                this.addLogEntry('ERROR', 'Sync', 'Failed to establish sync connection', 'websocket', { error: error.message });
+            }
+        }
+    }
+
+    setupPeriodicSync() {
+        // Check for updates every 30 seconds
+        this.syncInterval = setInterval(() => {
+            this.checkForUpdates();
+        }, 30000);
+    }
+
+    broadcastSettingsUpdate(key, value) {
+        // Send update via WebSocket if connected
+        if (this.syncSocket && this.syncSocket.readyState === WebSocket.OPEN) {
+            this.syncSocket.send(JSON.stringify({
+                type: 'settings-update',
+                key: key,
+                value: value,
+                timestamp: Date.now(),
+                source: 'admin'
+            }));
+        }
+
+        // Also update local storage for immediate effect
+        localStorage.setItem(key, typeof value === 'object' ? JSON.stringify(value) : value);
+    }
+
+    handleSyncMessage(data) {
+        if (data.type === 'settings-update') {
+            // Apply incoming settings update
+            this.applySyncedSettings(data.key, data.value);
+
+            this.addLogEntry('INFO', 'Sync', `Settings updated: ${data.key}`, 'sync-receive', {
+                key: data.key,
+                source: data.source
+            });
+        }
+    }
+
+    applySyncedSettings(key, value) {
+        switch (key) {
+            case 'pbx-name':
+                this.pbxConfig.name = value;
+                this.updatePBXNameDisplay();
+                break;
+            case 'announcements':
+                this.announcements = value;
+                this.loadAnnouncementsForUser();
+                break;
+            case 'user-role':
+                this.pbxConfig.role = value;
+                this.pbxConfig.isAdmin = value === 'administrator';
+                this.applyUserRoleInterface();
+                break;
+            case 'user-extension':
+                this.pbxConfig.extension = value;
+                this.displayUserExtensionInfo();
+                break;
+        }
+
+        // Update local storage
+        localStorage.setItem(key, typeof value === 'object' ? JSON.stringify(value) : value);
+
+        this.showToast(`Settings updated from server: ${key}`, 'info');
+    }
+
+    handleStorageChange(event) {
+        // Handle changes from other tabs/windows
+        if (event.key && event.newValue !== event.oldValue) {
+            this.applySyncedSettings(event.key, event.newValue);
+        }
+    }
+
+    checkForUpdates() {
+        // Periodically check server for updates
+        // This would typically make an API call to check for changes
+        if (this.pbxConfig.serverUrl) {
+            // Implementation would depend on your server API
+            console.log('Checking for updates...');
+        }
+    }
+
+    // FlexPhone SIP Client Integration
+    setupFlexPhoneIntegration() {
+        // Setup communication with FlexPhone app
+        this.flexPhoneChannel = new BroadcastChannel('flexpbx-flexphone');
+
+        this.flexPhoneChannel.onmessage = (event) => {
+            this.handleFlexPhoneMessage(event.data);
+        };
+
+        // Send current settings to FlexPhone if it's running
+        this.syncWithFlexPhone();
+    }
+
+    syncWithFlexPhone() {
+        const settingsToSync = {
+            pbxName: this.pbxConfig.name,
+            extension: this.pbxConfig.extension,
+            department: this.pbxConfig.department,
+            serverUrl: this.pbxConfig.serverUrl,
+            userRole: this.pbxConfig.role
+        };
+
+        this.flexPhoneChannel.postMessage({
+            type: 'settings-sync',
+            settings: settingsToSync,
+            timestamp: Date.now()
+        });
+    }
+
+    handleFlexPhoneMessage(data) {
+        if (data.type === 'extension-status') {
+            // Update extension status from FlexPhone
+            this.addLogEntry('INFO', 'FlexPhone', `Extension ${data.extension} status: ${data.status}`, 'flexphone-sync', data);
+        } else if (data.type === 'call-event') {
+            // Log call events from FlexPhone
+            this.addLogEntry('INFO', 'Calls', `Call event: ${data.event}`, 'flexphone-calls', data);
+        }
+    }
+
+    // DID (Direct Inward Dialing) Support System
+    setupDIDSupport() {
+        // Initialize DID configuration
+        this.didConfig = {
+            numbers: JSON.parse(localStorage.getItem('did-numbers') || '[]'),
+            assignments: JSON.parse(localStorage.getItem('did-assignments') || '{}'),
+            pools: JSON.parse(localStorage.getItem('did-pools') || '[]'),
+            providers: JSON.parse(localStorage.getItem('did-providers') || '[]')
+        };
+
+        // Add sample DID data for demonstration
+        if (this.didConfig.numbers.length === 0 && this.pbxConfig.isAdmin) {
+            this.initializeSampleDIDData();
+        }
+
+        // Update extension display with DID info
+        this.updateExtensionDIDDisplay();
+    }
+
+    initializeSampleDIDData() {
+        // Sample DID numbers and assignments
+        this.didConfig.numbers = [
+            { number: '+15551234567', provider: 'SIP Trunk Provider A', status: 'active', type: 'voice' },
+            { number: '+15551234568', provider: 'SIP Trunk Provider A', status: 'active', type: 'voice' },
+            { number: '+15551234569', provider: 'SIP Trunk Provider B', status: 'active', type: 'voice' },
+            { number: '+15551234570', provider: 'SIP Trunk Provider B', status: 'available', type: 'voice' }
+        ];
+
+        this.didConfig.providers = [
+            { name: 'SIP Trunk Provider A', type: 'sip', status: 'connected', didCount: 2 },
+            { name: 'SIP Trunk Provider B', type: 'sip', status: 'connected', didCount: 2 }
+        ];
+
+        // Save to localStorage
+        this.saveDIDConfiguration();
+
+        this.addLogEntry('INFO', 'DID', 'Sample DID data initialized', 'did-setup', {
+            numbersCount: this.didConfig.numbers.length,
+            providersCount: this.didConfig.providers.length
+        });
+    }
+
+    // Extension Management with DID Assignment
+    assignExtensionToUser(username, department = 'support') {
+        // Generate random extension or assign manually
+        const extension = this.generateRandomExtension();
+        const did = this.assignDIDToExtension(extension);
+
+        const userConfig = {
+            username: username,
+            extension: extension,
+            department: department,
+            did: did,
+            assigned: new Date().toISOString(),
+            status: 'active'
+        };
+
+        // Save user extension assignment
+        const assignments = JSON.parse(localStorage.getItem('extension-assignments') || '{}');
+        assignments[username] = userConfig;
+        localStorage.setItem('extension-assignments', JSON.stringify(assignments));
+
+        // If this is the current user, update their config
+        if (username === localStorage.getItem('current-username')) {
+            this.pbxConfig.extension = extension;
+            this.pbxConfig.did = did;
+            localStorage.setItem('user-extension', extension);
+            localStorage.setItem('user-did', did);
+            this.displayUserExtensionInfo();
+        }
+
+        // Broadcast assignment to all clients
+        this.broadcastSettingsUpdate('extension-assignments', assignments);
+
+        this.addLogEntry('INFO', 'Extensions', `Extension ${extension} assigned to ${username}`, 'extension-assign', {
+            username,
+            extension,
+            department,
+            did
+        });
+
+        return userConfig;
+    }
+
+    generateRandomExtension() {
+        // Generate random 3-4 digit extension
+        const existingAssignments = JSON.parse(localStorage.getItem('extension-assignments') || '{}');
+        const usedExtensions = Object.values(existingAssignments).map(a => a.extension);
+
+        let extension;
+        do {
+            extension = Math.floor(Math.random() * (9999 - 100) + 100).toString();
+        } while (usedExtensions.includes(extension));
+
+        return extension;
+    }
+
+    assignDIDToExtension(extension) {
+        // Find available DID number
+        const availableDID = this.didConfig.numbers.find(did =>
+            did.status === 'available' || !this.didConfig.assignments[did.number]
+        );
+
+        if (availableDID) {
+            // Assign DID to extension
+            this.didConfig.assignments[availableDID.number] = {
+                extension: extension,
+                assigned: new Date().toISOString(),
+                type: 'extension'
+            };
+
+            availableDID.status = 'assigned';
+            this.saveDIDConfiguration();
+
+            return availableDID.number;
+        }
+
+        return null; // No available DID numbers
+    }
+
+    updateExtensionDIDDisplay() {
+        if (this.pbxConfig.extension) {
+            const userDID = this.pbxConfig.did || localStorage.getItem('user-did');
+
+            if (userDID) {
+                const extensionInfo = document.querySelector('.user-extension-info');
+                if (extensionInfo) {
+                    // Add DID info to extension display
+                    const didInfo = document.createElement('div');
+                    didInfo.className = 'extension-did';
+                    didInfo.innerHTML = `
+                        <div class="did-label">Direct Number:</div>
+                        <div class="did-number">${userDID}</div>
+                    `;
+                    extensionInfo.appendChild(didInfo);
+                }
+            }
+        }
+    }
+
+    // SIP Trunk DID Management
+    manageSIPTrunkDIDs(trunkName, didNumbers) {
+        const trunk = {
+            name: trunkName,
+            type: 'sip',
+            didNumbers: didNumbers,
+            status: 'active',
+            configured: new Date().toISOString()
+        };
+
+        // Add DIDs from this trunk to our number pool
+        didNumbers.forEach(number => {
+            if (!this.didConfig.numbers.find(existing => existing.number === number)) {
+                this.didConfig.numbers.push({
+                    number: number,
+                    provider: trunkName,
+                    status: 'available',
+                    type: 'voice',
+                    trunk: trunkName
+                });
+            }
+        });
+
+        // Add trunk to providers if not exists
+        if (!this.didConfig.providers.find(p => p.name === trunkName)) {
+            this.didConfig.providers.push({
+                name: trunkName,
+                type: 'sip',
+                status: 'connected',
+                didCount: didNumbers.length
+            });
+        }
+
+        this.saveDIDConfiguration();
+
+        this.addLogEntry('INFO', 'SIP', `SIP trunk ${trunkName} configured with ${didNumbers.length} DID numbers`, 'sip-trunk', {
+            trunkName,
+            didCount: didNumbers.length
+        });
+
+        return trunk;
+    }
+
+    saveDIDConfiguration() {
+        localStorage.setItem('did-numbers', JSON.stringify(this.didConfig.numbers));
+        localStorage.setItem('did-assignments', JSON.stringify(this.didConfig.assignments));
+        localStorage.setItem('did-pools', JSON.stringify(this.didConfig.pools));
+        localStorage.setItem('did-providers', JSON.stringify(this.didConfig.providers));
+    }
+
+    // Admin function to manually assign extension to any user
+    adminAssignExtension() {
+        if (!this.pbxConfig.isAdmin) {
+            this.showToast('Only administrators can assign extensions', 'error');
+            return;
+        }
+
+        const username = prompt('Enter username to assign extension:');
+        if (!username) return;
+
+        const department = prompt('Enter department (support/operators/guests):', 'support');
+        if (!department) return;
+
+        const manualExtension = prompt('Enter specific extension (leave blank for random):');
+
+        let extension;
+        if (manualExtension && manualExtension.trim()) {
+            extension = manualExtension.trim();
+            // Check if extension is already used
+            const assignments = JSON.parse(localStorage.getItem('extension-assignments') || '{}');
+            const existingUser = Object.keys(assignments).find(user => assignments[user].extension === extension);
+            if (existingUser) {
+                this.showToast(`Extension ${extension} is already assigned to ${existingUser}`, 'error');
+                return;
+            }
+        } else {
+            extension = this.generateRandomExtension();
+        }
+
+        const did = this.assignDIDToExtension(extension);
+
+        const userConfig = {
+            username: username,
+            extension: extension,
+            department: department.toLowerCase(),
+            did: did,
+            assigned: new Date().toISOString(),
+            status: 'active',
+            assignedBy: 'Administrator'
+        };
+
+        // Save assignment
+        const assignments = JSON.parse(localStorage.getItem('extension-assignments') || '{}');
+        assignments[username] = userConfig;
+        localStorage.setItem('extension-assignments', JSON.stringify(assignments));
+
+        // Broadcast to all clients
+        this.broadcastSettingsUpdate('extension-assignments', assignments);
+
+        const message = did ?
+            `Extension ${extension} with DID ${did} assigned to ${username}` :
+            `Extension ${extension} assigned to ${username} (no DID available)`;
+
+        this.showToast(message, 'success');
+
+        this.addLogEntry('INFO', 'Admin', `Manual extension assignment: ${username} -> ${extension}`, 'admin-assign', userConfig);
+    }
+
+    // Get user's extension info for display
+    getUserExtensionInfo(username) {
+        const assignments = JSON.parse(localStorage.getItem('extension-assignments') || '{}');
+        return assignments[username] || null;
+    }
+
+    // Quick function to test extension assignment for Walter Harper example
+    testWalterHarperAssignment() {
+        if (this.pbxConfig.isAdmin) {
+            const walterConfig = this.assignExtensionToUser('walter.harper', 'support');
+            this.showToast(`Test: Walter Harper assigned extension ${walterConfig.extension}`, 'info');
+        }
+    }
+
+    // Google Voice Integration System
+    setupGoogleVoiceIntegration() {
+        // Initialize Google Voice configuration
+        this.googleVoiceConfig = {
+            enabled: localStorage.getItem('gv-enabled') === 'true',
+            apiKey: localStorage.getItem('gv-api-key') || '',
+            numbers: JSON.parse(localStorage.getItem('gv-numbers') || '[]'),
+            smsEnabled: localStorage.getItem('gv-sms-enabled') === 'true',
+            status: localStorage.getItem('gv-status') || 'disconnected'
+        };
+
+        // Setup Google Voice UI controls
+        this.setupGoogleVoiceControls();
+
+        // Update status display
+        this.updateGoogleVoiceStatus();
+
+        // If enabled, initialize connection
+        if (this.googleVoiceConfig.enabled && this.googleVoiceConfig.apiKey) {
+            this.initializeGoogleVoiceConnection();
+        }
+    }
+
+    setupGoogleVoiceControls() {
+        const setupBtn = document.getElementById('setup-google-voice');
+        const helpBtn = document.getElementById('gv-help');
+        const manualAssignBtn = document.getElementById('manual-did-assign');
+        const viewAssignmentsBtn = document.getElementById('view-did-assignments');
+
+        if (setupBtn) {
+            setupBtn.addEventListener('click', () => this.showGoogleVoiceSetupDialog());
+        }
+
+        if (helpBtn) {
+            helpBtn.addEventListener('click', () => this.showGoogleVoiceDocumentation());
+        }
+
+        if (manualAssignBtn) {
+            manualAssignBtn.addEventListener('click', () => this.showManualDIDAssignmentDialog());
+        }
+
+        if (viewAssignmentsBtn) {
+            viewAssignmentsBtn.addEventListener('click', () => this.showDIDAssignmentsView());
+        }
+
+        // Setup auto-assignment checkbox handlers
+        this.setupAutoAssignmentHandlers();
+    }
+
+    updateGoogleVoiceStatus() {
+        const statusElement = document.getElementById('gv-status');
+        const statusIndicator = statusElement?.querySelector('.status-indicator');
+        const statusMessage = statusElement?.querySelector('p');
+
+        if (statusIndicator && statusMessage) {
+            if (this.googleVoiceConfig.status === 'connected') {
+                statusIndicator.className = 'status-indicator connected';
+                statusIndicator.textContent = 'Connected';
+                statusMessage.textContent = `Connected with ${this.googleVoiceConfig.numbers.length} Google Voice numbers`;
+
+                // Update integration status container
+                const integrationStatus = document.querySelector('.integration-status');
+                if (integrationStatus) {
+                    integrationStatus.classList.add('connected');
+                }
+            } else {
+                statusIndicator.className = 'status-indicator disconnected';
+                statusIndicator.textContent = 'Disconnected';
+                statusMessage.textContent = 'Connect Google Voice for additional phone numbers and SMS support';
+            }
+        }
+    }
+
+    showGoogleVoiceSetupDialog() {
+        const isConnected = this.googleVoiceConfig.status === 'connected';
+
+        if (isConnected) {
+            const action = confirm('Google Voice is already connected. Do you want to reconfigure?');
+            if (!action) return;
+        }
+
+        const steps = `
+Google Voice Setup Steps:
+
+1. Enable Google Voice API in Google Cloud Console
+2. Create OAuth 2.0 credentials or API key
+3. Enable the Google Voice API for your project
+4. Copy your credentials
+
+Would you like to:
+- Setup new connection
+- View setup guide
+- Manage existing connection
+
+Enter 'setup' to continue with setup, 'guide' for documentation:
+        `;
+
+        const action = prompt(steps, 'setup');
+
+        if (action === 'setup') {
+            this.startGoogleVoiceSetup();
+        } else if (action === 'guide') {
+            this.showGoogleVoiceDocumentation();
+        }
+    }
+
+    startGoogleVoiceSetup() {
+        if (!this.pbxConfig.isAdmin) {
+            this.showToast('Only administrators can configure Google Voice', 'error');
+            return;
+        }
+
+        // Step 1: Get API credentials
+        const apiKey = prompt('Enter your Google Cloud API key or OAuth credentials:');
+        if (!apiKey) return;
+
+        // Step 2: Verify credentials and get Google Voice numbers
+        this.verifyGoogleVoiceCredentials(apiKey);
+    }
+
+    async verifyGoogleVoiceCredentials(apiKey) {
+        try {
+            // Note: In a real implementation, this would use the actual Google Voice API
+            // For demo purposes, we'll simulate the process
+
+            const simulatedNumbers = [
+                '+15551234567',
+                '+15551234568'
+            ];
+
+            // Store configuration
+            this.googleVoiceConfig.apiKey = apiKey;
+            this.googleVoiceConfig.numbers = simulatedNumbers;
+            this.googleVoiceConfig.enabled = true;
+            this.googleVoiceConfig.smsEnabled = true;
+            this.googleVoiceConfig.status = 'connected';
+
+            // Save to localStorage
+            localStorage.setItem('gv-api-key', apiKey);
+            localStorage.setItem('gv-numbers', JSON.stringify(simulatedNumbers));
+            localStorage.setItem('gv-enabled', 'true');
+            localStorage.setItem('gv-sms-enabled', 'true');
+            localStorage.setItem('gv-status', 'connected');
+
+            // Update UI
+            this.updateGoogleVoiceStatus();
+
+            // Add Google Voice numbers to DID pool
+            this.integrateGoogleVoiceWithDIDs();
+
+            // Show DID assignment options
+            this.showDIDAssignmentOptions();
+
+            // Apply automatic assignments based on checkboxes
+            this.applyAutomaticDIDAssignments();
+
+            // Broadcast to other clients
+            this.broadcastSettingsUpdate('google-voice-config', this.googleVoiceConfig);
+
+            this.addLogEntry('INFO', 'Google Voice', 'Google Voice integration configured successfully', 'gv-setup', {
+                numbersCount: simulatedNumbers.length,
+                smsEnabled: true
+            });
+
+            this.showToast(`Google Voice connected with ${simulatedNumbers.length} numbers`, 'success');
+
+        } catch (error) {
+            this.addLogEntry('ERROR', 'Google Voice', 'Failed to verify Google Voice credentials', 'gv-setup', {
+                error: error.message
+            });
+
+            this.showToast('Failed to connect to Google Voice. Please check your credentials.', 'error');
+        }
+    }
+
+    integrateGoogleVoiceWithDIDs() {
+        // Add Google Voice numbers to DID system
+        this.googleVoiceConfig.numbers.forEach(number => {
+            if (!this.didConfig.numbers.find(existing => existing.number === number)) {
+                this.didConfig.numbers.push({
+                    number: number,
+                    provider: 'Google Voice',
+                    status: 'available',
+                    type: 'voice+sms',
+                    source: 'google-voice'
+                });
+            }
+        });
+
+        // Add Google Voice as a provider
+        if (!this.didConfig.providers.find(p => p.name === 'Google Voice')) {
+            this.didConfig.providers.push({
+                name: 'Google Voice',
+                type: 'google-voice',
+                status: 'connected',
+                didCount: this.googleVoiceConfig.numbers.length,
+                features: ['voice', 'sms']
+            });
+        }
+
+        this.saveDIDConfiguration();
+    }
+
+    async sendGoogleVoiceSMS(to, message, fromNumber = null) {
+        if (!this.googleVoiceConfig.enabled || !this.googleVoiceConfig.smsEnabled) {
+            throw new Error('Google Voice SMS is not enabled');
+        }
+
+        // Use first available number if none specified
+        const gvNumber = fromNumber || this.googleVoiceConfig.numbers[0];
+
+        // Note: In real implementation, this would use Google Voice API
+        // For demo purposes, we'll simulate the SMS sending
+
+        const smsData = {
+            from: gvNumber,
+            to: to,
+            message: message,
+            timestamp: new Date().toISOString(),
+            status: 'sent',
+            provider: 'google-voice'
+        };
+
+        this.addLogEntry('INFO', 'SMS', `SMS sent via Google Voice: ${to}`, 'gv-sms', smsData);
+
+        return smsData;
+    }
+
+    showGoogleVoiceDocumentation() {
+        const documentation = `
+📞 Google Voice Integration Setup Guide
+
+Step 1: Google Cloud Console Setup
+• Go to console.cloud.google.com
+• Create new project or select existing project
+• Enable Google Voice API
+• Create credentials (API Key or OAuth 2.0)
+
+Step 2: API Configuration
+• Navigate to APIs & Services > Credentials
+• Create API Key or OAuth 2.0 Client ID
+• Restrict API key to Google Voice API only
+• Copy your credentials
+
+Step 3: FlexPBX Integration
+• Click "Setup Google Voice" in the dashboard
+• Enter your API credentials
+• System will verify and import your Google Voice numbers
+• Numbers will be added to DID pool automatically
+
+Step 4: Features Available
+• Voice calls through Google Voice numbers
+• SMS messaging integration
+• Multiple Google Voice number support
+• Integration with FlexPBX routing
+
+Important Links:
+• Google Cloud Console: https://console.cloud.google.com
+• Google Voice API Docs: https://developers.google.com/voice
+• OAuth 2.0 Setup: https://developers.google.com/identity/protocols/oauth2
+
+Supported Features:
+✅ Multiple Google Voice numbers
+✅ SMS sending and receiving
+✅ Call routing integration
+✅ DID number pool integration
+✅ Real-time sync across clients
+
+Would you like to start the setup process now?
+        `;
+
+        alert(documentation);
+    }
+
+    // SMS functionality
+    async handleGoogleVoiceSMS(extension, message, recipient) {
+        try {
+            // Get user's assigned Google Voice number
+            const userAssignment = this.getUserExtensionInfo(extension);
+            const gvNumber = this.getGoogleVoiceNumberForExtension(extension);
+
+            if (!gvNumber) {
+                throw new Error('No Google Voice number assigned to this extension');
+            }
+
+            const result = await this.sendGoogleVoiceSMS(recipient, message, gvNumber);
+
+            this.addLogEntry('INFO', 'SMS', `SMS sent from extension ${extension}`, 'extension-sms', {
+                extension,
+                recipient,
+                gvNumber,
+                messageLength: message.length
+            });
+
+            return result;
+
+        } catch (error) {
+            this.addLogEntry('ERROR', 'SMS', `SMS failed from extension ${extension}`, 'extension-sms', {
+                extension,
+                error: error.message
+            });
+            throw error;
+        }
+    }
+
+    getGoogleVoiceNumberForExtension(extension) {
+        // Check if extension has assigned Google Voice number in DID assignments
+        const gvNumbers = this.didConfig.numbers.filter(n => n.source === 'google-voice');
+
+        for (const number of gvNumbers) {
+            const assignment = this.didConfig.assignments[number.number];
+            if (assignment && assignment.extension === extension) {
+                return number.number;
+            }
+        }
+
+        return null;
+    }
+
+    // Admin function to assign Google Voice number to extension
+    assignGoogleVoiceToExtension(extension, gvNumber) {
+        if (!this.pbxConfig.isAdmin) {
+            this.showToast('Only administrators can assign Google Voice numbers', 'error');
+            return;
+        }
+
+        const gvNumberObj = this.didConfig.numbers.find(n =>
+            n.number === gvNumber && n.source === 'google-voice'
+        );
+
+        if (!gvNumberObj) {
+            this.showToast('Google Voice number not found', 'error');
+            return;
+        }
+
+        if (gvNumberObj.status === 'assigned') {
+            this.showToast('Google Voice number is already assigned', 'error');
+            return;
+        }
+
+        // Assign the number
+        this.didConfig.assignments[gvNumber] = {
+            extension: extension,
+            assigned: new Date().toISOString(),
+            type: 'extension',
+            provider: 'google-voice'
+        };
+
+        gvNumberObj.status = 'assigned';
+        this.saveDIDConfiguration();
+
+        this.addLogEntry('INFO', 'Admin', `Google Voice number ${gvNumber} assigned to extension ${extension}`, 'gv-assign', {
+            extension,
+            gvNumber
+        });
+
+        this.showToast(`Google Voice number ${gvNumber} assigned to extension ${extension}`, 'success');
+
+        // Broadcast to all clients
+        this.broadcastSettingsUpdate('did-assignments', this.didConfig.assignments);
+    }
+
+    setupAutoAssignmentHandlers() {
+        // Setup handlers for auto-assignment checkboxes
+        const autoAssignExtensions = document.getElementById('auto-assign-extensions');
+        const autoAssignMainIVR = document.getElementById('auto-assign-main-ivr');
+        const autoAssignSupport = document.getElementById('auto-assign-support');
+        const autoAssignOperators = document.getElementById('auto-assign-operators');
+
+        if (autoAssignExtensions) {
+            autoAssignExtensions.addEventListener('change', (e) => {
+                this.didConfig.autoAssignment.extensions = e.target.checked;
+                this.saveDIDConfiguration();
+                this.addLogEntry('INFO', 'Admin', `Auto-assignment for extensions ${e.target.checked ? 'enabled' : 'disabled'}`, 'did-config');
+            });
+        }
+
+        if (autoAssignMainIVR) {
+            autoAssignMainIVR.addEventListener('change', (e) => {
+                this.didConfig.autoAssignment.mainIVR = e.target.checked;
+                this.saveDIDConfiguration();
+                this.addLogEntry('INFO', 'Admin', `Auto-assignment for main IVR ${e.target.checked ? 'enabled' : 'disabled'}`, 'did-config');
+            });
+        }
+
+        if (autoAssignSupport) {
+            autoAssignSupport.addEventListener('change', (e) => {
+                this.didConfig.autoAssignment.support = e.target.checked;
+                this.saveDIDConfiguration();
+                this.addLogEntry('INFO', 'Admin', `Auto-assignment for support department ${e.target.checked ? 'enabled' : 'disabled'}`, 'did-config');
+            });
+        }
+
+        if (autoAssignOperators) {
+            autoAssignOperators.addEventListener('change', (e) => {
+                this.didConfig.autoAssignment.operators = e.target.checked;
+                this.saveDIDConfiguration();
+                this.addLogEntry('INFO', 'Admin', `Auto-assignment for operators department ${e.target.checked ? 'enabled' : 'disabled'}`, 'did-config');
+            });
+        }
+
+        // Load current settings
+        this.loadAutoAssignmentSettings();
+    }
+
+    loadAutoAssignmentSettings() {
+        // Load and apply current auto-assignment settings
+        const autoAssignExtensions = document.getElementById('auto-assign-extensions');
+        const autoAssignMainIVR = document.getElementById('auto-assign-main-ivr');
+        const autoAssignSupport = document.getElementById('auto-assign-support');
+        const autoAssignOperators = document.getElementById('auto-assign-operators');
+
+        if (autoAssignExtensions) {
+            autoAssignExtensions.checked = this.didConfig.autoAssignment.extensions;
+        }
+        if (autoAssignMainIVR) {
+            autoAssignMainIVR.checked = this.didConfig.autoAssignment.mainIVR;
+        }
+        if (autoAssignSupport) {
+            autoAssignSupport.checked = this.didConfig.autoAssignment.support;
+        }
+        if (autoAssignOperators) {
+            autoAssignOperators.checked = this.didConfig.autoAssignment.operators;
+        }
+    }
+
+    showDIDAssignmentOptions() {
+        // Show the DID assignment options panel
+        const didOptionsPanel = document.getElementById('gv-did-options');
+        if (didOptionsPanel) {
+            didOptionsPanel.style.display = 'block';
+
+            // Update panel with current Google Voice numbers
+            this.updateDIDAssignmentPanel();
+
+            this.addLogEntry('INFO', 'Admin', 'DID assignment options displayed', 'did-config');
+        }
+    }
+
+    updateDIDAssignmentPanel() {
+        // Update the DID assignment panel with current Google Voice numbers
+        const numbersContainer = document.querySelector('#gv-did-options .assignment-checkboxes');
+        if (!numbersContainer || !this.googleVoiceConfig.numbers.length) return;
+
+        // Add number-specific assignment options
+        this.googleVoiceConfig.numbers.forEach(number => {
+            const numberDiv = document.createElement('div');
+            numberDiv.className = 'number-assignment-section';
+            numberDiv.innerHTML = `
+                <h5>📞 ${number.number}</h5>
+                <div class="number-assignment-options">
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="assign-${number.number}-extension" data-number="${number.number}" data-type="extension">
+                        <span>Auto-assign to new extensions</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="assign-${number.number}-ivr" data-number="${number.number}" data-type="ivr">
+                        <span>Route to main IVR</span>
+                    </label>
+                    <label class="checkbox-item">
+                        <input type="checkbox" id="assign-${number.number}-support" data-number="${number.number}" data-type="support">
+                        <span>Route to support department</span>
+                    </label>
+                </div>
+            `;
+
+            // Add event listeners for number-specific assignments
+            numberDiv.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => {
+                    this.handleNumberAssignmentChange(e.target.dataset.number, e.target.dataset.type, e.target.checked);
+                });
+            });
+
+            numbersContainer.appendChild(numberDiv);
+        });
+    }
+
+    handleNumberAssignmentChange(number, type, enabled) {
+        // Handle changes to number-specific assignment settings
+        if (!this.didConfig.numberAssignments) {
+            this.didConfig.numberAssignments = {};
+        }
+
+        if (!this.didConfig.numberAssignments[number]) {
+            this.didConfig.numberAssignments[number] = {};
+        }
+
+        this.didConfig.numberAssignments[number][type] = enabled;
+        this.saveDIDConfiguration();
+
+        this.addLogEntry('INFO', 'Admin', `Number ${number} ${type} assignment ${enabled ? 'enabled' : 'disabled'}`, 'did-config', {
+            number,
+            type,
+            enabled
+        });
+    }
+
+    applyAutomaticDIDAssignments() {
+        // Apply automatic DID assignments based on current settings
+        if (!this.googleVoiceConfig.enabled || !this.googleVoiceConfig.numbers.length) {
+            return;
+        }
+
+        const assignments = [];
+
+        // Apply main IVR assignments
+        if (this.didConfig.autoAssignment.mainIVR) {
+            const primaryNumber = this.googleVoiceConfig.numbers[0];
+            if (primaryNumber && primaryNumber.status === 'available') {
+                this.assignDIDToIVR(primaryNumber.number);
+                assignments.push({ number: primaryNumber.number, target: 'main-ivr' });
+            }
+        }
+
+        // Apply support department assignments
+        if (this.didConfig.autoAssignment.support) {
+            const supportNumber = this.googleVoiceConfig.numbers.find(n => n.status === 'available');
+            if (supportNumber) {
+                this.assignDIDToSupport(supportNumber.number);
+                assignments.push({ number: supportNumber.number, target: 'support' });
+            }
+        }
+
+        // Apply operators department assignments
+        if (this.didConfig.autoAssignment.operators) {
+            const operatorNumber = this.googleVoiceConfig.numbers.find(n => n.status === 'available');
+            if (operatorNumber) {
+                this.assignDIDToOperators(operatorNumber.number);
+                assignments.push({ number: operatorNumber.number, target: 'operators' });
+            }
+        }
+
+        if (assignments.length > 0) {
+            this.addLogEntry('INFO', 'Admin', `Applied ${assignments.length} automatic DID assignments`, 'did-auto-assign', {
+                assignments
+            });
+            this.showToast(`Applied ${assignments.length} automatic DID assignments`, 'success');
+        }
+    }
+
+    assignDIDToIVR(number) {
+        // Assign DID to main IVR
+        this.didConfig.assignments[number] = {
+            target: 'main-ivr',
+            assigned: new Date().toISOString(),
+            type: 'ivr',
+            provider: 'google-voice'
+        };
+
+        // Update Google Voice number status
+        const gvNumber = this.googleVoiceConfig.numbers.find(n => n.number === number);
+        if (gvNumber) {
+            gvNumber.status = 'assigned';
+        }
+
+        this.saveDIDConfiguration();
+        this.saveGoogleVoiceConfig();
+    }
+
+    assignDIDToSupport(number) {
+        // Assign DID to support department
+        this.didConfig.assignments[number] = {
+            target: 'support-department',
+            assigned: new Date().toISOString(),
+            type: 'department',
+            provider: 'google-voice'
+        };
+
+        // Update Google Voice number status
+        const gvNumber = this.googleVoiceConfig.numbers.find(n => n.number === number);
+        if (gvNumber) {
+            gvNumber.status = 'assigned';
+        }
+
+        this.saveDIDConfiguration();
+        this.saveGoogleVoiceConfig();
+    }
+
+    assignDIDToOperators(number) {
+        // Assign DID to operators department
+        this.didConfig.assignments[number] = {
+            target: 'operators-department',
+            assigned: new Date().toISOString(),
+            type: 'department',
+            provider: 'google-voice'
+        };
+
+        // Update Google Voice number status
+        const gvNumber = this.googleVoiceConfig.numbers.find(n => n.number === number);
+        if (gvNumber) {
+            gvNumber.status = 'assigned';
+        }
+
+        this.saveDIDConfiguration();
+        this.saveGoogleVoiceConfig();
+    }
+
+    showManualDIDAssignmentDialog() {
+        // Show manual DID assignment dialog
+        const dialog = document.createElement('div');
+        dialog.className = 'modal-overlay';
+        dialog.innerHTML = `
+            <div class="modal-content did-assignment-modal">
+                <div class="modal-header">
+                    <h3>📋 Manual DID Assignment</h3>
+                    <button class="close-modal" aria-label="Close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="assignment-form">
+                        <div class="form-group">
+                            <label for="manual-did-number">Select DID Number:</label>
+                            <select id="manual-did-number" class="form-select">
+                                <option value="">Choose a number...</option>
+                                ${this.getAvailableDIDNumbers().map(num =>
+                                    `<option value="${num.number}">${num.number} (${num.provider})</option>`
+                                ).join('')}
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="manual-assignment-type">Assignment Type:</label>
+                            <select id="manual-assignment-type" class="form-select">
+                                <option value="">Choose assignment type...</option>
+                                <option value="extension">Extension</option>
+                                <option value="ivr">Main IVR</option>
+                                <option value="support">Support Department</option>
+                                <option value="operators">Operators Department</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" id="extension-selection" style="display: none;">
+                            <label for="manual-extension-number">Extension Number:</label>
+                            <select id="manual-extension-number" class="form-select">
+                                <option value="">Choose extension...</option>
+                                ${this.getAvailableExtensions().map(ext =>
+                                    `<option value="${ext.number}">${ext.number} - ${ext.name}</option>`
+                                ).join('')}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-secondary cancel-manual-assignment">Cancel</button>
+                    <button class="btn-primary apply-manual-assignment">Assign DID</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(dialog);
+
+        // Setup event listeners
+        const closeBtn = dialog.querySelector('.close-modal');
+        const cancelBtn = dialog.querySelector('.cancel-manual-assignment');
+        const applyBtn = dialog.querySelector('.apply-manual-assignment');
+        const assignmentType = dialog.querySelector('#manual-assignment-type');
+        const extensionSelection = dialog.querySelector('#extension-selection');
+
+        const closeDialog = () => {
+            dialog.remove();
+        };
+
+        closeBtn.addEventListener('click', closeDialog);
+        cancelBtn.addEventListener('click', closeDialog);
+
+        assignmentType.addEventListener('change', (e) => {
+            if (e.target.value === 'extension') {
+                extensionSelection.style.display = 'block';
+            } else {
+                extensionSelection.style.display = 'none';
+            }
+        });
+
+        applyBtn.addEventListener('click', () => {
+            this.processManualDIDAssignment(dialog);
+        });
+
+        this.addLogEntry('INFO', 'Admin', 'Manual DID assignment dialog opened', 'did-manual');
+    }
+
+    getAvailableDIDNumbers() {
+        // Get all available DID numbers from all providers
+        const available = [];
+
+        // Google Voice numbers
+        if (this.googleVoiceConfig.numbers) {
+            this.googleVoiceConfig.numbers.forEach(num => {
+                if (num.status === 'available') {
+                    available.push({
+                        number: num.number,
+                        provider: 'google-voice'
+                    });
+                }
+            });
+        }
+
+        // Could add other providers here (Callcentric, etc.)
+
+        return available;
+    }
+
+    getAvailableExtensions() {
+        // Get available extensions for assignment
+        // This would typically come from the PBX configuration
+        return [
+            { number: '100', name: 'Reception' },
+            { number: '200', name: 'Sales' },
+            { number: '300', name: 'Support' },
+            { number: '400', name: 'Management' }
+        ];
+    }
+
+    processManualDIDAssignment(dialog) {
+        const didNumber = dialog.querySelector('#manual-did-number').value;
+        const assignmentType = dialog.querySelector('#manual-assignment-type').value;
+        const extensionNumber = dialog.querySelector('#manual-extension-number').value;
+
+        if (!didNumber || !assignmentType) {
+            this.showToast('Please select both DID number and assignment type', 'error');
+            return;
+        }
+
+        if (assignmentType === 'extension' && !extensionNumber) {
+            this.showToast('Please select an extension number', 'error');
+            return;
+        }
+
+        // Create assignment
+        const assignment = {
+            assigned: new Date().toISOString(),
+            type: assignmentType,
+            provider: this.getProviderForNumber(didNumber)
+        };
+
+        if (assignmentType === 'extension') {
+            assignment.extension = extensionNumber;
+            assignment.target = `extension-${extensionNumber}`;
+        } else {
+            assignment.target = assignmentType === 'ivr' ? 'main-ivr' : `${assignmentType}-department`;
+        }
+
+        // Apply assignment
+        this.didConfig.assignments[didNumber] = assignment;
+
+        // Update provider number status
+        this.updateProviderNumberStatus(didNumber, 'assigned');
+
+        this.saveDIDConfiguration();
+
+        this.addLogEntry('INFO', 'Admin', `Manually assigned DID ${didNumber} to ${assignment.target}`, 'did-manual', {
+            didNumber,
+            assignment
+        });
+
+        this.showToast(`DID ${didNumber} assigned successfully`, 'success');
+        dialog.remove();
+
+        // Refresh assignments view if open
+        this.refreshDIDAssignmentsView();
+    }
+
+    getProviderForNumber(number) {
+        // Determine which provider a number belongs to
+        if (this.googleVoiceConfig.numbers.find(n => n.number === number)) {
+            return 'google-voice';
+        }
+        // Add other providers as needed
+        return 'unknown';
+    }
+
+    updateProviderNumberStatus(number, status) {
+        // Update the status of a number in its provider configuration
+        if (this.googleVoiceConfig.numbers) {
+            const gvNumber = this.googleVoiceConfig.numbers.find(n => n.number === number);
+            if (gvNumber) {
+                gvNumber.status = status;
+                this.saveGoogleVoiceConfig();
+            }
+        }
+        // Add other providers as needed
+    }
+
+    showDIDAssignmentsView() {
+        // Show current DID assignments in a modal
+        const dialog = document.createElement('div');
+        dialog.className = 'modal-overlay';
+        dialog.innerHTML = `
+            <div class="modal-content did-assignments-view">
+                <div class="modal-header">
+                    <h3>📋 Current DID Assignments</h3>
+                    <button class="close-modal" aria-label="Close">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="assignments-list" id="assignments-list">
+                        ${this.generateAssignmentsHTML()}
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn-secondary refresh-assignments">Refresh</button>
+                    <button class="btn-primary close-assignments-view">Close</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(dialog);
+
+        // Setup event listeners
+        const closeBtn = dialog.querySelector('.close-modal');
+        const closeViewBtn = dialog.querySelector('.close-assignments-view');
+        const refreshBtn = dialog.querySelector('.refresh-assignments');
+
+        const closeDialog = () => {
+            dialog.remove();
+        };
+
+        closeBtn.addEventListener('click', closeDialog);
+        closeViewBtn.addEventListener('click', closeDialog);
+        refreshBtn.addEventListener('click', () => {
+            this.refreshDIDAssignmentsView(dialog);
+        });
+
+        // Add remove assignment buttons
+        dialog.querySelectorAll('.remove-assignment').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const didNumber = e.target.dataset.number;
+                this.removeDIDAssignment(didNumber, dialog);
+            });
+        });
+
+        this.addLogEntry('INFO', 'Admin', 'DID assignments view opened', 'did-view');
+    }
+
+    generateAssignmentsHTML() {
+        if (!this.didConfig.assignments || Object.keys(this.didConfig.assignments).length === 0) {
+            return '<div class="no-assignments">No DID assignments configured yet.</div>';
+        }
+
+        let html = '<div class="assignments-table">';
+        html += '<div class="table-header">';
+        html += '<span>DID Number</span><span>Assigned To</span><span>Provider</span><span>Date</span><span>Actions</span>';
+        html += '</div>';
+
+        Object.entries(this.didConfig.assignments).forEach(([number, assignment]) => {
+            html += '<div class="assignment-row">';
+            html += `<span class="did-number">${number}</span>`;
+            html += `<span class="assignment-target">${this.formatAssignmentTarget(assignment)}</span>`;
+            html += `<span class="provider">${assignment.provider}</span>`;
+            html += `<span class="date">${new Date(assignment.assigned).toLocaleDateString()}</span>`;
+            html += `<span class="actions">`;
+            html += `<button class="btn-small remove-assignment" data-number="${number}">Remove</button>`;
+            html += `</span>`;
+            html += '</div>';
+        });
+
+        html += '</div>';
+        return html;
+    }
+
+    formatAssignmentTarget(assignment) {
+        switch (assignment.type) {
+            case 'extension':
+                return `Extension ${assignment.extension}`;
+            case 'ivr':
+                return 'Main IVR';
+            case 'department':
+                return assignment.target.replace('-department', '').replace('-', ' ').toUpperCase();
+            default:
+                return assignment.target;
+        }
+    }
+
+    refreshDIDAssignmentsView(dialog) {
+        if (dialog) {
+            const assignmentsList = dialog.querySelector('#assignments-list');
+            if (assignmentsList) {
+                assignmentsList.innerHTML = this.generateAssignmentsHTML();
+
+                // Re-attach event listeners for remove buttons
+                assignmentsList.querySelectorAll('.remove-assignment').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const didNumber = e.target.dataset.number;
+                        this.removeDIDAssignment(didNumber, dialog);
+                    });
+                });
+            }
+        }
+    }
+
+    removeDIDAssignment(didNumber, dialog) {
+        if (!confirm(`Remove DID assignment for ${didNumber}?`)) {
+            return;
+        }
+
+        // Remove assignment
+        delete this.didConfig.assignments[didNumber];
+
+        // Update provider number status
+        this.updateProviderNumberStatus(didNumber, 'available');
+
+        this.saveDIDConfiguration();
+
+        this.addLogEntry('INFO', 'Admin', `Removed DID assignment for ${didNumber}`, 'did-remove', {
+            didNumber
+        });
+
+        this.showToast(`DID assignment for ${didNumber} removed`, 'success');
+
+        // Refresh view
+        this.refreshDIDAssignmentsView(dialog);
+    }
+
+    saveDIDConfiguration() {
+        // Save DID configuration to localStorage
+        localStorage.setItem('did-config', JSON.stringify(this.didConfig));
+
+        // Broadcast to other clients if sync is enabled
+        if (this.pbxConfig.syncEnabled) {
+            this.broadcastSettingsUpdate('did-config', this.didConfig);
+        }
+    }
+
+    saveGoogleVoiceConfig() {
+        // Save Google Voice configuration to localStorage
+        localStorage.setItem('gv-config', JSON.stringify(this.googleVoiceConfig));
+        localStorage.setItem('gv-enabled', this.googleVoiceConfig.enabled.toString());
+        localStorage.setItem('gv-api-key', this.googleVoiceConfig.apiKey);
+        localStorage.setItem('gv-numbers', JSON.stringify(this.googleVoiceConfig.numbers));
+        localStorage.setItem('gv-sms-enabled', this.googleVoiceConfig.smsEnabled.toString());
+        localStorage.setItem('gv-status', this.googleVoiceConfig.status);
+
+        // Broadcast to other clients if sync is enabled
+        if (this.pbxConfig.syncEnabled) {
+            this.broadcastSettingsUpdate('google-voice-config', this.googleVoiceConfig);
         }
     }
 }

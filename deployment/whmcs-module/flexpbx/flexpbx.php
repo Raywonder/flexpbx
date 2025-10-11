@@ -6,7 +6,7 @@
  * Supports 2FA authentication and desktop app integration
  *
  * @package FlexPBX
- * @version 2.0.0
+ * @version 1.0.0
  * @author FlexPBX Team
  */
 
@@ -21,7 +21,7 @@ function flexpbx_config() {
     return array(
         "name" => "FlexPBX Management",
         "description" => "Complete PBX management and provisioning system with 2FA support",
-        "version" => "2.0.0",
+        "version" => "1.0.0",
         "author" => "FlexPBX Team",
         "language" => "english",
         "fields" => array(

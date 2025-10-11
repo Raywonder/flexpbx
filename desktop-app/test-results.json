@@ -1,0 +1,135 @@
+{
+  "timestamp": "2025-10-09T04:58:39.825Z",
+  "summary": {
+    "total": 31,
+    "passed": 31,
+    "failed": 0,
+    "passRate": "100.0%"
+  },
+  "results": [
+    {
+      "name": "Button: New Local Installation",
+      "status": "PASS"
+    },
+    {
+      "name": "Button: Deploy to Remote Server",
+      "status": "PASS"
+    },
+    {
+      "name": "Button: Connect to Existing Server",
+      "status": "PASS"
+    },
+    {
+      "name": "Button: Import Backup",
+      "status": "PASS"
+    },
+    {
+      "name": "Button: Export Backup",
+      "status": "PASS"
+    },
+    {
+      "name": "Button: Browse Directory",
+      "status": "PASS"
+    },
+    {
+      "name": "Button: Browse SSH Key",
+      "status": "PASS"
+    },
+    {
+      "name": "Button: Test Connection",
+      "status": "PASS"
+    },
+    {
+      "name": "Import hold-music",
+      "status": "PASS"
+    },
+    {
+      "name": "Import ivr-prompts",
+      "status": "PASS"
+    },
+    {
+      "name": "Import voicemail-greetings",
+      "status": "PASS"
+    },
+    {
+      "name": "Import announcements",
+      "status": "PASS"
+    },
+    {
+      "name": "Import ringtones",
+      "status": "PASS"
+    },
+    {
+      "name": "Import moh-classes",
+      "status": "PASS"
+    },
+    {
+      "name": "Bulk Media Export",
+      "status": "PASS"
+    },
+    {
+      "name": "Audio Format Conversion",
+      "status": "PASS"
+    },
+    {
+      "name": "ARIA Labels",
+      "status": "PASS"
+    },
+    {
+      "name": "Keyboard Shortcuts",
+      "status": "PASS"
+    },
+    {
+      "name": "Focus Indicators",
+      "status": "PASS"
+    },
+    {
+      "name": "Color Contrast Ratio",
+      "status": "PASS"
+    },
+    {
+      "name": "Live Region Announcements",
+      "status": "PASS"
+    },
+    {
+      "name": "Backup Format: FlexPBX Backup",
+      "status": "PASS"
+    },
+    {
+      "name": "Backup Format: FlexPBX Extended Backup",
+      "status": "PASS"
+    },
+    {
+      "name": "Backup Format: TAR Archive",
+      "status": "PASS"
+    },
+    {
+      "name": "Backup Format: Compressed TAR",
+      "status": "PASS"
+    },
+    {
+      "name": "Backup Format: ZIP Archive",
+      "status": "PASS"
+    },
+    {
+      "name": "Media Preservation in Backup",
+      "status": "PASS"
+    },
+    {
+      "name": "Import from Local Drive",
+      "status": "PASS"
+    },
+    {
+      "name": "Import Server Configuration",
+      "status": "PASS"
+    },
+    {
+      "name": "Migrate Server Media",
+      "status": "PASS"
+    },
+    {
+      "name": "Version Compatibility Check",
+      "status": "PASS"
+    }
+  ]
+}

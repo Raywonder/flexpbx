@@ -25,7 +25,7 @@ class DiscoveryService extends EventEmitter {
             name: os.hostname(),
             platform: os.platform(),
             type: 'flexpbx-desktop',
-            version: '2.0.0',
+            version: '1.0.0',
             capabilities: ['remote-install', 'file-transfer', 'monitoring'],
             timestamp: Date.now()
         };

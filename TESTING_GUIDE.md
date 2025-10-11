@@ -35,8 +35,8 @@ docker-compose ps
 ```bash
 # Extract the complete package
 cd deployment/build
-unzip FlexPBX-Complete-v2.0.0.zip
-cd FlexPBX-Complete-v2.0.0
+unzip FlexPBX-Complete-v1.0.0.zip
+cd FlexPBX-Complete-v1.0.0
 
 # Run local installation
 sudo ./install.sh local
@@ -49,7 +49,7 @@ cd desktop-apps/mac
 open "FlexPBX Desktop.app"
 
 # Or install from dmg
-open "FlexPBX Desktop-2.0.0-arm64.dmg"
+open "FlexPBX Desktop-1.0.0-arm64.dmg"
 ```
 
 ### Testing URLs (Local)
@@ -88,13 +88,13 @@ ssh root@$VPS_IP
 #### 2. Upload Installation Package
 ```bash
 # From your Mac, upload the package
-scp -r "deployment/build/FlexPBX-Complete-v2.0.0.zip" root@$VPS_IP:/tmp/
+scp -r "deployment/build/FlexPBX-Complete-v1.0.0.zip" root@$VPS_IP:/tmp/
 
 # On VPS, extract and install
 ssh root@$VPS_IP "
 cd /tmp
-unzip FlexPBX-Complete-v2.0.0.zip
-cd FlexPBX-Complete-v2.0.0
+unzip FlexPBX-Complete-v1.0.0.zip
+cd FlexPBX-Complete-v1.0.0
 chmod +x install.sh
 ./install.sh local
 "
@@ -103,7 +103,7 @@ chmod +x install.sh
 #### 3. Remote Installation from Mac
 ```bash
 # Use the remote installer
-cd "/Users/administrator/dev/apps/flex pbx/flexpbx/deployment/build/FlexPBX-Complete-v2.0.0"
+cd "/Users/administrator/dev/apps/flex pbx/flexpbx/deployment/build/FlexPBX-Complete-v1.0.0"
 ./install.sh remote $VPS_IP
 ```
 
@@ -234,7 +234,7 @@ open http://localhost:3000
 ```bash
 # Replace with your VPS IP
 VPS_IP="your.vps.ip"
-cd "/Users/administrator/dev/apps/flex pbx/flexpbx/deployment/build/FlexPBX-Complete-v2.0.0"
+cd "/Users/administrator/dev/apps/flex pbx/flexpbx/deployment/build/FlexPBX-Complete-v1.0.0"
 ./install.sh remote $VPS_IP
 open http://$VPS_IP:3000
 ```

@@ -390,7 +390,7 @@ Module-specific archives containing:
 
 ## 📝 **Changelog**
 
-### Version 2.0.0 (Enhanced Release)
+### Version 1.0.0 (Enhanced Release)
 - 🎯 **Full VoiceOver accessibility support** with ARIA attributes and screen reader compatibility
 - 🔧 **Single instance enforcement** using `app.requestSingleInstanceLock()`
 - 📋 **Complete UI reorganization** with Services, Admin Management, and Logs tabs

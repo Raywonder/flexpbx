@@ -125,7 +125,7 @@ class RichMessagingService extends EventEmitter {
                 type: 'welcome',
                 message: 'Connected to FlexPBX Rich Messaging',
                 serverInfo: {
-                    version: '2.0.0',
+                    version: '1.0.0',
                     features: Object.keys(this.messageTypes),
                     encryption: this.encryption.enabled
                 }
@@ -191,7 +191,7 @@ class RichMessagingService extends EventEmitter {
             metadata: {
                 ...metadata,
                 platform: process.platform,
-                clientVersion: '2.0.0'
+                clientVersion: '1.0.0'
             },
             status: 'sent',
             encrypted: false

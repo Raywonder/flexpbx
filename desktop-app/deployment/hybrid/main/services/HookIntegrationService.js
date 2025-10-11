@@ -556,7 +556,7 @@ function flexpbx_config() {
     return [
         'name' => 'FlexPBX Integration',
         'description' => 'Integrate FlexPBX with WHMCS for automated PBX provisioning',
-        'version' => '2.0.0',
+        'version' => '1.0.0',
         'author' => 'FlexPBX Team',
         'fields' => [
             'server_url' => [

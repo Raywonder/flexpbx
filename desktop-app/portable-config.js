@@ -93,7 +93,7 @@ class PortableConfigManager {
             // Create portable marker
             const markerFile = path.join(this.basePath, '.flexpbx-portable');
             await fs.writeFile(markerFile, JSON.stringify({
-                version: '2.0.0',
+                version: '1.0.0',
                 created: new Date().toISOString(),
                 platform: process.platform,
                 arch: process.arch
@@ -502,7 +502,7 @@ For support and documentation:
 
 ---
 
-*FlexPBX ${this.portableMode ? 'Portable' : 'Desktop'} Edition - Version 2.0.0*
+*FlexPBX ${this.portableMode ? 'Portable' : 'Desktop'} Edition - Version 1.0.0*
 *Generated: ${new Date().toISOString()}*
 `;
 

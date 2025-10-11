@@ -120,7 +120,7 @@ class BackgroundServiceManager extends EventEmitter {
                                     name: require('os').hostname(),
                                     ip: getLocalIP(),
                                     port: 8080,
-                                    version: '2.0.0',
+                                    version: '1.0.0',
                                     capabilities: ['admin', 'pbx', 'recording', 'copyparty']
                                 }
                             };

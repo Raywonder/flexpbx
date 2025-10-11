@@ -19,6 +19,23 @@ class SoundManager {
         };
 
         this.audioInstances = new Map();
+        this.soundQueue = [];
+        this.isPlaying = false;
+        this.currentPriority = 0;
+
+        // Sound priorities (higher number = higher priority)
+        this.soundPriorities = {
+            connected: 10,
+            reconnected: 8,
+            fileTransferComplete: 7,
+            message: 5,
+            connectionLost: 9,
+            disconnect: 8,
+            doorClosing: 6,
+            messageSend: 3,
+            messageReceive: 4
+        };
+
         this.ensureSoundsExist();
     }
 
@@ -59,23 +76,99 @@ class SoundManager {
             return { success: false, reason: 'Sound not found' };
         }
 
+        const {
+            priority = this.soundPriorities[soundName] || 5,
+            immediate = false,
+            allowOverride = false
+        } = options;
+
+        // If immediate is true, play right away regardless of queue
+        if (immediate) {
+            return await this.playDirectly(soundName, options);
+        }
+
+        // Check if we should override current sound based on priority
+        if (this.isPlaying && priority > this.currentPriority && allowOverride) {
+            console.log(`🔊 Overriding current sound with higher priority: ${soundName} (${priority})`);
+            this.soundQueue = []; // Clear queue
+            return await this.playDirectly(soundName, options);
+        }
+
+        // Add to queue if something is playing or queue has items
+        if (this.isPlaying || this.soundQueue.length > 0) {
+            // Check if a higher priority sound is already queued
+            const existingHigherPriority = this.soundQueue.find(item => item.priority > priority);
+            if (existingHigherPriority) {
+                console.log(`🔊 Skipping sound ${soundName} - higher priority sound already queued`);
+                return { success: false, reason: 'Higher priority sound queued' };
+            }
+
+            // Remove lower priority sounds from queue
+            this.soundQueue = this.soundQueue.filter(item => item.priority >= priority);
+
+            this.soundQueue.push({ soundName, options, priority });
+            console.log(`🔊 Queued sound: ${soundName} (priority: ${priority}), queue length: ${this.soundQueue.length}`);
+            return { success: true, message: 'Sound queued' };
+        }
+
+        // Play immediately if nothing is playing
+        return await this.playDirectly(soundName, options);
+    }
+
+    async playDirectly(soundName, options = {}) {
+        const fileName = this.sounds[soundName];
         const soundPath = path.join(this.soundsDir, fileName);
+        const priority = options.priority || this.soundPriorities[soundName] || 5;
+
+        this.isPlaying = true;
+        this.currentPriority = priority;
 
         try {
+            let result;
             // On macOS, use afplay for WAV files
             if (process.platform === 'darwin') {
-                return await this.playMacOSSound(soundPath, options);
+                result = await this.playMacOSSound(soundPath, { ...options, background: false });
             } else if (process.platform === 'linux') {
-                return await this.playLinuxSound(soundPath, options);
+                result = await this.playLinuxSound(soundPath, { ...options, background: false });
             } else if (process.platform === 'win32') {
-                return await this.playWindowsSound(soundPath, options);
+                result = await this.playWindowsSound(soundPath, { ...options, background: false });
             } else {
-                return { success: false, reason: 'Platform not supported' };
+                result = { success: false, reason: 'Platform not supported' };
             }
+
+            // Play next sound in queue after current finishes
+            this.processQueue();
+
+            return result;
         } catch (error) {
             console.error(`Error playing sound ${soundName}:`, error);
+            this.processQueue(); // Continue with queue even if this sound failed
             return { success: false, error: error.message };
         }
+    }
+
+    processQueue() {
+        this.isPlaying = false;
+        this.currentPriority = 0;
+
+        if (this.soundQueue.length > 0) {
+            // Sort queue by priority (highest first)
+            this.soundQueue.sort((a, b) => b.priority - a.priority);
+
+            const nextSound = this.soundQueue.shift();
+            console.log(`🔊 Playing next queued sound: ${nextSound.soundName} (priority: ${nextSound.priority})`);
+
+            // Small delay to prevent audio overlap
+            setTimeout(() => {
+                this.playDirectly(nextSound.soundName, nextSound.options);
+            }, 100);
+        }
+    }
+
+    // Clear the sound queue (useful for shutdown or priority overrides)
+    clearQueue() {
+        this.soundQueue = [];
+        console.log('🔊 Sound queue cleared');
     }
 
     async playMacOSSound(soundPath, options = {}) {
@@ -237,7 +330,8 @@ class SoundManager {
 
     // Background service specific sounds
     async playServiceStartedSound() {
-        return await this.playConnectionSound();
+        console.log('🔊 Playing primary service started sound...');
+        return await this.playSound('connected', { priority: 10, allowOverride: true });
     }
 
     async playServiceStoppedSound() {
@@ -253,7 +347,8 @@ class SoundManager {
     }
 
     async playCopyPartyStartedSound() {
-        return await this.playReconnectedSound();
+        console.log('🔊 Playing CopyParty started sound (lower priority)...');
+        return await this.playSound('reconnected', { priority: 6 });
     }
 
     async playDeploymentCompleteSound() {

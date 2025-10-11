@@ -163,7 +163,7 @@ cd "/Users/administrator/dev/apps/flex pbx/flexpbx"
 export VPS_IP="your.vps.ip.address"
 
 # Quick remote installation
-./deployment/build/FlexPBX-Complete-v2.0.0/install.sh remote $VPS_IP
+./deployment/build/FlexPBX-Complete-v1.0.0/install.sh remote $VPS_IP
 
 # Run comprehensive tests
 ./test-suite.sh vps $VPS_IP
@@ -178,11 +178,11 @@ ssh $VPS_IP "htop"
 export SERVER_IP="your.dedicated.ip"
 
 # Install with full features
-scp -r deployment/build/FlexPBX-Complete-v2.0.0.zip root@$SERVER_IP:/tmp/
+scp -r deployment/build/FlexPBX-Complete-v1.0.0.zip root@$SERVER_IP:/tmp/
 ssh root@$SERVER_IP "
   cd /tmp
-  unzip FlexPBX-Complete-v2.0.0.zip
-  cd FlexPBX-Complete-v2.0.0
+  unzip FlexPBX-Complete-v1.0.0.zip
+  cd FlexPBX-Complete-v1.0.0
   ./install.sh local --mode full --enable-all
 "
 
@@ -196,7 +196,7 @@ ssh root@$SERVER_IP "
 export SHARED_IP="your.shared.ip"
 
 # Install minimal version
-./deployment/build/FlexPBX-Complete-v2.0.0/install.sh local --mode minimal --shared-hosting
+./deployment/build/FlexPBX-Complete-v1.0.0/install.sh local --mode minimal --shared-hosting
 
 # Test basic functionality only
 curl http://$SHARED_IP:3000/health

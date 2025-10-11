@@ -1,0 +1,111 @@
+{
+  "timestamp": "2025-10-09T05:06:23.023Z",
+  "summary": {
+    "total": 25,
+    "passed": 25,
+    "failed": 0,
+    "passRate": "100.0%"
+  },
+  "results": [
+    {
+      "name": "Support for .flxmod format",
+      "status": "PASS"
+    },
+    {
+      "name": "Support for .tar.gz format",
+      "status": "PASS"
+    },
+    {
+      "name": "Support for .zip format",
+      "status": "PASS"
+    },
+    {
+      "name": "Support for .tar format",
+      "status": "PASS"
+    },
+    {
+      "name": "Reject .exe format",
+      "status": "PASS"
+    },
+    {
+      "name": "Reject .dmg format",
+      "status": "PASS"
+    },
+    {
+      "name": "Reject .pkg format",
+      "status": "PASS"
+    },
+    {
+      "name": "Reject .deb format",
+      "status": "PASS"
+    },
+    {
+      "name": "Valid Module Structure",
+      "status": "PASS"
+    },
+    {
+      "name": "Invalid Module Structure Rejection",
+      "status": "PASS"
+    },
+    {
+      "name": "Module Metadata Validation",
+      "status": "PASS"
+    },
+    {
+      "name": "Dependency Validation",
+      "status": "PASS"
+    },
+    {
+      "name": "Install from Local File",
+      "status": "PASS"
+    },
+    {
+      "name": "Install from URL",
+      "status": "PASS"
+    },
+    {
+      "name": "Installation Rollback on Failure",
+      "status": "PASS"
+    },
+    {
+      "name": "Prevent Duplicate Installation",
+      "status": "PASS"
+    },
+    {
+      "name": "Enable Module",
+      "status": "PASS"
+    },
+    {
+      "name": "Disable Module",
+      "status": "PASS"
+    },
+    {
+      "name": "Module Configuration",
+      "status": "PASS"
+    },
+    {
+      "name": "Module Uninstallation",
+      "status": "PASS"
+    },
+    {
+      "name": "Module Update",
+      "status": "PASS"
+    },
+    {
+      "name": "Create Module Template",
+      "status": "PASS"
+    },
+    {
+      "name": "Load Development Module",
+      "status": "PASS"
+    },
+    {
+      "name": "Module Hot Reload",
+      "status": "PASS"
+    },
+    {
+      "name": "Module Debugging Support",
+      "status": "PASS"
+    }
+  ]
+}

@@ -245,7 +245,7 @@ class AuthenticationService extends EventEmitter {
             const response = await axios.post(config.authUrl, loginData, {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                    'User-Agent': 'FlexPBX-Desktop/2.0.0'
+                    'User-Agent': 'FlexPBX-Desktop/1.0.0'
                 },
                 timeout: 15000,
                 maxRedirects: 5
