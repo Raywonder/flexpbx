@@ -1,0 +1,38 @@
+{
+    "asterisk_mode": "secure",
+    "allow_config_writes": false,
+    "api_mode": "enabled",
+    "debug_mode": false,
+    "version": "1.0",
+    "placeholder_emails": [
+        "user@example.com",
+        "admin@example.com",
+        "noemail@localhost"
+    ],
+    "notification_defaults": {
+        "push_notifications_enabled": false,
+        "email_notifications_enabled": true,
+        "notify_voicemail": true,
+        "notify_missed_calls": true,
+        "notify_sip_status": true,
+        "notify_system_alerts": false
+    },
+    "temp_password_expiry": 900,
+    "sip_status_cache_ttl": 5,
+    "backup": {
+        "enabled": true,
+        "schedule": "daily",
+        "retention_days": 30,
+        "include_user_data": false,
+        "include_logs": false,
+        "compression": true,
+        "encryption": false,
+        "remote_path": "",
+        "second_drive_path": ""
+    },
+    "audio_manager": {
+        "enabled": true,
+        "use_admin_login": true,
+        "require_permissions": ["all", "audio_manager"]
+    }
+}

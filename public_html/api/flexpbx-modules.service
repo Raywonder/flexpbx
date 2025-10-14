@@ -1,0 +1,14 @@
+[Unit]
+Description=FlexPBX Module Manager
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/opt/flexpbx/module-manager.sh
+Restart=on-failure
+RestartSec=5
+User=www-data
+Group=www-data
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,94 @@
+#!/bin/bash
+#
+# FlexPBX Permission Toggle Script
+# Switches between Secure Mode and Power User Mode
+#
+# Usage: flexpbx-toggle-permissions [secure|power_user]
+#
+
+set -e
+
+MODE="${1:-secure}"
+LOG_FILE="/var/log/flexpbx/permission-changes.log"
+TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
+
+# Create log directory if it doesn't exist
+mkdir -p /var/log/flexpbx
+chmod 755 /var/log/flexpbx
+
+# Log function
+log() {
+    echo "[$TIMESTAMP] $1" | tee -a "$LOG_FILE"
+}
+
+# Asterisk config files
+ASTERISK_CONFIGS=(
+    "/etc/asterisk/pjsip.conf"
+    "/etc/asterisk/extensions.conf"
+    "/etc/asterisk/voicemail.conf"
+    "/etc/asterisk/musiconhold.conf"
+    "/etc/asterisk/queues.conf"
+    "/etc/asterisk/features.conf"
+)
+
+log "======================================"
+log "FlexPBX Permission Toggle"
+log "Requested mode: $MODE"
+log "Executed by: ${SUDO_USER:-root}"
+log "======================================"
+
+case "$MODE" in
+    secure)
+        log "Switching to SECURE MODE (Read-Only)"
+
+        # Set files to 640 (owner write, group read)
+        for file in "${ASTERISK_CONFIGS[@]}"; do
+            if [ -f "$file" ]; then
+                chmod 640 "$file"
+                chown asterisk:asterisk "$file"
+                log "✓ Set $file to 640 (read-only for flexpbxuser)"
+            else
+                log "⚠ File not found: $file"
+            fi
+        done
+
+        log "✓ Secure mode enabled - FlexPBX will use API/CLI only"
+        ;;
+
+    power_user)
+        log "Switching to POWER USER MODE (Read-Write)"
+        log "⚠ WARNING: Granting write access to Asterisk configs"
+
+        # Set files to 660 (owner and group write)
+        for file in "${ASTERISK_CONFIGS[@]}"; do
+            if [ -f "$file" ]; then
+                chmod 660 "$file"
+                chown asterisk:asterisk "$file"
+                log "✓ Set $file to 660 (writable for flexpbxuser)"
+            else
+                log "⚠ File not found: $file"
+            fi
+        done
+
+        log "✓ Power user mode enabled - FlexPBX can edit config files directly"
+        ;;
+
+    *)
+        log "✗ ERROR: Invalid mode '$MODE'. Use 'secure' or 'power_user'"
+        exit 1
+        ;;
+esac
+
+# Verify flexpbxuser is in asterisk group
+if groups flexpbxuser | grep -q asterisk; then
+    log "✓ flexpbxuser is in asterisk group"
+else
+    log "⚠ WARNING: flexpbxuser is NOT in asterisk group!"
+    log "  Run: usermod -a -G asterisk flexpbxuser"
+fi
+
+log "======================================"
+log "Permission toggle completed successfully"
+log "======================================"
+
+exit 0

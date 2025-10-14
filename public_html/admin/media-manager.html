@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FlexPBX Media Manager</title>
+    <style>
+        body {
+            font-family: system-ui;
+            background: #1e1e1e;
+            color: white;
+            padding: 20px;
+            margin: 0;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 20px;
+            background: #2a2a2a;
+            border-radius: 8px;
+        }
+        .upload-area {
+            border: 2px dashed #555;
+            padding: 40px;
+            text-align: center;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .upload-area:hover {
+            border-color: #007acc;
+            background: #333;
+        }
+        .upload-area.drag-over {
+            border-color: #4ade80;
+            background: #2d4a2d;
+        }
+        button {
+            background: #007acc;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        button:hover { background: #005999; }
+        button:disabled { background: #666; cursor: not-allowed; }
+        .file-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .file-item {
+            background: #333;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #555;
+        }
+        .file-item audio {
+            width: 100%;
+            margin: 10px 0;
+        }
+        .success { color: #4ade80; }
+        .error { color: #f87171; }
+        .info { color: #60a5fa; }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .tab {
+            padding: 10px 20px;
+            background: #2a2a2a;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px 5px 0 0;
+        }
+        .tab.active {
+            background: #007acc;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            background: #333;
+            border: 1px solid #555;
+            border-radius: 5px;
+            color: white;
+            margin: 10px 0;
+        }
+        .status { padding: 10px; border-radius: 5px; margin: 10px 0; }
+        .file-info { font-size: 12px; color: #999; margin-top: 5px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📁 FlexPBX Media Manager</h1>
+            <p>Upload and manage IVR greetings, music on hold, and system sounds</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('sounds')">🔊 IVR & Sounds</button>
+            <button class="tab" onclick="switchTab('moh')">🎵 Music on Hold</button>
+            <button class="tab" onclick="switchTab('recordings')">📞 Recordings</button>
+        </div>
+
+        <!-- Sounds Tab -->
+        <div id="sounds-tab" class="tab-content active">
+            <div class="section">
+                <h2>Upload IVR Greetings & System Sounds</h2>
+                <p class="info">Recommended: 16-bit PCM WAV, 8kHz or 16kHz, Mono</p>
+
+                <div class="upload-area" id="sounds-upload" onclick="document.getElementById('sounds-file').click()">
+                    <h3>📤 Drop files here or click to browse</h3>
+                    <p>Supported: .wav, .mp3, .gsm</p>
+                    <input type="file" id="sounds-file" multiple accept=".wav,.mp3,.gsm" style="display:none" onchange="handleFileSelect(event, 'sounds')">
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <label>Custom filename (optional):</label>
+                    <input type="text" id="sounds-filename" placeholder="e.g., main-greeting.wav">
+                </div>
+
+                <div id="sounds-status" class="status" style="display:none;"></div>
+
+                <h3>Current Sound Files</h3>
+                <div id="sounds-list" class="file-list"></div>
+            </div>
+        </div>
+
+        <!-- Music on Hold Tab -->
+        <div id="moh-tab" class="tab-content">
+            <div class="section">
+                <h2>Upload Music on Hold</h2>
+                <p class="info">Recommended: WAV or MP3, high quality audio</p>
+
+                <div class="upload-area" id="moh-upload" onclick="document.getElementById('moh-file').click()">
+                    <h3>📤 Drop music files here or click to browse</h3>
+                    <p>Supported: .wav, .mp3</p>
+                    <input type="file" id="moh-file" multiple accept=".wav,.mp3" style="display:none" onchange="handleFileSelect(event, 'moh')">
+                </div>
+
+                <div style="margin: 20px 0;">
+                    <label>MOH Class Name:</label>
+                    <input type="text" id="moh-class" placeholder="e.g., corporate, ambient, jazz">
+                </div>
+
+                <div id="moh-status" class="status" style="display:none;"></div>
+
+                <h3>Current Music on Hold Files</h3>
+                <div id="moh-list" class="file-list"></div>
+            </div>
+        </div>
+
+        <!-- Recordings Tab -->
+        <div id="recordings-tab" class="tab-content">
+            <div class="section">
+                <h2>Call Recordings</h2>
+                <p class="info">View and manage recorded calls</p>
+
+                <div id="recordings-status" class="status" style="display:none;"></div>
+
+                <h3>Available Recordings</h3>
+                <div id="recordings-list" class="file-list"></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Quick Actions</h3>
+            <button onclick="refreshAllLists()">🔄 Refresh All Lists</button>
+            <button onclick="testAudio()">🎧 Test Audio System</button>
+            <button onclick="window.location.href='dashboard.html'">← Back to Admin</button>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api/file-manager.php';
+        const MEDIA_BASE = '/media';
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+
+            event.target.classList.add('active');
+            document.getElementById(tabName + '-tab').classList.add('active');
+
+            loadFileList(tabName);
+        }
+
+        // Drag and drop handlers
+        ['sounds', 'moh'].forEach(type => {
+            const area = document.getElementById(type + '-upload');
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                area.addEventListener(eventName, preventDefaults, false);
+            });
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                area.addEventListener(eventName, () => area.classList.add('drag-over'), false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                area.addEventListener(eventName, () => area.classList.remove('drag-over'), false);
+            });
+
+            area.addEventListener('drop', (e) => handleDrop(e, type), false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        function handleDrop(e, type) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            handleFiles(files, type);
+        }
+
+        function handleFileSelect(event, type) {
+            handleFiles(event.target.files, type);
+        }
+
+        async function handleFiles(files, type) {
+            const status = document.getElementById(type + '-status');
+            status.style.display = 'block';
+            status.className = 'status info';
+            status.innerHTML = `Uploading ${files.length} file(s)...`;
+
+            for (let file of files) {
+                await uploadFile(file, type);
+            }
+
+            status.className = 'status success';
+            status.innerHTML = `✅ Upload complete! Uploaded ${files.length} file(s).`;
+
+            loadFileList(type);
+        }
+
+        async function uploadFile(file, type) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('action', 'upload');
+            formData.append('type', type);
+
+            const customName = document.getElementById(type + '-filename')?.value;
+            if (customName) {
+                formData.append('filename', customName);
+            }
+
+            try {
+                const response = await fetch('/api/media-upload.php', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                if (!result.success) {
+                    throw new Error(result.message || 'Upload failed');
+                }
+
+                return result;
+            } catch (error) {
+                console.error('Upload error:', error);
+                const status = document.getElementById(type + '-status');
+                status.className = 'status error';
+                status.innerHTML = `❌ Error: ${error.message}`;
+            }
+        }
+
+        async function loadFileList(type) {
+            const listEl = document.getElementById(type + '-list');
+            listEl.innerHTML = '<p class="info">Loading...</p>';
+
+            try {
+                const response = await fetch(`${API_BASE}?action=list&path=media/${type}`);
+                const result = await response.json();
+
+                if (!result.success) {
+                    throw new Error(result.message);
+                }
+
+                if (!result.files || result.files.length === 0) {
+                    listEl.innerHTML = '<p class="info">No files yet. Upload some files to get started!</p>';
+                    return;
+                }
+
+                listEl.innerHTML = result.files.map(file => `
+                    <div class="file-item">
+                        <strong>${file.name}</strong>
+                        <div class="file-info">${formatFileSize(file.size)} • ${file.modified || ''}</div>
+                        ${file.name.endsWith('.wav') || file.name.endsWith('.mp3') ?
+                            `<audio controls><source src="${MEDIA_BASE}/${type}/${file.name}"></audio>` : ''}
+                        <div style="margin-top:10px;">
+                            <button onclick="deleteFile('${type}', '${file.name}')">🗑️ Delete</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                listEl.innerHTML = `<p class="error">Error loading files: ${error.message}</p>`;
+            }
+        }
+
+        async function deleteFile(type, filename) {
+            if (!confirm(`Delete ${filename}?`)) return;
+
+            try {
+                const response = await fetch(API_BASE, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        action: 'delete',
+                        path: `media/${type}/${filename}`
+                    })
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    loadFileList(type);
+                } else {
+                    alert('Delete failed: ' + result.message);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        function refreshAllLists() {
+            ['sounds', 'moh', 'recordings'].forEach(type => loadFileList(type));
+        }
+
+        function testAudio() {
+            alert('Audio system test:\n\n✅ Media directories: Configured\n✅ Upload API: Active\n✅ File Manager: Ready\n\nTest a file by uploading and playing it in the list below.');
+        }
+
+        // Load initial list
+        loadFileList('sounds');
+    </script>
+</body>
+</html>

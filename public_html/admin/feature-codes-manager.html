@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feature Codes Manager - FlexPBX Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f8f9fa;
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        td {
+            padding: 15px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #28a745;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .category-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .category-diagnostic {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .category-queue {
+            background: #28a745;
+            color: white;
+        }
+
+        .category-music {
+            background: #6f42c1;
+            color: white;
+        }
+
+        .category-voicemail {
+            background: #fd7e14;
+            color: white;
+        }
+
+        .status-enabled {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .status-disabled {
+            color: #dc3545;
+            font-weight: 600;
+        }
+
+        .code-display {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 16px;
+            color: #667eea;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .back-link {
+            color: #667eea;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+
+        <div class="header">
+            <div>
+                <h1>📞 Feature Codes Manager</h1>
+                <p style="color: #666; margin-top: 5px;">Enable, disable, and manage PBX feature codes</p>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-warning" onclick="backupConfig()">💾 Backup</button>
+                <button class="btn btn-success" onclick="reloadDialplan()" id="reloadBtn">🔄 Reload Dialplan</button>
+            </div>
+        </div>
+
+        <div id="alertContainer"></div>
+
+        <div class="card">
+            <div id="loadingContainer" class="loading">
+                <div class="spinner"></div>
+                <p>Loading feature codes...</p>
+            </div>
+
+            <div id="tableContainer" style="display: none;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>Code</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Category</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="codesTableBody">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 style="margin-bottom: 15px;">ℹ️ Instructions</h3>
+            <ul style="line-height: 1.8; color: #666;">
+                <li><strong>Toggle Status:</strong> Use the switch to enable or disable a feature code</li>
+                <li><strong>Save Changes:</strong> Changes are saved automatically when you toggle</li>
+                <li><strong>Reload Dialplan:</strong> Click "Reload Dialplan" to apply changes to Asterisk</li>
+                <li><strong>Backup:</strong> Always backup before making major changes</li>
+                <li><strong>Test:</strong> Test feature codes after enabling by dialing from a phone</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        let currentCodes = [];
+
+        // Load feature codes on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadFeatureCodes();
+        });
+
+        function loadFeatureCodes() {
+            fetch('feature-codes-manager.php?action=list')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        currentCodes = data.codes;
+                        renderTable(data.codes);
+                        document.getElementById('loadingContainer').style.display = 'none';
+                        document.getElementById('tableContainer').style.display = 'block';
+                    } else {
+                        showAlert('error', 'Failed to load feature codes: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    showAlert('error', 'Error loading feature codes: ' + error.message);
+                });
+        }
+
+        function renderTable(codes) {
+            const tbody = document.getElementById('codesTableBody');
+            tbody.innerHTML = '';
+
+            codes.forEach(code => {
+                const tr = document.createElement('tr');
+
+                const categoryClass = 'category-' + code.category.toLowerCase().replace(/\s+/g, '-');
+
+                tr.innerHTML = `
+                    <td>
+                        <label class="toggle-switch">
+                            <input type="checkbox" ${code.enabled ? 'checked' : ''}
+                                   onchange="toggleCode('${code.code}', this.checked)">
+                            <span class="slider"></span>
+                        </label>
+                    </td>
+                    <td><span class="code-display">${code.code}</span></td>
+                    <td><strong>${code.name}</strong></td>
+                    <td>${code.description}</td>
+                    <td><span class="category-badge ${categoryClass}">${code.category}</span></td>
+                    <td>
+                        <span class="${code.enabled ? 'status-enabled' : 'status-disabled'}">
+                            ${code.enabled ? '✓ Enabled' : '✗ Disabled'}
+                        </span>
+                    </td>
+                `;
+
+                tbody.appendChild(tr);
+            });
+        }
+
+        function toggleCode(code, enabled) {
+            const formData = new FormData();
+            formData.append('action', 'toggle');
+            formData.append('code', code);
+
+            showAlert('info', `${enabled ? 'Enabling' : 'Disabling'} ${code}...`);
+
+            fetch('feature-codes-manager.php', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert('success', `Feature code ${code} ${enabled ? 'enabled' : 'disabled'} successfully. Click "Reload Dialplan" to apply.`);
+                    loadFeatureCodes(); // Refresh the table
+                } else {
+                    showAlert('error', 'Failed to toggle feature code: ' + data.message);
+                    loadFeatureCodes(); // Refresh to revert UI
+                }
+            })
+            .catch(error => {
+                showAlert('error', 'Error toggling feature code: ' + error.message);
+                loadFeatureCodes(); // Refresh to revert UI
+            });
+        }
+
+        function reloadDialplan() {
+            const btn = document.getElementById('reloadBtn');
+            btn.disabled = true;
+            btn.textContent = '⏳ Reloading...';
+
+            fetch('feature-codes-manager.php?action=reload')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showAlert('success', '✓ Dialplan reloaded successfully! Changes are now active.');
+                    } else {
+                        showAlert('error', 'Failed to reload dialplan: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    showAlert('error', 'Error reloading dialplan: ' + error.message);
+                })
+                .finally(() => {
+                    btn.disabled = false;
+                    btn.textContent = '🔄 Reload Dialplan';
+                });
+        }
+
+        function backupConfig() {
+            if (!confirm('Create a backup of the current configuration?')) {
+                return;
+            }
+
+            fetch('feature-codes-manager.php?action=backup')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        showAlert('success', '✓ Configuration backed up to: ' + data.backup_file);
+                    } else {
+                        showAlert('error', 'Failed to backup configuration: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    showAlert('error', 'Error backing up configuration: ' + error.message);
+                });
+        }
+
+        function showAlert(type, message) {
+            const container = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type} show`;
+            alert.textContent = message;
+
+            container.innerHTML = '';
+            container.appendChild(alert);
+
+            // Auto-hide after 5 seconds for success/info messages
+            if (type === 'success' || type === 'info') {
+                setTimeout(() => {
+                    alert.classList.remove('show');
+                    setTimeout(() => alert.remove(), 300);
+                }, 5000);
+            }
+        }
+    </script>
+</body>
+</html>

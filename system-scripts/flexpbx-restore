@@ -1,0 +1,505 @@
+#!/bin/bash
+###############################################################################
+# FlexPBX Restore System
+# Restores .flx (system config) or .flxx (extended) backup files
+#
+# Usage: flexpbx-restore [OPTIONS] <backup_file>
+#   -m, --mode <fresh|merge|migrate>  Restore mode (default: merge)
+#       fresh    - Fresh installation (overwrites everything)
+#       merge    - Merge with existing system (keeps user data)
+#       migrate  - Migrate to new user account
+#   -u, --user <username>              Target username for migration
+#   -v, --verbose                      Verbose output
+#   -y, --yes                          Skip confirmation prompts
+#   -h, --help                         Show this help
+#
+# Examples:
+#   flexpbx-restore backup.flx                    # Merge with existing
+#   flexpbx-restore -m fresh backup.flx           # Fresh install
+#   flexpbx-restore -m migrate -u newuser backup.flx  # Migrate to newuser
+###############################################################################
+
+set -e
+
+# Default values
+RESTORE_MODE="merge"
+TARGET_USER="$USER"
+VERBOSE=false
+AUTO_YES=false
+BACKUP_FILE=""
+TEMP_DIR=$(mktemp -d)
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Logging functions
+log_info() {
+    if [ "$VERBOSE" = true ]; then
+        echo -e "${BLUE}[INFO]${NC} $1"
+    fi
+}
+
+log_success() {
+    echo -e "${GREEN}[SUCCESS]${NC} $1"
+}
+
+log_warning() {
+    echo -e "${YELLOW}[WARNING]${NC} $1"
+}
+
+log_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+    exit 1
+}
+
+# Show help
+show_help() {
+    grep '^#' "$0" | grep -v '#!/bin/bash' | sed 's/^# *//'
+    exit 0
+}
+
+# Confirm action
+confirm() {
+    if [ "$AUTO_YES" = true ]; then
+        return 0
+    fi
+
+    local message="$1"
+    echo -e "${YELLOW}$message${NC}"
+    read -p "Continue? [y/N] " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        log_error "Operation cancelled by user"
+    fi
+}
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -m|--mode)
+            RESTORE_MODE="$2"
+            shift 2
+            ;;
+        -u|--user)
+            TARGET_USER="$2"
+            shift 2
+            ;;
+        -v|--verbose)
+            VERBOSE=true
+            shift
+            ;;
+        -y|--yes)
+            AUTO_YES=true
+            shift
+            ;;
+        -h|--help)
+            show_help
+            ;;
+        *)
+            if [ -z "$BACKUP_FILE" ]; then
+                BACKUP_FILE="$1"
+                shift
+            else
+                log_error "Unknown option: $1. Use -h for help."
+            fi
+            ;;
+    esac
+done
+
+# Validate arguments
+if [ -z "$BACKUP_FILE" ]; then
+    log_error "No backup file specified. Use -h for help."
+fi
+
+if [ ! -f "$BACKUP_FILE" ]; then
+    log_error "Backup file not found: $BACKUP_FILE"
+fi
+
+if [ "$RESTORE_MODE" != "fresh" ] && [ "$RESTORE_MODE" != "merge" ] && [ "$RESTORE_MODE" != "migrate" ]; then
+    log_error "Invalid restore mode: $RESTORE_MODE. Must be 'fresh', 'merge', or 'migrate'."
+fi
+
+# Check if migration user exists
+if [ "$RESTORE_MODE" = "migrate" ] && [ "$TARGET_USER" != "$USER" ]; then
+    if ! id "$TARGET_USER" &>/dev/null; then
+        log_error "Target user does not exist: $TARGET_USER"
+    fi
+fi
+
+###############################################################################
+# Restore Functions
+###############################################################################
+
+# Extract backup file
+extract_backup() {
+    local backup="$1"
+    local extract_dir="$2"
+
+    log_info "Extracting backup..."
+
+    # Check if compressed
+    if [[ "$backup" == *.gz ]]; then
+        log_info "Decompressing gzip archive..."
+        gunzip -c "$backup" > "$extract_dir/backup.json"
+    else
+        cp "$backup" "$extract_dir/backup.json"
+    fi
+
+    if [ ! -f "$extract_dir/backup.json" ]; then
+        log_error "Failed to extract backup"
+    fi
+
+    log_success "Backup extracted"
+}
+
+# Verify backup integrity
+verify_backup() {
+    local backup_json="$1"
+
+    log_info "Verifying backup integrity..."
+
+    # Check if valid JSON
+    if ! jq empty "$backup_json" 2>/dev/null; then
+        log_error "Invalid backup file (not valid JSON)"
+    fi
+
+    # Check version
+    local version=$(jq -r '.version' "$backup_json")
+    log_info "Backup version: $version"
+
+    # Check backup type
+    local backup_type=$(jq -r '.backup_type' "$backup_json")
+    log_info "Backup type: $backup_type"
+
+    # Get file count
+    local file_count=$(jq -r '.file_count' "$backup_json")
+    log_info "Files in backup: $file_count"
+
+    log_success "Backup verified"
+}
+
+# Restore a single file
+restore_file() {
+    local backup_json="$1"
+    local file_index="$2"
+    local target_base="$3"
+
+    # Get file info
+    local path=$(jq -r ".files[$file_index].path" "$backup_json")
+    local hash=$(jq -r ".files[$file_index].hash" "$backup_json" | sed 's/sha256://')
+    local content=$(jq -r ".files[$file_index].content" "$backup_json")
+
+    if [ "$path" = "null" ] || [ -z "$path" ]; then
+        return 1
+    fi
+
+    log_info "Restoring: $path"
+
+    # Determine target path
+    local target_file
+    if [[ "$path" == /* ]]; then
+        # Absolute path
+        target_file="$path"
+    elif [[ "$path" == "etc/"* ]] || [[ "$path" == "usr/"* ]]; then
+        # System path
+        target_file="/$path"
+    else
+        # Relative to user home
+        target_file="$target_base/$path"
+    fi
+
+    # Create directory
+    local target_dir=$(dirname "$target_file")
+    mkdir -p "$target_dir"
+
+    # Decode and write file
+    echo "$content" | base64 -d > "$target_file"
+
+    # Verify hash
+    local restored_hash=$(sha256sum "$target_file" | awk '{print $1}')
+    if [ "$hash" != "$restored_hash" ]; then
+        log_warning "Hash mismatch for $path (expected: $hash, got: $restored_hash)"
+    fi
+
+    # Set permissions
+    if [[ "$target_file" == /usr/local/bin/* ]]; then
+        chmod 755 "$target_file"
+    elif [[ "$target_file" == /etc/sudoers.d/* ]]; then
+        chmod 440 "$target_file"
+    else
+        chmod 644 "$target_file"
+    fi
+
+    # Set ownership
+    if [[ "$target_file" == "$target_base"* ]]; then
+        chown "$TARGET_USER:nobody" "$target_file" 2>/dev/null || true
+    fi
+
+    log_success "Restored: $path"
+    return 0
+}
+
+# Create directory structure
+create_directories() {
+    local target_base="$1"
+
+    log_info "Creating directory structure..."
+
+    local dirs=(
+        "$target_base/users"
+        "$target_base/admins"
+        "$target_base/temp_passwords"
+        "$target_base/push_subscriptions"
+        "$target_base/cache/sip_status"
+        "$target_base/logs"
+        "$target_base/backup"
+        "$target_base/templates"
+    )
+
+    for dir in "${dirs[@]}"; do
+        mkdir -p "$dir"
+        chmod 750 "$dir"
+        chown "$TARGET_USER:nobody" "$dir" 2>/dev/null || true
+        log_info "Created: $dir"
+    done
+
+    log_success "Directory structure created"
+}
+
+# Apply default settings
+apply_settings() {
+    local backup_json="$1"
+    local target_base="$2"
+
+    log_info "Applying default settings..."
+
+    local settings_file="$target_base/flexpbx-config.json"
+
+    # Extract default settings from backup
+    jq -r '.default_settings' "$backup_json" > "$settings_file"
+
+    chmod 644 "$settings_file"
+    chown "$TARGET_USER:nobody" "$settings_file" 2>/dev/null || true
+
+    log_success "Settings applied: $settings_file"
+}
+
+# Create templates
+create_templates() {
+    local backup_json="$1"
+    local target_base="$2"
+
+    log_info "Creating templates..."
+
+    # Check if extended backup with templates
+    local backup_type=$(jq -r '.backup_type' "$backup_json")
+
+    if [ "$backup_type" = "extended" ]; then
+        # User template
+        jq -r '.user_template' "$backup_json" > "$target_base/templates/user_template.json"
+        log_info "Created: user_template.json"
+
+        # Admin template
+        jq -r '.admin_template' "$backup_json" > "$target_base/templates/admin_template.json"
+        log_info "Created: admin_template.json"
+    fi
+
+    # Settings template
+    jq -r '.default_settings' "$backup_json" > "$target_base/templates/settings_template.json"
+    log_info "Created: settings_template.json"
+
+    # Set permissions
+    chmod 644 "$target_base/templates"/*.json 2>/dev/null || true
+    chown "$TARGET_USER:nobody" "$target_base/templates"/*.json 2>/dev/null || true
+
+    log_success "Templates created"
+}
+
+# Create first admin account
+create_first_admin() {
+    local target_base="$1"
+
+    log_info "Creating first admin account..."
+
+    # Generate temporary password
+    local temp_pass="Admin$(shuf -i 1000-9999 -n 1)"
+    local pass_hash=$(php -r "echo password_hash('$temp_pass', PASSWORD_DEFAULT);")
+
+    # Create admin account
+    local admin_file="$target_base/admins/admin.json"
+
+    cat > "$admin_file" <<EOF
+{
+  "username": "admin",
+  "password": "$pass_hash",
+  "temp_password_expires": $(( $(date +%s) + 900 )),
+  "email": "admin@example.com",
+  "full_name": "Administrator",
+  "role": "super_admin",
+  "is_active": true,
+  "permissions": ["all"],
+  "push_notifications_enabled": false,
+  "email_notifications_enabled": true,
+  "notify_system_alerts": true,
+  "created_date": "$(date '+%Y-%m-%d %H:%M:%S')",
+  "last_login": null,
+  "linked_extension": null,
+  "linked_username": null
+}
+EOF
+
+    chmod 644 "$admin_file"
+    chown "$TARGET_USER:nobody" "$admin_file" 2>/dev/null || true
+
+    log_success "Admin account created"
+    echo ""
+    echo -e "${GREEN}╔═══════════════════════════════════════════════════════╗${NC}"
+    echo -e "${GREEN}║           IMPORTANT: First Admin Login                ║${NC}"
+    echo -e "${GREEN}╠═══════════════════════════════════════════════════════╣${NC}"
+    echo -e "${GREEN}║ Username: admin                                       ║${NC}"
+    echo -e "${GREEN}║ Temporary Password: ${YELLOW}$temp_pass${GREEN}                       ║${NC}"
+    echo -e "${GREEN}║ Expires in: 15 minutes                                ║${NC}"
+    echo -e "${GREEN}║                                                       ║${NC}"
+    echo -e "${GREEN}║ Please login and change your password immediately!    ║${NC}"
+    echo -e "${GREEN}╚═══════════════════════════════════════════════════════╝${NC}"
+    echo ""
+}
+
+# Backup existing data
+backup_existing_data() {
+    local target_base="$1"
+
+    log_info "Backing up existing user data..."
+
+    local backup_dir="$target_base/backup/pre-restore-$(date +%Y%m%d-%H%M%S)"
+    mkdir -p "$backup_dir"
+
+    # Backup users
+    if [ -d "$target_base/users" ]; then
+        cp -r "$target_base/users" "$backup_dir/" 2>/dev/null || true
+    fi
+
+    # Backup admins
+    if [ -d "$target_base/admins" ]; then
+        cp -r "$target_base/admins" "$backup_dir/" 2>/dev/null || true
+    fi
+
+    log_success "Existing data backed up to: $backup_dir"
+}
+
+###############################################################################
+# Main Restore Process
+###############################################################################
+
+echo -e "${BLUE}╔═══════════════════════════════════════════════════════╗${NC}"
+echo -e "${BLUE}║           FlexPBX Restore System                      ║${NC}"
+echo -e "${BLUE}╚═══════════════════════════════════════════════════════╝${NC}"
+echo ""
+echo "Backup file: $BACKUP_FILE"
+echo "Restore mode: $RESTORE_MODE"
+echo "Target user: $TARGET_USER"
+echo ""
+
+# Extract backup
+WORK_DIR="$TEMP_DIR/restore"
+mkdir -p "$WORK_DIR"
+extract_backup "$BACKUP_FILE" "$WORK_DIR"
+
+# Verify backup
+BACKUP_JSON="$WORK_DIR/backup.json"
+verify_backup "$BACKUP_JSON"
+
+# Determine target base directory
+if [ "$RESTORE_MODE" = "migrate" ]; then
+    TARGET_BASE="/home/$TARGET_USER"
+else
+    TARGET_BASE="$HOME"
+fi
+
+log_info "Target directory: $TARGET_BASE"
+
+# Confirm restore
+case "$RESTORE_MODE" in
+    fresh)
+        confirm "WARNING: Fresh installation will overwrite all existing data!"
+        ;;
+    merge)
+        confirm "This will merge system files with your existing installation."
+        ;;
+    migrate)
+        confirm "This will install FlexPBX to user: $TARGET_USER"
+        ;;
+esac
+
+# Backup existing data if merge mode
+if [ "$RESTORE_MODE" = "merge" ]; then
+    backup_existing_data "$TARGET_BASE"
+fi
+
+# Create directory structure
+create_directories "$TARGET_BASE"
+
+# Check if backup contains sensitive data
+SENSITIVE_DATA=$(jq -r '.sensitive_data_included // false' "$BACKUP_JSON")
+
+if [ "$SENSITIVE_DATA" = "true" ]; then
+    echo ""
+    echo -e "${YELLOW}╔═══════════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${YELLOW}║                  ⚠️  SENSITIVE DATA DETECTED ⚠️                ║${NC}"
+    echo -e "${YELLOW}╠═══════════════════════════════════════════════════════════════╣${NC}"
+    echo -e "${YELLOW}║ This backup contains sensitive user data:                    ║${NC}"
+    echo -e "${YELLOW}║  • User emails, names, passwords                             ║${NC}"
+    echo -e "${YELLOW}║  • Push notification subscriptions                           ║${NC}"
+
+    if [ "$(jq -r '.includes.voicemail_recordings // false' "$BACKUP_JSON")" = "true" ]; then
+        echo -e "${YELLOW}║  • Voicemail recordings                                      ║${NC}"
+    fi
+    echo -e "${YELLOW}║                                                               ║${NC}"
+    echo -e "${YELLOW}║ This data will be restored to the target system.             ║${NC}"
+    echo -e "${YELLOW}╚═══════════════════════════════════════════════════════════════╝${NC}"
+    echo ""
+
+    if [ "$AUTO_YES" = false ]; then
+        confirm "Are you sure you want to restore user data?"
+    fi
+fi
+
+# Restore all files
+log_info "Restoring files..."
+file_count=$(jq -r '.file_count' "$BACKUP_JSON")
+
+for ((i=0; i<file_count; i++)); do
+    restore_file "$BACKUP_JSON" "$i" "$TARGET_BASE" || true
+done
+
+# Apply settings
+apply_settings "$BACKUP_JSON" "$TARGET_BASE"
+
+# Create templates
+create_templates "$BACKUP_JSON" "$TARGET_BASE"
+
+# Create first admin if fresh install (but not if restoring user data)
+if [ "$RESTORE_MODE" = "fresh" ] || [ "$RESTORE_MODE" = "migrate" ]; then
+    if [ "$SENSITIVE_DATA" = "false" ]; then
+        create_first_admin "$TARGET_BASE"
+    else
+        log_info "Skipping first admin creation (user data restored)"
+    fi
+fi
+
+# Cleanup
+rm -rf "$TEMP_DIR"
+
+log_success "Restore complete!"
+echo ""
+echo "Next steps:"
+echo "1. Verify system files are in place"
+echo "2. Test service worker registration"
+echo "3. Test API endpoints"
+echo "4. Login to admin portal and change password"
+echo ""
+echo "For assistance, see: $TARGET_BASE/public_html/docs/"

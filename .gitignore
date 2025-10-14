@@ -1,0 +1,131 @@
+# FlexPBX .gitignore
+# Exclude personal/sensitive data while keeping system code
+
+###############################################################################
+# Personal User Data
+###############################################################################
+users/
+admins/
+temp_passwords/
+push_subscriptions/
+user_backups/
+
+# Session data
+sessions/
+
+# Cache files
+cache/
+*.cache
+
+# Log files
+logs/
+*.log
+
+# Backup files (contain sensitive data)
+backup/
+*.flx
+*.flxx
+*.flx.gz
+*.flxx.gz
+
+###############################################################################
+# Asterisk Personal Configuration
+###############################################################################
+# Exclude actual trunks, DIDs, and personal extensions
+asterisk/pjsip_custom.conf
+asterisk/extensions_custom.conf
+asterisk/voicemail_custom.conf
+
+# Exclude any files with "trunk" or "did" in the name
+*trunk*.conf
+*did*.conf
+*real*.conf
+*production*.conf
+
+# Voicemail data
+voicemail/
+
+###############################################################################
+# Credentials & Secrets
+###############################################################################
+*.key
+*.pem
+*.crt
+credentials.json
+secrets.json
+api_keys.json
+vapid_keys.json
+
+# Environment files
+.env
+.env.local
+.env.production
+
+###############################################################################
+# Personal Configuration Files
+###############################################################################
+flexpbx-config.json
+
+# CDR and Call Recordings
+cdr/
+recordings/
+call_recordings/
+monitor/
+
+###############################################################################
+# Database Files
+###############################################################################
+*.db
+*.sqlite
+*.sqlite3
+
+###############################################################################
+# System Files
+###############################################################################
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.idea/
+.vscode/
+.AppleDouble
+.LSOverride
+
+###############################################################################
+# Temporary Files
+###############################################################################
+tmp/
+temp/
+*.tmp
+
+###############################################################################
+# Node modules (if any)
+###############################################################################
+node_modules/
+package-lock.json
+yarn.lock
+
+###############################################################################
+# PHP Composer (if used)
+###############################################################################
+vendor/
+composer.lock
+
+###############################################################################
+# Archive files
+###############################################################################
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+
+###############################################################################
+# Keep these template files
+###############################################################################
+!templates/
+!templates/*.json
+!docs/
+!docs/*.md
+!docs/*.html

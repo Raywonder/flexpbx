@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlexPBX - Multi-Client Server Management System</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 80px 20px;
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #fff, #e3f2fd);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 0 0 20px rgba(255,255,255,0.3); }
+            to { text-shadow: 0 0 30px rgba(255,255,255,0.6); }
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .feature-badges {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+
+        .badge {
+            background: rgba(255,255,255,0.2);
+            padding: 10px 20px;
+            border-radius: 50px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
+            font-weight: 600;
+            transition: transform 0.3s ease;
+        }
+
+        .badge:hover {
+            transform: translateY(-5px) scale(1.05);
+            background: rgba(255,255,255,0.3);
+        }
+
+        .clients-grid {
+            max-width: 1400px;
+            margin: 80px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+        }
+
+        .client-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .client-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #2196F3, #4CAF50, #FF9800, #9C27B0);
+        }
+
+        .client-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+        }
+
+        .client-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            display: block;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .client-card:nth-child(2) .client-icon { animation-delay: 0.5s; }
+        .client-card:nth-child(3) .client-icon { animation-delay: 1s; }
+        .client-card:nth-child(4) .client-icon { animation-delay: 1.5s; }
+        .client-card:nth-child(5) .client-icon { animation-delay: 2s; }
+        .client-card:nth-child(6) .client-icon { animation-delay: 2.5s; }
+
+        .client-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1976D2;
+            margin-bottom: 10px;
+        }
+
+        .version-badge {
+            background: linear-gradient(45deg, #e3f2fd, #bbdefb);
+            color: #1976D2;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-left: 10px;
+        }
+
+        .client-description {
+            color: #666;
+            margin: 15px 0;
+            line-height: 1.6;
+        }
+
+        .platforms {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .platform-tag {
+            background: #f5f5f5;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            color: #555;
+            border: 1px solid #ddd;
+        }
+
+        .platform-tag.primary { background: #e8f5e8; color: #2e7d32; border-color: #c8e6c9; }
+        .platform-tag.accessibility { background: #fff3e0; color: #f57c00; border-color: #ffcc02; }
+
+        .architecture-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 80px 20px;
+            color: white;
+            text-align: center;
+        }
+
+        .architecture-title {
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            font-weight: 700;
+        }
+
+        .connection-diagram {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .connection-node {
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            text-align: center;
+            min-width: 120px;
+            position: relative;
+        }
+
+        .connection-arrow {
+            font-size: 2rem;
+            color: rgba(255,255,255,0.7);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
+
+        .features-grid {
+            max-width: 1200px;
+            margin: 80px auto;
+            padding: 0 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1976D2;
+            margin-bottom: 10px;
+        }
+
+        .cta-section {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            padding: 60px 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .cta-button {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2.5rem; }
+            .hero-subtitle { font-size: 1.2rem; }
+            .clients-grid { grid-template-columns: 1fr; }
+            .connection-diagram { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <header class="hero">
+        <div class="hero-content">
+            <h1>FlexPBX</h1>
+            <p class="hero-subtitle">Multi-Client Server Management System</p>
+            <p style="opacity: 0.8; font-size: 1.1rem;">Intelligent connection hierarchy inspired by Tailscale architecture</p>
+
+            <div class="feature-badges">
+                <div class="badge">🖥️ Desktop Management</div>
+                <div class="badge">📱 Mobile Apps</div>
+                <div class="badge">🌐 Web Interface</div>
+                <div class="badge">♿ Fully Accessible</div>
+                <div class="badge">🔄 Auto-Updates</div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <section class="clients-grid">
+            <div class="client-card">
+                <span class="client-icon">👨‍💼</span>
+                <h3 class="client-title">
+                    FlexPBX Admin Client
+                    <span class="version-badge">v2.0+</span>
+                </h3>
+                <p class="client-description">
+                    <strong>Primary management client</strong> - Connects directly to remote server, manages other desktop clients, provides admin controls and fallback server capabilities.
+                </p>
+                <div class="platforms">
+                    <span class="platform-tag primary">macOS Intel/ARM64</span>
+                    <span class="platform-tag primary">Windows 10/11</span>
+                    <span class="platform-tag primary">Linux AppImage</span>
+                </div>
+            </div>
+
+            <div class="client-card">
+                <span class="client-icon">🖥️</span>
+                <h3 class="client-title">
+                    FlexPBX Desktop Client
+                    <span class="version-badge">v1.0+</span>
+                </h3>
+                <p class="client-description">
+                    <strong>Standard desktop client</strong> - Connects to admin clients as fallback when remote server unavailable. Auto-link authorization for easy setup.
+                </p>
+                <div class="platforms">
+                    <span class="platform-tag">Cross-Platform</span>
+                    <span class="platform-tag">Auto-Link</span>
+                    <span class="platform-tag">Smart Fallback</span>
+                </div>
+            </div>
+
+            <div class="client-card">
+                <span class="client-icon">📱</span>
+                <h3 class="client-title">
+                    FlexPhone Mobile
+                    <span class="version-badge">v1.0+</span>
+                </h3>
+                <p class="client-description">
+                    <strong>Mobile companion app</strong> - iOS and Android apps with full VoiceOver/TalkBack support, connects through admin client for call management.
+                </p>
+                <div class="platforms">
+                    <span class="platform-tag accessibility">iOS VoiceOver</span>
+                    <span class="platform-tag accessibility">Android TalkBack</span>
+                    <span class="platform-tag accessibility">ARIA Compliant</span>
+                </div>
+            </div>
+
+            <div class="client-card">
+                <span class="client-icon">🌐</span>
+                <h3 class="client-title">
+                    Web Interface
+                    <span class="version-badge">Browser</span>
+                </h3>
+                <p class="client-description">
+                    <strong>Browser-based access</strong> - No installation required, works with any modern browser, full screen reader compatibility for accessibility.
+                </p>
+                <div class="platforms">
+                    <span class="platform-tag">Chrome 90+</span>
+                    <span class="platform-tag">Firefox 88+</span>
+                    <span class="platform-tag">Safari 14+</span>
+                    <span class="platform-tag">Edge 90+</span>
+                </div>
+            </div>
+
+            <div class="client-card">
+                <span class="client-icon">🔗</span>
+                <h3 class="client-title">
+                    Legacy Clients
+                    <span class="version-badge" style="background: #fff3cd; color: #856404;">Legacy</span>
+                </h3>
+                <p class="client-description">
+                    <strong>Backward compatibility</strong> - Older FlexPBX versions (pre-2.0) can connect with limited features. Auto-update available for full functionality.
+                </p>
+                <div class="platforms">
+                    <span class="platform-tag">Basic Calling</span>
+                    <span class="platform-tag">Auto-Update Available</span>
+                </div>
+            </div>
+
+            <div class="client-card">
+                <span class="client-icon">🔄</span>
+                <h3 class="client-title">
+                    Auto-Update System
+                    <span class="version-badge" style="background: #d4edda; color: #155724;">Auto</span>
+                </h3>
+                <p class="client-description">
+                    <strong>Seamless updates</strong> - All clients can receive automatic updates through this server, with configurable auto-restart and rollback capabilities.
+                </p>
+                <div class="platforms">
+                    <span class="platform-tag">Checksums</span>
+                    <span class="platform-tag">Rollback</span>
+                    <span class="platform-tag">Scheduled Updates</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="architecture-section">
+            <h2 class="architecture-title">Intelligent Connection Hierarchy</h2>
+            <div class="connection-diagram">
+                <div class="connection-node">
+                    <div style="font-size: 2rem;">☁️</div>
+                    <div>Remote Server</div>
+                </div>
+                <div class="connection-arrow">→</div>
+                <div class="connection-node">
+                    <div style="font-size: 2rem;">👨‍💼</div>
+                    <div>Admin Client</div>
+                </div>
+                <div class="connection-arrow">→</div>
+                <div class="connection-node">
+                    <div style="font-size: 2rem;">🖥️</div>
+                    <div>Desktop Clients</div>
+                </div>
+            </div>
+            <p style="margin-top: 30px; opacity: 0.9;">Smart fallback connections ensure your clients stay connected even when the remote server is unavailable</p>
+        </section>
+
+        <section class="features-grid">
+            <div class="feature-card">
+                <span class="feature-icon">🎯</span>
+                <h4 class="feature-title">Easy Installation</h4>
+                <p>Web-based installer with auto-detection. No terminal required - install in minutes through your browser.</p>
+            </div>
+
+            <div class="feature-card">
+                <span class="feature-icon">♿</span>
+                <h4 class="feature-title">Fully Accessible</h4>
+                <p>WCAG 2.1 AA compliant with full screen reader support. Built for everyone, including users with disabilities.</p>
+            </div>
+
+            <div class="feature-card">
+                <span class="feature-icon">🔄</span>
+                <h4 class="feature-title">Auto-Updates</h4>
+                <p>Seamless updates with rollback capabilities. Keep all your clients updated automatically with zero downtime.</p>
+            </div>
+
+            <div class="feature-card">
+                <span class="feature-icon">🛡️</span>
+                <h4 class="feature-title">Secure by Design</h4>
+                <p>Built-in security features, rate limiting, and encrypted connections. Your communications stay private and secure.</p>
+            </div>
+
+            <div class="feature-card">
+                <span class="feature-icon">⚡</span>
+                <h4 class="feature-title">Real-time Management</h4>
+                <p>Monitor and manage all connected clients in real-time. See connection status, limits, and performance metrics.</p>
+            </div>
+
+            <div class="feature-card">
+                <span class="feature-icon">🌍</span>
+                <h4 class="feature-title">Cross-Platform</h4>
+                <p>Runs everywhere - macOS, Windows, Linux, iOS, Android, and web browsers. One server, every platform.</p>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <h2>Ready to Get Started?</h2>
+            <p>Install FlexPBX in minutes with our web-based installer</p>
+            <a href="install.php" class="cta-button">🚀 Start Installation</a>
+        </section>
+    </main>
+</body>
+</html>

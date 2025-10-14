@@ -1,0 +1,26 @@
+{
+    "version": "1.1.0",
+    "deployedAt": "2025-10-11T19:51:05Z",
+    "components": [
+        "config.php",
+        "connection-manager.php",
+        "auto-link-manager.php",
+        "update-manager.php",
+        "install.sh",
+        "module-manager.sh",
+        "flexpbx-modules.service"
+    ],
+    "requirements": {
+        "php": ">=8.1",
+        "mysql": ">=8.0",
+        "nginx": ">=1.18"
+    },
+    "endpoints": {
+        "register": "/api/register",
+        "authorize": "/api/authorize",
+        "status": "/api/status",
+        "update-check": "/api/updates/check",
+        "auto-link": "/api/auto-link",
+        "module-reload": "/api/module-reload"
+    }
+}

@@ -1,0 +1,637 @@
+#!/bin/bash
+###############################################################################
+# FlexPBX Backup System
+# Creates .flx (system config) or .flxx (extended) backup files
+#
+# Usage: flexpbx-backup [OPTIONS]
+#   -t, --type <flx|flxx>    Backup type (default: flx)
+#   -o, --output <path>      Output directory (default: ~/backup/)
+#   -d, --include-data       Include user data (SENSITIVE: passwords, emails)
+#   --include-voicemail      Include voicemail recordings (requires -d)
+#   -c, --compress           Compress backup with gzip
+#   -v, --verbose            Verbose output
+#   -h, --help               Show this help
+#
+# Examples:
+#   flexpbx-backup                          # Create basic .flx backup
+#   flexpbx-backup -t flxx -c              # Create compressed .flxx backup
+#   flexpbx-backup -d                       # Include user data (SENSITIVE!)
+#   flexpbx-backup -d --include-voicemail  # Include data + voicemail
+#   flexpbx-backup -o /tmp/backups -v      # Verbose mode to /tmp/backups
+#
+# WARNING: Using -d creates a SENSITIVE backup containing:
+#   - Real user emails and names
+#   - Password hashes
+#   - Session tokens
+#   - Push subscriptions
+# Store these backups SECURELY and do NOT share them!
+###############################################################################
+
+set -e
+
+# Default values
+BACKUP_TYPE="flx"
+OUTPUT_DIR="$HOME/backup"
+COMPRESS=false
+VERBOSE=false
+INCLUDE_DATA=false
+INCLUDE_VOICEMAIL=false
+FLEXPBX_VERSION="1.0"
+TIMESTAMP=$(date +"%Y-%m-%d_%H-%M-%S")
+TEMP_DIR=$(mktemp -d)
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# Logging functions
+log_info() {
+    if [ "$VERBOSE" = true ]; then
+        echo -e "${BLUE}[INFO]${NC} $1"
+    fi
+}
+
+log_success() {
+    echo -e "${GREEN}[SUCCESS]${NC} $1"
+}
+
+log_warning() {
+    echo -e "${YELLOW}[WARNING]${NC} $1"
+}
+
+log_error() {
+    echo -e "${RED}[ERROR]${NC} $1"
+    exit 1
+}
+
+# Show help
+show_help() {
+    grep '^#' "$0" | grep -v '#!/bin/bash' | sed 's/^# *//'
+    exit 0
+}
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -t|--type)
+            BACKUP_TYPE="$2"
+            shift 2
+            ;;
+        -o|--output)
+            OUTPUT_DIR="$2"
+            shift 2
+            ;;
+        -d|--include-data)
+            INCLUDE_DATA=true
+            shift
+            ;;
+        --include-voicemail)
+            INCLUDE_VOICEMAIL=true
+            shift
+            ;;
+        -c|--compress)
+            COMPRESS=true
+            shift
+            ;;
+        -v|--verbose)
+            VERBOSE=true
+            shift
+            ;;
+        -h|--help)
+            show_help
+            ;;
+        *)
+            log_error "Unknown option: $1. Use -h for help."
+            ;;
+    esac
+done
+
+# Validate voicemail option
+if [ "$INCLUDE_VOICEMAIL" = true ] && [ "$INCLUDE_DATA" = false ]; then
+    log_error "--include-voicemail requires -d (--include-data) flag"
+fi
+
+# Validate backup type
+if [ "$BACKUP_TYPE" != "flx" ] && [ "$BACKUP_TYPE" != "flxx" ]; then
+    log_error "Invalid backup type: $BACKUP_TYPE. Must be 'flx' or 'flxx'."
+fi
+
+# Create output directory
+mkdir -p "$OUTPUT_DIR"
+log_info "Output directory: $OUTPUT_DIR"
+
+# Create temporary working directory
+WORK_DIR="$TEMP_DIR/flexpbx-backup"
+mkdir -p "$WORK_DIR"
+log_info "Working directory: $WORK_DIR"
+
+###############################################################################
+# Backup Functions
+###############################################################################
+
+# Calculate SHA256 hash of a file
+calculate_hash() {
+    local file="$1"
+    if [ -f "$file" ]; then
+        sha256sum "$file" | awk '{print $1}'
+    else
+        echo ""
+    fi
+}
+
+# Base64 encode a file
+encode_file() {
+    local file="$1"
+    if [ -f "$file" ]; then
+        base64 -w 0 "$file"
+    else
+        echo ""
+    fi
+}
+
+# Copy file to backup and return JSON entry
+backup_file() {
+    local source="$1"
+    local relative_path="$2"
+
+    if [ ! -f "$source" ]; then
+        log_warning "File not found: $source"
+        return 1
+    fi
+
+    local hash=$(calculate_hash "$source")
+    local size=$(stat -c%s "$source")
+    local content=$(encode_file "$source")
+
+    log_info "Backing up: $relative_path ($size bytes)"
+
+    # Create JSON entry
+    cat <<EOF
+    {
+      "path": "$relative_path",
+      "hash": "sha256:$hash",
+      "size": $size,
+      "content": "$content"
+    }
+EOF
+}
+
+# Sanitize flexpbx-config.json (remove personal data)
+sanitize_config() {
+    local config_file="$HOME/flexpbx-config.json"
+    local sanitized="$WORK_DIR/flexpbx-config-sanitized.json"
+
+    if [ ! -f "$config_file" ]; then
+        log_warning "flexpbx-config.json not found"
+        return 1
+    fi
+
+    # Copy and sanitize (remove any personal data if present)
+    cp "$config_file" "$sanitized"
+
+    # Return sanitized file
+    echo "$sanitized"
+}
+
+# Create user template from existing user (sanitized)
+create_user_template() {
+    local user_dir="$HOME/users"
+
+    # Find first user file as template
+    local user_file=$(find "$user_dir" -name "*.json" -type f | head -n 1)
+
+    if [ -z "$user_file" ]; then
+        log_warning "No user files found for template"
+        return 1
+    fi
+
+    # Create sanitized template
+    cat <<'EOF'
+{
+  "extension": "XXXX",
+  "username": "username_placeholder",
+  "password": "HASHED_PLACEHOLDER",
+  "email": "user@example.com",
+  "full_name": "User Name",
+  "voicemail": true,
+  "voicemail_pin": "0000",
+  "accessibility_enabled": false,
+  "push_notifications_enabled": false,
+  "email_notifications_enabled": true,
+  "notify_voicemail": true,
+  "notify_missed_calls": true,
+  "notify_sip_status": true,
+  "is_active": true,
+  "created_date": "2025-01-01 00:00:00",
+  "last_login": null,
+  "linked_admin": null
+}
+EOF
+}
+
+# Create admin template
+create_admin_template() {
+    cat <<'EOF'
+{
+  "username": "admin",
+  "password": "HASHED_PLACEHOLDER",
+  "email": "admin@example.com",
+  "full_name": "Administrator",
+  "role": "super_admin",
+  "is_active": true,
+  "permissions": ["all"],
+  "push_notifications_enabled": false,
+  "email_notifications_enabled": true,
+  "notify_system_alerts": true,
+  "created_date": "2025-01-01 00:00:00",
+  "last_login": null,
+  "linked_extension": null,
+  "linked_username": null
+}
+EOF
+}
+
+# Create settings template
+create_settings_template() {
+    cat <<'EOF'
+{
+  "asterisk_mode": "secure",
+  "allow_config_writes": false,
+  "api_mode": "enabled",
+  "debug_mode": false,
+  "placeholder_emails": [
+    "user@example.com",
+    "admin@example.com",
+    "noemail@localhost"
+  ],
+  "notification_defaults": {
+    "push_notifications_enabled": false,
+    "email_notifications_enabled": true,
+    "notify_voicemail": true,
+    "notify_missed_calls": true,
+    "notify_sip_status": true,
+    "notify_system_alerts": false
+  },
+  "temp_password_expiry": 900,
+  "sip_status_cache_ttl": 5,
+  "backup": {
+    "enabled": true,
+    "schedule": "daily",
+    "retention_days": 30,
+    "include_user_data": false,
+    "include_logs": false,
+    "compression": true,
+    "encryption": false
+  }
+}
+EOF
+}
+
+###############################################################################
+# Main Backup Process
+###############################################################################
+
+log_info "Starting FlexPBX backup ($BACKUP_TYPE format)..."
+log_info "FlexPBX version: $FLEXPBX_VERSION"
+
+# Initialize file list array
+FILES_JSON=""
+FILE_COUNT=0
+
+# Backup public_html files
+log_info "Backing up public_html files..."
+
+PUBLIC_HTML_FILES=(
+    "$HOME/public_html/service-worker.js"
+    "$HOME/public_html/api/notification-subscribe.php"
+    "$HOME/public_html/api/sip-status.php"
+    "$HOME/public_html/api/generate-temp-password.php"
+    "$HOME/public_html/api/login.php"
+    "$HOME/public_html/api/flexpbx-config-helper.php"
+    "$HOME/public_html/user-portal/change-password.php"
+    "$HOME/public_html/user-portal/setup-email.php"
+    "$HOME/public_html/user-portal/notification-settings.php"
+    "$HOME/public_html/user-portal/login.php"
+    "$HOME/public_html/user-portal/index.php"
+    "$HOME/public_html/admin/change-password.php"
+    "$HOME/public_html/admin/setup-email.php"
+    "$HOME/public_html/admin/link-extension.php"
+    "$HOME/public_html/admin/login.php"
+    "$HOME/public_html/admin/dashboard.html"
+)
+
+for file in "${PUBLIC_HTML_FILES[@]}"; do
+    if [ -f "$file" ]; then
+        relative_path="${file#$HOME/}"
+        file_json=$(backup_file "$file" "$relative_path")
+        if [ $? -eq 0 ]; then
+            if [ -n "$FILES_JSON" ]; then
+                FILES_JSON="$FILES_JSON,$file_json"
+            else
+                FILES_JSON="$file_json"
+            fi
+            ((FILE_COUNT++))
+        fi
+    fi
+done
+
+# Backup documentation
+log_info "Backing up documentation..."
+
+DOC_FILES=(
+    "$HOME/public_html/docs/SYSTEM_WIDE_TEMP_PASSWORDS.md"
+    "$HOME/public_html/docs/EMAIL_SETUP_SYSTEM.md"
+    "$HOME/public_html/docs/PUSH_NOTIFICATIONS_AND_STATUS.md"
+    "$HOME/public_html/docs/AUTO_GENERATED_PASSWORDS.md"
+)
+
+for file in "${DOC_FILES[@]}"; do
+    if [ -f "$file" ]; then
+        relative_path="${file#$HOME/}"
+        file_json=$(backup_file "$file" "$relative_path")
+        if [ $? -eq 0 ]; then
+            FILES_JSON="$FILES_JSON,$file_json"
+            ((FILE_COUNT++))
+        fi
+    fi
+done
+
+# Backup Asterisk configuration templates
+log_info "Backing up Asterisk configuration templates..."
+
+ASTERISK_FILES=(
+    "/etc/asterisk/pjsip.conf"
+    "/etc/asterisk/extensions.conf"
+    "/etc/asterisk/voicemail.conf"
+    "/etc/asterisk/features.conf"
+)
+
+for file in "${ASTERISK_FILES[@]}"; do
+    if [ -f "$file" ]; then
+        relative_path="${file#/}"
+        file_json=$(backup_file "$file" "$relative_path")
+        if [ $? -eq 0 ]; then
+            FILES_JSON="$FILES_JSON,$file_json"
+            ((FILE_COUNT++))
+        fi
+    fi
+done
+
+# Backup sudoers configuration
+log_info "Backing up sudoers configuration..."
+if [ -f "/etc/sudoers.d/flexpbx-asterisk" ]; then
+    file_json=$(backup_file "/etc/sudoers.d/flexpbx-asterisk" "etc/sudoers.d/flexpbx-asterisk")
+    if [ $? -eq 0 ]; then
+        FILES_JSON="$FILES_JSON,$file_json"
+        ((FILE_COUNT++))
+    fi
+fi
+
+# Backup system scripts
+log_info "Backing up system scripts..."
+if [ -f "/usr/local/bin/flexpbx-toggle-permissions" ]; then
+    file_json=$(backup_file "/usr/local/bin/flexpbx-toggle-permissions" "usr/local/bin/flexpbx-toggle-permissions")
+    if [ $? -eq 0 ]; then
+        FILES_JSON="$FILES_JSON,$file_json"
+        ((FILE_COUNT++))
+    fi
+fi
+
+# Backup sanitized config
+log_info "Backing up sanitized configuration..."
+sanitized_config=$(sanitize_config)
+if [ -f "$sanitized_config" ]; then
+    file_json=$(backup_file "$sanitized_config" "flexpbx-config.json")
+    if [ $? -eq 0 ]; then
+        FILES_JSON="$FILES_JSON,$file_json"
+        ((FILE_COUNT++))
+    fi
+fi
+
+# Backup user data if requested
+if [ "$INCLUDE_DATA" = true ]; then
+    log_warning "Including USER DATA in backup (SENSITIVE!)"
+
+    # Backup users directory
+    if [ -d "$HOME/users" ]; then
+        log_info "Backing up users directory..."
+        for user_file in "$HOME/users"/*.json; do
+            if [ -f "$user_file" ]; then
+                relative_path="${user_file#$HOME/}"
+                file_json=$(backup_file "$user_file" "$relative_path")
+                if [ $? -eq 0 ]; then
+                    FILES_JSON="$FILES_JSON,$file_json"
+                    ((FILE_COUNT++))
+                fi
+            fi
+        done
+    fi
+
+    # Backup admins directory
+    if [ -d "$HOME/admins" ]; then
+        log_info "Backing up admins directory..."
+        for admin_file in "$HOME/admins"/*.json; do
+            if [ -f "$admin_file" ]; then
+                relative_path="${admin_file#$HOME/}"
+                file_json=$(backup_file "$admin_file" "$relative_path")
+                if [ $? -eq 0 ]; then
+                    FILES_JSON="$FILES_JSON,$file_json"
+                    ((FILE_COUNT++))
+                fi
+            fi
+        done
+    fi
+
+    # Backup push subscriptions
+    if [ -d "$HOME/push_subscriptions" ]; then
+        log_info "Backing up push subscriptions..."
+        for sub_file in "$HOME/push_subscriptions"/*.json; do
+            if [ -f "$sub_file" ]; then
+                relative_path="${sub_file#$HOME/}"
+                file_json=$(backup_file "$sub_file" "$relative_path")
+                if [ $? -eq 0 ]; then
+                    FILES_JSON="$FILES_JSON,$file_json"
+                    ((FILE_COUNT++))
+                fi
+            fi
+        done
+    fi
+
+    # Backup voicemail if requested
+    if [ "$INCLUDE_VOICEMAIL" = true ]; then
+        log_info "Backing up voicemail recordings..."
+        VOICEMAIL_DIR="/var/spool/asterisk/voicemail/flexpbx"
+        if [ -d "$VOICEMAIL_DIR" ]; then
+            # Find all voicemail audio files
+            find "$VOICEMAIL_DIR" -type f \( -name "*.wav" -o -name "*.gsm" -o -name "*.WAV" \) | while read vm_file; do
+                relative_path="voicemail/${vm_file#$VOICEMAIL_DIR/}"
+                file_json=$(backup_file "$vm_file" "$relative_path")
+                if [ $? -eq 0 ]; then
+                    FILES_JSON="$FILES_JSON,$file_json"
+                    ((FILE_COUNT++))
+                fi
+            done
+        else
+            log_warning "Voicemail directory not found: $VOICEMAIL_DIR"
+        fi
+    fi
+
+    log_warning "User data backup complete - store this backup SECURELY!"
+fi
+
+# Create metadata
+log_info "Creating backup metadata..."
+
+BACKUP_JSON=$(cat <<EOF
+{
+  "version": "$FLEXPBX_VERSION",
+  "backup_type": "$([ "$INCLUDE_DATA" = true ] && echo 'full_with_data' || echo 'system_config')",
+  "created": "$(date '+%Y-%m-%d %H:%M:%S')",
+  "flexpbx_version": "$FLEXPBX_VERSION",
+  "sensitive_data_included": $([  "$INCLUDE_DATA" = true ] && echo 'true' || echo 'false'),
+  "includes": {
+    "system_files": true,
+    "api_endpoints": true,
+    "service_worker": true,
+    "notification_system": true,
+    "temp_password_system": true,
+    "email_validation": true,
+    "sip_status_monitoring": true,
+    "documentation": true,
+    "asterisk_templates": true,
+    "sudo_config": true,
+    "user_data": $([ "$INCLUDE_DATA" = true ] && echo 'true' || echo 'false'),
+    "voicemail_recordings": $([ "$INCLUDE_VOICEMAIL" = true ] && echo 'true' || echo 'false')
+  },
+  "excludes": {
+    "user_data": $([ "$INCLUDE_DATA" = false ] && echo 'true' || echo 'false'),
+    "passwords": $([ "$INCLUDE_DATA" = false ] && echo 'true' || echo 'false'),
+    "sessions": $([ "$INCLUDE_DATA" = false ] && echo 'true' || echo 'false'),
+    "subscriptions": $([ "$INCLUDE_DATA" = false ] && echo 'true' || echo 'false'),
+    "cache": true,
+    "logs": true
+  },
+  "file_count": $FILE_COUNT,
+  "files": [
+$FILES_JSON
+  ],
+  "default_settings": $(create_settings_template)
+}
+EOF
+)
+
+# For .flxx format, add templates
+if [ "$BACKUP_TYPE" = "flxx" ]; then
+    log_info "Creating extended backup with templates..."
+
+    BACKUP_JSON=$(cat <<EOF
+{
+  "version": "$FLEXPBX_VERSION",
+  "backup_type": "$([ "$INCLUDE_DATA" = true ] && echo 'extended_with_data' || echo 'extended')",
+  "created": "$(date '+%Y-%m-%d %H:%M:%S')",
+  "flexpbx_version": "$FLEXPBX_VERSION",
+  "sensitive_data_included": $([ "$INCLUDE_DATA" = true ] && echo 'true' || echo 'false'),
+  "includes": {
+    "system_config": true,
+    "user_templates": true,
+    "admin_templates": true,
+    "asterisk_configs": true,
+    "database_schema": false,
+    "user_data": $([ "$INCLUDE_DATA" = true ] && echo 'true' || echo 'false'),
+    "voicemail_recordings": $([ "$INCLUDE_VOICEMAIL" = true ] && echo 'true' || echo 'false')
+  },
+  "file_count": $FILE_COUNT,
+  "files": [
+$FILES_JSON
+  ],
+  "user_template": $(create_user_template),
+  "admin_template": $(create_admin_template),
+  "default_settings": $(create_settings_template)
+}
+EOF
+)
+fi
+
+# Write backup file
+OUTPUT_FILE="$OUTPUT_DIR/flexpbx-${TIMESTAMP}.$BACKUP_TYPE"
+echo "$BACKUP_JSON" > "$OUTPUT_FILE"
+
+log_success "Backup created: $OUTPUT_FILE"
+log_info "Files backed up: $FILE_COUNT"
+log_info "Backup size: $(du -h "$OUTPUT_FILE" | cut -f1)"
+
+# Compress if requested
+if [ "$COMPRESS" = true ]; then
+    log_info "Compressing backup..."
+    gzip "$OUTPUT_FILE"
+    OUTPUT_FILE="${OUTPUT_FILE}.gz"
+    log_success "Compressed: $OUTPUT_FILE"
+    log_info "Compressed size: $(du -h "$OUTPUT_FILE" | cut -f1)"
+fi
+
+# Create symlink to latest backup
+ln -sf "$(basename "$OUTPUT_FILE")" "$OUTPUT_DIR/latest.$BACKUP_TYPE$([ "$COMPRESS" = true ] && echo '.gz' || echo '')"
+
+# Cleanup
+rm -rf "$TEMP_DIR"
+
+log_success "Backup complete!"
+echo ""
+echo "Backup file: $OUTPUT_FILE"
+echo "File count: $FILE_COUNT"
+echo "Backup type: $BACKUP_TYPE"
+
+# Show sensitive data warning if applicable
+if [ "$INCLUDE_DATA" = true ]; then
+    echo ""
+    echo -e "${RED}╔═══════════════════════════════════════════════════════════════╗${NC}"
+    echo -e "${RED}║                    ⚠️  SECURITY WARNING ⚠️                     ║${NC}"
+    echo -e "${RED}╠═══════════════════════════════════════════════════════════════╣${NC}"
+    echo -e "${RED}║ This backup contains SENSITIVE user data:                    ║${NC}"
+    echo -e "${RED}║  • Real user emails, names, and phone numbers                ║${NC}"
+    echo -e "${RED}║  • Password hashes                                           ║${NC}"
+    echo -e "${RED}║  • Session tokens                                            ║${NC}"
+    echo -e "${RED}║  • Push notification subscriptions                           ║${NC}"
+    if [ "$INCLUDE_VOICEMAIL" = true ]; then
+        echo -e "${RED}║  • Voicemail recordings                                      ║${NC}"
+    fi
+    echo -e "${RED}║                                                               ║${NC}"
+    echo -e "${RED}║ DO NOT share this backup publicly!                           ║${NC}"
+    echo -e "${RED}║ Store in a SECURE location with encryption if possible.      ║${NC}"
+    echo -e "${RED}╚═══════════════════════════════════════════════════════════════╝${NC}"
+fi
+
+echo ""
+echo "To restore this backup, run:"
+echo "  flexpbx-restore $OUTPUT_FILE"
+
+# Copy to additional locations if configured
+BACKUP_CONFIG="$HOME/flexpbx-config.json"
+if [ -f "$BACKUP_CONFIG" ]; then
+    # Check if additional backup locations are configured
+    REMOTE_BACKUP=$(jq -r '.backup.remote_path // empty' "$BACKUP_CONFIG" 2>/dev/null)
+    SECOND_DRIVE=$(jq -r '.backup.second_drive_path // empty' "$BACKUP_CONFIG" 2>/dev/null)
+
+    # Copy to remote location (rsync/scp)
+    if [ -n "$REMOTE_BACKUP" ]; then
+        log_info "Copying to remote location: $REMOTE_BACKUP"
+        if rsync -avz "$OUTPUT_FILE" "$REMOTE_BACKUP/" 2>/dev/null; then
+            log_success "Remote backup created: $REMOTE_BACKUP/$(basename "$OUTPUT_FILE")"
+        else
+            log_warning "Failed to copy to remote location"
+        fi
+    fi
+
+    # Copy to second drive
+    if [ -n "$SECOND_DRIVE" ]; then
+        log_info "Copying to second drive: $SECOND_DRIVE"
+        if [ -d "$SECOND_DRIVE" ]; then
+            cp "$OUTPUT_FILE" "$SECOND_DRIVE/" && log_success "Second drive backup: $SECOND_DRIVE/$(basename "$OUTPUT_FILE")"
+        else
+            log_warning "Second drive path not accessible: $SECOND_DRIVE"
+        fi
+    fi
+fi

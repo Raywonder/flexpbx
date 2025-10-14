@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FlexPBX Admin Client</title>
+    <style>
+        body {
+            font-family: system-ui;
+            background: #1e1e1e;
+            color: white;
+            padding: 20px;
+            margin: 0;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+        .container { max-width: 800px; margin: 0 auto; }
+        .section { margin: 30px 0; padding: 20px; background: #2a2a2a; border-radius: 8px; }
+        .status { margin: 20px 0; padding: 10px; background: #333; border-radius: 5px; }
+        .input-group { margin: 15px 0; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="text"], input[type="password"], select {
+            width: 100%;
+            padding: 10px;
+            background: #333;
+            border: 1px solid #555;
+            border-radius: 5px;
+            color: white;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+        button {
+            background: #007acc;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        button:hover { background: #005999; }
+        button:disabled { background: #666; cursor: not-allowed; }
+        .success { color: #4ade80; }
+        .error { color: #f87171; }
+        .info { color: #60a5fa; }
+        .admin-section { border-left: 4px solid #007acc; }
+        .button-group { display: flex; gap: 10px; flex-wrap: wrap; }
+        .help-text {
+            background: #2d2d2d;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .auto-managed-section {
+            margin-bottom: 20px;
+        }
+        .auto-status-card {
+            background: #1e3a5f;
+            border: 2px solid #3b82f6;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        .auto-indicator {
+            font-size: 18px;
+            font-weight: bold;
+            color: #60a5fa;
+            margin-bottom: 8px;
+        }
+        .auto-description {
+            color: #cbd5e1;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+            margin: 15px 0;
+            border-left: 3px solid #007acc;
+        }
+        .help-hint {
+            font-size: 12px;
+            color: #aaa;
+            margin-bottom: 5px;
+            font-style: italic;
+        }
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+        .detection-results {
+            background: #2d2d2d;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            border-left: 3px solid #10b981;
+        }
+        .method-available { color: #4ade80; }
+        .method-unavailable { color: #f87171; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h1 style="margin: 0;">🔧 FlexPBX Admin Client</h1>
+            <a href="dashboard.html" style="background: #667eea; color: white; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: 600;">← Dashboard</a>
+        </div>
+
+        <div class="section">
+            <h2>🌐 Remote Server Connection</h2>
+            <p class="help-text" role="note" aria-live="polite">
+                <strong>For screen readers:</strong> Enter your FlexPBX server URL below. You can use either the root domain (like https://example.com) or the full API URL (https://example.com/api/). The app will auto-detect available authentication methods from your server.
+            </p>
+            <div class="input-group">
+                <label for="serverUrl">Server URL (root domain or API URL):</label>
+                <div class="help-hint" role="note">Default: https://flexpbx.devinecreations.net - Enter your server's domain or full API URL</div>
+                <input type="text" id="serverUrl" placeholder="https://flexpbx.devinecreations.net" value="https://flexpbx.devinecreations.net"
+                       aria-describedby="serverUrl-help" autocomplete="url">
+                <div id="serverUrl-help" class="sr-only">Enter the URL of your FlexPBX server. This can be just the domain name or the full API endpoint URL.</div>
+            </div>
+            <div class="button-group">
+                <button onclick="detectServerCapabilities()" aria-describedby="detect-help">Detect Server Capabilities</button>
+                <div id="detect-help" class="sr-only">Click to automatically detect what authentication methods your server supports</div>
+            </div>
+            <div class="status" id="detectionStatus" role="status" aria-live="polite">Detection: Ready</div>
+
+            <div class="input-group">
+                <label for="authMethod">Authentication Method:</label>
+                <div class="help-hint" role="note">Select the authentication method supported by your server</div>
+                <select id="authMethod" aria-describedby="authMethod-help">
+                    <option value="pincode">Device Pincode (Generate 6-digit code on server)</option>
+                    <option value="api-key">API Key (Default: flexpbx_api_2024)</option>
+                    <option value="admin-login">Admin Login (Default user: admin)</option>
+                </select>
+                <div id="authMethod-help" class="sr-only">Choose how you want to authenticate with the server. Pincode is most secure, API key is for development, admin login uses your server credentials.</div>
+            </div>
+            <div class="input-group" id="authCredentials" style="display: none;">
+                <label for="authValue">Authentication Value:</label>
+                <div class="help-hint" role="note" id="authValue-hint">Enter the required authentication value based on your selected method</div>
+                <input type="password" id="authValue" placeholder="Enter pincode, API key, or password"
+                       aria-describedby="authValue-hint" autocomplete="current-password">
+                <div id="forgotPasswordLink" style="margin-top: 8px; display: none;">
+                    <a href="forgot-password.php" style="color: #60a5fa; text-decoration: none; font-size: 13px;">Forgot your admin password?</a>
+                </div>
+            </div>
+            <div class="button-group">
+                <button onclick="connectToServer()">Connect to Server</button>
+                <button onclick="autoDiscoverConnect()">Auto Discover & Connect</button>
+                <button onclick="disconnect()">Disconnect</button>
+            </div>
+            <div class="status" id="connectionStatus">Status: Ready</div>
+        </div>
+
+        <div class="section admin-section">
+            <h2>🔧 Admin Client Management</h2>
+            <div class="auto-managed-section">
+                <div class="auto-status-card">
+                    <div class="auto-indicator">🤖 Auto-managed Server</div>
+                    <div class="auto-description">Server lifecycle is automatically managed based on demand and remote commands</div>
+                </div>
+                <div class="button-group">
+                    <button onclick="openAdminDashboard()">Open Admin Dashboard</button>
+                    <button onclick="getConnectedClients()">Show Connected Clients</button>
+                </div>
+            </div>
+            <div class="status" id="adminStatus">Client Server: Auto-managed</div>
+        </div>
+
+        <div class="section">
+            <h2>⚙️ Local Server Options</h2>
+            <div class="button-group">
+                <button onclick="createLocalServer()">Create Local FlexPBX Server</button>
+                <button onclick="manageLocalAPI()">Manage Local API</button>
+                <button onclick="configurePBX()">Configure PBX Settings</button>
+            </div>
+        </div>
+
+        <!-- API Endpoints Section - Hidden until authenticated -->
+        <div class="section" id="api-endpoints-section" style="display: none;">
+            <h2>📊 API Endpoints (Test Connection)</h2>
+            <div class="security-notice" style="background: rgba(255,215,0,0.1); border: 1px solid #ffcc00; border-radius: 4px; padding: 8px; margin-bottom: 10px; color: #ffcc00; font-size: 12px;">
+                🔒 API endpoints are only visible after successful authentication for security purposes
+            </div>
+            <div class="button-group">
+                <button onclick="testEndpoint('/api/info')">Test API Info</button>
+                <button onclick="testEndpoint('/api/status')">Test System Status</button>
+                <button onclick="testEndpoint('/api/auth/status')">Test Auth Status</button>
+            </div>
+            <div class="status" id="apiStatus">API Tests: Ready</div>
+        </div>
+
+        <!-- Authentication Required Notice -->
+        <div class="section" id="auth-required-notice">
+            <h2>🔐 Authentication Required</h2>
+            <div class="auth-notice" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 16px; text-align: center;">
+                <p>Please connect to your FlexPBX server above to access API endpoints and administrative features.</p>
+                <p style="color: #ffcc00; font-size: 12px;">© 2025-2026 Devine Creations LLC - Enterprise PBX Solution</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+
+        // Update auth input visibility
+        document.getElementById('authMethod').addEventListener('change', function() {
+            const authCredentials = document.getElementById('authCredentials');
+            const authValue = document.getElementById('authValue');
+            const authHint = document.getElementById('authValue-hint');
+            const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+
+            if (this.value === 'pincode') {
+                authCredentials.style.display = 'none';
+                authHint.textContent = 'For pincode auth, generate a 6-digit code on your server first';
+                forgotPasswordLink.style.display = 'none';
+            } else {
+                authCredentials.style.display = 'block';
+                if (this.value === 'api-key') {
+                    authValue.placeholder = 'Enter API key (e.g., flexpbx_api_2024)';
+                    authHint.textContent = 'Enter your FlexPBX API key. Default for testing: flexpbx_api_2024';
+                    forgotPasswordLink.style.display = 'none';
+                } else {
+                    authValue.placeholder = 'Enter admin password';
+                    authHint.textContent = 'Enter your admin password. Default for testing: FlexPBX2024!';
+                    forgotPasswordLink.style.display = 'block';
+                }
+            }
+        });
+
+        async function detectServerCapabilities() {
+            const serverUrl = document.getElementById('serverUrl').value.trim();
+            if (!serverUrl) {
+                updateStatus('detectionStatus', 'Error: Please enter a server URL first', 'error');
+                return;
+            }
+
+            // Normalize URL
+            let baseUrl = serverUrl;
+            if (!baseUrl.endsWith('/api') && !baseUrl.endsWith('/api/')) {
+                baseUrl = baseUrl.replace(/\/$/, '') + '/api';
+            }
+
+            updateStatus('detectionStatus', 'Detecting server capabilities for ' + baseUrl + '...', 'info');
+
+            const capabilities = {
+                apiInfo: false,
+                systemStatus: false,
+                authEndpoints: false,
+                deviceRegister: false,
+                deviceAuthorize: false,
+                userLogin: false,
+                pincodeGenerate: false,
+                authStatus: false
+            };
+
+            const results = [];
+
+            // Test endpoints
+            const endpoints = [
+                { path: '/info', key: 'apiInfo', name: 'API Information' },
+                { path: '/status', key: 'systemStatus', name: 'System Status' },
+                { path: '/auth/device/register', key: 'deviceRegister', name: 'Device Registration' },
+                { path: '/auth/device/authorize', key: 'deviceAuthorize', name: 'Device Authorization' },
+                { path: '/auth/user/login', key: 'userLogin', name: 'User Login' },
+                { path: '/auth/user/create', key: 'userCreate', name: 'User Creation' },
+                { path: '/auth/pincode/generate', key: 'pincodeGenerate', name: 'Pincode Generation' },
+                { path: '/auth/status', key: 'authStatus', name: 'Auth Status Check' }
+            ];
+
+            for (const endpoint of endpoints) {
+                try {
+                    const response = await fetch(baseUrl + endpoint.path, {
+                        method: 'GET',
+                        headers: { 'Accept': 'application/json' }
+                    });
+
+                    if (response.status < 500) { // 200, 400, 401, 403 are all valid responses
+                        capabilities[endpoint.key] = true;
+                        results.push({
+                            name: endpoint.name,
+                            available: true,
+                            status: response.status,
+                            path: endpoint.path
+                        });
+                    } else {
+                        results.push({
+                            name: endpoint.name,
+                            available: false,
+                            status: response.status,
+                            path: endpoint.path
+                        });
+                    }
+                } catch (error) {
+                    results.push({
+                        name: endpoint.name,
+                        available: false,
+                        error: error.message,
+                        path: endpoint.path
+                    });
+                }
+            }
+
+            // Display results
+            displayDetectionResults(results, capabilities, baseUrl);
+        }
+
+        function displayDetectionResults(results, capabilities, baseUrl) {
+            // Create or update detection results display
+            let resultsDiv = document.getElementById('detectionResults');
+            if (!resultsDiv) {
+                resultsDiv = document.createElement('div');
+                resultsDiv.id = 'detectionResults';
+                resultsDiv.className = 'detection-results';
+                document.getElementById('detectionStatus').parentNode.insertBefore(resultsDiv, document.getElementById('detectionStatus').nextSibling);
+            }
+
+            let html = '<h3>🔍 Server Detection Results</h3>';
+            html += '<p><strong>Server:</strong> ' + baseUrl + '</p>';
+
+            // Determine available auth methods
+            const authMethods = [];
+            if (capabilities.pincodeGenerate && capabilities.deviceRegister) {
+                authMethods.push('Device Pincode Authentication');
+            }
+            if (capabilities.userLogin) {
+                authMethods.push('Admin Login Authentication');
+            }
+            if (capabilities.deviceRegister) {
+                authMethods.push('API Key Authentication');
+            }
+
+            html += '<div role="region" aria-label="Available Authentication Methods">';
+            html += '<h4>📋 Available Authentication Methods:</h4>';
+            if (authMethods.length > 0) {
+                authMethods.forEach(method => {
+                    html += '<div class="method-available">✅ ' + method + '</div>';
+                });
+            } else {
+                html += '<div class="method-unavailable">❌ No standard authentication methods detected</div>';
+            }
+            html += '</div>';
+
+            html += '<div role="region" aria-label="Endpoint Test Results">';
+            html += '<h4>🔌 Endpoint Test Results:</h4>';
+            results.forEach(result => {
+                const statusClass = result.available ? 'method-available' : 'method-unavailable';
+                const icon = result.available ? '✅' : '❌';
+                const statusText = result.status ? ` (HTTP ${result.status})` : result.error ? ` (${result.error})` : '';
+                html += '<div class="' + statusClass + '">' + icon + ' ' + result.name + ': ' + result.path + statusText + '</div>';
+            });
+            html += '</div>';
+
+            // Recommendations
+            html += '<div role="region" aria-label="Connection Recommendations">';
+            html += '<h4>💡 Recommendations for Screen Reader Users:</h4>';
+            if (capabilities.pincodeGenerate) {
+                html += '<div class="method-available">• Use Device Pincode authentication for highest security</div>';
+            }
+            if (capabilities.userLogin) {
+                html += '<div class="method-available">• Use Admin Login with your server credentials</div>';
+            }
+            if (!capabilities.pincodeGenerate && !capabilities.userLogin) {
+                html += '<div class="method-unavailable">• Try API Key authentication with: flexpbx_api_2024</div>';
+            }
+            html += '</div>';
+
+            resultsDiv.innerHTML = html;
+
+            // Update status
+            if (authMethods.length > 0) {
+                updateStatus('detectionStatus', '✅ Detection complete - ' + authMethods.length + ' auth methods available', 'success');
+
+                // Auto-update auth method dropdown based on detection
+                const authSelect = document.getElementById('authMethod');
+                if (capabilities.pincodeGenerate && capabilities.deviceRegister) {
+                    authSelect.value = 'pincode';
+                } else if (capabilities.userLogin) {
+                    authSelect.value = 'admin-login';
+                } else {
+                    authSelect.value = 'api-key';
+                }
+                authSelect.dispatchEvent(new Event('change'));
+
+            } else {
+                updateStatus('detectionStatus', '⚠️ Detection complete - Limited authentication options detected', 'error');
+            }
+        }
+
+        function updateStatus(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            if (element) {
+                element.innerHTML = message;
+                element.className = 'status ' + type;
+            }
+        }
+
+        async function connectToServer() {
+            const serverUrl = document.getElementById('serverUrl').value.trim();
+            const authMethod = document.getElementById('authMethod').value;
+            const authValue = document.getElementById('authValue').value;
+
+            if (!serverUrl) {
+                updateStatus('connectionStatus', 'Error: Please enter a server URL', 'error');
+                return;
+            }
+
+            // Normalize URL - add /api if not present
+            let normalizedUrl = serverUrl;
+            if (!normalizedUrl.endsWith('/api') && !normalizedUrl.endsWith('/api/')) {
+                normalizedUrl = normalizedUrl.replace(/\/$/, '') + '/api';
+            }
+
+            updateStatus('connectionStatus', 'Connecting to ' + normalizedUrl + '...', 'info');
+
+            try {
+                const credentials = authMethod === 'pincode' ? { method: 'pincode' } :
+                                 authMethod === 'api-key' ? { method: 'api-key', apiKey: authValue } :
+                                 { method: 'admin-login', username: 'admin', password: authValue };
+
+                const result = await ipcRenderer.invoke('connect-to-remote-server', normalizedUrl, credentials);
+
+                if (result && result.success) {
+                    updateStatus('connectionStatus', 'Connected successfully! Type: ' + (result.type || 'remote-server'), 'success');
+
+                    // Show API endpoints after successful authentication
+                    showAPIEndpoints();
+                } else {
+                    updateStatus('connectionStatus', 'Connection failed: ' + (result ? result.error : 'Unknown error'), 'error');
+
+                    // Hide API endpoints if connection failed
+                    hideAPIEndpoints();
+                }
+            } catch (error) {
+                updateStatus('connectionStatus', 'Error: ' + error.message, 'error');
+            }
+        }
+
+        async function autoDiscoverConnect() {
+            updateStatus('connectionStatus', 'Auto-discovering servers...', 'info');
+            try {
+                const result = await ipcRenderer.invoke('auto-discover-and-connect');
+                if (result && result.success) {
+                    updateStatus('connectionStatus', 'Auto-connected successfully!', 'success');
+
+                    // Show API endpoints after successful authentication
+                    showAPIEndpoints();
+                } else {
+                    updateStatus('connectionStatus', 'Auto-discovery failed: ' + (result ? result.error : 'No servers found'), 'error');
+
+                    // Hide API endpoints if connection failed
+                    hideAPIEndpoints();
+                }
+            } catch (error) {
+                updateStatus('connectionStatus', 'Auto-discovery error: ' + error.message, 'error');
+            }
+        }
+
+        async function disconnect() {
+            updateStatus('connectionStatus', 'Disconnecting...', 'info');
+            try {
+                const result = await ipcRenderer.invoke('disconnect-from-remote-server');
+                updateStatus('connectionStatus', 'Disconnected', 'info');
+            } catch (error) {
+                updateStatus('connectionStatus', 'Disconnect error: ' + error.message, 'error');
+            }
+        }
+
+        async function startClientServer() {
+            updateStatus('adminStatus', 'Starting client server...', 'info');
+            try {
+                const result = await ipcRenderer.invoke('start-client-server', 9001);
+                if (result && result.success) {
+                    updateStatus('adminStatus', 'Client Server: Running on port ' + result.port, 'success');
+                } else {
+                    updateStatus('adminStatus', 'Failed to start server: ' + (result ? result.error : 'Unknown error'), 'error');
+                }
+            } catch (error) {
+                updateStatus('adminStatus', 'Server start error: ' + error.message, 'error');
+            }
+        }
+
+        async function stopClientServer() {
+            try {
+                const result = await ipcRenderer.invoke('stop-client-server');
+                updateStatus('adminStatus', 'Client Server: Stopped', 'info');
+            } catch (error) {
+                updateStatus('adminStatus', 'Server stop error: ' + error.message, 'error');
+            }
+        }
+
+        async function openAdminDashboard() {
+            try {
+                await ipcRenderer.invoke('open-admin-window');
+            } catch (error) {
+                console.error('Dashboard open error:', error);
+            }
+        }
+
+        async function getConnectedClients() {
+            try {
+                const clients = await ipcRenderer.invoke('get-connected-clients');
+                updateStatus('adminStatus', 'Connected clients: ' + (clients ? clients.length : 0), 'info');
+                console.log('Connected clients:', clients);
+            } catch (error) {
+                updateStatus('adminStatus', 'Error getting clients: ' + error.message, 'error');
+            }
+        }
+
+        async function testEndpoint(endpoint) {
+            const serverUrl = document.getElementById('serverUrl').value.trim();
+            if (!serverUrl) {
+                updateStatus('apiStatus', 'Please enter a server URL first', 'error');
+                return;
+            }
+
+            // Normalize URL
+            let baseUrl = serverUrl;
+            if (!baseUrl.endsWith('/api') && !baseUrl.endsWith('/api/')) {
+                baseUrl = baseUrl.replace(/\/$/, '') + '/api';
+            }
+
+            const testUrl = baseUrl + endpoint;
+            updateStatus('apiStatus', 'Testing: ' + testUrl, 'info');
+
+            try {
+                const response = await fetch(testUrl);
+                if (response.ok) {
+                    const data = await response.json();
+                    updateStatus('apiStatus', endpoint + ': ✅ Success - ' + JSON.stringify(data).substring(0, 100) + '...', 'success');
+                } else {
+                    updateStatus('apiStatus', endpoint + ': ❌ Failed - HTTP ' + response.status, 'error');
+                }
+            } catch (error) {
+                updateStatus('apiStatus', endpoint + ': ❌ Error - ' + error.message, 'error');
+            }
+        }
+
+        // Local server functions (placeholder for now)
+        function createLocalServer() {
+            updateStatus('connectionStatus', 'Local server creation feature will be implemented', 'info');
+        }
+
+        function manageLocalAPI() {
+            updateStatus('connectionStatus', 'Local API management feature will be implemented', 'info');
+        }
+
+        function configurePBX() {
+            updateStatus('connectionStatus', 'PBX configuration feature will be implemented', 'info');
+        }
+
+        // Listen for connection events
+        ipcRenderer.on('remote-server-connected', (event, data) => {
+            updateStatus('connectionStatus', 'Remote server connected: ' + (data.serverUrl || 'Unknown'), 'success');
+        });
+
+        ipcRenderer.on('remote-server-disconnected', (event, data) => {
+            updateStatus('connectionStatus', 'Remote server disconnected', 'info');
+        });
+
+        ipcRenderer.on('client-server-started', (event, data) => {
+            updateStatus('adminStatus', 'Client Server: Running on port ' + data.port, 'success');
+        });
+
+        ipcRenderer.on('client-server-stopped', (event, data) => {
+            updateStatus('adminStatus', 'Client Server: Stopped', 'info');
+        });
+
+        // API Endpoints Visibility Management
+        function showAPIEndpoints() {
+            const apiSection = document.getElementById('api-endpoints-section');
+            const authNotice = document.getElementById('auth-required-notice');
+
+            if (apiSection) {
+                apiSection.style.display = 'block';
+                console.log('✅ API endpoints revealed after authentication');
+            }
+            if (authNotice) {
+                authNotice.style.display = 'none';
+            }
+        }
+
+        function hideAPIEndpoints() {
+            const apiSection = document.getElementById('api-endpoints-section');
+            const authNotice = document.getElementById('auth-required-notice');
+
+            if (apiSection) {
+                apiSection.style.display = 'none';
+                console.log('🔒 API endpoints hidden - authentication required');
+            }
+            if (authNotice) {
+                authNotice.style.display = 'block';
+            }
+        }
+
+        // Initialize - ensure API endpoints are hidden by default
+        document.addEventListener('DOMContentLoaded', function() {
+            hideAPIEndpoints();
+        });
+
+        // Initialize
+        console.log('FlexPBX Admin Interface loaded');
+    </script>
+</body>
+</html>

@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlexPBX Admin - Google Voice Integration</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .sidebar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        .sidebar a:hover, .sidebar .active {
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+        }
+        .integration-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        .integration-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.15);
+        }
+        .status-connected {
+            color: #28a745;
+            animation: pulse 2s infinite;
+        }
+        .status-disconnected {
+            color: #dc3545;
+        }
+        .status-warning {
+            color: #ffc107;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        .oauth-section {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        .feature-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .number-display {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .quota-bar {
+            height: 8px;
+            border-radius: 4px;
+            background: #e0e0e0;
+            overflow: hidden;
+        }
+        .quota-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #28a745 0%, #ffc107 70%, #dc3545 90%);
+            transition: width 0.3s ease;
+        }
+        .sms-conversation {
+            max-height: 300px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+        }
+        .sms-message {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 12px;
+            max-width: 70%;
+        }
+        .sms-outgoing {
+            background: #667eea;
+            color: white;
+            margin-left: auto;
+            text-align: right;
+        }
+        .sms-incoming {
+            background: white;
+            border: 1px solid #dee2e6;
+        }
+        .voicemail-item {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: white;
+        }
+        .transcription-text {
+            background: #f8f9fa;
+            border-left: 3px solid #667eea;
+            padding: 10px;
+            margin-top: 10px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-2 d-none d-md-block sidebar p-3">
+                <div class="sidebar-sticky">
+                    <div class="text-center mb-4">
+                        <h4 class="text-white">FlexPBX Admin</h4>
+                        <small class="text-light opacity-75">Google Voice</small>
+                    </div>
+
+                    <ul class="nav flex-column">
+                        <li class="nav-item mb-2">
+                            <a class="nav-link p-3" href="dashboard.html">
+                                <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link p-3" href="admin-trunks-management.html">
+                                <i class="fas fa-network-wired me-2"></i> Trunk Management
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link p-3" href="admin-extensions-management.html">
+                                <i class="fas fa-phone me-2"></i> Extensions
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link p-3 active" href="admin-google-voice.html">
+                                <i class="fab fa-google me-2"></i> Google Voice
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link p-3" href="admin-queues.html">
+                                <i class="fas fa-users me-2"></i> Call Queues
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link p-3" href="admin-ivr.html">
+                                <i class="fas fa-sitemap me-2"></i> IVR System
+                            </a>
+                        </li>
+                        <li class="nav-item mb-2">
+                            <a class="nav-link p-3" href="admin-call-logs.html">
+                                <i class="fas fa-history me-2"></i> Call Logs
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-10 ml-sm-auto col-lg-10 px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">
+                        <i class="fab fa-google me-2 text-primary"></i>
+                        Google Voice Integration
+                    </h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <button class="btn btn-success" onclick="connectGoogleVoice()" id="connectBtn">
+                            <i class="fas fa-link me-1"></i> Connect Google Voice
+                        </button>
+                        <button class="btn btn-outline-primary ms-2" onclick="refreshData()">
+                            <i class="fas fa-sync-alt me-1"></i> Refresh Data
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Connection Status -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="oauth-section">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h4>
+                                        <i class="fas fa-circle status-connected me-2" id="connectionStatus"></i>
+                                        <span id="connectionText">Google Voice Connected</span>
+                                    </h4>
+                                    <p class="mb-2">
+                                        <strong>Primary Number:</strong>
+                                        <span class="number-display" id="primaryNumber">(281) 301-5784</span>
+                                    </p>
+                                    <p class="mb-0">
+                                        <strong>Account:</strong> <span id="accountEmail">flexpbx@devinecreations.com</span><br>
+                                        <strong>Last Sync:</strong> <span id="lastSync">2025-10-13 14:25:30</span><br>
+                                        <strong>OAuth Status:</strong> <span class="badge bg-success" id="oauthStatus">Active</span>
+                                    </p>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <div class="btn-group-vertical">
+                                        <button class="btn btn-outline-warning mb-2" onclick="refreshToken()">
+                                            <i class="fas fa-key me-1"></i> Refresh Token
+                                        </button>
+                                        <button class="btn btn-outline-danger" onclick="disconnectGoogleVoice()">
+                                            <i class="fas fa-unlink me-1"></i> Disconnect
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API Usage Statistics -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card border-primary">
+                            <div class="card-body text-center">
+                                <h3 class="text-primary" id="callsToday">247</h3>
+                                <p class="mb-0">Calls Today</p>
+                                <div class="quota-bar mt-2">
+                                    <div class="quota-fill" style="width: 25%"></div>
+                                </div>
+                                <small class="text-muted">247 / 1000 daily limit</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-info">
+                            <div class="card-body text-center">
+                                <h3 class="text-info" id="smsToday">82</h3>
+                                <p class="mb-0">SMS Today</p>
+                                <div class="quota-bar mt-2">
+                                    <div class="quota-fill" style="width: 16%"></div>
+                                </div>
+                                <small class="text-muted">82 / 500 daily limit</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-success">
+                            <div class="card-body text-center">
+                                <h3 class="text-success" id="voicemailCount">12</h3>
+                                <p class="mb-0">New Voicemails</p>
+                                <div class="mt-2">
+                                    <span class="badge bg-success">8 Transcribed</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card border-warning">
+                            <div class="card-body text-center">
+                                <h3 class="text-warning" id="missedCalls">5</h3>
+                                <p class="mb-0">Missed Calls</p>
+                                <div class="mt-2">
+                                    <button class="btn btn-sm btn-warning" onclick="showMissedCalls()">
+                                        View Details
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Features Tabs -->
+                <div class="row">
+                    <div class="col-12">
+                        <ul class="nav nav-tabs" id="googleVoiceTabs">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-bs-toggle="tab" href="#configuration">
+                                    <i class="fas fa-cog me-1"></i> Configuration
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#voicemail">
+                                    <i class="fas fa-voicemail me-1"></i> Voicemail
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#sms">
+                                    <i class="fas fa-sms me-1"></i> SMS Management
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#callrouting">
+                                    <i class="fas fa-route me-1"></i> Call Routing
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-bs-toggle="tab" href="#analytics">
+                                    <i class="fas fa-chart-line me-1"></i> Analytics
+                                </a>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content mt-3">
+                            <!-- Configuration Tab -->
+                            <div class="tab-pane fade show active" id="configuration">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="feature-card">
+                                            <h5><i class="fas fa-phone me-2"></i>Phone Number Settings</h5>
+                                            <form id="numberSettingsForm">
+                                                <div class="mb-3">
+                                                    <label class="form-label">Primary Number</label>
+                                                    <input type="tel" class="form-control" id="primaryNum" value="(281) 301-5784" readonly>
+                                                    <small class="form-text text-muted">This number is linked to your Google Voice account</small>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Display Name</label>
+                                                    <input type="text" class="form-control" id="displayName" value="FlexPBX Main Line" placeholder="How this number appears to callers">
+                                                </div>
+                                                <div class="mb-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="enableSMS" checked>
+                                                        <label class="form-check-label" for="enableSMS">Enable SMS Integration</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="enableVoicemail" checked>
+                                                        <label class="form-check-label" for="enableVoicemail">Enable Voicemail Transcription</label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="enableCallForwarding">
+                                                        <label class="form-check-label" for="enableCallForwarding">Forward missed calls to PBX</label>
+                                                    </div>
+                                                </div>
+                                                <button type="button" class="btn btn-primary" onclick="saveNumberSettings()">
+                                                    <i class="fas fa-save me-1"></i> Save Settings
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="feature-card">
+                                            <h5><i class="fas fa-key me-2"></i>OAuth2 Configuration</h5>
+                                            <div class="mb-3">
+                                                <label class="form-label">Client ID</label>
+                                                <input type="text" class="form-control" id="clientId" value="your-google-client-id" readonly>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Authorization Scopes</label>
+                                                <div class="border rounded p-3 bg-light">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="scopeVoice" checked disabled>
+                                                        <label class="form-check-label" for="scopeVoice">
+                                                            <code>https://www.googleapis.com/auth/voice</code>
+                                                        </label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="scopeSMS" checked disabled>
+                                                        <label class="form-check-label" for="scopeSMS">
+                                                            <code>https://www.googleapis.com/auth/voice.sms</code>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">Token Refresh</label>
+                                                <div class="d-flex align-items-center">
+                                                    <span class="badge bg-success me-2">Valid</span>
+                                                    <span class="text-muted">Expires: Oct 13, 2025 at 2:30 PM</span>
+                                                </div>
+                                            </div>
+                                            <div class="d-grid gap-2">
+                                                <button class="btn btn-warning" onclick="refreshOAuthToken()">
+                                                    <i class="fas fa-sync me-1"></i> Refresh OAuth Token
+                                                </button>
+                                                <button class="btn btn-outline-danger" onclick="revokeAccess()">
+                                                    <i class="fas fa-ban me-1"></i> Revoke Access
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Rate Limits & Quotas -->
+                                <div class="row mt-4">
+                                    <div class="col-12">
+                                        <div class="feature-card">
+                                            <h5><i class="fas fa-tachometer-alt me-2"></i>API Rate Limits & Quotas</h5>
+                                            <div class="row">
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Daily Call Limit</label>
+                                                    <input type="number" class="form-control" id="callLimit" value="1000" min="100" max="10000">
+                                                    <div class="progress mt-2" style="height: 6px;">
+                                                        <div class="progress-bar bg-primary" style="width: 25%"></div>
+                                                    </div>
+                                                    <small class="text-muted">247 / 1000 used today</small>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Daily SMS Limit</label>
+                                                    <input type="number" class="form-control" id="smsLimit" value="500" min="50" max="5000">
+                                                    <div class="progress mt-2" style="height: 6px;">
+                                                        <div class="progress-bar bg-info" style="width: 16%"></div>
+                                                    </div>
+                                                    <small class="text-muted">82 / 500 used today</small>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <label class="form-label">Webhook Retry Attempts</label>
+                                                    <input type="number" class="form-control" id="retryAttempts" value="3" min="1" max="10">
+                                                    <small class="form-text text-muted">Number of retry attempts for failed webhooks</small>
+                                                </div>
+                                            </div>
+                                            <div class="mt-3">
+                                                <button class="btn btn-primary" onclick="saveRateLimits()">
+                                                    <i class="fas fa-save me-1"></i> Save Rate Limits
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Voicemail Tab -->
+                            <div class="tab-pane fade" id="voicemail">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <div class="feature-card">
+                                            <h5><i class="fas fa-voicemail me-2"></i>Recent Voicemails</h5>
+                                            <div id="voicemailList">
+                                                <div class="voicemail-item">
+                                                    <div class="d-flex justify-content-between align-items-start">
+                                                        <div>
+                                                            <strong>+1 (555) 123-4567</strong>
+                                                            <span class="badge bg-info ms-2">New</span>
+                                                        </div>
+                                                        <div class="text-end">
+                                                            <small class="text-muted">Oct 13, 2:15 PM</small>
+                                                            <div class="btn-group btn-group-sm ms-2">
+                                                                <button class="btn btn-outline-primary" onclick="playVoicemail('vm1')">
+                                                                    <i class="fas fa-play"></i>
+                                                                </button>
+                                                                <button class="btn btn-outline-success" onclick="downloadVoicemail('vm1')">
+                                                                    <i class="fas fa-download"></i>
+                                                                </button>
+                                                                <button class="btn btn-outline-danger" onclick="deleteVoicemail('vm1')">
+                                                                    <i class="fas fa-trash"></i>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="transcription-text">
+                                                        "Hi, this is John calling about the meeting tomorrow. Please call me back when you get a chance. Thanks!"
+                                                    </div>
+                                                    <div class="mt-2">
+                                                        <small class="text-muted">
+                                                            <i class="fas fa-clock me-1"></i> Duration: 32 seconds
+                                                            <i class="fas fa-brain ms-3 me-1"></i> Confidence: 94%
+                                                        </small>
+                                                    </div>
+                                                </div>
+
+                                                <div class="voicemail-item">
+                                                    <div class="d-flex justify-content-between align-items-start">
+                                                        <div>
+                                                            <strong>+1 (555) 987-6543</strong>
+                                                        </div>
+                                                        <div class="text-end">
+                                                            <small class="text-muted">Oct 13, 1:45 PM</small>
+                                                            <div class="btn-group btn-group-sm ms-2">
+                                                                <button class="btn btn-outline-primary" onclick="playVoicemail('vm2')">
+                                                                    <i class="fas fa-play"></i>
+                                                                </button>
+                                                                <button class="btn btn-outline-success" onclick="downloadVoicemail('vm2')">
+                                                                    <i class="fas fa-download"></i>
+                                                                </button>
+                                                                <button class="btn btn-outline-danger" onclick="deleteVoicemail('vm2')">
+                                                                    <i class="fas fa-trash"></i>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="transcription-text">
+                                                        "Hello, I'm calling to follow up on our conversation about the project timeline. Could you give me a call back? Thank you."
+                                                    </div>
+                                                    <div class="mt-2">
+                                                        <small class="text-muted">
+                                                            <i class="fas fa-clock me-1"></i> Duration: 28 seconds
+                                                            <i class="fas fa-brain ms-3 me-1"></i> Confidence: 89%
+                                                        </small>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="feature-card">
+                                            <h5><i class="fas fa-cog me-2"></i>Voicemail Settings</h5>
+                                            <form id="voicemailSettingsForm">
+                                                <div class="mb-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="autoTranscribe" checked>
+                                                        <label class="form-check-label" for="autoTranscribe">
+                                                            Auto-transcribe voicemails
+                                                        </label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="emailNotifications" checked>
+                                                        <label class="form-check-label" for="emailNotifications">
+                                                            Email notifications
+                                                        </label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="smsNotifications">
+                                                        <label class="form-check-label" for="smsNotifications">
+                                                            SMS notifications
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Forward to Extension</label>
+                                                    <select class="form-select" id="forwardExtension">
+                                                        <option value="">No forwarding</option>
+                                                        <option value="2001">2001 - Senior Tech Support</option>
+                                                        <option value="2000">2000 - Support Manager</option>
+                                                        <option value="1000">1000 - Sales Manager</option>
+                                                    </select>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Greeting Message</label>
+                                                    <textarea class="form-control" id="greetingMessage" rows="3" placeholder="Leave your custom greeting message...">Thank you for calling FlexPBX. Please leave a message after the tone and we'll get back to you as soon as possible.</textarea>
+                                                </div>
+                                                <button type="button" class="btn btn-primary w-100" onclick="saveVoicemailSettings()">
+                                                    <i class="fas fa-save me-1"></i> Save Settings
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- SMS Management Tab -->
+                            <div class="tab-pane fade" id="sms">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <div class="feature-card">
+                                            <h5><i class="fas fa-sms me-2"></i>SMS Conversations</h5>
+                                            <div class="sms-conversation" id="smsConversation">
+                                                <div class="sms-message sms-incoming">
+                                                    <strong>+1 (555) 123-4567</strong><br>
+                                                    Hi, what are your business hours?<br>
+                                                    <small class="text-muted">Oct 13, 2:10 PM</small>
+                                                </div>
+                                                <div class="sms-message sms-outgoing">
+                                                    Our business hours are Monday-Friday 9 AM to 6 PM EST. How can we help you today?<br>
+                                                    <small class="text-muted">Oct 13, 2:12 PM</small>
+                                                </div>
+                                                <div class="sms-message sms-incoming">
+                                                    <strong>+1 (555) 123-4567</strong><br>
+                                                    I need help with my account setup. Can someone call me?<br>
+                                                    <small class="text-muted">Oct 13, 2:15 PM</small>
+                                                </div>
+                                            </div>
+                                            <div class="mt-3">
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" id="smsReply" placeholder="Type your reply...">
+                                                    <button class="btn btn-primary" onclick="sendSMSReply()">
+                                                        <i class="fas fa-paper-plane"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="feature-card">
+                                            <h5><i class="fas fa-users me-2"></i>SMS Contacts</h5>
+                                            <div class="list-group">
+                                                <a href="#" class="list-group-item list-group-item-action active" onclick="loadSMSConversation('+15551234567')">
+                                                    <div class="d-flex justify-content-between">
+                                                        <strong>+1 (555) 123-4567</strong>
+                                                        <span class="badge bg-primary">3</span>
+                                                    </div>
+                                                    <small>Last message at 2:15 PM</small>
+                                                </a>
+                                                <a href="#" class="list-group-item list-group-item-action" onclick="loadSMSConversation('+15559876543')">
+                                                    <div class="d-flex justify-content-between">
+                                                        <strong>+1 (555) 987-6543</strong>
+                                                    </div>
+                                                    <small>Last message at 1:30 PM</small>
+                                                </a>
+                                                <a href="#" class="list-group-item list-group-item-action" onclick="loadSMSConversation('+15555551234')">
+                                                    <div class="d-flex justify-content-between">
+                                                        <strong>+1 (555) 555-1234</strong>
+                                                        <span class="badge bg-danger">1</span>
+                                                    </div>
+                                                    <small>Last message at 12:45 PM</small>
+                                                </a>
+                                            </div>
+                                            <div class="mt-3">
+                                                <button class="btn btn-success w-100" onclick="newSMSConversation()">
+                                                    <i class="fas fa-plus me-1"></i> New Message
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div class="feature-card mt-3">
+                                            <h5><i class="fas fa-robot me-2"></i>Auto-Reply Settings</h5>
+                                            <form id="autoReplyForm">
+                                                <div class="form-check mb-3">
+                                                    <input class="form-check-input" type="checkbox" id="enableAutoReply">
+                                                    <label class="form-check-label" for="enableAutoReply">
+                                                        Enable auto-reply
+                                                    </label>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Auto-reply message</label>
+                                                    <textarea class="form-control" id="autoReplyMessage" rows="3" placeholder="Thank you for contacting us...">Thank you for contacting FlexPBX! We'll respond to your message during business hours (Mon-Fri 9 AM - 6 PM EST).</textarea>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Business Hours Only</label>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="businessHoursOnly" checked>
+                                                        <label class="form-check-label" for="businessHoursOnly">
+                                                            Only send during business hours
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <button type="button" class="btn btn-primary w-100" onclick="saveAutoReplySettings()">
+                                                    <i class="fas fa-save me-1"></i> Save Settings
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Call Routing Tab -->
+                            <div class="tab-pane fade" id="callrouting">
+                                <div class="feature-card">
+                                    <h5><i class="fas fa-route me-2"></i>Call Routing Rules</h5>
+                                    <p class="text-muted">Configure how incoming Google Voice calls are handled by your FlexPBX system.</p>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="border rounded p-3 mb-3">
+                                                <h6><i class="fas fa-phone-alt me-2"></i>Incoming Call Routing</h6>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Default Destination</label>
+                                                    <select class="form-select" id="defaultDestination">
+                                                        <option value="101">101 - Main IVR</option>
+                                                        <option value="2001">2001 - Senior Tech Support</option>
+                                                        <option value="1000">1000 - Sales Manager</option>
+                                                        <option value="queue_support">Support Queue</option>
+                                                        <option value="queue_sales">Sales Queue</option>
+                                                    </select>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="enableCallScreening">
+                                                        <label class="form-check-label" for="enableCallScreening">
+                                                            Enable call screening
+                                                        </label>
+                                                    </div>
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="enableCallRecording" checked>
+                                                        <label class="form-check-label" for="enableCallRecording">
+                                                            Record all calls
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="border rounded p-3 mb-3">
+                                                <h6><i class="fas fa-clock me-2"></i>Business Hours Routing</h6>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Business Hours</label>
+                                                    <div class="row">
+                                                        <div class="col-6">
+                                                            <input type="time" class="form-control" id="businessStart" value="09:00">
+                                                        </div>
+                                                        <div class="col-6">
+                                                            <input type="time" class="form-control" id="businessEnd" value="18:00">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">After Hours Destination</label>
+                                                    <select class="form-select" id="afterHoursDestination">
+                                                        <option value="voicemail">Google Voice Voicemail</option>
+                                                        <option value="2001">2001 - Emergency Support</option>
+                                                        <option value="101">101 - Main IVR</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Advanced Routing Rules -->
+                                    <div class="mb-3">
+                                        <h6><i class="fas fa-filter me-2"></i>Advanced Routing Rules</h6>
+                                        <div class="table-responsive">
+                                            <table class="table table-sm">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Caller ID Pattern</th>
+                                                        <th>Condition</th>
+                                                        <th>Destination</th>
+                                                        <th>Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="routingRules">
+                                                    <tr>
+                                                        <td>+1555*</td>
+                                                        <td>Business Hours</td>
+                                                        <td>Sales Queue</td>
+                                                        <td>
+                                                            <button class="btn btn-sm btn-outline-danger" onclick="deleteRule(this)">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td>Unknown</td>
+                                                        <td>Any Time</td>
+                                                        <td>Main IVR</td>
+                                                        <td>
+                                                            <button class="btn btn-sm btn-outline-danger" onclick="deleteRule(this)">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <button class="btn btn-outline-primary" onclick="addRoutingRule()">
+                                            <i class="fas fa-plus me-1"></i> Add Rule
+                                        </button>
+                                    </div>
+
+                                    <div class="text-end">
+                                        <button class="btn btn-primary" onclick="saveCallRouting()">
+                                            <i class="fas fa-save me-1"></i> Save Routing Configuration
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Analytics Tab -->
+                            <div class="tab-pane fade" id="analytics">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="feature-card">
+                                            <h5><i class="fas fa-chart-bar me-2"></i>Call Analytics</h5>
+                                            <canvas id="callAnalyticsChart" height="200"></canvas>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="feature-card">
+                                            <h5><i class="fas fa-chart-line me-2"></i>SMS Analytics</h5>
+                                            <canvas id="smsAnalyticsChart" height="200"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-4">
+                                    <div class="col-12">
+                                        <div class="feature-card">
+                                            <h5><i class="fas fa-table me-2"></i>Usage Summary (Last 30 Days)</h5>
+                                            <div class="table-responsive">
+                                                <table class="table table-striped">
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Metric</th>
+                                                            <th>Current Month</th>
+                                                            <th>Previous Month</th>
+                                                            <th>Change</th>
+                                                            <th>Average per Day</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>Incoming Calls</td>
+                                                            <td>1,247</td>
+                                                            <td>1,109</td>
+                                                            <td><span class="badge bg-success">+12.4%</span></td>
+                                                            <td>41.6</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Outgoing Calls</td>
+                                                            <td>892</td>
+                                                            <td>756</td>
+                                                            <td><span class="badge bg-success">+18.0%</span></td>
+                                                            <td>29.7</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>SMS Received</td>
+                                                            <td>456</td>
+                                                            <td>389</td>
+                                                            <td><span class="badge bg-success">+17.2%</span></td>
+                                                            <td>15.2</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>SMS Sent</td>
+                                                            <td>342</td>
+                                                            <td>298</td>
+                                                            <td><span class="badge bg-success">+14.8%</span></td>
+                                                            <td>11.4</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>Voicemails</td>
+                                                            <td>78</td>
+                                                            <td>91</td>
+                                                            <td><span class="badge bg-warning">-14.3%</span></td>
+                                                            <td>2.6</td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- OAuth Connection Modal -->
+    <div class="modal fade" id="oauthModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fab fa-google me-2"></i>Connect Google Voice
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center">
+                        <i class="fab fa-google text-primary" style="font-size: 48px;"></i>
+                        <h4 class="mt-3">Authorize FlexPBX Access</h4>
+                        <p class="text-muted">
+                            FlexPBX needs permission to access your Google Voice account to manage calls, SMS, and voicemail.
+                        </p>
+
+                        <div class="list-group text-start mb-4">
+                            <div class="list-group-item">
+                                <i class="fas fa-phone text-success me-2"></i>
+                                <strong>Voice Calls:</strong> Make and receive calls through your Google Voice number
+                            </div>
+                            <div class="list-group-item">
+                                <i class="fas fa-sms text-info me-2"></i>
+                                <strong>SMS Messages:</strong> Send and receive text messages
+                            </div>
+                            <div class="list-group-item">
+                                <i class="fas fa-voicemail text-warning me-2"></i>
+                                <strong>Voicemail:</strong> Access and manage voicemail messages with transcription
+                            </div>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="fas fa-shield-alt me-2"></i>
+                            Your credentials are securely stored and encrypted. FlexPBX only accesses the permissions you grant.
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-success" onclick="initiateOAuth()">
+                        <i class="fab fa-google me-1"></i> Connect with Google
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="flexpbx-dynamic-ui.js"></script>
+    <script>
+        // Google Voice integration functions
+        function connectGoogleVoice() {
+            new bootstrap.Modal(document.getElementById('oauthModal')).show();
+        }
+
+        function initiateOAuth() {
+            // Step 1: Request authorization URL from our API
+            fetch('/api/google-voice/auth-url', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    redirect_uri: window.location.origin + '/api/google-voice/callback',
+                    scopes: [
+                        'https://www.googleapis.com/auth/voice',
+                        'https://www.googleapis.com/auth/voice.sms'
+                    ]
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.auth_url) {
+                    // Step 2: Redirect to Google OAuth
+                    window.open(data.auth_url, 'GoogleOAuth', 'width=500,height=600');
+
+                    // Step 3: Monitor for completion
+                    const checkAuth = setInterval(() => {
+                        fetch('/api/google-voice/auth-status')
+                            .then(response => response.json())
+                            .then(status => {
+                                if (status.authenticated) {
+                                    clearInterval(checkAuth);
+                                    bootstrap.Modal.getInstance(document.getElementById('oauthModal')).hide();
+                                    location.reload();
+                                }
+                            });
+                    }, 2000);
+                } else {
+                    alert('Error initializing OAuth: ' + data.error);
+                }
+            });
+        }
+
+        function disconnectGoogleVoice() {
+            if (confirm('Are you sure you want to disconnect Google Voice? This will disable all Google Voice features.')) {
+                fetch('/api/google-voice/disconnect', { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            location.reload();
+                        } else {
+                            alert('Error disconnecting: ' + data.error);
+                        }
+                    });
+            }
+        }
+
+        function refreshToken() {
+            fetch('/api/google-voice/refresh-token', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('oauthStatus').textContent = 'Refreshed';
+                        document.getElementById('oauthStatus').className = 'badge bg-success';
+                    } else {
+                        alert('Token refresh failed: ' + data.error);
+                    }
+                });
+        }
+
+        function refreshData() {
+            // Refresh all data from Google Voice API
+            fetch('/api/google-voice/sync', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert('Sync failed: ' + data.error);
+                    }
+                });
+        }
+
+        // Voicemail functions
+        function playVoicemail(vmId) {
+            fetch(`/api/google-voice/voicemail/${vmId}/play`, { method: 'POST' })
+                .then(response => response.blob())
+                .then(audioBlob => {
+                    const audioUrl = URL.createObjectURL(audioBlob);
+                    const audio = new Audio(audioUrl);
+                    audio.play();
+                });
+        }
+
+        function downloadVoicemail(vmId) {
+            window.open(`/api/google-voice/voicemail/${vmId}/download`, '_blank');
+        }
+
+        function deleteVoicemail(vmId) {
+            if (confirm('Delete this voicemail?')) {
+                fetch(`/api/google-voice/voicemail/${vmId}`, { method: 'DELETE' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            location.reload();
+                        }
+                    });
+            }
+        }
+
+        // SMS functions
+        function loadSMSConversation(phoneNumber) {
+            fetch(`/api/google-voice/sms/${encodeURIComponent(phoneNumber)}`)
+                .then(response => response.json())
+                .then(conversation => {
+                    const container = document.getElementById('smsConversation');
+                    container.innerHTML = '';
+
+                    conversation.messages.forEach(msg => {
+                        const messageDiv = document.createElement('div');
+                        messageDiv.className = `sms-message ${msg.direction === 'in' ? 'sms-incoming' : 'sms-outgoing'}`;
+                        messageDiv.innerHTML = `
+                            ${msg.direction === 'in' ? '<strong>' + phoneNumber + '</strong><br>' : ''}
+                            ${msg.text}<br>
+                            <small class="text-muted">${new Date(msg.timestamp).toLocaleString()}</small>
+                        `;
+                        container.appendChild(messageDiv);
+                    });
+
+                    container.scrollTop = container.scrollHeight;
+                });
+        }
+
+        function sendSMSReply() {
+            const message = document.getElementById('smsReply').value;
+            const activeContact = document.querySelector('.list-group-item.active strong').textContent;
+
+            if (message.trim()) {
+                fetch('/api/google-voice/sms/send', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        to: activeContact,
+                        message: message
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        document.getElementById('smsReply').value = '';
+                        loadSMSConversation(activeContact);
+                    } else {
+                        alert('Failed to send SMS: ' + data.error);
+                    }
+                });
+            }
+        }
+
+        // Save functions
+        function saveNumberSettings() {
+            const formData = new FormData(document.getElementById('numberSettingsForm'));
+            const settings = Object.fromEntries(formData.entries());
+
+            fetch('/api/google-voice/settings/number', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(settings)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Number settings saved successfully!');
+                } else {
+                    alert('Error saving settings: ' + data.error);
+                }
+            });
+        }
+
+        function saveVoicemailSettings() {
+            const formData = new FormData(document.getElementById('voicemailSettingsForm'));
+            const settings = Object.fromEntries(formData.entries());
+
+            fetch('/api/google-voice/settings/voicemail', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(settings)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Voicemail settings saved successfully!');
+                } else {
+                    alert('Error saving settings: ' + data.error);
+                }
+            });
+        }
+
+        function saveCallRouting() {
+            // Collect all routing settings
+            const settings = {
+                defaultDestination: document.getElementById('defaultDestination').value,
+                enableCallScreening: document.getElementById('enableCallScreening').checked,
+                enableCallRecording: document.getElementById('enableCallRecording').checked,
+                businessStart: document.getElementById('businessStart').value,
+                businessEnd: document.getElementById('businessEnd').value,
+                afterHoursDestination: document.getElementById('afterHoursDestination').value
+            };
+
+            fetch('/api/google-voice/settings/routing', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(settings)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Call routing settings saved successfully!');
+                } else {
+                    alert('Error saving settings: ' + data.error);
+                }
+            });
+        }
+
+        // Auto-refresh data every 30 seconds
+        setInterval(function() {
+            // Update usage statistics
+            fetch('/api/google-voice/usage-stats')
+                .then(response => response.json())
+                .then(stats => {
+                    document.getElementById('callsToday').textContent = stats.calls_today;
+                    document.getElementById('smsToday').textContent = stats.sms_today;
+                    document.getElementById('voicemailCount').textContent = stats.voicemail_count;
+                    document.getElementById('missedCalls').textContent = stats.missed_calls;
+                });
+        }, 30000);
+    </script>
+</body>
+</html>

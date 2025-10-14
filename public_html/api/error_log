@@ -1,0 +1,1 @@
+[13-Oct-2025 18:16:58 UTC] PHP Warning:  copy(.htaccess.example): Failed to open stream: No such file or directory in /home/flexpbxuser/public_html/api/install.php on line 2392
