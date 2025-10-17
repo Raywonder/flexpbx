@@ -138,6 +138,28 @@
             <p class="mt-3 mb-0 text-muted">Scan with any compatible SIP application</p>
         </div>
 
+        <!-- One-Click Config Links -->
+        <div class="manual-settings" id="oneClickLinks" style="display: none;">
+            <h6 class="mb-3">One-Click Configuration Links</h6>
+            <p class="small text-muted mb-3">Click a link to automatically configure your SIP client:</p>
+
+            <div class="d-grid gap-2">
+                <a href="#" id="sipLink" class="btn btn-outline-primary btn-sm">
+                    <i class="fas fa-phone me-2"></i> Generic SIP URI
+                </a>
+                <a href="#" id="linphoneLink" class="btn btn-outline-success btn-sm">
+                    <i class="fas fa-mobile me-2"></i> Linphone
+                </a>
+                <a href="#" id="zoiperLink" class="btn btn-outline-info btn-sm">
+                    <i class="fas fa-headset me-2"></i> Zoiper
+                </a>
+                <a href="#" id="groundwireLink" class="btn btn-outline-warning btn-sm">
+                    <i class="fas fa-broadcast-tower me-2"></i> Groundwire
+                </a>
+            </div>
+            <p class="mt-3 mb-0 text-muted small">Note: Some browsers may require permission to open SIP apps</p>
+        </div>
+
         <div class="manual-settings" id="manualSettings" style="display: none;">
             <h6 class="mb-3">Manual Configuration</h6>
             <div class="setting-row">
@@ -210,6 +232,32 @@
             // Show QR and manual settings
             document.getElementById('qrContainer').style.display = 'block';
             document.getElementById('manualSettings').style.display = 'block';
+            document.getElementById('oneClickLinks').style.display = 'block';
+
+            // Generate one-click configuration links
+            generateConfigLinks(extension, password);
+        }
+
+        // Generate clickable configuration links
+        function generateConfigLinks(extension, password) {
+            const server = 'flexpbx.devinecreations.net';
+            const dialplan = '(2xxx|*xx|1[2-9]xxxxxxxxx)';
+
+            // Generic SIP URI (RFC 3261)
+            const sipUri = `sip:${extension}:${password}@${server}:5060`;
+            document.getElementById('sipLink').href = sipUri;
+
+            // Linphone config URL
+            const linphoneUri = `linphone-config:provisioning?url=${encodeURIComponent('https://flexpbx.devinecreations.net/api/provision.php?path=get_config&extension=' + extension + '&password=' + password)}`;
+            document.getElementById('linphoneLink').href = linphoneUri;
+
+            // Zoiper config URL
+            const zoiperUri = `zoiper://config?username=${extension}&password=${password}&server=${server}&port=5060&transport=udp`;
+            document.getElementById('zoiperLink').href = zoiperUri;
+
+            // Groundwire SIP URI
+            const groundwireUri = `sip:${extension}@${server}:5060;transport=udp;password=${password}`;
+            document.getElementById('groundwireLink').href = groundwireUri;
         }
 
         // Don't auto-generate - wait for user input
