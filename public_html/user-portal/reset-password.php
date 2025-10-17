@@ -83,9 +83,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $token_valid) {
                 error_log("Database password update failed: " . $e->getMessage());
             }
 
+            // Update SIP password in pjsip.conf
+            $pjsip_updated = updatePjsipPassword($extension, $new_password);
+
             if (file_put_contents($user_file, json_encode($user_data, JSON_PRETTY_PRINT))) {
                 // Delete token so it can't be reused
                 unlink($token_file);
+
+                // Reload PJSIP if config was updated
+                if ($pjsip_updated) {
+                    exec('sudo -u asterisk /usr/sbin/asterisk -rx "pjsip reload" 2>&1', $reload_output);
+                }
 
                 // Send confirmation email
                 $to = $token_data['email'];
@@ -112,6 +120,45 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $token_valid) {
             }
         }
     }
+}
+
+/**
+ * Update SIP password in pjsip.conf
+ */
+function updatePjsipPassword($extension, $new_password) {
+    $pjsip_conf = '/etc/asterisk/pjsip.conf';
+
+    if (!file_exists($pjsip_conf)) {
+        error_log("pjsip.conf not found");
+        return false;
+    }
+
+    $content = file_get_contents($pjsip_conf);
+
+    // Find and replace password for this extension's auth section
+    // Pattern matches: [extension]\ntype=auth\n...password=oldpass
+    $pattern = '/(\[' . preg_quote($extension) . '\]\s*\n(?:.*\n)*?type\s*=\s*auth(?:.*\n)*?)password\s*=\s*[^\s\n]+/';
+    $replacement = '${1}password=' . $new_password;
+
+    $new_content = preg_replace($pattern, $replacement, $content, 1, $count);
+
+    if ($count > 0 && $new_content !== $content) {
+        // Backup original file
+        copy($pjsip_conf, $pjsip_conf . '.bak');
+
+        // Write new content
+        if (file_put_contents($pjsip_conf, $new_content)) {
+            // Fix permissions
+            chown($pjsip_conf, 'asterisk');
+            chgrp($pjsip_conf, 'asterisk');
+            chmod($pjsip_conf, 0640);
+
+            error_log("Updated SIP password for extension $extension");
+            return true;
+        }
+    }
+
+    return false;
 }
 ?>
 <!DOCTYPE html>
