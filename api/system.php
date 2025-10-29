@@ -1,10 +1,9 @@
 <?php
 /**
- * FlexPBX System API
- * System health, backups, version info, and monitoring
+ * FlexPBX System Management API
+ * System operations, health checks, and reload functions
+ * Created: October 16, 2025
  */
-
-require_once __DIR__ . '/auth.php';
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
@@ -16,491 +15,872 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit;
 }
 
-$auth = checkAuth();
-if (!$auth['authenticated']) {
-    http_response_code(401);
-    echo json_encode(['error' => 'Unauthorized']);
-    exit;
+// Include HubNode Monitor integration
+require_once __DIR__ . '/lib/hubnode_monitor.php';
+
+$path = $_GET['path'] ?? '';
+$method = $_SERVER['REQUEST_METHOD'];
+
+// Get POST data
+$postData = [];
+if ($method === 'POST') {
+    $postData = json_decode(file_get_contents('php://input'), true) ?? [];
 }
 
-$method = $_SERVER['REQUEST_METHOD'];
-$path = $_GET['path'] ?? '';
-
 switch ($path) {
-    case 'status':
-    case 'health':
-        handleSystemHealth($method);
-        break;
-
-    case 'version':
+    case '':
     case 'info':
-        handleSystemInfo($method);
+        handleInfo();
         break;
 
-    case 'backup':
-        handleBackup($method);
+    case 'active_calls':
+        handleActiveCalls();
         break;
 
-    case 'restore':
-        handleRestore($method);
+    case 'reload':
+        handleReload($postData);
         break;
 
-    case 'logs':
-        handleLogs($method);
+    case 'restart':
+        handleRestart($postData);
         break;
 
-    case 'services':
-        handleServices($method);
+    case 'status':
+        handleStatus();
         break;
 
-    case 'resources':
-        handleResources($method);
+    case 'health':
+        handleHealth();
+        break;
+
+    case 'backup_list':
+        handleBackupList();
+        break;
+
+    case 'backup_create':
+        handleBackupCreate($postData);
+        break;
+
+    case 'backup_restore':
+        handleBackupRestore($postData);
+        break;
+
+    case 'backup_delete':
+        handleBackupDelete($postData);
+        break;
+
+    case 'backup_download':
+        handleBackupDownload();
+        break;
+
+    case 'drives':
+        handleDrives();
+        break;
+
+    case 'backup_status':
+        handleBackupStatus();
+        break;
+
+    case 'push_notification':
+        handlePushNotification($postData);
+        break;
+
+    case 'process_backup_queue':
+        handleProcessBackupQueue($postData);
         break;
 
     default:
-        http_response_code(404);
-        echo json_encode(['error' => 'Endpoint not found']);
+        respond(false, 'Invalid path', null, 404);
         break;
 }
 
 /**
- * System health status
+ * API Information
  */
-function handleSystemHealth($method) {
-    if ($method !== 'GET') {
-        http_response_code(405);
-        echo json_encode(['error' => 'Method not allowed']);
-        return;
-    }
+function handleInfo() {
+    respond(true, 'FlexPBX System Management API', [
+        'version' => '1.0',
+        'endpoints' => [
+            'active_calls' => 'Get count of active calls',
+            'reload' => 'Reload Asterisk configuration',
+            'restart' => 'Restart Asterisk service',
+            'status' => 'Get system status',
+            'health' => 'System health check'
+        ]
+    ]);
+}
 
-    $health = [
-        'overall_status' => 'healthy',
-        'timestamp' => date('c'),
-        'services' => [],
-        'resources' => [],
-        'issues' => []
-    ];
+/**
+ * Get active calls count
+ */
+function handleActiveCalls() {
+    exec('sudo -u asterisk /usr/sbin/asterisk -rx "core show channels" 2>&1', $output, $return_code);
 
-    // Check Asterisk
-    exec('sudo systemctl is-active asterisk 2>/dev/null', $asterisk_status);
-    $asterisk_active = (trim($asterisk_status[0] ?? '') === 'active');
+    $activeCalls = 0;
+    $channels = [];
 
-    exec('sudo asterisk -rx "core show uptime" 2>/dev/null', $uptime_output);
-    $uptime = '';
-    foreach ($uptime_output as $line) {
-        if (preg_match('/System uptime:\s+(.+)/', $line, $matches)) {
-            $uptime = $matches[1];
+    foreach ($output as $line) {
+        // Look for active calls line like "2 active channels"
+        if (preg_match('/(\d+)\s+active\s+channel/i', $line, $matches)) {
+            $activeCalls = (int)$matches[1];
+        }
+
+        // Parse individual channels
+        if (preg_match('/^(PJSIP\/\S+)\s+/', $line, $matches)) {
+            $channels[] = $matches[1];
         }
     }
 
-    $health['services']['asterisk'] = [
-        'status' => $asterisk_active ? 'running' : 'stopped',
-        'uptime' => $uptime,
-        'healthy' => $asterisk_active
+    respond(true, 'Active calls retrieved', [
+        'active_calls' => $activeCalls,
+        'channels' => $channels,
+        'has_active_calls' => $activeCalls > 0
+    ]);
+}
+
+/**
+ * Reload Asterisk configuration
+ */
+function handleReload($data) {
+    $module = $data['module'] ?? 'all';
+    $force = $data['force'] ?? false;
+    $waitForIdle = $data['wait_for_idle'] ?? true;
+
+    // Check for active calls unless forced
+    if (!$force && $waitForIdle) {
+        exec('sudo -u asterisk /usr/sbin/asterisk -rx "core show channels" 2>&1', $output);
+
+        foreach ($output as $line) {
+            if (preg_match('/(\d+)\s+active\s+channel/i', $line, $matches)) {
+                $activeCalls = (int)$matches[1];
+
+                if ($activeCalls > 0) {
+                    respond(false, 'Cannot reload: active calls in progress', [
+                        'active_calls' => $activeCalls,
+                        'suggestion' => 'Wait for calls to end or use force=true'
+                    ], 409); // 409 Conflict
+                    return;
+                }
+            }
+        }
+    }
+
+    // Perform reload based on module
+    $reloadCommands = [
+        'all' => 'core reload',
+        'pjsip' => 'pjsip reload',
+        'dialplan' => 'dialplan reload',
+        'voicemail' => 'voicemail reload',
+        'moh' => 'moh reload',
+        'queues' => 'queue reload',
+        'sip' => 'sip reload'
     ];
 
-    // Check coturn (STUN)
-    exec('sudo systemctl is-active coturn 2>/dev/null', $coturn_status);
-    $coturn_active = (trim($coturn_status[0] ?? '') === 'active');
+    if (!isset($reloadCommands[$module])) {
+        respond(false, 'Invalid module name', [
+            'valid_modules' => array_keys($reloadCommands)
+        ]);
+        return;
+    }
 
-    $health['services']['coturn'] = [
-        'status' => $coturn_active ? 'running' : 'stopped',
-        'healthy' => $coturn_active
+    $command = $reloadCommands[$module];
+    exec('sudo -u asterisk /usr/sbin/asterisk -rx "' . $command . '" 2>&1', $output, $return_code);
+
+    if ($return_code === 0) {
+        respond(true, ucfirst($module) . ' configuration reloaded successfully', [
+            'module' => $module,
+            'output' => implode("\n", $output)
+        ]);
+    } else {
+        respond(false, 'Reload failed', [
+            'module' => $module,
+            'output' => implode("\n", $output),
+            'return_code' => $return_code
+        ], 500);
+    }
+}
+
+/**
+ * Restart Asterisk service
+ */
+function handleRestart($data) {
+    $force = $data['force'] ?? false;
+
+    // Check for active calls unless forced
+    if (!$force) {
+        exec('sudo -u asterisk /usr/sbin/asterisk -rx "core show channels" 2>&1', $output);
+
+        foreach ($output as $line) {
+            if (preg_match('/(\d+)\s+active\s+channel/i', $line, $matches)) {
+                $activeCalls = (int)$matches[1];
+
+                if ($activeCalls > 0) {
+                    respond(false, 'Cannot restart: active calls in progress', [
+                        'active_calls' => $activeCalls,
+                        'warning' => 'Restart will disconnect all active calls',
+                        'suggestion' => 'Wait for calls to end or use force=true'
+                    ], 409);
+                    return;
+                }
+            }
+        }
+    }
+
+    // Perform graceful restart
+    exec('systemctl restart asterisk 2>&1', $output, $return_code);
+
+    // Wait for Asterisk to come back up
+    sleep(3);
+
+    // Check if Asterisk is running
+    exec('systemctl is-active asterisk 2>&1', $statusOutput);
+    $isRunning = (trim($statusOutput[0]) === 'active');
+
+    if ($isRunning) {
+        respond(true, 'Asterisk restarted successfully', [
+            'status' => 'active',
+            'output' => implode("\n", $output)
+        ]);
+    } else {
+        respond(false, 'Asterisk restart failed or not running', [
+            'status' => $statusOutput[0] ?? 'unknown',
+            'output' => implode("\n", $output)
+        ], 500);
+    }
+}
+
+/**
+ * Get system status
+ */
+function handleStatus() {
+    // Asterisk status
+    exec('systemctl is-active asterisk 2>&1', $asteriskStatus);
+    exec('uptime -p 2>&1', $uptime);
+
+    // Get Asterisk uptime
+    exec('sudo -u asterisk /usr/sbin/asterisk -rx "core show uptime" 2>&1', $asteriskUptime);
+
+    // Get active calls
+    exec('sudo -u asterisk /usr/sbin/asterisk -rx "core show channels concise" 2>&1 | wc -l', $callCount);
+
+    // Get registered endpoints
+    exec('sudo -u asterisk /usr/sbin/asterisk -rx "pjsip show endpoints" 2>&1 | grep -c "Avail"', $registeredEndpoints);
+
+    // Get trunk status
+    exec('sudo -u asterisk /usr/sbin/asterisk -rx "pjsip show registrations" 2>&1 | grep -c "Registered"', $registeredTrunks);
+
+    respond(true, 'System status retrieved', [
+        'asterisk' => [
+            'status' => trim($asteriskStatus[0]),
+            'is_running' => trim($asteriskStatus[0]) === 'active',
+            'uptime' => implode("\n", $asteriskUptime)
+        ],
+        'system' => [
+            'uptime' => trim($uptime[0])
+        ],
+        'telephony' => [
+            'active_calls' => max(0, (int)trim($callCount[0]) - 1), // Subtract header line
+            'registered_endpoints' => (int)trim($registeredEndpoints[0]),
+            'registered_trunks' => (int)trim($registeredTrunks[0])
+        ]
+    ]);
+}
+
+/**
+ * System health check
+ */
+function handleHealth() {
+    $health = [
+        'status' => 'healthy',
+        'checks' => [],
+        'timestamp' => date('c')
     ];
 
-    // Check fail2ban
-    exec('sudo systemctl is-active fail2ban 2>/dev/null', $fail2ban_status);
-    $fail2ban_active = (trim($fail2ban_status[0] ?? '') === 'active');
+    // Check Asterisk service
+    exec('systemctl is-active asterisk 2>&1', $asteriskStatus);
+    $asteriskRunning = (trim($asteriskStatus[0]) === 'active');
 
-    $health['services']['fail2ban'] = [
-        'status' => $fail2ban_active ? 'running' : 'stopped',
-        'healthy' => $fail2ban_active
+    $health['checks']['asterisk_service'] = [
+        'status' => $asteriskRunning ? 'pass' : 'fail',
+        'message' => $asteriskRunning ? 'Asterisk is running' : 'Asterisk is not running'
     ];
 
     // Check disk space
-    exec('df -h / | tail -1', $df_output);
-    if (preg_match('/(\d+)%/', $df_output[0], $matches)) {
-        $disk_usage = (int)$matches[1];
-        $health['resources']['disk'] = [
-            'usage_percent' => $disk_usage,
-            'healthy' => $disk_usage < 90
-        ];
+    exec('df -h /var/spool/asterisk | tail -1 | awk \'{print $5}\' | sed \'s/%//\'', $diskUsage);
+    $diskPercent = (int)trim($diskUsage[0]);
 
-        if ($disk_usage >= 90) {
-            $health['issues'][] = "Disk usage critical: {$disk_usage}%";
-            $health['overall_status'] = 'warning';
+    $health['checks']['disk_space'] = [
+        'status' => $diskPercent < 90 ? 'pass' : 'warn',
+        'message' => "Disk usage: {$diskPercent}%",
+        'value' => $diskPercent
+    ];
+
+    // Check if PJSIP is loaded
+    exec('sudo -u asterisk /usr/sbin/asterisk -rx "pjsip show endpoints" 2>&1 | head -1', $pjsipCheck);
+    $pjsipLoaded = !preg_match('/No such command/i', $pjsipCheck[0]);
+
+    $health['checks']['pjsip_module'] = [
+        'status' => $pjsipLoaded ? 'pass' : 'fail',
+        'message' => $pjsipLoaded ? 'PJSIP module loaded' : 'PJSIP module not loaded'
+    ];
+
+    // Overall status
+    $allPassed = true;
+    foreach ($health['checks'] as $check) {
+        if ($check['status'] === 'fail') {
+            $allPassed = false;
+            $health['status'] = 'unhealthy';
+            break;
+        } elseif ($check['status'] === 'warn' && $health['status'] === 'healthy') {
+            $health['status'] = 'degraded';
         }
     }
 
-    // Check memory
-    exec('free | grep Mem', $mem_output);
-    if (preg_match('/Mem:\s+(\d+)\s+(\d+)/', $mem_output[0], $matches)) {
-        $mem_total = (int)$matches[1];
-        $mem_used = (int)$matches[2];
-        $mem_percent = round(($mem_used / $mem_total) * 100);
+    $httpCode = $health['status'] === 'healthy' ? 200 : ($health['status'] === 'degraded' ? 200 : 503);
 
-        $health['resources']['memory'] = [
-            'total_kb' => $mem_total,
-            'used_kb' => $mem_used,
-            'usage_percent' => $mem_percent,
-            'healthy' => $mem_percent < 90
-        ];
+    respond(true, 'Health check complete', $health, $httpCode);
+}
 
-        if ($mem_percent >= 90) {
-            $health['issues'][] = "Memory usage high: {$mem_percent}%";
-            $health['overall_status'] = 'warning';
+/**
+ * List all available backups
+ */
+function handleBackupList() {
+    $backupLocations = [
+        '/mnt/backup/flexpbx-backups/flx',
+        '/mnt/backup/flexpbx-backups/flxx',
+        '/mnt/backup/flexpbx-backups/full',
+        '/home/flexpbxuser/public_html/uploads/backups/system',
+        '/home/flexpbxuser/public_html/uploads/backups/api'
+    ];
+
+    $backups = [];
+
+    foreach ($backupLocations as $location) {
+        if (!is_dir($location)) {
+            continue;
+        }
+
+        $files = glob("$location/*");
+        foreach ($files as $file) {
+            if (is_file($file)) {
+                $backups[] = [
+                    'name' => basename($file),
+                    'path' => $file,
+                    'location' => $location,
+                    'size' => filesize($file),
+                    'size_formatted' => formatBytes(filesize($file)),
+                    'type' => detectBackupType($file),
+                    'date' => date('Y-m-d H:i:s', filemtime($file)),
+                    'timestamp' => filemtime($file)
+                ];
+            }
         }
     }
 
-    // Check load average
-    exec('uptime', $uptime_cmd);
-    if (preg_match('/load average:\s+([\d.]+)/', $uptime_cmd[0], $matches)) {
-        $load = (float)$matches[1];
-        $health['resources']['load_average'] = [
-            '1min' => $load,
-            'healthy' => $load < 10
-        ];
+    // Sort by timestamp (newest first)
+    usort($backups, function($a, $b) {
+        return $b['timestamp'] - $a['timestamp'];
+    });
 
-        if ($load >= 10) {
-            $health['issues'][] = "High load average: $load";
-            $health['overall_status'] = 'warning';
-        }
-    }
-
-    // Determine overall status
-    if (!$asterisk_active) {
-        $health['overall_status'] = 'critical';
-        $health['issues'][] = 'Asterisk service not running';
-    }
-
-    echo json_encode([
-        'success' => true,
-        'health' => $health
+    respond(true, 'Backups retrieved', [
+        'backups' => $backups,
+        'count' => count($backups)
     ]);
 }
 
 /**
- * System version and info
+ * Create a new backup
  */
-function handleSystemInfo($method) {
-    if ($method !== 'GET') {
-        http_response_code(405);
-        echo json_encode(['error' => 'Method not allowed']);
-        return;
-    }
+function handleBackupCreate($data) {
+    $type = $data['type'] ?? 'full';  // full, flx, flxx
+    $compress = $data['compress'] ?? true;
 
-    $info = [
-        'flexpbx' => [
-            'version' => '1.0.0',
-            'release_date' => '2025-10-16',
-            'build' => 'stable'
-        ],
-        'asterisk' => [],
-        'system' => []
+    // Create request ID
+    $requestId = time() . '_' . rand(1000, 9999);
+
+    // Create queue directory
+    $queueDir = '/home/flexpbxuser/.backup-queue';
+    @mkdir($queueDir, 0755, true);
+
+    // Create request file
+    $requestFile = $queueDir . '/' . $requestId . '.json';
+    $requestData = [
+        'id' => $requestId,
+        'type' => $type,
+        'compress' => $compress,
+        'timestamp' => date('Y-m-d H:i:s'),
+        'user' => $_SERVER['REMOTE_USER'] ?? 'api'
     ];
 
-    // Get Asterisk version
-    exec('sudo asterisk -V 2>/dev/null', $asterisk_ver);
-    if (!empty($asterisk_ver[0])) {
-        $info['asterisk']['version'] = trim($asterisk_ver[0]);
-    }
+    file_put_contents($requestFile, json_encode($requestData, JSON_PRETTY_PRINT));
 
-    // Get system info
-    exec('uname -r', $kernel);
-    $info['system']['kernel'] = trim($kernel[0] ?? '');
-
-    exec('cat /etc/os-release | grep PRETTY_NAME', $os);
-    if (!empty($os[0]) && preg_match('/PRETTY_NAME="(.+)"/', $os[0], $matches)) {
-        $info['system']['os'] = $matches[1];
-    }
-
-    exec('hostname', $hostname);
-    $info['system']['hostname'] = trim($hostname[0] ?? '');
-
-    exec('hostname -I | awk \'{print $1}\'', $ip);
-    $info['system']['ip'] = trim($ip[0] ?? '');
-
-    // Get configured extensions count
-    exec('sudo asterisk -rx "pjsip show endpoints" 2>/dev/null | grep -c "Endpoint:"', $ext_count);
-    $info['statistics']['total_extensions'] = (int)($ext_count[0] ?? 0);
-
-    // Get active calls
-    exec('sudo asterisk -rx "core show channels" 2>/dev/null | grep "active call"', $calls);
-    if (!empty($calls[0]) && preg_match('/(\d+)\s+active call/', $calls[0], $matches)) {
-        $info['statistics']['active_calls'] = (int)$matches[1];
-    } else {
-        $info['statistics']['active_calls'] = 0;
-    }
-
-    echo json_encode([
-        'success' => true,
-        'info' => $info,
-        'timestamp' => date('c')
+    // Log to HubNode monitor
+    HubNodeMonitor::logBackupEvent('queued', $type, true, [
+        'request_id' => $requestId,
+        'compressed' => $compress
     ]);
-}
 
-/**
- * Create system backup
- */
-function handleBackup($method) {
-    if ($method !== 'POST') {
-        http_response_code(405);
-        echo json_encode(['error' => 'Method not allowed']);
-        return;
-    }
-
-    $data = json_decode(file_get_contents('php://input'), true);
-    $backup_type = $data['type'] ?? 'config'; // 'config' or 'full'
-    $backup_name = 'flexpbx_backup_' . date('Y-m-d_His');
-
-    $backup_dir = '/home/flexpbxuser/backups';
-    @mkdir($backup_dir, 0755, true);
-
-    $files_to_backup = [
-        '/etc/asterisk/pjsip.conf',
-        '/etc/asterisk/extensions.conf',
-        '/etc/asterisk/voicemail.conf',
-        '/etc/asterisk/rtp.conf',
-        '/home/flexpbxuser/public_html/admin',
-        '/home/flexpbxuser/public_html/api'
-    ];
-
-    if ($backup_type === 'full') {
-        $files_to_backup[] = '/var/lib/asterisk/sounds';
-        $files_to_backup[] = '/var/spool/asterisk/voicemail';
-    }
-
-    $backup_file = "$backup_dir/$backup_name.tar.gz";
-
-    // Create tar archive
-    $files_str = implode(' ', $files_to_backup);
-    exec("sudo tar -czf $backup_file $files_str 2>&1", $tar_output, $tar_ret);
-
-    if ($tar_ret === 0) {
-        exec("sudo chown flexpbxuser:flexpbxuser $backup_file");
-
-        $backup_size = filesize($backup_file);
-
-        echo json_encode([
-            'success' => true,
-            'message' => 'Backup created successfully',
-            'backup' => [
-                'file' => $backup_file,
-                'name' => basename($backup_file),
-                'size' => $backup_size,
-                'size_human' => formatBytes($backup_size),
-                'type' => $backup_type,
-                'timestamp' => date('c')
-            ]
-        ]);
-    } else {
-        http_response_code(500);
-        echo json_encode([
-            'error' => 'Backup failed',
-            'output' => $tar_output
-        ]);
-    }
+    respond(true, 'Backup request queued', [
+        'request_id' => $requestId,
+        'type' => $type,
+        'compressed' => $compress,
+        'status_url' => '/api/system.php?path=backup_status&request_id=' . $requestId,
+        'message' => 'Backup will be processed by cron. Check status with the status_url.'
+    ]);
 }
 
 /**
  * Restore from backup
  */
-function handleRestore($method) {
-    if ($method !== 'POST') {
-        http_response_code(405);
-        echo json_encode(['error' => 'Method not allowed']);
-        return;
+function handleBackupRestore($data) {
+    $backupFile = $data['backup_file'] ?? '';
+
+    if (empty($backupFile) || !file_exists($backupFile)) {
+        respond(false, 'Backup file not found', null, 404);
     }
 
-    $data = json_decode(file_get_contents('php://input'), true);
-    $backup_file = $data['backup_file'] ?? '';
-
-    if (!file_exists($backup_file)) {
-        http_response_code(404);
-        echo json_encode(['error' => 'Backup file not found']);
-        return;
-    }
-
-    // Extract backup
-    exec("sudo tar -xzf $backup_file -C / 2>&1", $output, $ret);
-
-    if ($ret === 0) {
-        // Reload Asterisk configurations
-        exec('sudo asterisk -rx "core reload"');
-
-        echo json_encode([
-            'success' => true,
-            'message' => 'Backup restored successfully',
-            'timestamp' => date('c')
-        ]);
-    } else {
-        http_response_code(500);
-        echo json_encode([
-            'error' => 'Restore failed',
-            'output' => $output
-        ]);
-    }
-}
-
-/**
- * Get system logs
- */
-function handleLogs($method) {
-    if ($method !== 'GET') {
-        http_response_code(405);
-        echo json_encode(['error' => 'Method not allowed']);
-        return;
-    }
-
-    $log_type = $_GET['type'] ?? 'asterisk';
-    $lines = (int)($_GET['lines'] ?? 100);
-    $lines = min($lines, 1000); // Max 1000 lines
-
-    $log_file = match($log_type) {
-        'asterisk' => '/var/log/asterisk/messages',
-        'flexpbx' => '/var/log/flexpbx.log',
-        'security' => '/var/log/flexpbx-security.log',
-        'extensions' => '/var/log/flexpbx-extensions.log',
-        default => '/var/log/asterisk/messages'
-    };
-
-    if (!file_exists($log_file)) {
-        echo json_encode([
-            'success' => true,
-            'logs' => [],
-            'message' => 'Log file not found or empty'
-        ]);
-        return;
-    }
-
-    exec("tail -$lines $log_file 2>/dev/null", $log_lines);
-
-    echo json_encode([
-        'success' => true,
-        'log_type' => $log_type,
-        'lines' => $log_lines,
-        'total_lines' => count($log_lines),
-        'timestamp' => date('c')
-    ]);
-}
-
-/**
- * Get services status
- */
-function handleServices($method) {
-    if ($method !== 'GET') {
-        http_response_code(405);
-        echo json_encode(['error' => 'Method not allowed']);
-        return;
-    }
-
-    $services = [
-        'asterisk' => getServiceStatus('asterisk'),
-        'coturn' => getServiceStatus('coturn'),
-        'fail2ban' => getServiceStatus('fail2ban'),
-        'apache2' => getServiceStatus('apache2'),
-        'mysql' => getServiceStatus('mysql'),
-        'nginx' => getServiceStatus('nginx')
+    // Verify file is in backup directory (security check)
+    $allowedPaths = [
+        '/mnt/backup/flexpbx-backups/',
+        '/home/flexpbxuser/public_html/uploads/backups/'
     ];
 
-    echo json_encode([
-        'success' => true,
-        'services' => $services,
-        'timestamp' => date('c')
+    $isAllowed = false;
+    foreach ($allowedPaths as $allowedPath) {
+        if (strpos(realpath($backupFile), $allowedPath) === 0) {
+            $isAllowed = true;
+            break;
+        }
+    }
+
+    if (!$isAllowed) {
+        respond(false, 'Cannot restore from files outside backup directories', null, 403);
+    }
+
+    // Use flexpbx-restore script for all backup types
+    $command = "sudo -u flexpbxuser /usr/local/bin/flexpbx-restore " . escapeshellarg($backupFile) . " 2>&1";
+
+    // For tar.gz, need root permissions
+    $type = detectBackupType($backupFile);
+    if ($type === 'tar.gz') {
+        $command = "sudo /usr/local/bin/flexpbx-restore " . escapeshellarg($backupFile) . " 2>&1";
+    }
+
+    exec("timeout 300 " . $command, $output, $returnCode);
+
+    $success = $returnCode === 0;
+
+    // Log to HubNode monitor
+    HubNodeMonitor::logBackupEvent('restore', $type, $success, [
+        'backup_file' => basename($backupFile)
+    ]);
+
+    respond($success, $success ? 'Backup restored successfully' : 'Restore failed', [
+        'output' => implode("\n", $output),
+        'backup_file' => basename($backupFile),
+        'type' => $type,
+        'return_code' => $returnCode
     ]);
 }
 
 /**
- * Get resource usage
+ * Delete a backup
  */
-function handleResources($method) {
-    if ($method !== 'GET') {
-        http_response_code(405);
-        echo json_encode(['error' => 'Method not allowed']);
-        return;
+function handleBackupDelete($data) {
+    $backupFile = $data['backup_file'] ?? '';
+
+    if (empty($backupFile) || !file_exists($backupFile)) {
+        respond(false, 'Backup file not found', null, 404);
     }
 
-    $resources = [];
+    // Verify file is in backup directory (security check)
+    $allowedPaths = [
+        '/mnt/backup/flexpbx-backups/',
+        '/home/flexpbxuser/public_html/uploads/backups/'
+    ];
 
-    // CPU usage
-    exec('top -bn1 | grep "Cpu(s)"', $cpu);
-    if (!empty($cpu[0]) && preg_match('/([\d.]+)\s*id/', $cpu[0], $matches)) {
-        $idle = (float)$matches[1];
-        $resources['cpu'] = [
-            'usage_percent' => round(100 - $idle, 2),
-            'idle_percent' => round($idle, 2)
-        ];
+    $isAllowed = false;
+    foreach ($allowedPaths as $allowedPath) {
+        if (strpos(realpath($backupFile), $allowedPath) === 0) {
+            $isAllowed = true;
+            break;
+        }
     }
 
-    // Memory
-    exec('free -m', $mem);
-    if (isset($mem[1]) && preg_match('/Mem:\s+(\d+)\s+(\d+)\s+(\d+)/', $mem[1], $matches)) {
-        $resources['memory'] = [
-            'total_mb' => (int)$matches[1],
-            'used_mb' => (int)$matches[2],
-            'free_mb' => (int)$matches[3],
-            'usage_percent' => round(($matches[2] / $matches[1]) * 100, 2)
-        ];
+    if (!$isAllowed) {
+        respond(false, 'Cannot delete files outside backup directories', null, 403);
     }
 
-    // Disk
-    exec('df -h /', $disk);
-    if (isset($disk[1]) && preg_match('/(\S+)\s+(\S+)\s+(\S+)\s+(\d+)%/', $disk[1], $matches)) {
-        $resources['disk'] = [
-            'total' => $matches[2],
-            'used' => $matches[3],
-            'usage_percent' => (int)$matches[4]
-        ];
-    }
+    $success = unlink($backupFile);
 
-    // Load average
-    exec('uptime', $uptime);
-    if (!empty($uptime[0]) && preg_match('/load average:\s+([\d.]+),\s+([\d.]+),\s+([\d.]+)/', $uptime[0], $matches)) {
-        $resources['load'] = [
-            '1min' => (float)$matches[1],
-            '5min' => (float)$matches[2],
-            '15min' => (float)$matches[3]
-        ];
-    }
+    // Log to HubNode monitor
+    HubNodeMonitor::logBackupEvent('delete', 'backup', $success, [
+        'backup_file' => basename($backupFile)
+    ]);
 
-    echo json_encode([
-        'success' => true,
-        'resources' => $resources,
-        'timestamp' => date('c')
+    respond($success, $success ? 'Backup deleted' : 'Delete failed', [
+        'backup_file' => basename($backupFile)
     ]);
 }
 
-// Helper functions
+/**
+ * Download a backup file
+ */
+function handleBackupDownload() {
+    $backupFile = $_GET['file'] ?? '';
 
-function getServiceStatus($service) {
-    exec("sudo systemctl is-active $service 2>/dev/null", $status);
-    $active = (trim($status[0] ?? '') === 'active');
+    if (empty($backupFile) || !file_exists($backupFile)) {
+        respond(false, 'Backup file not found', null, 404);
+    }
 
-    exec("sudo systemctl show $service --property=ActiveEnterTimestamp --no-pager 2>/dev/null", $start_time);
-
-    return [
-        'name' => $service,
-        'status' => $active ? 'running' : 'stopped',
-        'active' => $active,
-        'start_time' => isset($start_time[0]) ? str_replace('ActiveEnterTimestamp=', '', $start_time[0]) : ''
+    // Verify file is in backup directory (security check)
+    $allowedPaths = [
+        '/mnt/backup/flexpbx-backups/',
+        '/home/flexpbxuser/public_html/uploads/backups/'
     ];
+
+    $isAllowed = false;
+    foreach ($allowedPaths as $allowedPath) {
+        if (strpos(realpath($backupFile), $allowedPath) === 0) {
+            $isAllowed = true;
+            break;
+        }
+    }
+
+    if (!$isAllowed) {
+        respond(false, 'Cannot download files outside backup directories', null, 403);
+    }
+
+    // Send file
+    header('Content-Type: application/octet-stream');
+    header('Content-Disposition: attachment; filename="' . basename($backupFile) . '"');
+    header('Content-Length: ' . filesize($backupFile));
+    readfile($backupFile);
+    exit;
 }
 
-function formatBytes($bytes) {
+/**
+ * Check backup queue status
+ */
+function handleBackupStatus() {
+    $requestId = $_GET['request_id'] ?? '';
+
+    if (empty($requestId)) {
+        respond(false, 'Missing request_id parameter', null, 400);
+    }
+
+    $queueDir = '/home/flexpbxuser/.backup-queue';
+    $statusDir = '/home/flexpbxuser/.backup-status';
+
+    $requestFile = $queueDir . '/' . $requestId . '.json';
+    $statusFile = $statusDir . '/' . $requestId . '.json';
+
+    // Check if request is still queued
+    if (file_exists($requestFile)) {
+        $requestData = json_decode(file_get_contents($requestFile), true);
+        respond(true, 'Backup request is queued', [
+            'status' => 'queued',
+            'request_id' => $requestId,
+            'type' => $requestData['type'] ?? 'unknown',
+            'queued_at' => $requestData['timestamp'] ?? 'unknown'
+        ]);
+        return;
+    }
+
+    // Check if status file exists
+    if (file_exists($statusFile)) {
+        $statusData = json_decode(file_get_contents($statusFile), true);
+        respond(true, 'Backup request processed', $statusData);
+        return;
+    }
+
+    // Request not found
+    respond(false, 'Backup request not found', [
+        'request_id' => $requestId,
+        'message' => 'Request may have expired (status files are kept for 24 hours)'
+    ], 404);
+}
+
+/**
+ * Send push notification
+ * Sends notifications via Discord webhook and HubNode event log
+ */
+function handlePushNotification($data) {
+    // Validate required fields
+    $target = $data['target'] ?? '';
+    $message = $data['message'] ?? '';
+    $priority = $data['priority'] ?? 'normal';
+    $channels = $data['channels'] ?? ['discord', 'hubnode'];
+
+    if (empty($target)) {
+        respond(false, 'Missing target parameter', null, 400);
+    }
+
+    if (empty($message)) {
+        respond(false, 'Missing message parameter', null, 400);
+    }
+
+    // Validate target format
+    $targetType = 'unknown';
+    $targetValue = $target;
+
+    if ($target === 'global') {
+        $targetType = 'global';
+        $targetValue = 'all users';
+    } elseif ($target === 'discord') {
+        $targetType = 'discord_only';
+        $targetValue = 'Discord channel';
+    } elseif (strpos($target, 'extension:') === 0) {
+        $targetType = 'extension';
+        $targetValue = substr($target, 10); // Remove 'extension:' prefix
+    }
+
+    $results = [];
+
+    // Send to HubNode event log (persistent record)
+    if (in_array('hubnode', $channels)) {
+        $success = HubNodeMonitor::logEvent('notification', 'push', [
+            'target' => $target,
+            'target_type' => $targetType,
+            'target_value' => $targetValue,
+            'message' => $message,
+            'priority' => $priority
+        ], true);
+
+        $results['hubnode'] = $success ? 'logged' : 'failed';
+    }
+
+    // Send to Discord webhook (instant notification)
+    if (in_array('discord', $channels)) {
+        // Discord webhook URL (should match HubNode monitor)
+        $discordWebhook = 'https://discord.com/api/webhooks/1391179168913555568/5hdSwsxtv-KyxyEVaXPu7jtHbKsPN4pRwg3y3KR_Lqai5YtRzZ9ynlKhXuz8HBqdXRmm';
+
+        // Build Discord embed
+        $priorityColors = [
+            'normal' => 0x3b82f6,  // Blue
+            'high' => 0xf59e0b,    // Orange
+            'urgent' => 0xef4444   // Red
+        ];
+
+        $priorityIcons = [
+            'normal' => '📢',
+            'high' => '⚠️',
+            'urgent' => '🚨'
+        ];
+
+        $icon = $priorityIcons[$priority] ?? '📢';
+        $color = $priorityColors[$priority] ?? 0x3b82f6;
+
+        $embed = [
+            'embeds' => [[
+                'title' => $icon . ' FlexPBX Notification',
+                'description' => $message,
+                'color' => $color,
+                'fields' => [
+                    [
+                        'name' => 'Target',
+                        'value' => $targetValue,
+                        'inline' => true
+                    ],
+                    [
+                        'name' => 'Priority',
+                        'value' => ucfirst($priority),
+                        'inline' => true
+                    ]
+                ],
+                'footer' => [
+                    'text' => 'FlexPBX Push Notification',
+                    'icon_url' => 'https://flexpbx.devinecreations.net/favicon.ico'
+                ],
+                'timestamp' => date('c')
+            ]]
+        ];
+
+        // Send to Discord
+        $ch = curl_init($discordWebhook);
+        curl_setopt_array($ch, [
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => json_encode($embed),
+            CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => 5
+        ]);
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        $results['discord'] = ($httpCode === 200 || $httpCode === 204) ? 'sent' : 'failed';
+    }
+
+    // Send to Mastodon (public announcement or DM)
+    if (in_array('mastodon', $channels)) {
+        $mastodonVisibility = $data['mastodon_visibility'] ?? 'unlisted';
+
+        // Call HubNode service monitor's Mastodon endpoint
+        $mastodonData = [
+            'event_type' => 'notification',
+            'action' => 'push',
+            'success' => true,
+            'data' => [
+                'message' => $message,
+                'target' => $targetValue,
+                'priority' => $priority
+            ],
+            'visibility' => $mastodonVisibility
+        ];
+
+        $ch = curl_init('http://localhost:5003/send_mastodon');
+        curl_setopt_array($ch, [
+            CURLOPT_POST => true,
+            CURLOPT_POSTFIELDS => json_encode($mastodonData),
+            CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT => 5
+        ]);
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($httpCode === 200) {
+            $responseData = json_decode($response, true);
+            $results['mastodon'] = $responseData['success'] ?? false ? 'sent' : 'failed';
+        } else {
+            $results['mastodon'] = 'failed';
+        }
+    }
+
+    respond(true, 'Notification sent', [
+        'target' => $target,
+        'target_type' => $targetType,
+        'target_value' => $targetValue,
+        'priority' => $priority,
+        'channels' => $results,
+        'message_preview' => substr($message, 0, 50) . (strlen($message) > 50 ? '...' : '')
+    ]);
+}
+
+/**
+ * List all detected drives
+ */
+function handleDrives() {
+    exec('lsblk -b -o NAME,SIZE,FSTYPE,MOUNTPOINT,LABEL -J 2>&1', $output, $returnCode);
+
+    $lsblkData = json_decode(implode("\n", $output), true);
+
+    if (!$lsblkData) {
+        respond(false, 'Failed to detect drives', null, 500);
+    }
+
+    $drives = [];
+
+    foreach ($lsblkData['blockdevices'] as $device) {
+        $drives[] = [
+            'name' => $device['name'],
+            'size' => $device['size'],
+            'size_formatted' => formatBytes($device['size']),
+            'fstype' => $device['fstype'] ?? 'none',
+            'mountpoint' => $device['mountpoint'] ?? null,
+            'label' => $device['label'] ?? ''
+        ];
+
+        // Include partitions
+        if (isset($device['children'])) {
+            foreach ($device['children'] as $partition) {
+                $drives[] = [
+                    'name' => $partition['name'],
+                    'size' => $partition['size'],
+                    'size_formatted' => formatBytes($partition['size']),
+                    'fstype' => $partition['fstype'] ?? 'none',
+                    'mountpoint' => $partition['mountpoint'] ?? null,
+                    'label' => $partition['label'] ?? '',
+                    'parent' => $device['name']
+                ];
+            }
+        }
+    }
+
+    respond(true, 'Drives detected', [
+        'drives' => $drives,
+        'count' => count($drives)
+    ]);
+}
+
+/**
+ * Helper: Detect backup type from filename
+ */
+function detectBackupType($filename) {
+    if (preg_match('/\.tar\.gz$/', $filename)) {
+        return 'tar.gz';
+    } elseif (preg_match('/\.flxx(\.gz)?$/', $filename)) {
+        return 'flxx';
+    } elseif (preg_match('/\.flx(\.gz)?$/', $filename)) {
+        return 'flx';
+    }
+    return 'unknown';
+}
+
+/**
+ * Helper: Format bytes to human readable
+ */
+function formatBytes($bytes, $precision = 2) {
     $units = ['B', 'KB', 'MB', 'GB', 'TB'];
-    $i = 0;
-    while ($bytes >= 1024 && $i < count($units) - 1) {
-        $bytes /= 1024;
-        $i++;
-    }
-    return round($bytes, 2) . ' ' . $units[$i];
+    $bytes = max($bytes, 0);
+    $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+    $pow = min($pow, count($units) - 1);
+    $bytes /= (1 << (10 * $pow));
+    return round($bytes, $precision) . ' ' . $units[$pow];
 }
 
-function checkAuth() {
-    session_start();
-    return [
-        'authenticated' => isset($_SESSION['authenticated']) && $_SESSION['authenticated'] === true,
-        'username' => $_SESSION['username'] ?? null
+/**
+ * Process backup queue (fallback for systems without cron)
+ */
+function handleProcessBackupQueue($data) {
+    $source = $data['source'] ?? 'api';
+
+    // Call the backup queue processor script
+    $scriptPath = '/home/flexpbxuser/public_html/scripts/process-backup-queue.php';
+
+    if (!file_exists($scriptPath)) {
+        respond(false, 'Backup processor script not found', null, 500);
+        return;
+    }
+
+    // Execute the processor script
+    exec("/usr/bin/php $scriptPath 2>&1", $output, $returnCode);
+
+    $success = $returnCode === 0;
+
+    // Parse output for processed count
+    $processed = 0;
+    foreach ($output as $line) {
+        if (preg_match('/Processed (\d+) backup/', $line, $matches)) {
+            $processed = (int)$matches[1];
+        }
+    }
+
+    respond($success, $success ? 'Backup queue processed' : 'Processing failed', [
+        'processed' => $processed,
+        'source' => $source,
+        'output' => implode("\n", array_slice($output, -5)) // Last 5 lines
+    ]);
+}
+
+function respond($success, $message, $data = null, $httpCode = 200) {
+    http_response_code($httpCode);
+
+    $response = [
+        'success' => $success,
+        'message' => $message,
+        'timestamp' => date('c')
     ];
+
+    if ($data !== null) {
+        $response = array_merge($response, $data);
+    }
+
+    echo json_encode($response, JSON_PRETTY_PRINT);
+    exit;
 }
 ?>

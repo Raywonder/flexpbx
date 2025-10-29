@@ -66,6 +66,14 @@ switch ($path) {
         handleBulkCreate($method);
         break;
 
+    case 'moh-classes':
+        handleGetMOHClasses($method);
+        break;
+
+    case 'update-moh':
+        handleUpdateMOH($method, $extension_id);
+        break;
+
     default:
         http_response_code(404);
         echo json_encode(['error' => 'Not Found', 'message' => 'API endpoint not found']);
@@ -139,6 +147,7 @@ function handleCreateExtension($method) {
     $voicemail_enabled = $data['voicemail'] ?? true;
     $voicemail_pin = $data['voicemail_pin'] ?? generatePin();
     $email = $data['email'] ?? '';
+    $moh_class = $data['moh_class'] ?? 'default';
 
     // Validate extension number
     if (!preg_match('/^\d{3,5}$/', $extension)) {
@@ -172,6 +181,7 @@ force_rport=yes
 rewrite_contact=yes
 rtp_symmetric=yes
 dtmf_mode=rfc4733
+moh_suggest={$moh_class}
 
 [{$extension}]
 type=auth
@@ -564,11 +574,134 @@ function logAction($action, $extension, $ip) {
     file_put_contents($log_file, json_encode($entry) . "\n", FILE_APPEND);
 }
 
-function checkAuth() {
-    session_start();
-    return [
-        'authenticated' => isset($_SESSION['authenticated']) && $_SESSION['authenticated'] === true,
-        'username' => $_SESSION['username'] ?? null
+/**
+ * Get available MOH classes
+ */
+function handleGetMOHClasses($method) {
+    if ($method !== 'GET') {
+        http_response_code(405);
+        echo json_encode(['error' => 'Method not allowed']);
+        return;
+    }
+
+    exec('sudo -u asterisk /usr/sbin/asterisk -rx "moh show classes" 2>&1', $output, $ret);
+
+    $moh_classes = [];
+    $current_class = null;
+
+    foreach ($output as $line) {
+        if (preg_match('/^Class:\s+(.+)$/', $line, $matches)) {
+            $class_name = trim($matches[1]);
+            $moh_classes[] = [
+                'name' => $class_name,
+                'display_name' => formatMOHClassName($class_name),
+                'description' => getMOHDescription($class_name)
+            ];
+        }
+    }
+
+    echo json_encode([
+        'success' => true,
+        'moh_classes' => $moh_classes,
+        'total' => count($moh_classes),
+        'timestamp' => date('c')
+    ]);
+}
+
+/**
+ * Update MOH class for an extension
+ */
+function handleUpdateMOH($method, $extension_id) {
+    if ($method !== 'POST' && $method !== 'PUT') {
+        http_response_code(405);
+        echo json_encode(['error' => 'Method not allowed']);
+        return;
+    }
+
+    if (empty($extension_id)) {
+        http_response_code(400);
+        echo json_encode(['error' => 'Extension ID required']);
+        return;
+    }
+
+    $data = json_decode(file_get_contents('php://input'), true);
+    $moh_class = $data['moh_class'] ?? 'default';
+
+    global $pjsip_conf;
+
+    // Read current pjsip.conf
+    $config = file_get_contents($pjsip_conf);
+
+    // Find the endpoint section for this extension
+    $pattern = "/(\[$extension_id\]\s*\ntype=endpoint\s*\n(?:.*\n)*?)(moh_suggest=.*\n)?/";
+
+    // Check if moh_suggest already exists
+    if (preg_match("/\[$extension_id\].*?type=endpoint.*?moh_suggest=/s", $config)) {
+        // Update existing moh_suggest
+        $config = preg_replace(
+            "/(\[$extension_id\].*?type=endpoint.*?)moh_suggest=.*/s",
+            "$1moh_suggest=$moh_class",
+            $config
+        );
+    } else {
+        // Add moh_suggest to endpoint
+        $config = preg_replace(
+            "/(\[$extension_id\]\s*\ntype=endpoint\s*\n)/",
+            "$1moh_suggest=$moh_class\n",
+            $config
+        );
+    }
+
+    // Write updated config
+    if (file_put_contents($pjsip_conf, $config) === false) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to update configuration']);
+        return;
+    }
+
+    // Fix permissions
+    exec("sudo chown asterisk:asterisk $pjsip_conf");
+    exec("sudo chmod 640 $pjsip_conf");
+
+    // Reload PJSIP
+    exec('sudo asterisk -rx "pjsip reload" 2>&1', $reload_output, $reload_ret);
+
+    echo json_encode([
+        'success' => true,
+        'message' => "MOH class updated to '$moh_class' for extension $extension_id",
+        'extension' => $extension_id,
+        'moh_class' => $moh_class,
+        'timestamp' => date('c')
+    ]);
+}
+
+/**
+ * Format MOH class name for display
+ */
+function formatMOHClassName($name) {
+    $display_names = [
+        'default' => 'Raywonder Radio (Audio Described)',
+        'raywonder-radio' => 'Raywonder Radio (Audio Described)',
+        'tappedin-radio' => 'TappedIn Radio (Meditation & Soundscapes)',
+        'chrismix-radio' => 'ChrisMix Radio',
+        'soulfood-radio' => 'SoulFood Radio'
     ];
+
+    return $display_names[$name] ?? ucwords(str_replace(['-', '_'], ' ', $name));
+}
+
+/**
+ * Get MOH class description
+ */
+function getMOHDescription($name) {
+    $descriptions = [
+        'default' => 'Scheduled Audio Described TV, Movies, and Music',
+        'raywonder-radio' => 'Scheduled Audio Described TV, Movies, and Music',
+        'tappedin-radio' => 'Relaxing soundscapes, meditation music, and podcasts',
+        'chrismix-radio' => 'ChrisMix Radio streaming music',
+        'soulfood-radio' => 'SoulFood Radio streaming music'
+    ];
+
+    return $descriptions[$name] ?? 'Music on hold';
 }
 ?>
