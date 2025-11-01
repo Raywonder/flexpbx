@@ -1,0 +1,88 @@
+RewriteEngine On
+
+# Admin Dashboard Redirects - Must be BEFORE catch-all rules
+RewriteRule ^admin/?$ /monitoring/ [R=302,L]
+RewriteRule ^admin/dashboard/?$ /monitoring/ [R=302,L]
+
+# API Routing for FlexPBX Multi-Server System
+RewriteRule ^register/?$ connection-manager.php [L,QSA]
+RewriteRule ^authorize/?$ connection-manager.php [L,QSA]
+RewriteRule ^connection-limit/?$ connection-manager.php [L,QSA]
+RewriteRule ^status/?$ connection-manager.php [L,QSA]
+RewriteRule ^update-check/?$ connection-manager.php [L,QSA]
+RewriteRule ^module-reload/?$ connection-manager.php [L,QSA]
+RewriteRule ^server-restart/?$ connection-manager.php [L,QSA]
+
+# Auto-Link Authorization Routes
+RewriteRule ^request-auth/?$ auto-link-manager.php [L,QSA]
+RewriteRule ^approve-auth/?$ auto-link-manager.php [L,QSA]
+RewriteRule ^deny-auth/?$ auto-link-manager.php [L,QSA]
+RewriteRule ^auto-link/?$ auto-link-manager.php [L,QSA]
+RewriteRule ^fallback-setup/?$ auto-link-manager.php [L,QSA]
+RewriteRule ^test-fallback/?$ auto-link-manager.php [L,QSA]
+RewriteRule ^get-authorized/?$ auto-link-manager.php [L,QSA]
+RewriteRule ^revoke-auth/?$ auto-link-manager.php [L,QSA]
+
+# Update System Routes
+RewriteRule ^updates/check/?$ update-manager.php [L,QSA]
+RewriteRule ^updates/download/?$ update-manager.php [L,QSA]
+RewriteRule ^updates/upload/?$ update-manager.php [L,QSA]
+
+# Route API calls to index.php (for /api/auth/status, etc.) - LAST
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [L,QSA]
+
+# CORS Headers for Client Access
+<IfModule mod_headers.c>
+    Header always set Access-Control-Allow-Origin "*"
+    Header always set Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+    Header always set Access-Control-Allow-Headers "Content-Type, Authorization, X-API-Key, X-Requested-With"
+    Header always set Access-Control-Max-Age "86400"
+</IfModule>
+
+# Handle preflight OPTIONS requests
+RewriteCond %{REQUEST_METHOD} OPTIONS
+RewriteRule ^(.*)$ $1 [R=200,L]
+
+# Security Headers
+<IfModule mod_headers.c>
+    Header always set X-Frame-Options "DENY"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Rate Limiting (if mod_evasive is available)
+<IfModule mod_evasive24.c>
+    DOSHashTableSize    512
+    DOSPageCount        3
+    DOSPageInterval     1
+    DOSSiteCount        50
+    DOSSiteInterval     1
+    DOSBlockingPeriod   60
+</IfModule>
+
+# File Protection
+<Files ~ "^\.">
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files "config.php">
+    Order allow,deny
+    Deny from all
+</Files>
+
+<Files "deployment-manifest.json">
+    Order allow,deny
+    Deny from all
+</Files>
+
+# PHP Settings
+<IfModule mod_php7.c>
+    php_value upload_max_filesize 100M
+    php_value post_max_size 100M
+    php_value max_execution_time 300
+    php_value memory_limit 256M
+</IfModule>

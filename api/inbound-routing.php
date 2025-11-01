@@ -1,5 +1,13 @@
 <?php
-// FlexPBX Inbound Routing API
+/**
+ * FlexPBX Inbound Routing API
+ * Updated: October 16, 2025
+ * API Pattern: Uses query parameter format (?path=[action])
+ * Changes:
+ * - Migrated from action= to path= query parameter
+ * - Added delete and reload endpoints
+ * - Enhanced routing types (IVR, Queue, Extension, Voicemail, Conference, Announcement, Time-based)
+ */
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
@@ -86,18 +94,23 @@ function saveConfig($config) {
     return false;
 }
 
-// Get action
-$action = $_GET['action'] ?? $_POST['action'] ?? 'get';
+// Get path for new query parameter format
+$path = $_GET['path'] ?? '';
+$method = $_SERVER['REQUEST_METHOD'];
 $rawInput = file_get_contents('php://input');
 $postData = json_decode($rawInput, true);
 
-switch ($action) {
+switch ($path) {
+    case '':
+    case 'list':
     case 'get':
         // Get current configuration
         $config = loadConfig();
         respond(true, 'Configuration loaded', ['config' => $config]);
         break;
 
+    case 'create':
+    case 'update':
     case 'save':
         // Save route configuration
         if (!isset($postData['config'])) {
@@ -169,22 +182,30 @@ switch ($action) {
         }
         break;
 
+    case 'options':
     case 'get_options':
         // Get available routing options
         respond(true, 'Routing options', [
             'types' => [
                 'ivr' => 'IVR Menu / Auto-Attendant',
                 'queue' => 'Call Queue / Ring Group',
+                'conference' => 'Conference Bridge',
                 'extension' => 'Direct to Extension',
                 'voicemail' => 'Voicemail',
                 'announcement' => 'Play Announcement',
-                'custom' => 'Custom/Time-Based'
+                'time_condition' => 'Time-Based Routing'
             ],
-            'ivr_menus' => ['101' => 'Main IVR', '102' => 'After Hours'],
+            'ivr_menus' => ['101' => 'Main IVR', '102' => 'After Hours', '103' => 'Sales IVR'],
             'queues' => [
                 'sales-queue' => 'Sales Department',
                 'tech-support' => 'Technical Support',
-                'accessibility-support' => 'Accessibility Support'
+                'accessibility-support' => 'Accessibility Support',
+                'general' => 'General Queue'
+            ],
+            'conferences' => [
+                '6000' => 'Main Conference Room',
+                '6001' => 'Sales Meeting Room',
+                '6002' => 'Support Team Room'
             ],
             'extensions' => [
                 '2001' => 'Senior Tech Support',
@@ -194,7 +215,39 @@ switch ($action) {
         ]);
         break;
 
+    case 'delete':
+        // Delete a route
+        $routeId = $_GET['id'] ?? $postData['id'] ?? null;
+        if (!$routeId) {
+            respond(false, 'No route ID specified');
+        }
+
+        $config = loadConfig();
+        if (!isset($config['routes'][$routeId])) {
+            respond(false, 'Route not found');
+        }
+
+        unset($config['routes'][$routeId]);
+
+        if (saveConfig($config)) {
+            respond(true, 'Route deleted successfully');
+        } else {
+            respond(false, 'Failed to delete route');
+        }
+        break;
+
+    case 'reload':
+        // Reload Asterisk dialplan
+        exec('sudo -u asterisk /usr/sbin/asterisk -rx "dialplan reload"', $output, $returnCode);
+
+        if ($returnCode === 0) {
+            respond(true, 'Dialplan reloaded successfully', ['output' => implode("\n", $output)]);
+        } else {
+            respond(false, 'Failed to reload dialplan', ['output' => implode("\n", $output)]);
+        }
+        break;
+
     default:
-        respond(false, 'Invalid action');
+        respond(false, 'Invalid path: ' . $path);
 }
 ?>

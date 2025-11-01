@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlexPBX Feature Codes Reference - FlexPBX Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #34495e;
+            font-size: 1.8rem;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #555;
+            font-size: 1.4rem;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+
+        h4 {
+            color: #666;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        h5, h6 {
+            color: #777;
+            margin-top: 15px;
+            margin-bottom: 8px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+
+        ul, ol {
+            margin-bottom: 15px;
+            margin-left: 30px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e74c3c;
+        }
+
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+            font-size: 0.95em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            display: block;
+        }
+
+        table thead {
+            background: #667eea;
+            color: white;
+        }
+
+        table th,
+        table td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        table tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        table tbody tr:hover {
+            background: #e9ecef;
+        }
+
+        blockquote {
+            border-left: 4px solid #667eea;
+            padding-left: 20px;
+            margin: 20px 0;
+            color: #555;
+            font-style: italic;
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 4px;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px solid #ecf0f1;
+            margin: 30px 0;
+        }
+
+        a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        strong {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        em {
+            font-style: italic;
+            color: #555;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid #ecf0f1;
+            text-align: center;
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            table {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to Documentation Index</a>
+
+        <div class="header">
+            <h1>FlexPBX Feature Codes Reference</h1>
+        </div>
+
+        <div class="content">
+            <h1>FlexPBX Feature Codes Reference</h1><br><strong>Last Updated:</strong> October 14, 2025 02:00 AM<br><strong>System:</strong> Asterisk 18.12.1</p><hr><h2>📞 Quick Reference Card</h2><table><tr><td>Code</td><td>Feature</td><td>Description</td></tr><br><tr><td>------</td><td>---------</td><td>-------------</td></tr><br><tr><td><strong>\*43</strong></td><td>Echo Test</td><td>Test audio (hear yourself)</td></tr><br><tr><td><strong>\*44</strong></td><td>Time/Clock</td><td>Hear current date and time</td></tr><br><tr><td><strong>\*45</strong></td><td>Queue Login</td><td>Login to support queue</td></tr><br><tr><td><strong>\*46</strong></td><td>Queue Logout</td><td>Logout from support queue</td></tr><br><tr><td><strong>\*48</strong></td><td>Queue Status</td><td>Hear queue call count and agents</td></tr><br><tr><td><strong>\*77</strong></td><td>MOH + Stats</td><td>Hear queue stats then music on hold</td></tr><br><tr><td><strong>\*78</strong></td><td>Music on Hold</td><td>Preview what callers hear on hold</td></tr><br><tr><td><strong>\*97</strong></td><td>Voicemail</td><td>Access your voicemail box</td></tr><br></table><br><hr></p><h2>🧪 Diagnostic &amp; Testing</h2><h3>\*43 - Echo Test</h3><br><strong>Purpose:</strong> Test audio quality and verify two-way audio is working</p><p><strong>What happens:</strong><br><li>Call answers</li><br><li>Everything you say is played back to you with a slight delay</li><br><li>Used to test microphone, speaker, and network quality</li><br><li>Press hangup when done</li></p><p><strong>Use when:</strong><br><ul><li>Setting up a new phone</li><br><li>Troubleshooting one-way audio</li><br><li>Testing after network changes</li><br><li>Verifying codec quality</li></p><p><strong>Expected result:</strong> Should hear yourself clearly with ~0.5 second delay</p><hr><h3>\*44 - Time/Clock Announcement</h3><br><strong>Purpose:</strong> Hear the current date and time spoken aloud</p><p><strong>What happens:</strong><br><li>Call answers</li><br><li>System announces: &quot;Today is [Day], [Month] [Date], [Year]. The time is [Hour]:[Minute] [AM/PM]&quot;</li><br><li>Automatically hangs up after announcement</li></p><p><strong>Use when:</strong><br><li>Testing text-to-speech functionality</li><br><li>Verifying system time is correct</li><br><li>Quick audio test with known output</li><br><li>Training users on feature codes</li></p><p><strong>Example output:</strong> &quot;Today is Sunday, October 14th, 2025. The time is 2:00 AM&quot;</p><hr><h2>🎧 Queue Management (Agents)</h2><h3>\*45 - Queue Login</h3><br><strong>Purpose:</strong> Login to the support queue to receive calls</p><p><strong>What happens:</strong></p><p><strong>If NOT already logged in:</strong><br><li>Call answers</li><br><li>System adds you to queue</li><br><li>Plays: &quot;You are now logged into the support queue&quot;</li><br><li>You&#039;ll now receive queue calls</li><br><li>Automatically hangs up</li></p><p><strong>If ALREADY logged in:</strong><br><li>Call answers</li><br><li>Plays: &quot;You are already logged into the queue&quot;</li><br><li>No action taken</li><br><li>Automatically hangs up</li></p><p><strong>Technical details:</strong><br><li>Adds <code>PJSIP/[extension]</code> to support queue</li><br><li>Uses dynamic membership (not in queues.conf)</li><br><li>Membership persists until logout or restart</li><br><li>Uses custom prompt: <code>callcueue-login</code></li></p><hr><h3>\*46 - Queue Logout</h3><br><strong>Purpose:</strong> Logout from the support queue to stop receiving calls</p><p><strong>What happens:</strong></p><p><strong>If currently logged in:</strong><br><li>Call answers</li><br><li>System removes you from queue</li><br><li>Plays: &quot;You are now logged out of the support queue&quot;</li><br><li>You&#039;ll stop receiving queue calls</li><br><li>Automatically hangs up</li></p><p><strong>If NOT logged in:</strong><br><li>Call answers</li><br><li>Plays: &quot;You are not currently logged into the queue&quot;</li><br><li>No action taken</li><br><li>Automatically hangs up</li></p><p><strong>Technical details:</strong><br><li>Removes <code>PJSIP/[extension]</code> from support queue</li><br><li>Immediate effect - no more calls routed to you</li><br><li>Uses custom prompt: <code>callcueue-logout</code></li></p><hr><h3>\*48 - Queue Status</h3><br><strong>Purpose:</strong> Hear how many calls are waiting and how many agents are logged in</p><p><strong>What happens:</strong><br><li>Call answers</li><br><li>Announces: &quot;There are [X] calls waiting&quot;</li><br><li>Then: &quot;[Y] agents logged in&quot; (uses agent-loginok prompt)</li><br><li>Automatically hangs up</li></p><p><strong>Use when:</strong><br><li>Checking if anyone needs help</li><br><li>Verifying you&#039;re logged in</li><br><li>Checking queue load before logging in</li><br><li>Supervisors checking queue health</li></p><p><strong>Example output:</strong><br><li>&quot;There are 3 calls waiting. 2 agents logged in&quot;</li><br><li>&quot;There are 0 calls waiting. 1 agent logged in&quot;</li></p><p><strong>Technical details:</strong><br><li>Reads <code>QUEUE<em>WAITING</em>COUNT(support)</code></li><br><li>Reads <code>QUEUE<em>MEMBER</em>COUNT(support)</code></li><br><li>Real-time data from queue</li></p><hr><h2>🎵 Music on Hold Features</h2><h3>\*77 - MOH Preview + Queue Stats</h3><br><strong>Purpose:</strong> Hear queue statistics followed by music on hold preview</p><p><strong>What happens:</strong><br><li>Call answers</li><br><li>Announces call count (number only)</li><br><li>Waits 1 second</li><br><li>Plays music on hold for 120 seconds (2 minutes)</li><br><li>Automatically hangs up after 2 minutes or if you hang up first</li></p><p><strong>Use when:</strong><br><li>Testing music on hold configuration</li><br><li>Previewing what callers hear while waiting</li><br><li>Checking queue status while hearing MOH</li><br><li>Quick queue check without hanging up immediately</li></p><p><strong>Technical details:</strong><br><li>Uses MOH class: <code>default</code></li><br><li>Timeout: 120 seconds</li><br><li>Shows real-time queue count</li></p><hr><h3>\*78 - Music on Hold Preview</h3><br><strong>Purpose:</strong> Hear exactly what callers hear when placed on hold</p><p><strong>What happens:</strong><br><li>Call answers</li><br><li>Plays music on hold for 120 seconds (2 minutes)</li><br><li>Automatically hangs up after 2 minutes or if you hang up first</li></p><p><strong>Use when:</strong><br><li>Testing new MOH audio files</li><br><li>Verifying MOH is working</li><br><li>Checking audio quality of hold music</li><br><li>Previewing before deploying to production</li></p><p><strong>Technical details:</strong><br><li>Uses MOH class: <code>default</code></li><br><li>Timeout: 120 seconds</li><br><li>Can be interrupted by hangup</li></p><p><strong>Configure MOH:</strong><br><li>Files location: <code>/var/lib/asterisk/moh/</code></li><br><li>Config file: <code>/etc/asterisk/musiconhold.conf</code></li><br><li>Supports: Local files, Icecast, Shoutcast</li><br><li>Formats: ulaw, gsm, wav</li></p><hr><h2>📬 Voicemail</h2><h3>\*97 - Voicemail Main</h3><br><strong>Purpose:</strong> Access your voicemail box to listen to messages</p><p><strong>What happens:</strong><br><li>Call answers</li><br><li>Prompts for password (if not set, may skip)</li><br><li>Main voicemail menu:</li><br>      <li>Press <strong>1</strong> - Listen to new messages</li><br>      <li>Press <strong>2</strong> - Change folders</li><br>      <li>Press <strong>3</strong> - Advanced options</li><br>      <li>Press <strong>0</strong> - Mailbox options</li><br>      <li>Press <strong>\</strong>* - Exit</li></p><p><strong>Voicemail Options:</strong><br><li><strong>During playback:</strong></li><br>    <li><strong>3</strong> - Delete message</li><br>    <li><strong>5</strong> - Repeat message</li><br>    <li><strong>6</strong> - Next message</li><br>    <li><strong>7</strong> - Previous message</li><br>    <li><strong>9</strong> - Save to folder</li></p><p><strong>Technical details:</strong><br><li>Uses <code>VoicemailMain(${CALLERID(num)}@flexpbx)</code></li><br><li>Automatically detects your extension</li><br><li>Messages stored in: <code>/var/spool/asterisk/voicemail/flexpbx/[extension]/</code></li><br><li>Supports greetings, PIN, folders</li></p><p><strong>First time setup:</strong><br><li>System may ask you to set a PIN</li><br><li>Follow prompts to record your name</li><br><li>Record unavailable and busy greetings</li></p><hr><h2>📊 Feature Code Usage Guide</h2><h3>For Regular Users</h3><br><strong>Daily use codes:</strong><br><li><strong>\*97</strong> - Check voicemail daily</li><br><li><strong>\*44</strong> - Quick time check</li></p><p><strong>When troubleshooting:</strong><br><li><strong>\*43</strong> - Test audio first</li><br><li><strong>\*78</strong> - Verify you can hear audio</li></p><hr><h3>For Queue Agents</h3><br><strong>At start of shift:</strong><br><li>Dial <strong>\*43</strong> - Test audio is working</li><br><li>Dial <strong>\*48</strong> - Check queue status</li><br><li>Dial <strong>\*45</strong> - Login to queue</li><br><li>Wait for calls!</li></p><p><strong>During shift:</strong><br><li>Dial <strong>\*48</strong> - Check how many calls waiting</li><br><li>Dial <strong>\*97</strong> - Check voicemail between calls</li></p><p><strong>At end of shift:</strong><br><li>Dial <strong>\*46</strong> - Logout from queue</li><br><li>Dial <strong>\*48</strong> - Verify you&#039;re logged out</li></p><hr><h3>For Supervisors/Admins</h3><br><strong>Monitoring:</strong><br><li><strong>\*48</strong> - Real-time queue status</li><br><li><strong>\*77</strong> - Queue status + MOH test</li><br><li><strong>\*78</strong> - Test hold music quality</li></p><p><strong>Testing:</strong><br><li><strong>\*43</strong> - Test audio path</li><br><li><strong>\*44</strong> - Verify system time</li><br><li><strong>\*78</strong> - Verify MOH working</li></p><hr><h2>🔧 Technical Details</h2><h3>Extension Context</h3><br>All feature codes are in context: <code>flexpbx-internal</code></p><h3>Audio Files Used</h3><p><strong>Queue prompts (custom):</strong><br><li><code>callcueue-login</code> - Login success (5.8 sec)</li><br><li><code>callcueue-logout</code> - Logout success (7.5 sec)</li><br><li><code>callcueue-loged-in-to-out-prompt</code> - Already logged in (8.3 sec)</li><br><li><code>callcueue-loged-out-to-in-prompt</code> - Already logged out (11.0 sec)</li></p><p><strong>System prompts (Asterisk default):</strong><br><li><code>agent-loginok</code> - Agent confirmation</li><br><li><code>queue-thereare</code> - &quot;There are&quot;</li><br><li><code>queue-callswaiting</code> - &quot;calls waiting&quot;</li><br><li>Plus numbers 0-9 for SayNumber()</li></p><h3>Queue Configuration</h3><br><li><strong>Queue name:</strong> <code>support</code></li><br><li><strong>Strategy:</strong> ringall</li><br><li><strong>Timeout:</strong> 15 seconds per agent</li><br><li><strong>Retry:</strong> 5 seconds</li><br><li><strong>Music on hold:</strong> default class</li></p><h3>Voicemail Configuration</h3><br><li><strong>Context:</strong> <code>flexpbx</code></li><br><li><strong>Mailboxes:</strong> 2000-2003</li><br><li><strong>Format:</strong> wav</li><br><li><strong>Max message:</strong> 180 seconds</li><br><li><strong>Max messages:</strong> 100</li></p><hr><h2>🎯 Quick Troubleshooting</h2><h3>Feature code not working?</h3><br><li>Check dialplan loaded: <code>asterisk -rx &quot;dialplan reload&quot;</code></li><br><li>Verify in context: <code>asterisk -rx &quot;dialplan show flexpbx-internal&quot;</code></li><br><li>Check logs: <code>tail -f /var/log/asterisk/messages</code></li></p><h3>Audio not playing?</h3><br><li>Test with <strong>\*43</strong> first (echo test)</li><br><li>If echo works, test <strong>\*44</strong> (time announcement)</li><br><li>Check sound files: <code>ls /usr/share/asterisk/sounds/</code></li><br><li>Verify permissions: Files owned by asterisk:asterisk</li></p><h3>Queue not working?</h3><br><li>Check queue exists: <code>asterisk -rx &quot;queue show support&quot;</code></li><br><li>Test login: Dial <strong>\*45</strong></li><br><li>Check status: Dial <strong>\*48</strong></li><br><li>Verify membership: <code>asterisk -rx &quot;queue show support&quot;</code></li></p><h3>Voicemail not working?</h3><br><li>Check module: <code>asterisk -rx &quot;module show like voicemail&quot;</code></li><br><li>Should see: <code>app<em>voicemail</em>imap.so</code></li><br><li>If not: <code>asterisk -rx &quot;module load app<em>voicemail</em>imap.so&quot;</code></li><br><li>Test: Dial <strong>\*97</strong></li></p><hr><h2>📝 Configuration Files</h2><h3>Dialplan</h3><br><strong>File:</strong> <code>/etc/asterisk/extensions.conf</code><br><strong>Section:</strong> <code>[flexpbx-internal]</code><br><strong>Lines:</strong> 930-1011</p><h3>Music on Hold</h3><br><strong>File:</strong> <code>/etc/asterisk/musiconhold.conf</code><br><strong>Classes configured:</strong><br><li>default - Main MOH class</li></p><h3>Voicemail</h3><br><strong>File:</strong> <code>/etc/asterisk/voicemail.conf</code><br><strong>Context:</strong> <code>[flexpbx]</code><br><strong>Mailboxes:</strong> 2000, 2001, 2002, 2003</p><h3>Queue</h3><br><strong>File:</strong> <code>/etc/asterisk/queues.conf</code><br><strong>Queues:</strong><br><li>support - Main support queue</li><br><li>sales - Sales queue</li></p><hr><h2>🔄 Reload Commands</h2><p><strong>Reload dialplan (after changing feature codes):</strong><br><pre><code class="language-bash">asterisk -rx &quot;dialplan reload&quot;</code></pre><p><strong>Reload voicemail (after changing mailbox settings):</strong><br><pre><code class="language-bash">asterisk -rx &quot;module reload app<em>voicemail</em>imap.so&quot;</code></pre><p><strong>Reload MOH (after changing music files):</strong><br><pre><code class="language-bash">asterisk -rx &quot;module reload res_musiconhold.so&quot;</code></pre><p><strong>Reload queues (after changing queue settings):</strong><br><pre><code class="language-bash">asterisk -rx &quot;module reload app_queue.so&quot;</code></pre><hr><h2>🎓 User Training Guide</h2><h3>Print and Post This:</h3><pre><code class="language-">╔════════════════════════════════════╗<br>║   FLEXPBX FEATURE CODES CHEAT SHEET   ║<br>╠════════════════════════════════════╣<br>║  *43  │ Echo Test (Test Audio)     ║<br>║  *44  │ Time/Date Announcement     ║<br>║  *45  │ Queue Login                ║<br>║  *46  │ Queue Logout               ║<br>║  *48  │ Queue Status               ║<br>║  *77  │ Queue Stats + Hold Music   ║<br>║  *78  │ Hold Music Preview         ║<br>║  *97  │ Voicemail                  ║<br>╚════════════════════════════════════╝</code></pre><p><strong>Agent Quick Start:</strong><br><li><strong>\*45</strong> to login (start of shift)</li><br><li><strong>\*48</strong> to check queue anytime</li><br><li><strong>\*46</strong> to logout (end of shift)</li><br><li><strong>\*97</strong> to check voicemail</li></p><p><strong>If problems:</strong><br><li><strong>\*43</strong> to test audio</li><br><li>Call supervisor for help</li><br></ul><br><hr></p><p><strong>System:</strong> FlexPBX v1.0<br><strong>Support:</strong> Check <code>/var/log/asterisk/messages</code> for errors<br><strong>Documentation:</strong> This file + <code>/home/flexpbxuser/public<em>html/api/ASTERISK</em>API_INTEGRATION.md</code><br></p>
+        </div>
+
+        <div class="footer">
+            <p>FlexPBX Documentation | Generated from Markdown</p>
+            <p><a href="FEATURE_CODES.md" download>Download Markdown Version</a></p>
+        </div>
+    </div>
+</body>
+</html>

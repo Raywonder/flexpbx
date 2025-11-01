@@ -1,0 +1,30 @@
+# FlexPBX Admin Directory Configuration
+# Sets dashboard.php as the default landing page
+
+# Set default index files (dashboard.php first, then index.php as fallback)
+DirectoryIndex dashboard.php index.php
+
+# Protect sensitive PHP files from direct access
+<Files "admin_auth_check.php">
+    Require all denied
+</Files>
+
+# Optional: Protect includes directory if it exists
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^includes/ - [F,L]
+</IfModule>
+
+# Security headers
+<IfModule mod_headers.c>
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>
+
+# Prevent directory listing
+Options -Indexes
+
+# Custom error pages (optional)
+# ErrorDocument 404 /admin/dashboard.php
+# ErrorDocument 403 /admin/login.php

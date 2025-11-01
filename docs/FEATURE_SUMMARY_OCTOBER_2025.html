@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlexPBX Feature Implementation Summary - FlexPBX Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #34495e;
+            font-size: 1.8rem;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #555;
+            font-size: 1.4rem;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+
+        h4 {
+            color: #666;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        h5, h6 {
+            color: #777;
+            margin-top: 15px;
+            margin-bottom: 8px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+
+        ul, ol {
+            margin-bottom: 15px;
+            margin-left: 30px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e74c3c;
+        }
+
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+            font-size: 0.95em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            display: block;
+        }
+
+        table thead {
+            background: #667eea;
+            color: white;
+        }
+
+        table th,
+        table td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        table tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        table tbody tr:hover {
+            background: #e9ecef;
+        }
+
+        blockquote {
+            border-left: 4px solid #667eea;
+            padding-left: 20px;
+            margin: 20px 0;
+            color: #555;
+            font-style: italic;
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 4px;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px solid #ecf0f1;
+            margin: 30px 0;
+        }
+
+        a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        strong {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        em {
+            font-style: italic;
+            color: #555;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid #ecf0f1;
+            text-align: center;
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            table {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to Documentation Index</a>
+
+        <div class="header">
+            <h1>FlexPBX Feature Implementation Summary</h1>
+        </div>
+
+        <div class="content">
+            <h1>FlexPBX Feature Implementation Summary</h1><br><strong>Date:</strong> October 14, 2025<br><strong>Status:</strong> Production Ready</p><hr><h2>🎯 Completed Features</h2><h3>1. Conditional Queue Audio System ✅</h3><p><strong>Feature Codes:</strong><br><ul><li><strong>\*45</strong> - Queue Login (support queue)</li><br><li><strong>\*46</strong> - Queue Logout (support queue)</li><br><li><strong>\*47</strong> - Queue Status (support queue)</li></p><p><strong>Conditional Logic:</strong><br><li>Different audio plays depending on current queue membership status</li><br><li>Uses <code>QUEUE_MEMBER()</code> function to check status before taking action</li><br><li>Prevents duplicate login/logout attempts</li></p><p><strong>Audio Files:</strong><br><li><code>callcueue-loged-out-to-in-prompt.wav</code> - Plays when successfully joining queue via \*45</li><br><li><code>callcueue-login.wav</code> - Plays when dialing \*45 but already logged in</li><br><li><code>callcueue-loged-in-to-out-prompt.wav</code> - Plays when successfully leaving queue via \*46</li><br><li><code>callcueue-logout.wav</code> - Plays when dialing \*46 but already logged out</li></p><p><strong>Technical Implementation:</strong><br><li>Location: <code>/etc/asterisk/extensions.conf</code> lines 936-963</li><br><li>Audio files: <code>/var/lib/asterisk/sounds/callcueue-*</code></li><br><li>Formats: WAV (16-bit, 8kHz, mono) and ulaw</li><br><li>Permissions: asterisk:asterisk, 644</li></p><p><strong>Testing:</strong><br><pre><code class="language-">Dial *45 first time  → Hear login success message → Added to queue<br>Dial *45 again       → Hear &quot;already logged in&quot; message → No action<br>Dial *46 first time  → Hear logout success message → Removed from queue<br>Dial *46 again       → Hear &quot;already out&quot; message → No action</code></pre><hr><h3>2. Music on Hold Streaming System ✅</h3><p><strong>Configuration File:</strong> <code>/etc/asterisk/musiconhold.conf</code></p><p><strong>Supported Sources:</strong><br><li><strong>Local audio files</strong> - MP3/WAV files in <code>/var/lib/asterisk/moh/</code></li><br><li><strong>Icecast streams</strong> - Internet radio streams (MP3/OGG)</li><br><li><strong>Shoutcast streams</strong> - Traditional streaming servers</li><br><li><strong>Custom applications</strong> - mpg123 with sox for processing</li></p><p><strong>MOH Classes Available:</strong><br><li><code>default</code> - Local files, random playback</li><br><li><code>stream-volume-quiet</code> - 50% volume streaming</li><br><li><code>stream-volume-normal</code> - 70% volume streaming</li><br><li><code>stream-volume-loud</code> - 80% volume streaming</li><br><li><code>stream-volume-full</code> - 100% volume streaming</li><br><li><code>icecast-soma-fm</code> - Example Soma FM stream at 70% volume</li><br><li><code>support-queue</code> - Dedicated for support queue</li><br><li><code>sales-queue</code> - Dedicated for sales queue</li></p><p><strong>Volume Control:</strong><br>Uses sox to adjust volume during streaming:<br><pre><code class="language-bash">mpg123 -q -r 8000 --mono -s -@ | sox -t raw -r 8000 -c 1 -e signed -b 16 - -t raw -r 8000 -c 1 -e signed -b 16 - vol 0.7</code></pre><p><strong>Web Interface:</strong> <code>/home/flexpbxuser/public_html/admin/moh-manager.html</code><br><li>Add/edit stream URLs</li><br><li>Adjust volume (0-100%)</li><br><li>Test playback</li><br><li>Assign to queues</li><br><li>Upload local files</li><br><li>Reload configuration</li></p><hr><h3>3. Audio Upload Auto-Conversion ✅</h3><p><strong>Admin Interface:</strong> <code>/home/flexpbxuser/public_html/admin/audio-upload.php</code><br><strong>User Interface:</strong> <code>/home/flexpbxuser/public_html/user-portal/my-recordings.php</code></p><p><strong>Automatic Processing:</strong><br><li>Upload any audio format (MP3, WAV, OGG, etc.)</li><br><li>Converts to Asterisk-optimized format:</li><br>      <li>8kHz sample rate</li><br>      <li>Mono channel</li><br>      <li>16-bit depth</li><br>      <li>-3dB normalization</li><br><li>Creates ulaw format automatically</li><br><li>Sets proper ownership (asterisk:asterisk)</li><br><li>Sets proper permissions (644)</li><br><li>Deploys to correct directory</li></p><p><strong>Categories Supported:</strong><br><li>IVR Prompts - <code>/var/lib/asterisk/sounds/custom/</code></li><br><li>Queue Announcements - <code>/var/lib/asterisk/sounds/</code></li><br><li>Voicemail Greetings - <code>/var/spool/asterisk/voicemail/{context}/{mailbox}/</code></li><br><li>Music on Hold - <code>/var/lib/asterisk/moh/</code></li></p><p><strong>Technical Details:</strong><br><pre><code class="language-bash">sox input.wav -r 8000 -c 1 -b 16 output.wav norm -3<br>sox output.wav -r 8000 -c 1 -t ul output.ulaw</code></pre><hr><h3>4. Asterisk API Integration Documentation ✅</h3><p><strong>Location:</strong> <code>/home/flexpbxuser/public<em>html/api/ASTERISK</em>API_INTEGRATION.md</code></p><p><strong>Documented Interfaces:</strong><br><li><strong>AMI (Asterisk Manager Interface)</strong> - TCP socket on port 5038</li><br><li><strong>AGI (Asterisk Gateway Interface)</strong> - Call control from dialplan</li><br><li><strong>ARI (Asterisk REST Interface)</strong> - WebSocket + HTTP on port 8088/8089</li><br><li><strong>CLI Interface</strong> - Shell command execution</li></p><p><strong>Features Documented:</strong><br><li>Call control (originate, hangup, transfer, park)</li><br><li>Music on Hold configuration and API control</li><br><li>Queue management (add/remove/pause members, status)</li><br><li>Voicemail integration</li><br><li>Extension/Endpoint management</li><br><li>Trunk management and monitoring</li><br><li>Call Detail Records (CDR) access</li><br><li>Call monitoring and recording</li><br><li>Audio playback applications</li><br><li>Conference bridges (ConfBridge)</li><br><li>Real-time event subscriptions</li><br><li>Call features and pickup codes</li><br><li>Security and authentication</li><br><li>Database integration (AstDB and Realtime)</li><br><li>WebRTC support</li><br><li>System control and diagnostics</li><br><li>Prometheus metrics endpoint</li></p><p><strong>Code Examples Included:</strong><br><li>PHP AMI Manager class</li><br><li>JavaScript ARI client</li><br><li>AGI script template</li><br><li>Dialplan integration examples</li></p><hr><h3>5. Admin Dashboard Consolidation ✅</h3><p><strong>Location:</strong> <code>/home/flexpbxuser/public_html/admin/dashboard.html</code></p><p><strong>Sections:</strong><br><li><strong>Media &amp; Audio Management</strong></li><br>      <li>Audio Upload Manager</li><br>      <li>Media Manager</li><br>      <li>Music on Hold Manager (NEW)</li><br>  <li><strong>PBX Configuration</strong></li><br>      <li>Extensions Management</li><br>      <li>Trunks Management</li><br>      <li>Trunks &amp; DIDs Manager</li><br>      <li>Inbound Routing</li><br>      <li>Google Voice Integration</li><br>  <li><strong>System Tools</strong></li><br>      <li>System Self-Check</li><br>      <li>Admin Client</li><br>  <li><strong>Documentation</strong></li><br>      <li>IVR Setup Guide</li><br>      <li>ElevenLabs Guide</li><br>      <li>User Portal Link</li></p><p><strong>Design:</strong><br><li>Responsive grid layout</li><br><li>Card-based interface</li><br><li>Gradient purple theme</li><br><li>Hover animations</li><br><li>Badge indicators for new features</li></p><hr><h2>🔧 System Configuration</h2><h3>Audio File Locations</h3><br><pre><code class="language-">/var/lib/asterisk/sounds/          - Custom prompts and queue audio<br>/var/lib/asterisk/sounds/en/       - English language prompts<br>/var/lib/asterisk/moh/             - Music on hold files<br>/usr/share/asterisk/sounds/        - System default sounds<br>/var/spool/asterisk/voicemail/     - Voicemail greetings</code></pre><h3>Configuration Files Modified</h3><br><pre><code class="language-">/etc/asterisk/extensions.conf      - Dialplan with queue features<br>/etc/asterisk/musiconhold.conf     - MOH classes and streaming<br>/etc/asterisk/queues.conf          - Queue configuration</code></pre><h3>Permissions</h3><br><pre><code class="language-">Owner: asterisk:asterisk<br>Audio files: 644<br>Directories: 755</code></pre><hr><h2>📞 Queue System Details</h2><p><strong>Queue Name:</strong> <code>support</code></p><p><strong>Members:</strong> Dynamic (agents login/logout via \<em>45/\</em>46)</p><p><strong>Strategy:</strong> ringall (can be changed in queues.conf)</p><p><strong>Features:</strong><br><li>Real-time login/logout with audio confirmation</li><br><li>Status checking with \*47</li><br><li>Conditional audio prevents confusion</li><br><li>Music on hold during wait</li><br><li>Agent penalty support</li><br><li>Call recording capability</li></p><p><strong>AMI Events Generated:</strong><br><li>QueueMemberAdded</li><br><li>QueueMemberRemoved</li><br><li>QueueCallerJoin</li><br><li>AgentConnect</li><br><li>QueueMemberStatus</li></p><hr><h2>🎵 Music on Hold Technical Details</h2><p><strong>Audio Processing Chain:</strong><br><pre><code class="language-">Stream URL → mpg123 → sox (volume adjust) → Asterisk</code></pre><p><strong>Format Requirements:</strong><br><li>Sample Rate: 8000 Hz</li><br><li>Channels: 1 (mono)</li><br><li>Format: slin (signed linear)</li><br><li>Bit Depth: 16-bit</li></p><p><strong>Example Stream Configuration:</strong><br><pre><code class="language-ini">[icecast-soma-fm]<br>mode=custom<br>application=/usr/bin/bash -c &#039;echo &quot;http://ice1.somafm.com/groovesalad-128-mp3&quot; | /home/linuxbrew/.linuxbrew/bin/mpg123 -q -r 8000 --mono -s -@ | sox -t raw -r 8000 -c 1 -e signed -b 16 - -t raw -r 8000 -c 1 -e signed -b 16 - vol 0.7&#039;<br>format=slin</code></pre><p><strong>Local Files Configuration:</strong><br><pre><code class="language-ini">[default]<br>mode=files<br>directory=/var/lib/asterisk/moh<br>sort=random</code></pre><hr><h2>🔄 Reload Commands</h2><p><strong>Reload dialplan:</strong><br><pre><code class="language-bash">asterisk -rx &quot;dialplan reload&quot;</code></pre><p><strong>Reload music on hold:</strong><br><pre><code class="language-bash">asterisk -rx &quot;module reload res_musiconhold.so&quot;</code></pre><p><strong>Show MOH classes:</strong><br><pre><code class="language-bash">asterisk -rx &quot;moh show classes&quot;</code></pre><p><strong>Show queue members:</strong><br><pre><code class="language-bash">asterisk -rx &quot;queue show support&quot;</code></pre><p><strong>Check queue status:</strong><br><pre><code class="language-bash">asterisk -rx &quot;queue show&quot;</code></pre><hr><h2>🧪 Testing Procedures</h2><h3>Test Queue Audio</h3><br><li>Dial \*45 from any extension (2000-2003)</li><br><li>Should hear login success message</li><br><li>Verify added to queue: <code>asterisk -rx &quot;queue show support&quot;</code></li><br><li>Dial \*45 again</li><br><li>Should hear &quot;already logged in&quot; message</li><br><li>Dial \*46</li><br><li>Should hear logout success message</li><br><li>Verify removed from queue</li><br><li>Dial \*46 again</li><br><li>Should hear &quot;already logged out&quot; message</li></p><h3>Test Music on Hold</h3><br><li>Log into support queue with \*45</li><br><li>Call support queue from another extension</li><br><li>Should hear music on hold</li><br><li>Adjust volume in MOH Manager</li><br><li>Reload MOH: <code>asterisk -rx &quot;module reload res_musiconhold.so&quot;</code></li><br><li>Test again with new volume</li></p><h3>Test Audio Upload</h3><br><li>Navigate to admin/audio-upload.php</li><br><li>Upload MP3/WAV file</li><br><li>Select category (IVR/Queue/Custom)</li><br><li>Verify conversion creates ulaw file</li><br><li>Check permissions: <code>ls -l /var/lib/asterisk/sounds/</code></li><br><li>Test playback in dialplan</li></p><hr><h2>📊 System Status</h2><p><strong>Asterisk Version:</strong> 18.12.1<br><strong>Active Extensions:</strong> 2000, 2001, 2002, 2003<br><strong>Active Trunks:</strong> CallCentric (registered)<br><strong>Queues Configured:</strong> support, sales<br><strong>MOH Classes:</strong> 11 classes (8 streaming, 3 local files)<br><strong>Audio Files:</strong> 50+ prompts including conditional queue audio</p><hr><h2>🔐 Security Notes</h2><p><strong>File Permissions:</strong><br><li>All audio files owned by asterisk:asterisk</li><br><li>Upload scripts validate file types</li><br><li>sox conversion sanitizes audio format</li><br><li>No shell injection vulnerabilities in upload paths</li></p><p><strong>Network Security:</strong><br><li>AMI port 5038 should be firewalled (internal only)</li><br><li>ARI port 8088/8089 behind authentication</li><br><li>Streaming MOH uses HTTPS when available</li></p><hr><h2>📝 Future Enhancements</h2><p><strong>Potential Additions:</strong><br><li>Multiple queue support (sales, support, billing)</li><br><li>Queue priority and penalty management UI</li><br><li>Real-time queue dashboard with AMI events</li><br><li>Call recording download interface</li><br><li>IVR builder with drag-and-drop</li><br><li>Conference bridge management</li><br><li>WebRTC softphone integration</li><br><li>Mobile app for queue login/logout</li><br><li>Queue statistics and reporting</li><br><li>Wallboard display for queue metrics</li></p><hr><h2>📖 Documentation References</h2><p><strong>Internal Docs:</strong><br><li><code>/home/flexpbxuser/public<em>html/api/ASTERISK</em>API_INTEGRATION.md</code></li><br><li><code>/etc/asterisk/extensions.conf</code> - Dialplan</li><br><li><code>/etc/asterisk/musiconhold.conf</code> - MOH configuration</li><br><li><code>/etc/asterisk/queues.conf</code> - Queue settings</li></p><p><strong>External Resources:</strong><br><li>Asterisk Documentation: https://docs.asterisk.org/</li><br><li>AMI Reference: https://docs.asterisk.org/Asterisk<em>18</em>Documentation/API<em>Documentation/AMI</em>Actions/</li><br><li>ARI Reference: https://docs.asterisk.org/Asterisk<em>18</em>Documentation/API<em>Documentation/Asterisk</em>REST_Interface/</li><br></ul><br><hr></p><p><strong>Maintained by:</strong> FlexPBX Development Team<br><strong>Last Updated:</strong> October 14, 2025<br><strong>Version:</strong> 1.0<br></p>
+        </div>
+
+        <div class="footer">
+            <p>FlexPBX Documentation | Generated from Markdown</p>
+            <p><a href="FEATURE_SUMMARY_OCTOBER_2025.md" download>Download Markdown Version</a></p>
+        </div>
+    </div>
+</body>
+</html>

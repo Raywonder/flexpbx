@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feature Codes Manager - Admin Guide - FlexPBX Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #34495e;
+            font-size: 1.8rem;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #555;
+            font-size: 1.4rem;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+
+        h4 {
+            color: #666;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        h5, h6 {
+            color: #777;
+            margin-top: 15px;
+            margin-bottom: 8px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+
+        ul, ol {
+            margin-bottom: 15px;
+            margin-left: 30px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e74c3c;
+        }
+
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+            font-size: 0.95em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            display: block;
+        }
+
+        table thead {
+            background: #667eea;
+            color: white;
+        }
+
+        table th,
+        table td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        table tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        table tbody tr:hover {
+            background: #e9ecef;
+        }
+
+        blockquote {
+            border-left: 4px solid #667eea;
+            padding-left: 20px;
+            margin: 20px 0;
+            color: #555;
+            font-style: italic;
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 4px;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px solid #ecf0f1;
+            margin: 30px 0;
+        }
+
+        a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        strong {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        em {
+            font-style: italic;
+            color: #555;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid #ecf0f1;
+            text-align: center;
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            table {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to Documentation Index</a>
+
+        <div class="header">
+            <h1>Feature Codes Manager - Admin Guide</h1>
+        </div>
+
+        <div class="content">
+            <h1>Feature Codes Manager - Admin Guide</h1><br><strong>Created:</strong> October 14, 2025 02:15 AM<br><strong>Interface:</strong> Web-based admin panel</p><hr><h2>🎯 Overview</h2><p>The Feature Codes Manager is a web-based admin interface that allows you to:<br><ul><li>✅ <strong>Enable/Disable</strong> feature codes with a single click</li><br><li>🔄 <strong>Reload</strong> Asterisk dialplan without SSH access</li><br><li>💾 <strong>Backup</strong> configurations before making changes</li><br><li>📊 <strong>View</strong> all feature codes in one place</li><br><li>⚡ <strong>Apply</strong> changes instantly</li></p><hr><h2>🌐 Access the Interface</h2><p><strong>URL:</strong> <code>https://flexpbx.devinecreations.net/admin/feature-codes-manager.html</code></p><p><strong>Or from Admin Dashboard:</strong><br><li>Go to Admin Dashboard</li><br><li>Look for &quot;📞 Feature Codes Manager&quot; card</li><br><li>Click &quot;Manage Feature Codes&quot;</li></p><hr><h2>📋 Features</h2><h3>1. Feature Code Table</h3><br>Shows all available feature codes with:<br><li><strong>Status Toggle</strong> - Enable/disable switch</li><br><li><strong>Code</strong> - The dial code (<em>43, </em>45, etc.)</li><br><li><strong>Name</strong> - Feature name (Echo Test, Queue Login, etc.)</li><br><li><strong>Description</strong> - What the feature does</li><br><li><strong>Category</strong> - Type of feature (Diagnostic, Queue, etc.)</li><br><li><strong>Current Status</strong> - Enabled or Disabled</li></p><h3>2. Categories</h3><br>Feature codes are organized by category:</p><p><strong>🔍 Diagnostic</strong><br><li>*43 - Echo Test</li><br><li>*44 - Time/Clock</li></p><p><strong>📞 Queue</strong><br><li>*45 - Queue Login</li><br><li>*46 - Queue Logout</li><br><li>*48 - Queue Status</li></p><p><strong>🎵 Music on Hold</strong><br><li>*77 - MOH + Queue Stats</li><br><li>*78 - Music on Hold Preview</li></p><p><strong>📬 Voicemail</strong><br><li>*97 - Voicemail Access</li></p><h3>3. Action Buttons</h3><p><strong>🔄 Reload Dialplan</strong><br><li>Applies all changes to Asterisk</li><br><li>Must click after making changes</li><br><li>Shows success/error message</li><br><li>Takes 1-2 seconds</li></p><p><strong>💾 Backup</strong><br><li>Creates timestamped backup of extensions.conf</li><br><li>Stored as: <code>/etc/asterisk/extensions.conf.backup.YYYY-MM-DD_HH-mm-ss</code></li><br><li>Always backup before major changes</li></p><hr><h2>🎮 How to Use</h2><h3>Enable a Feature Code</h3><br>  <li>Find the feature code in the table</li><br><li>Click the toggle switch to <strong>ON</strong> position (green)</li><br><li>You&#039;ll see: &quot;Feature code *XX enabled successfully&quot;</li><br><li>Click <strong>&quot;Reload Dialplan&quot;</strong> button at top</li><br><li>Wait for success message: &quot;Dialplan reloaded successfully!&quot;</li><br><li>Feature code is now active</li></p><h3>Disable a Feature Code</h3><br>  <li>Find the feature code in the table</li><br><li>Click the toggle switch to <strong>OFF</strong> position (gray)</li><br><li>You&#039;ll see: &quot;Feature code *XX disabled successfully&quot;</li><br><li>Click <strong>&quot;Reload Dialplan&quot;</strong> button at top</li><br><li>Wait for success message</li><br><li>Feature code is now inactive (users can&#039;t dial it)</li></p><h3>Backup Configuration</h3><br>  <li>Click <strong>&quot;💾 Backup&quot;</strong> button at top right</li><br><li>Confirm the backup</li><br><li>You&#039;ll see: &quot;Configuration backed up to: /etc/asterisk/extensions.conf.backup.2025-10-14_02-15-30&quot;</li><br><li>Backup file is stored on server</li></p><hr><h2>🔧 Technical Details</h2><h3>How It Works</h3><p><strong>Behind the scenes:</strong><br>  <li><strong>Enable/Disable:</strong></li><br>      <li>PHP reads <code>/etc/asterisk/extensions.conf</code></li><br>      <li>Finds the feature code section</li><br>      <li>Comments out (<code>; exten =&gt;</code>) or uncomments the lines</li><br>      <li>Saves changes back to file</li><br>  <li><strong>Reload:</strong></li><br>      <li>Executes: <code>asterisk -rx &quot;dialplan reload&quot;</code></li><br>      <li>Asterisk re-reads extensions.conf</li><br>      <li>Changes take effect immediately</li><br>  <li><strong>Backup:</strong></li><br>      <li>Copies current extensions.conf</li><br>      <li>Adds timestamp to filename</li><br>      <li>Stores in same directory</li></p><h3>Files Modified</h3><p><strong>Configuration:</strong><br><li><code>/etc/asterisk/extensions.conf</code> - Main dialplan</li></p><p><strong>Application:</strong><br><li><code>/home/flexpbxuser/public_html/admin/feature-codes-manager.html</code> - Frontend UI</li><br><li><code>/home/flexpbxuser/public_html/admin/feature-codes-manager.php</code> - Backend API</li></p><h3>Permissions Required</h3><p>The system must have permission to:<br><li>Read <code>/etc/asterisk/extensions.conf</code></li><br><li>Write to <code>/etc/asterisk/extensions.conf</code></li><br><li>Execute <code>asterisk -rx</code> commands</li><br><li>Create backup files</li></p><hr><h2>⚠️ Important Notes</h2><h3>Before Making Changes</h3><br>  <li><strong>Always backup first</strong> - Click the Backup button</li><br><li><strong>Test in non-peak hours</strong> - Don&#039;t disable codes during busy times</li><br><li><strong>Communicate with users</strong> - Let them know if you&#039;re disabling features</li><br><li><strong>Document changes</strong> - Keep notes on why you disabled something</li></p><h3>After Making Changes</h3><br>  <li><strong>Always reload</strong> - Click &quot;Reload Dialplan&quot; button</li><br><li><strong>Test immediately</strong> - Dial the feature code from a phone</li><br><li><strong>Check logs</strong> - If issues, check <code>/var/log/asterisk/messages</code></li><br><li><strong>Verify status</strong> - Make sure toggle reflects actual state</li></p><h3>Safety Features</h3><br>  <li><strong>Automatic backups</strong> available before changes</li><br><li><strong>Changes don&#039;t apply</strong> until you click Reload</li><br><li><strong>Config validation</strong> before saving</li><br><li><strong>Error messages</strong> if something fails</li><br><li><strong>Original file preserved</strong> in backups</li></p><hr><h2>🐛 Troubleshooting</h2><h3>Issue: Toggle doesn&#039;t stay in position</h3><p><strong>Solution:</strong><br><li>Reload the page</li><br><li>Check server logs</li><br><li>Verify file permissions on extensions.conf</li><br><li>Try backing up first</li></p><h3>Issue: Reload button shows error</h3><p><strong>Possible causes:</strong><br><li>Asterisk not running</li><br>      <li>Check: <code>asterisk -rx &quot;core show version&quot;</code></li><br>      <li>Restart: <code>systemctl restart asterisk</code></li><br>  <li>Permission denied</li><br>      <li>Check web server can run asterisk commands</li><br>      <li>May need to add to sudoers</li><br>  <li>Syntax error in extensions.conf</li><br>      <li>Check Asterisk logs</li><br>      <li>Restore from backup</li></p><h3>Issue: Feature code not working after enable</h3><p><strong>Steps:</strong><br><li>Verify toggle is green (enabled)</li><br><li>Click &quot;Reload Dialplan&quot; again</li><br><li>Test from phone</li><br><li>Check Asterisk CLI: <code>asterisk -rx &quot;dialplan show flexpbx-internal&quot;</code></li><br><li>Look for your feature code in output</li></p><h3>Issue: Can&#039;t access the interface</h3><p><strong>Check:</strong><br><li>URL is correct</li><br><li>Web server is running</li><br><li>File permissions: <code>ls -l /home/flexpbxuser/public_html/admin/feature-codes-manager.*</code></li><br><li>PHP is installed and working</li></p><hr><h2>📊 Status Indicators</h2><h3>Toggle Colors</h3><br><li>🟢 <strong>Green</strong> - Feature enabled</li><br><li>⚪ <strong>Gray</strong> - Feature disabled</li></p><h3>Status Text</h3><br><li>✓ <strong>Enabled</strong> - Feature is active</li><br><li>✗ <strong>Disabled</strong> - Feature is inactive</li></p><h3>Alert Messages</h3><br><li>🟢 <strong>Green box</strong> - Success</li><br><li>🔴 <strong>Red box</strong> - Error</li><br><li>🔵 <strong>Blue box</strong> - Information</li></p><hr><h2>🔄 Workflow Examples</h2><h3>Example 1: Disable Echo Test During Maintenance</h3><pre><code class="language-">1. Open Feature Codes Manager<br><li>Click &quot;💾 Backup&quot; button</li><br><li>Find &quot;*43 - Echo Test&quot; in table</li><br><li>Click toggle to OFF (gray)</li><br><li>Click &quot;🔄 Reload Dialplan&quot;</li><br><li>Wait for success message</li><br><li>Test: Dial *43 → Should hear &quot;invalid extension&quot;</li><br><li>When done, toggle back ON and reload</code></pre></li></p><h3>Example 2: Enable New Feature Code</h3><pre><code class="language-">1. Open Feature Codes Manager<br><li>Click &quot;💾 Backup&quot; button</li><br><li>Find new feature code in table</li><br><li>Click toggle to ON (green)</li><br><li>Click &quot;🔄 Reload Dialplan&quot;</li><br><li>Wait for success message</li><br><li>Test: Dial the code → Should work</code></pre></li></p><h3>Example 3: Disable All Queue Features</h3><pre><code class="language-">1. Backup configuration<br><li>Disable *45 (Queue Login)</li><br><li>Disable *46 (Queue Logout)</li><br><li>Disable *48 (Queue Status)</li><br><li>Click &quot;Reload Dialplan&quot; once</li><br><li>All queue features now disabled</li><br><li>Users can&#039;t access queue functions</code></pre></li></p><hr><h2>🎓 Best Practices</h2><h3>Daily Operations</h3><br>  <li><strong>Check status</strong> before making changes</li><br><li><strong>Backup</strong> before bulk changes</li><br><li><strong>Reload</strong> after all changes (not after each one)</li><br><li><strong>Test</strong> immediately after changes</li><br><li><strong>Document</strong> what you changed and why</li></p><h3>Security</h3><br>  <li><strong>Restrict access</strong> to authorized admins only</li><br><li><strong>Keep backups</strong> for at least 30 days</li><br><li><strong>Log changes</strong> (who changed what when)</li><br><li><strong>Review logs</strong> regularly for issues</li><br><li><strong>Test in staging</strong> if available</li></p><h3>Maintenance</h3><br>  <li><strong>Review feature codes</strong> monthly</li><br><li><strong>Clean up</strong> unused codes</li><br><li><strong>Update descriptions</strong> as needed</li><br><li><strong>Verify backups</strong> are being created</li><br><li><strong>Test all codes</strong> quarterly</li></p><hr><h2>📞 Support</h2><h3>Need Help?</h3><p><strong>Check logs:</strong><br><pre><code class="language-bash">tail -f /var/log/asterisk/messages</code></pre><p><strong>View current dialplan:</strong><br><pre><code class="language-bash">asterisk -rx &quot;dialplan show flexpbx-internal&quot;</code></pre><p><strong>Restore from backup:</strong><br><pre><code class="language-bash">cp /etc/asterisk/extensions.conf.backup.YYYY-MM-DD_HH-mm-ss /etc/asterisk/extensions.conf<br>asterisk -rx &quot;dialplan reload&quot;</code></pre><hr><h2>📝 Quick Reference</h2><table><tr><td>Action</td><td>Steps</td><td>Time</td></tr><br><tr><td>--------</td><td>-------</td><td>------</td></tr><br><tr><td>Enable code</td><td>Toggle ON → Reload</td><td>5 sec</td></tr><br><tr><td>Disable code</td><td>Toggle OFF → Reload</td><td>5 sec</td></tr><br><tr><td>Backup config</td><td>Click Backup button</td><td>2 sec</td></tr><br><tr><td>Reload dialplan</td><td>Click Reload button</td><td>2 sec</td></tr><br><tr><td>Test feature</td><td>Dial from phone</td><td>10 sec</td></tr><br></table><br><hr></p><h2>🚀 Advanced Usage</h2><h3>Bulk Operations</h3><p>To enable/disable multiple codes:<br><li>Click each toggle (don&#039;t reload yet)</li><br><li>After all toggles changed</li><br><li>Click &quot;Reload Dialplan&quot; once</li><br><li>All changes apply together</li></p><h3>Scheduling Changes</h3><p>For scheduled enable/disable:<br><li>Use cron job to call PHP script</li><br><li>Or manually change at scheduled time</li><br><li>Best for maintenance windows</li></p><h3>Monitoring</h3><p>Check if feature is actually disabled:<br><pre><code class="language-bash">asterisk -rx &quot;dialplan show flexpbx-internal&quot; | grep -A 2 &quot;*43&quot;</code></pre><p>If commented, you&#039;ll see lines starting with <code>;</code></p><hr><h2>✅ Checklist</h2><p><strong>Before Using:</strong><br><li>[ ] Access URL works</li><br><li>[ ] Can see feature code table</li><br><li>[ ] Backup button works</li><br><li>[ ] Reload button works</li></p><p><strong>When Making Changes:</strong><br><li>[ ] Backup created</li><br><li>[ ] Changes tested</li><br><li>[ ] Dialplan reloaded</li><br><li>[ ] Users notified if needed</li></p><p><strong>After Changes:</strong><br><li>[ ] Feature codes tested</li><br><li>[ ] Logs checked for errors</li><br><li>[ ] Documentation updated</li><br><li>[ ] Backup retained</li><br></ul><br><hr></p><p><strong>Interface Version:</strong> 1.0<br><strong>Last Updated:</strong> October 14, 2025<br><strong>Location:</strong> <code>/home/flexpbxuser/public_html/admin/feature-codes-manager.html</code><br><strong>Documentation:</strong> <code>/home/flexpbxuser/public<em>html/FEATURE</em>CODES.md</code><br></p>
+        </div>
+
+        <div class="footer">
+            <p>FlexPBX Documentation | Generated from Markdown</p>
+            <p><a href="FEATURE_CODES_MANAGER_GUIDE.md" download>Download Markdown Version</a></p>
+        </div>
+    </div>
+</body>
+</html>

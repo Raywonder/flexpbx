@@ -2354,32 +2354,90 @@ return [
     }
 
     private function createDirectoryStructure() {
+        // Application directories (relative to public_html)
         $directories = [
-            '../config',
-            '../cron',
-            '../logs',
-            '../uploads',
-            '../backups',
-            '../dashboard',
-            '../modules',
-            '../temp'
+            '../config' => 0750,
+            '../cron' => 0750,
+            '../logs' => 0750,
+            '../uploads' => 0750,
+            '../backups' => 0750,
+            '../dashboard' => 0755,
+            '../modules' => 0755,
+            '../temp' => 0750
         ];
 
-        foreach ($directories as $dir) {
+        // User data directories (absolute paths)
+        $baseDir = '/home/flexpbxuser';
+        $userDirectories = [
+            $baseDir . '/sms_messages' => 0750,
+            $baseDir . '/voicemails' => 0750,
+            $baseDir . '/recordings' => 0750,
+            $baseDir . '/users' => 0750,
+            $baseDir . '/bugs' => 0750,
+            $baseDir . '/scripts' => 0750
+        ];
+
+        // System log directory
+        $systemDirectories = [
+            '/var/log/flexpbx' => 0750
+        ];
+
+        // Create application directories
+        foreach ($directories as $dir => $perms) {
             if (!is_dir($dir)) {
-                mkdir($dir, 0755, true);
-                $this->logProgress("📁 Created directory: " . basename($dir));
+                if (@mkdir($dir, $perms, true)) {
+                    $this->logProgress("📁 Created directory: " . basename($dir));
+                    chmod($dir, $perms);
+                }
+            } else {
+                chmod($dir, $perms);
             }
         }
 
-        // Create index.php files for security
+        // Create user data directories
+        foreach ($userDirectories as $dir => $perms) {
+            if (!is_dir($dir)) {
+                if (@mkdir($dir, $perms, true)) {
+                    $this->logProgress("📁 Created directory: " . basename($dir));
+                    chmod($dir, $perms);
+                    if (function_exists('chown')) {
+                        @chown($dir, 'flexpbxuser');
+                        @chgrp($dir, 'nobody');
+                    }
+                }
+            } else {
+                chmod($dir, $perms);
+            }
+        }
+
+        // Create system directories
+        foreach ($systemDirectories as $dir => $perms) {
+            if (!is_dir($dir)) {
+                if (@mkdir($dir, $perms, true)) {
+                    $this->logProgress("📁 Created system directory: " . basename($dir));
+                    chmod($dir, $perms);
+                    if (function_exists('chown')) {
+                        @chown($dir, 'flexpbxuser');
+                        @chgrp($dir, 'nobody');
+                    }
+                }
+            }
+        }
+
+        // Create security index.php files
         $indexContent = '<?php header("HTTP/1.1 403 Forbidden"); exit("Directory access forbidden"); ?>';
-        foreach ($directories as $dir) {
+        $protectedDirs = array_keys(array_filter($directories, function($key) {
+            return !in_array($key, ['../dashboard', '../modules']);
+        }, ARRAY_FILTER_USE_KEY));
+
+        foreach ($protectedDirs as $dir) {
             $indexFile = $dir . '/index.php';
             if (!file_exists($indexFile)) {
                 file_put_contents($indexFile, $indexContent);
             }
         }
+
+        $this->logProgress("✅ Directory structure complete");
     }
 
     private function initializeServices($dbConfig) {

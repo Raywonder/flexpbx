@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📞 FlexPBX Extension Testing Guide - FlexPBX Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #34495e;
+            font-size: 1.8rem;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #555;
+            font-size: 1.4rem;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+
+        h4 {
+            color: #666;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        h5, h6 {
+            color: #777;
+            margin-top: 15px;
+            margin-bottom: 8px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+
+        ul, ol {
+            margin-bottom: 15px;
+            margin-left: 30px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e74c3c;
+        }
+
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+            font-size: 0.95em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            display: block;
+        }
+
+        table thead {
+            background: #667eea;
+            color: white;
+        }
+
+        table th,
+        table td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        table tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        table tbody tr:hover {
+            background: #e9ecef;
+        }
+
+        blockquote {
+            border-left: 4px solid #667eea;
+            padding-left: 20px;
+            margin: 20px 0;
+            color: #555;
+            font-style: italic;
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 4px;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px solid #ecf0f1;
+            margin: 30px 0;
+        }
+
+        a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        strong {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        em {
+            font-style: italic;
+            color: #555;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid #ecf0f1;
+            text-align: center;
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            table {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to Documentation Index</a>
+
+        <div class="header">
+            <h1>📞 FlexPBX Extension Testing Guide</h1>
+        </div>
+
+        <div class="content">
+            <h1>📞 FlexPBX Extension Testing Guide</h1><h2>🚀 <strong>Ready to Test Extensions</strong></h2><h3><strong>1. First - Run Admin Self-Check:</strong></h3><br>Upload <code>admin-self-check.php</code> to <code>/api/</code> and run:<br><pre><code class="language-bash"># Via web browser:<br>https://flexpbx.devinecreations.net/api/admin-self-check.php</p><h1>Via SSH:</h1><br>cd /home/flexpbxuser/public_html<br>php api/admin-self-check.php</code></pre><p>This will:<br><ul><li>✅ Automatically <code>chmod 755</code> all scripts</li><br><li>✅ Verify all configuration files</li><br><li>✅ Check admin interface readiness</li><br><li>✅ Confirm test extension setup</li></p><h3><strong>2. Test Extension 2001 Configuration:</strong></h3><br><pre><code class="language-">Extension: 2001<br>Username: techsupport1<br>Password: Support2001!<br>Server: flexpbx.devinecreations.net<br>Port: 5070<br>Domain: flexpbx.local</code></pre><h3><strong>3. SIP Client Setup:</strong></h3><br><strong>Recommended Clients:</strong><br><li><strong>Desktop:</strong> X-Lite, Zoiper, 3CX Phone</li><br><li><strong>Mobile:</strong> Zoiper, Linphone</li><br><li><strong>Web:</strong> WebRTC SIP client</li></p><p><strong>Settings:</strong><br><li><strong>Account Name:</strong> FlexPBX Test</li><br><li><strong>User ID:</strong> techsupport1</li><br><li><strong>Password:</strong> Support2001!</li><br><li><strong>Domain:</strong> flexpbx.devinecreations.net</li><br><li><strong>Port:</strong> 5070</li><br><li><strong>Transport:</strong> UDP</li><br><li><strong>STUN Server:</strong> stun.l.google.com:19302 (optional)</li></p><h3><strong>4. Test Call Scenarios:</strong></h3><h4><strong>Internal Calls:</strong></h4><br><li><strong>Call 101</strong> → Main IVR (test menu navigation)</li><br><li><strong>Call 1000</strong> → Sales Manager</li><br><li><strong>Call 1001</strong> → Sales Rep 1</li><br><li><strong>Call 2000</strong> → Support Manager</li><br><li><strong>Call 8000</strong> → Main Conference Room</li></p><h4><strong>Queue Testing:</strong></h4><br><li><strong>Call 101, Press 1</strong> → Sales Queue (corporate hold music)</li><br><li><strong>Call 101, Press 2</strong> → Support Queue (ambient hold music)</li><br><li><strong>Call 101, Press 4</strong> → Direct to extension 2001</li></p><h4><strong>Audio Quality Tests:</strong></h4><br><li><strong>Call 9196</strong> → Echo test (verify audio path)</li><br><li><strong>Dial *97</strong> → Voicemail access</li><br><li><strong>Test DTMF:</strong> Press all digits 0-9, *, # during calls</li></p><h4><strong>Conference Testing:</strong></h4><br><li><strong>Call 8000</strong> → Join main conference (up to 50 participants)</li><br><li><strong>Call 8001</strong> → Sales meeting room</li><br><li><strong>Call 8002</strong> → Support team room</li></p><h3><strong>5. External SIP Testing:</strong></h3><br>From Callcentric or other SIP provider:<br><pre><code class="language-">sip:101@flexpbx.devinecreations.net    (Main IVR)<br>sip:2001@flexpbx.devinecreations.net   (Your test extension)<br>sip:8000@flexpbx.devinecreations.net   (Conference room)</code></pre><h3><strong>6. Outbound Testing:</strong></h3><br>From extension 2001:<br><li><strong>US/Canada:</strong> Dial <code>9 + 1 + 10-digit number</code></li><br><li><strong>International:</strong> Dial <code>9 + 011 + country + number</code></li><br><li><strong>Emergency:</strong> Dial <code>911</code> (routes via Callcentric)</li></p><h3><strong>7. Admin Panel Testing:</strong></h3><br><strong>Trunk Management:</strong><br><li>https://flexpbx.devinecreations.net/admin/admin-trunks-management.html</li><br><li>Test trunk status, edit passwords, verify connectivity</li></p><p><strong>Extension Management:</strong><br><li>https://flexpbx.devinecreations.net/admin/admin-extensions-management.html</li><br><li>View extension status, edit passwords, manage permissions</li></p><p><strong>Google Voice Integration:</strong><br><li>https://flexpbx.devinecreations.net/admin/admin-google-voice.html</li><br><li>Test OAuth setup, SMS management, voicemail</li></p><h3><strong>8. Expected Results:</strong></h3><br><li>✅ <strong>Registration:</strong> Extension registers within 5 seconds</li><br><li>✅ <strong>Audio Quality:</strong> Clear HD audio with G.722 codec</li><br><li>✅ <strong>DTMF Recognition:</strong> Immediate response to button presses</li><br><li>✅ <strong>Hold Music:</strong> Starts within 3 seconds when placed on hold</li><br><li>✅ <strong>Queue Announcements:</strong> Position announcements every 30 seconds</li><br><li>✅ <strong>Conference Audio:</strong> Clear multi-party audio mixing</li></p><h3><strong>9. Troubleshooting:</strong></h3><br><strong>Can&#039;t Register:</strong><br><li>Check firewall allows port 5070</li><br><li>Verify extension 2001 is enabled in config</li><br><li>Try different SIP client</li></p><p><strong>No Audio:</strong><br><li>Check NAT/firewall for RTP ports 10000-20000</li><br><li>Enable STUN in SIP client</li><br><li>Try different codec (G.711 instead of G.722)</li></p><p><strong>Can&#039;t Make Calls:</strong><br><li>Verify FlexPBX service is running</li><br><li>Check extension has outbound permissions</li><br><li>Test with internal calls first (101, 8000)</li><br></ul><br><h2>🎯 <strong>Ready to Test!</strong></h2><p>Everything is configured and ready. Start with extension 2001 registration, then test internal calls to 101 (IVR) and 8000 (conference room).</p>
+        </div>
+
+        <div class="footer">
+            <p>FlexPBX Documentation | Generated from Markdown</p>
+            <p><a href="EXTENSION-TESTING-GUIDE.md" download>Download Markdown Version</a></p>
+        </div>
+    </div>
+</body>
+</html>

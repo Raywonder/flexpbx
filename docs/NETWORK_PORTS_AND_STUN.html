@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlexPBX Network Configuration - FlexPBX Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #34495e;
+            font-size: 1.8rem;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #555;
+            font-size: 1.4rem;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+
+        h4 {
+            color: #666;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        h5, h6 {
+            color: #777;
+            margin-top: 15px;
+            margin-bottom: 8px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+
+        ul, ol {
+            margin-bottom: 15px;
+            margin-left: 30px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e74c3c;
+        }
+
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+            font-size: 0.95em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            display: block;
+        }
+
+        table thead {
+            background: #667eea;
+            color: white;
+        }
+
+        table th,
+        table td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        table tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        table tbody tr:hover {
+            background: #e9ecef;
+        }
+
+        blockquote {
+            border-left: 4px solid #667eea;
+            padding-left: 20px;
+            margin: 20px 0;
+            color: #555;
+            font-style: italic;
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 4px;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px solid #ecf0f1;
+            margin: 30px 0;
+        }
+
+        a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        strong {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        em {
+            font-style: italic;
+            color: #555;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid #ecf0f1;
+            text-align: center;
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            table {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to Documentation Index</a>
+
+        <div class="header">
+            <h1>FlexPBX Network Configuration</h1>
+        </div>
+
+        <div class="content">
+            <h1>FlexPBX Network Configuration</h1><br><strong>Server:</strong> 64.20.46.178<br><strong>Tailscale IP:</strong> 100.64.0.2<br><strong>Date:</strong> October 14, 2025</p><hr><h2>🔌 SIP &amp; RTP Ports</h2><h3>SIP Signaling Ports</h3><br><table><tr><td>Port</td><td>Protocol</td><td>Purpose</td><td>Bind Address</td></tr><br><tr><td>------</td><td>----------</td><td>---------</td><td>--------------</td></tr><br><tr><td><strong>5060</strong></td><td>UDP</td><td>SIP Signaling (Public)</td><td>64.20.46.178</td></tr><br><tr><td><strong>5060</strong></td><td>TCP</td><td>SIP Signaling (Public)</td><td>64.20.46.178</td></tr><br><tr><td><strong>5060</strong></td><td>UDP</td><td>SIP Signaling (Tailscale)</td><td>100.64.0.2</td></tr><br><tr><td><strong>5160</strong></td><td>UDP</td><td>SIP Alternate Port 1</td><td>0.0.0.0</td></tr><br><tr><td><strong>5260</strong></td><td>UDP</td><td>SIP Alternate Port 2</td><td>0.0.0.0</td></tr><br><tr><td><strong>5061</strong></td><td>TLS</td><td>SIP Secure (disabled - no cert)</td><td>0.0.0.0</td></tr></p><h3>RTP Media Ports</h3><br><tr><td>Port Range</td><td>Protocol</td><td>Purpose</td></tr><br><tr><td>------------</td><td>----------</td><td>---------</td></tr><br><tr><td><strong>10000-20000</strong></td><td>UDP</td><td>Real-time media (voice/video)</td></tr><br></table><br><strong>Note:</strong> Firewall must allow UDP ports 10000-20000 for audio to work</p><hr><h2>🌐 STUN Servers (for NAT Traversal)</h2><h3>Primary STUN Server</h3><br><pre><code class="language-">Server: stun.l.google.com<br>Port: 19302<br>Protocol: UDP</code></pre><h3>Alternative STUN Servers</h3><br>If you need to configure your SIP phone/softphone with STUN:</p><pre><code class="language-">stun.l.google.com:19302           (Google - Primary)<br>stun1.l.google.com:19302          (Google - Backup 1)<br>stun2.l.google.com:19302          (Google - Backup 2)<br>stun3.l.google.com:19302          (Google - Backup 3)<br>stun4.l.google.com:19302          (Google - Backup 4)</p><p>stun.voip.blackberry.com:3478     (Blackberry)<br>stun.ekiga.net:3478                (Ekiga)<br>stun.ideasip.com:3478              (IdeaSIP)<br>stun.voipbuster.com:3478           (VoIPBuster)<br>stun.voipstunt.com:3478            (VoIPStunt)</code></pre><hr><h2>📱 SIP Phone Configuration</h2><h3>For Public Internet Connection</h3><br><pre><code class="language-">Server/Proxy: 64.20.46.178<br>Port: 5060<br>Transport: UDP<br>Username: 2000 (or 2001, 2002, 2003)<br>Password: [Your extension password]</code></pre><h3>For Tailscale VPN Connection</h3><br><pre><code class="language-">Server/Proxy: 100.64.0.2<br>Port: 5060<br>Transport: UDP<br>Username: 2000 (or 2001, 2002, 2003)<br>Password: [Your extension password]</code></pre><h3>Recommended Phone Settings</h3><br><pre><code class="language-">STUN Server: stun.l.google.com:19302<br>Enable ICE: Yes<br>RTP Symmetric: Yes<br>NAT Traversal: Enabled<br>Codec Priority:<br>    <li>ulaw (G.711 μ-law)</li><br>    <li>alaw (G.711 A-law)</li><br>    <li>gsm</code></pre></li></p><hr><h2>🔐 Firewall Rules</h2><h3>Incoming Traffic (Allow)</h3><br><pre><code class="language-bash"># SIP Signaling<br>-A INPUT -p udp --dport 5060 -j ACCEPT<br>-A INPUT -p tcp --dport 5060 -j ACCEPT<br>-A INPUT -p udp --dport 5160 -j ACCEPT<br>-A INPUT -p udp --dport 5260 -j ACCEPT</p><h1>RTP Media</h1><br>-A INPUT -p udp --dport 10000:20000 -j ACCEPT</p><h1>STUN (if needed)</h1><br>-A OUTPUT -p udp --dport 19302 -j ACCEPT<br>-A OUTPUT -p udp --dport 3478 -j ACCEPT</code></pre><h3>CSF Firewall (Current System)</h3><br><pre><code class="language-bash"># Add to /etc/csf/csf.conf<br>TCP_IN = &quot;5060,5061,22,80,443,...&quot;<br>TCP_OUT = &quot;5060,5061,22,80,443,...&quot;<br>UDP_IN = &quot;5060,5160,5260,10000:20000&quot;<br>UDP_OUT = &quot;5060,5160,5260,10000:20000,3478,19302&quot;</p><h1>Then restart CSF</h1><br>csf -r</code></pre><hr><h2>🧪 Test Extensions</h2><p>All test extensions now working after dialplan reload:</p><h3>Queue Audio Tests</h3><br><ul><li><strong>\*451</strong> - Test &quot;callcueue-login&quot; (login success)</li><br><li><strong>\*452</strong> - Test &quot;callcueue-loged-in-to-out-prompt&quot; (already logged in)</li><br><li><strong>\*453</strong> - Test &quot;callcueue-logout&quot; (logout success)</li><br><li><strong>\*454</strong> - Test &quot;callcueue-loged-out-to-in-prompt&quot; (already logged out)</li><br><li><strong>\*455</strong> - Test &quot;agent-loginok&quot; (system file - confirms audio path works)</li></p><h3>Queue Functions</h3><br><li><strong>\*45</strong> - Login to support queue</li><br><li><strong>\*46</strong> - Logout from support queue</li><br><li><strong>\*48</strong> - Check queue status</li></p><h3>Other Features</h3><br><li><strong>\*97</strong> - Voicemail main</li><br><li><strong>9196</strong> - Echo test</li></p><hr><h2>🐛 Troubleshooting No Audio</h2><h3>Step 1: Verify Basic Connectivity</h3><br><pre><code class="language-bash"># From your computer, test SIP port<br>nc -zv 64.20.46.178 5060</p><h1>Test RTP port range</h1><br>nc -zvu 64.20.46.178 10000</code></pre><h3>Step 2: Test Echo Extension</h3><br>Dial <strong>9196</strong> - you should hear yourself with a slight delay<br><li>If you hear yourself → Audio path is working</li><br><li>If silent → Check firewall/NAT</li></p><h3>Step 3: Test System Audio File</h3><br>Dial <strong>\*455</strong> - should hear &quot;Agent Login OK&quot;<br><li>If you hear it → Queue audio files may have issue</li><br><li>If silent → RTP issue</li></p><h3>Step 4: Check Phone Settings</h3><br>Ensure your softphone has:<br><li>STUN enabled: <code>stun.l.google.com:19302</code></li><br><li>NAT traversal enabled</li><br><li>Correct codecs: ulaw, alaw, gsm</li></p><h3>Step 5: Check Firewall</h3><br><pre><code class="language-bash"># On server, check if ports are open<br>netstat -tulpn | grep asterisk</p><h1>Test STUN connectivity</h1><br>nc -zvu stun.l.google.com 19302</code></pre><hr><h2>📊 Current Asterisk NAT Settings</h2><p>All endpoints configured with optimal NAT settings:</p><pre><code class="language-ini">rtp_symmetric=yes          # Send RTP to source of incoming RTP<br>force_rport=yes            # Force use of rport in Via header<br>rewrite_contact=yes        # Rewrite Contact header with source IP<br>direct_media=no            # Keep RTP flowing through Asterisk<br>ice_support=yes            # Enable ICE for NAT traversal</code></pre><hr><h2>🔄 Configuration Files</h2><h3>/etc/asterisk/rtp.conf</h3><br><pre><code class="language-ini">[general]<br>rtpstart=10000<br>rtpend=20000<br>strictrtp=no<br>stunaddr=stun.l.google.com:19302</code></pre><h3>/etc/asterisk/pjsip.conf (Transport)</h3><br><pre><code class="language-ini">[transport-udp]<br>type=transport<br>protocol=udp<br>bind=64.20.46.178:5060<br>external<em>media</em>address=64.20.46.178<br>external<em>signaling</em>address=64.20.46.178</p><p>[transport-tailscale]<br>type=transport<br>protocol=udp<br>bind=100.64.0.2:5060<br>local_net=100.64.0.0/10</code></pre><h3>/etc/asterisk/pjsip.conf (Endpoint Example)</h3><br><pre><code class="language-ini">[2001]<br>type=endpoint<br>context=flexpbx-internal<br>disallow=all<br>allow=ulaw,alaw,gsm<br>transport=transport-udp<br>direct_media=no<br>rtp_symmetric=yes<br>force_rport=yes<br>rewrite_contact=yes<br>ice_support=yes</code></pre><hr><h2>📞 Recommended SIP Apps</h2><h3>Desktop</h3><br><li><strong>Zoiper</strong> (Windows/Mac/Linux) - Best overall</li><br><li><strong>MicroSIP</strong> (Windows) - Lightweight</li><br><li><strong>Linphone</strong> (All platforms) - Open source</li></p><h3>Mobile</h3><br><li><strong>Zoiper</strong> (iOS/Android) - Professional</li><br><li><strong>Linphone</strong> (iOS/Android) - Free &amp; open source</li><br><li><strong>Bria</strong> (iOS/Android) - Enterprise grade</li></p><h3>Configuration Tips for Apps</h3><br><li>Set STUN server in app settings</li><br><li>Enable &quot;Push notifications&quot; for incoming calls</li><br><li>Set &quot;Keep alive&quot; to 60 seconds</li><br><li>Enable &quot;Echo cancellation&quot;</li><br><li>Set audio codec to &quot;ulaw&quot; as first choice</li></p><hr><h2>🎯 Quick Test Sequence</h2><p>Once connected, test in this order:<br>  <li><strong>Dial 9196</strong> (Echo test)</li><br>      <li>You should hear yourself → Audio works!</li><br>  <li><strong>Dial \*455</strong> (System audio)</li><br>      <li>You should hear &quot;Agent Login OK&quot; → File playback works!</li><br>  <li><strong>Dial \*451</strong> (Queue login audio)</li><br>      <li>You should hear queue login message → Queue files work!</li><br>  <li><strong>Dial \*45</strong> (Actually login to queue)</li><br>      <li>Should add you to queue and play message</li><br>  <li><strong>Dial \*46</strong> (Logout from queue)</li><br>      <li>Should remove you and play message</li></p><hr><h2>📝 Notes</h2><br>  <li><strong>Strict RTP</strong> is currently set to &quot;no&quot; to help with NAT issues</li><br><li><strong>ICE support</strong> is enabled for WebRTC compatibility</li><br><li><strong>STUN</strong> is configured but Asterisk may not show it in CLI (this is normal)</li><br><li><strong>Tailscale transport</strong> is working on 100.64.0.2:5060</li><br><li>All <strong>test extensions</strong> reload after each Asterisk restart</li><br></ul><br><hr></p><p><strong>Last Updated:</strong> October 14, 2025 01:35 AM<br><strong>Status:</strong> All configurations active, dialplan loaded, ready for testing<br></p>
+        </div>
+
+        <div class="footer">
+            <p>FlexPBX Documentation | Generated from Markdown</p>
+            <p><a href="NETWORK_PORTS_AND_STUN.md" download>Download Markdown Version</a></p>
+        </div>
+    </div>
+</body>
+</html>

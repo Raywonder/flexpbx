@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Issues Troubleshooting Guide - FlexPBX Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #34495e;
+            font-size: 1.8rem;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #555;
+            font-size: 1.4rem;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+
+        h4 {
+            color: #666;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        h5, h6 {
+            color: #777;
+            margin-top: 15px;
+            margin-bottom: 8px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+
+        ul, ol {
+            margin-bottom: 15px;
+            margin-left: 30px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e74c3c;
+        }
+
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+            font-size: 0.95em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            display: block;
+        }
+
+        table thead {
+            background: #667eea;
+            color: white;
+        }
+
+        table th,
+        table td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        table tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        table tbody tr:hover {
+            background: #e9ecef;
+        }
+
+        blockquote {
+            border-left: 4px solid #667eea;
+            padding-left: 20px;
+            margin: 20px 0;
+            color: #555;
+            font-style: italic;
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 4px;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px solid #ecf0f1;
+            margin: 30px 0;
+        }
+
+        a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        strong {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        em {
+            font-style: italic;
+            color: #555;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid #ecf0f1;
+            text-align: center;
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            table {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to Documentation Index</a>
+
+        <div class="header">
+            <h1>Audio Issues Troubleshooting Guide</h1>
+        </div>
+
+        <div class="content">
+            <h1>Audio Issues Troubleshooting Guide</h1><br><strong>Date:</strong> October 14, 2025 04:20 AM<br><strong>Issues Reported:</strong><br><li>*43 (Echo test) - No audio, just silence</li><br><li>*44 (Time) - Starts then ends with no audio</li><br><li>Voicemail - Incomplete prompts, numbers missing, call ends abruptly</li><br><li>Extension dialing during calls not working</li><br><li><em>45/</em>46 queue prompts need verification</li></p><hr><h2>🔍 Current Status</h2><p>###enabled verbose logging (level 5)<br>✅ Enabled debug logging (level 3)<br>✅ Verified codecs: ulaw, alaw, gsm are enabled<br>✅ Verified sound files exist (738 files installed)<br>✅ Verified file permissions (asterisk:asterisk, 644)<br>✅ Verified dialplan loaded correctly<br>✅ Verified VoicemailMain application available</p><hr><h2>🧪 Diagnostic Commands Run</h2><h3>Sound File Verification</h3><br><pre><code class="language-bash"># Checked directories - PASS<br>/usr/share/asterisk/sounds/digits/  - 90+ files<br>/usr/share/asterisk/sounds/vm-*     - 100+ voicemail prompts<br>/usr/share/asterisk/sounds/         - 738 total files</p><h1>Permissions fixed</h1><br>chmod 644 on all sound files<br>chmod 755 on directories<br>owner: asterisk:asterisk</code></pre><h3>Module Verification</h3><br><pre><code class="language-bash"># Echo application - LOADED<br>asterisk -rx &quot;core show application Echo&quot;<br>Result: Application available</p><h1>Say applications - LOADED</h1><br>asterisk -rx &quot;core show applications&quot; | grep Say<br>Result: SayNumber, SayDigits, SayUnixTime all available</p><h1>Voicemail - LOADED</h1><br>asterisk -rx &quot;module show like voicemail&quot;<br>Result: app<em>voicemail</em>imap.so running</code></pre><h3>Endpoint/Codec Verification</h3><br><pre><code class="language-bash"># Extension 2001 codecs<br>Allowed: ulaw, alaw, gsm<br>RTP symmetric: Yes<br>Force rport: Yes<br>Direct media: No</code></pre><hr><h2>🎯 Likely Causes</h2><h3>Issue 1 &amp; 2: <em>43/</em>44 No Audio</h3><p><strong>Most likely cause:</strong> One-way RTP audio issue</p><p><strong>Symptoms match:</strong><br><ul><li>Call connects (so SIP signaling works)</li><br><li>No audio heard (RTP not reaching client)</li><br><li>Call works but silent</li></p><p><strong>Possible reasons:</strong><br><li><strong>Firewall blocking RTP</strong> - UDP ports 10000-20000 not open</li><br><li><strong>NAT/routing issue</strong> - RTP packets not reaching your device</li><br><li><strong>Codec negotiation</strong> - Client using codec Asterisk can&#039;t send</li><br><li><strong>STUN not working</strong> - External IP not properly discovered</li></p><p><strong>Next steps to diagnose:</strong><br><pre><code class="language-bash"># While on a call to *43, check active channels<br>asterisk -rx &quot;core show channels verbose&quot;</p><h1>Check RTP statistics</h1><br>asterisk -rx &quot;rtp show stats&quot;</p><h1>Check if RTP packets are being sent</h1><br><h1>(need to run during active call)</code></pre></h1><h3>Issue 3: Voicemail Incomplete Prompts</h3><p><strong>Possible causes:</strong><br><li><strong>Timeout too short</strong> - Call ending before prompts finish</li><br><li><strong>Missing sound files</strong> - Some vm-* files not found</li><br><li><strong>Codec issue</strong> - Same as above, can&#039;t hear prompts</li><br><li><strong>Voicemail config</strong> - Wrong paths or settings</li></p><p><strong>Files verified present:</strong><br><li>vm-login.ulaw</li><br><li>vm-password.ulaw</li><br><li>vm-instructions.ulaw</li><br><li>digits/0-9.ulaw</li><br><li>Plus 100+ other vm-* files</li></p><h3>Issue 4: Extension Dialing Not Enabled</h3><p><strong>Feature needed:</strong> Call transfers</p><p><strong>Current status:</strong> Transfer features may not be enabled in features.conf</p><p><strong>What&#039;s needed:</strong><br><li>Blind transfer: <em>2 or </em>*</li><br><li>Attended transfer: *3</li><br><li>Or dial by extension feature</li></p><hr><h2>🔧 Fixes Applied</h2><h3>1. Enabled Verbose Logging</h3><br><pre><code class="language-bash">asterisk -rx &quot;core set verbose 5&quot;<br>asterisk -rx &quot;core set debug 3&quot;</code></pre><p>Now all calls will show detailed logs in <code>/var/log/asterisk/messages</code></p><h3>2. Fixed File Permissions</h3><br><pre><code class="language-bash">chmod 644 /usr/share/asterisk/sounds/<em>*/</em><br>chmod 755 /usr/share/asterisk/sounds directories<br>chown asterisk:asterisk all sound files</code></pre><h3>3. Verified Dialplan</h3><br>All feature codes properly loaded:<br><li>*43 - Echo Test ✓</li><br><li>*44 - Time Announcement ✓</li><br><li>*45 - Queue Login ✓</li><br><li>*46 - Queue Logout ✓</li><br><li>*48 - Queue Status ✓</li><br><li>*77 - MOH + Stats ✓</li><br><li>*78 - MOH Preview ✓</li><br><li>*97 - Voicemail ✓</li></p><hr><h2>📋 Test Procedure</h2><h3>Test 1: Echo Test (*43)</h3><p><strong>What to do:</strong><br><li>Dial *43 from extension 2001</li><br><li>Say something</li><br><li>Listen for echo</li></p><p><strong>Expected:</strong><br><li>Hear yourself with 0.5 second delay</li><br><li>Clear audio quality</li><br><li>Can talk for as long as you want</li></p><p><strong>If still silent:</strong><br><pre><code class="language-bash"># Check logs during call<br>tail -f /var/log/asterisk/messages | grep -i &quot;echo\|rtp\|audio&quot;</p><h1>Check if firewall allows RTP</h1><br>netstat -tulpn | grep asterisk | grep -E &quot;100[0-9]{2}&quot;</p><h1>Verify RTP ports open</h1><br>sudo firewall-cmd --list-all | grep 10000-20000</code></pre><h3>Test 2: Time Announcement (*44)</h3><p><strong>What to do:</strong><br><li>Dial *44 from extension 2001</li><br><li>Listen for time announcement</li></p><p><strong>Expected:</strong><br><li>Hear: &quot;Today is Sunday, October 14th, 2025. The time is 4:20 AM&quot;</li><br><li>Then call ends</li></p><p><strong>If still silent:</strong><br><pre><code class="language-bash"># Check if SayUnixTime works<br>tail -f /var/log/asterisk/messages | grep -i &quot;sayunixtime\|playback&quot;</code></pre><h3>Test 3: Voicemail (*97)</h3><p><strong>What to do:</strong><br><li>Dial *97</li><br><li>Follow prompts</li></p><p><strong>Expected sequence:</strong><br><li>&quot;Comedian mail&quot; (intro)</li><br><li>&quot;Mailbox?&quot; or auto-detect your mailbox</li><br><li>&quot;Password?&quot; (if configured)</li><br><li>Main menu: &quot;You have X new messages...&quot;</li><br><li>Options menu with all choices</li></p><p><strong>If still incomplete:</strong><br><pre><code class="language-bash"># Check voicemail context<br>asterisk -rx &quot;voicemail show users&quot;</p><h1>Check sound file playback</h1><br>tail -f /var/log/asterisk/messages | grep -i &quot;vm-\|voicemail&quot;</code></pre><h3>Test 4: Queue Prompts (<em>45, </em>46)</h3><p><strong>Test *45 (Login):</strong><br><li>First dial - Should hear: &quot;You are now logged into the support queue&quot;</li><br><li>Dial again - Should hear: &quot;You are already logged into the queue&quot;</li></p><p><strong>Test *46 (Logout):</strong><br><li>First dial - Should hear: &quot;You are now logged out of the support queue&quot;</li><br><li>Dial again - Should hear: &quot;You are not currently logged into the queue&quot;</li></p><p><strong>Verify:</strong><br><pre><code class="language-bash"># Check which prompts are configured<br>grep -A 3 &quot;exten =&gt; \*45&quot; /etc/asterisk/extensions.conf<br>grep -A 3 &quot;exten =&gt; \*46&quot; /etc/asterisk/extensions.conf</code></pre><hr><h2>🚨 Real-Time Monitoring</h2><h3>During Your Next Test Call</h3><p><strong>Open SSH terminal and run:</strong><br><pre><code class="language-bash"># Terminal 1 - Watch messages log<br>tail -f /var/log/asterisk/messages</p><h1>Terminal 2 - Watch channels</h1><br>watch -n 1 &#039;asterisk -rx &quot;core show channels&quot;&#039;</p><h1>Terminal 3 - Watch RTP</h1><br>watch -n 1 &#039;asterisk -rx &quot;rtp show stats&quot;&#039;</code></pre><p><strong>Then dial *43 and note:</strong><br><li>Does channel show up?</li><br><li>Does RTP show packets?</li><br><li>Are there any WARNING or ERROR messages?</li><br><li>Does codec show correctly?</li></p><hr><h2>🔍 What I Need From You</h2><h3>Please Test and Report:</h3><p><strong>For *43 (Echo):</strong><br><li>[ ] Does call connect? (hear ringing/answered)</li><br><li>[ ] Do you hear anything at all?</li><br><li>[ ] Can you hear yourself echo back?</li><br><li>[ ] How long before call ends?</li></p><p><strong>For *44 (Time):</strong><br><li>[ ] Does call connect?</li><br><li>[ ] Do you hear any audio?</li><br><li>[ ] Does it say the time?</li><br><li>[ ] Does call end immediately or after pause?</li></p><p><strong>For *97 (Voicemail):</strong><br><li>[ ] What exactly do you hear?</li><br><li>[ ] Where does it stop/end abruptly?</li><br><li>[ ] Which menu options do you hear?</li><br><li>[ ] What happens when you press digits?</li></p><p><strong>For <em>45/</em>46 (Queue):</strong><br><li>[ ] Which audio file actually plays?</li><br><li>[ ] Is it the right one for the situation?</li><br><li>[ ] Does it play completely?</li><br><li>[ ] Any silence or cutoff?</li></p><h3>Also Check:</h3><p><strong>On your phone/softphone:</strong><br><li>What codec is being used? (Check phone settings)</li><br><li>Is STUN enabled?</li><br><li>What&#039;s the audio codec priority?</li><br><li>Any firewall on your computer?</li></p><hr><h2>🔧 Additional Fixes to Try</h2><h3>If RTP/Audio Issues Persist</h3><p><strong>Option 1: Disable strictrtp temporarily</strong><br><pre><code class="language-bash"># Edit /etc/asterisk/rtp.conf<br>strictrtp=no</p><h1>Reload</h1><br>asterisk -rx &quot;module reload res<em>rtp</em>asterisk.so&quot;</code></pre><p><strong>Option 2: Check external IP</strong><br><pre><code class="language-bash"># Verify external IP is correct<br>asterisk -rx &quot;pjsip show transports&quot;</p><h1>Should show:</h1><br><h1>transport-udp: 64.20.46.178:5060</h1><br><h1>transport-tailscale: 100.64.0.2:5060</code></pre></h1><p><strong>Option 3: Test from different network</strong><br><li>Try calling from different WiFi</li><br><li>Try calling from cellular data</li><br><li>Try different SIP client</li></p><p><strong>Option 4: Simplify codec list</strong><br><pre><code class="language-bash"># Test with only ulaw<br><h1>Edit endpoint in pjsip.conf:</h1><br>disallow=all<br>allow=ulaw</p><h1>Reload</h1><br>asterisk -rx &quot;module reload res_pjsip.so&quot;</code></pre><hr><h2>📊 Expected Log Output</h2><h3>Successful *43 Echo Test</h3><pre><code class="language-">[timestamp] VERBOSE[xxxxx] pbx.c: Executing [*43@flexpbx-internal:1] NoOp(&quot;PJSIP/2001-xxxxx&quot;, &quot;Echo Test&quot;)<br>[timestamp] VERBOSE[xxxxx] pbx.c: Executing [*43@flexpbx-internal:2] Answer(&quot;PJSIP/2001-xxxxx&quot;, &quot;&quot;)<br>[timestamp] VERBOSE[xxxxx] pbx.c: Executing [*43@flexpbx-internal:3] Wait(&quot;PJSIP/2001-xxxxx&quot;, &quot;0.5&quot;)<br>[timestamp] VERBOSE[xxxxx] pbx.c: Executing [*43@flexpbx-internal:4] Echo(&quot;PJSIP/2001-xxxxx&quot;, &quot;&quot;)<br>[timestamp] VERBOSE[xxxxx] app_echo.c: Echo media</code></pre><p>If you see warnings/errors here, that&#039;s the problem!</p><hr><h2>📞 Queue Prompts Configuration</h2><h3>Current Mapping (Verified Correct)</h3><p><strong>\*45 - Queue Login:</strong><br><pre><code class="language-">NOT in queue → Plays: callcueue-login.wav (5.8 sec)<br>ALREADY in queue → Plays: callcueue-loged-in-to-out-prompt.wav (8.3 sec)</code></pre><p><strong>\*46 - Queue Logout:</strong><br><pre><code class="language-">IN queue → Plays: callcueue-logout.wav (7.5 sec)<br>NOT in queue → Plays: callcueue-loged-out-to-in-prompt.wav (11.0 sec)</code></pre><p><strong>Files exist in:</strong><br><li><code>/usr/share/asterisk/sounds/callcueue-*.wav</code></li><br><li><code>/usr/share/asterisk/sounds/callcueue-*.ulaw</code></li><br><li><code>/usr/share/asterisk/sounds/callcueue-*.gsm</code></li></p><p>All 3 formats available for compatibility.</p><hr><h2>✅ Action Items</h2><br>  <li><strong>Test again</strong> with logging enabled</li><br><li><strong>Report back</strong> exactly what you hear (or don&#039;t hear)</li><br><li><strong>Check phone settings</strong> - codec, STUN, NAT settings</li><br><li><strong>Try from different device</strong> if possible</li><br><li><strong>Provide log snippets</strong> from <code>/var/log/asterisk/messages</code> during test call</li></p><hr><p><strong>Status:</strong> Diagnostics enabled, awaiting test results<br><strong>Next:</strong> Based on test results, we&#039;ll know if it&#039;s:<br><li>RTP/firewall issue</li><br><li>Codec issue</li><br><li>Configuration issue</li><br><li>Client-side issue</li><br></ul><br><strong>Logging:</strong> All enabled - will show detailed info on next call<br></p>
+        </div>
+
+        <div class="footer">
+            <p>FlexPBX Documentation | Generated from Markdown</p>
+            <p><a href="AUDIO_TROUBLESHOOTING.md" download>Download Markdown Version</a></p>
+        </div>
+    </div>
+</body>
+</html>

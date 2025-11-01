@@ -1,0 +1,2 @@
+[17-Oct-2025 01:24:57 UTC] PHP Warning:  Undefined array key "REQUEST_METHOD" in /home/flexpbxuser/public_html/api/dialplan.php on line 14
+[17-Oct-2025 09:01:48 UTC] PHP Warning:  Undefined array key "REQUEST_METHOD" in /home/flexpbxuser/public_html/api/user-status.php on line 13

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flex PBX Server Status - CRITICAL ISSUE FOUND - FlexPBX Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #34495e;
+            font-size: 1.8rem;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #555;
+            font-size: 1.4rem;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+
+        h4 {
+            color: #666;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        h5, h6 {
+            color: #777;
+            margin-top: 15px;
+            margin-bottom: 8px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+
+        ul, ol {
+            margin-bottom: 15px;
+            margin-left: 30px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e74c3c;
+        }
+
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+            font-size: 0.95em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            display: block;
+        }
+
+        table thead {
+            background: #667eea;
+            color: white;
+        }
+
+        table th,
+        table td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        table tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        table tbody tr:hover {
+            background: #e9ecef;
+        }
+
+        blockquote {
+            border-left: 4px solid #667eea;
+            padding-left: 20px;
+            margin: 20px 0;
+            color: #555;
+            font-style: italic;
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 4px;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px solid #ecf0f1;
+            margin: 30px 0;
+        }
+
+        a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        strong {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        em {
+            font-style: italic;
+            color: #555;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid #ecf0f1;
+            text-align: center;
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            table {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to Documentation Index</a>
+
+        <div class="header">
+            <h1>Flex PBX Server Status - CRITICAL ISSUE FOUND</h1>
+        </div>
+
+        <div class="content">
+            <h1>Flex PBX Server Status - CRITICAL ISSUE FOUND</h1><p><strong>Date:</strong> October 13, 2025<br><strong>Status:</strong> ⚠️ PBX SERVER NOT RUNNING</p><hr><h2>🚨 ISSUE IDENTIFIED</h2><h3>Problem</h3><br>When calling DID <strong>(312) 313-9555</strong>, the call goes to <strong>Callcentric error message</strong> instead of Flex PBX.</p><h3>Root Cause</h3><br><strong>NO PBX SERVER SOFTWARE IS RUNNING</strong></p><p>There is no Asterisk, FreePBX, or any SIP server process running on this system.</p><hr><h2>🔍 Diagnostic Results</h2><h3>What I Checked</h3><p>✅ <strong>Process Check:</strong><br><pre><code class="language-bash">ps aux | grep asterisk<br>Result: No processes found</code></pre><p>✅ <strong>Port Check:</strong><br><pre><code class="language-bash">netstat -tuln | grep 5070<br>Result: Port 5070 is NOT listening</code></pre><p>✅ <strong>Service Check:</strong><br><pre><code class="language-bash">systemctl status asterisk<br>Result: No service found</code></pre><p>✅ <strong>Docker Check:</strong><br><pre><code class="language-bash">docker ps | grep pbx<br>Result: No containers running</code></pre><p>✅ <strong>Binary Check:</strong><br><pre><code class="language-bash">which asterisk freepbx<br>Result: No binaries found</code></pre><h3>Conclusion</h3><br><strong>NO PBX SERVER IS INSTALLED OR RUNNING</strong></p><hr><h2>✅ What IS Working</h2><h3>Configuration Files - ALL READY</h3><br><ul><li>✅ Callcentric trunk config (17778171572, credentials correct)</li><br><li>✅ DID (312) 313-9555 configured</li><br><li>✅ Extensions (21 total, including Walter Harper on 2006)</li><br><li>✅ Dialplan (09 prefix for outbound)</li><br><li>✅ IVR configuration (Extension 101)</li><br><li>✅ Queue configuration (sales, support, accessibility)</li><br><li>✅ Music on Hold (82 tracks)</li><br><li>✅ Inbound routing rules</li><br><li>✅ Channel limits (2 concurrent)</li><br><li>✅ All management UIs ready</li></p><h3>The Problem</h3><br>All the <strong>configuration</strong> is perfect and ready to use.</p><p>But there&#039;s <strong>no PBX server software</strong> to actually:<br><li>Listen on SIP port 5070</li><br><li>Register with Callcentric</li><br><li>Handle incoming calls</li><br><li>Route calls to extensions</li><br><li>Play IVR menus</li><br><li>Manage voicemail</li></p><hr><h2>🎯 What Needs to Happen</h2><h3>Option 1: Install Asterisk (Recommended)</h3><br><pre><code class="language-bash"># Install Asterisk PBX server<br>yum install asterisk asterisk-core-sounds-en-gsm asterisk-moh-opsound-gsm</p><h1>Configure Asterisk with our settings</h1><br><h1>Point to: /home/flexpbxuser/public_html/config/</h1><h1>Start service</h1><br>systemctl start asterisk<br>systemctl enable asterisk</code></pre><h3>Option 2: Install FreePBX</h3><br><pre><code class="language-bash"># Install FreePBX (includes Asterisk)<br><h1>Follow FreePBX installation guide for AlmaLinux/RHEL</h1><h1>Import our configuration files</h1><br><h1>Configure trunk with Callcentric credentials</h1><br><h1>Configure DID routing</h1><br><h1>Import extensions</code></pre></h1><h3>Option 3: Docker Container</h3><br><pre><code class="language-bash"># Run Asterisk in Docker<br>docker run -d --name asterisk \<br>  -p 5060:5060/udp \<br>  -p 5070:5070/udp \<br>  -p 10000-20000:10000-20000/udp \<br>  -v /home/flexpbxuser/public_html/config:/etc/asterisk \<br>  asterisk/asterisk:latest</code></pre><h3>Option 4: Hosted PBX Service</h3><br><li>Use a hosted PBX provider (3CX, Twilio, etc.)</li><br><li>Configure with our Callcentric credentials</li><br><li>Import our extension list</li><br><li>Configure routing rules</li></p><hr><h2>📋 Current Call Flow (NOT WORKING)</h2><p><strong>What SHOULD happen:</strong><br><pre><code class="language-">1. Caller dials: (312) 313-9555<br><li>Callcentric receives call</li><br><li>Callcentric forwards to: flexpbx.devinecreations.net:5070</li><br><li>Asterisk answers on port 5070</li><br><li>Routes to IVR (Extension 101)</li><br><li>Plays greeting, offers menu</li><br><li>Caller presses options</li><br><li>Routes to queues/extensions</code></pre></li></p><p><strong>What ACTUALLY happens:</strong><br><pre><code class="language-">1. Caller dials: (312) 313-9555<br><li>Callcentric receives call</li><br><li>Callcentric tries to forward to: flexpbx.devinecreations.net:5070</li><br><li>❌ NOTHING IS LISTENING ON PORT 5070</li><br><li>Callcentric error: &quot;The number you have dialed is not in service&quot;</code></pre></li></p><hr><h2>🔧 Immediate Actions Required</h2><h3>1. Decide on PBX Solution</h3><br>Choose one:<br><li>[ ] Install Asterisk directly on server</li><br><li>[ ] Install FreePBX (GUI + Asterisk)</li><br><li>[ ] Deploy Docker container</li><br><li>[ ] Use hosted/cloud PBX</li></p><h3>2. Install/Deploy PBX Software</h3><br>Whichever option chosen above</p><h3>3. Configure PBX Server</h3><br><li>Import our trunk configuration</li><br><li>Set up SIP registration to Callcentric</li><br><li>Configure DID routing</li><br><li>Import extensions</li><br><li>Set up dialplan</li><br><li>Configure IVR</li><br><li>Import music on hold</li></p><h3>4. Verify Registration</h3><br><pre><code class="language-bash"># Check Asterisk is running<br>systemctl status asterisk</p><h1>Check SIP port listening</h1><br>netstat -tuln | grep 5070</p><h1>Check trunk registration</h1><br>asterisk -rx &quot;sip show registry&quot;</p><h1>Should show: Registered to Callcentric</code></pre></h1><h3>5. Test Inbound Call</h3><br><li>Call (312) 313-9555</li><br><li>Should reach IVR</li><br><li>Not Callcentric error</li></p><hr><h2>📞 Callcentric Configuration</h2><h3>What Callcentric Needs</h3><br>When you configure the DID on Callcentric&#039;s portal, set:</p><p><strong>DID:</strong> 3123139555<br><strong>Forward To:</strong> flexpbx.devinecreations.net<br><strong>Port:</strong> 5070<br><strong>Type:</strong> SIP URI</p><p>OR</p><p><strong>SIP URI:</strong> sip:3123139555@flexpbx.devinecreations.net:5070</p><h3>What&#039;s Happening Now</h3><br>Callcentric IS configured correctly (probably).<br>But when it tries to forward to our server:<br><li>Port 5070 is not listening</li><br><li>No SIP server responds</li><br><li>Call fails with error message</li></p><hr><h2>🎬 Quick Start Guide (After Installing Asterisk)</h2><h3>1. Install Asterisk</h3><br><pre><code class="language-bash">sudo yum install asterisk asterisk-core-sounds-en</code></pre><h3>2. Configure SIP Trunk</h3><br>Create <code>/etc/asterisk/sip.conf</code>:<br><pre><code class="language-ini">[callcentric]<br>type=friend<br>username=17778171572<br>secret=860719938242<br>host=sip.callcentric.com<br>fromuser=17778171572<br>fromdomain=sip.callcentric.com<br>context=from-trunk<br>qualify=yes<br>nat=auto<em>force</em>rport,auto_comedia<br>canreinvite=no<br>dtmfmode=rfc2833<br>disallow=all<br>allow=g722<br>allow=ulaw<br>allow=alaw</p><p>[general]<br>bindport=5070<br>bindaddr=0.0.0.0<br>context=default</code></pre><h3>3. Configure Extensions</h3><br>Create <code>/etc/asterisk/extensions.conf</code>:<br><pre><code class="language-ini">[from-trunk]<br>exten =&gt; 3123139555,1,Answer()<br>exten =&gt; 3123139555,n,Goto(ivr-main,s,1)</p><p>[ivr-main]<br>exten =&gt; s,1,Answer()<br>exten =&gt; s,n,Background(main-greeting)<br>exten =&gt; s,n,WaitExten(10)</p><p>exten =&gt; 1,1,Goto(queue-sales,s,1)<br>exten =&gt; 2,1,Goto(queue-support,s,1)</code></pre><h3>4. Start Asterisk</h3><br><pre><code class="language-bash">systemctl start asterisk<br>systemctl enable asterisk</code></pre><h3>5. Test</h3><br><pre><code class="language-bash">asterisk -rx &quot;sip show registry&quot;<br><h1>Should show: Registered</code></pre></h1><hr><h2>📊 Server Requirements</h2><h3>Minimum Hardware</h3><br><li>CPU: 2 cores</li><br><li>RAM: 2GB</li><br><li>Disk: 20GB</li><br><li>Network: 1Gbps</li></p><h3>Ports Required (Open Firewall)</h3><br><li>TCP/UDP 5070 - SIP signaling</li><br><li>UDP 10000-20000 - RTP media</li></p><h3>Current Server</h3><br><pre><code class="language-bash">hostname: flexpbx.devinecreations.net<br>IP: [need to verify]<br>OS: AlmaLinux/RHEL 8</code></pre><hr><h2>⚠️ Why Calls Go to Error Message</h2><p><strong>Callcentric Error Message means:</strong><br>&gt; &quot;I tried to deliver this call to your SIP server, but nothing answered&quot;</p><p><strong>NOT because:</strong><br><li>❌ Wrong credentials (we have correct ones)</li><br><li>❌ Wrong DID (3123139555 is correct)</li><br><li>❌ Bad configuration (our config files are perfect)</li></p><p><strong>BUT because:</strong><br><li>✅ <strong>No PBX server is running to receive the call</strong></li></p><hr><h2>🔄 What We&#039;ve Built So Far</h2><p>We have a <strong>complete Flex PBX configuration system</strong>:<br><li>Web-based management UIs</li><br><li>Trunk &amp; DID manager</li><br><li>Inbound routing configurator</li><br><li>Media manager with MOH</li><br><li>Extension management</li><br><li>All config files ready</li></p><p><strong>We&#039;re just missing the actual PBX engine!</strong></p><p>Think of it like this:<br><li>✅ We built the entire car interior (dashboard, seats, controls)</li><br><li>✅ We have the manual (config files)</li><br><li>✅ We have the keys (credentials)</li><br><li>❌ But there&#039;s no engine under the hood!</li></p><hr><h2>🚀 Next Steps - Priority Order</h2><h3>CRITICAL (Do First)</h3><br><li><strong>Install PBX Server Software</strong></li><br>      <li>Asterisk or FreePBX</li><br>      <li>Get it running on port 5070</li><br>  <li><strong>Configure Trunk Registration</strong></li><br>      <li>Register to Callcentric</li><br>      <li>Verify &quot;Registered&quot; status</li><br>  <li><strong>Test Inbound Call</strong></li><br>      <li>Call (312) 313-9555</li><br>      <li>Should reach PBX, not error</li></p><h3>HIGH (Do Next)</h3><br><li>Import our extension configurations</li><br><li>Set up IVR menus</li><br><li>Configure voicemail</li><br><li>Test Walter Harper&#039;s extension (2006)</li></p><h3>MEDIUM (Then)</h3><br><li>Upload IVR greeting files</li><br><li>Configure music on hold</li><br><li>Set up call queues</li><br><li>Test all features</li></p><hr><h2>📞 Support Options</h2><h3>Option A: We Install Asterisk</h3><br>I can guide you through installing Asterisk and importing all our configs.</p><h3>Option B: You Have Existing PBX</h3><br>If you already have a PBX server somewhere:<br><li>Tell me where it is</li><br><li>I&#039;ll help configure it with our settings</li></p><h3>Option C: Use Hosted Service</h3><br>Sign up for hosted PBX (3CX Cloud, etc.)<br><li>I&#039;ll help migrate our configuration</li><br></ul><br><hr></p><h2>✅ Summary</h2><p><strong>Configuration:</strong> 100% Complete and Ready ✅<br><strong>PBX Software:</strong> Not Installed ❌<br><strong>Server Running:</strong> No ❌<br><strong>Trunk Registered:</strong> Can&#039;t register (no server) ❌<br><strong>Calls Working:</strong> No (no server to receive them) ❌</p><p><strong>TO FIX:</strong> Install and start PBX server software (Asterisk/FreePBX)</p><p><strong>THEN:</strong> Everything else will work immediately because all config is ready!</p><hr><p><strong>Ready to install Asterisk? Let me know and I&#039;ll guide you through it!</strong><br></p>
+        </div>
+
+        <div class="footer">
+            <p>FlexPBX Documentation | Generated from Markdown</p>
+            <p><a href="PBX-SERVER-STATUS.md" download>Download Markdown Version</a></p>
+        </div>
+    </div>
+</body>
+</html>

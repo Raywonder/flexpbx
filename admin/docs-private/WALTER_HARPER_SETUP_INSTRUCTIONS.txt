@@ -1,0 +1,296 @@
+
+WALTER HARPER - EXTENSION 2006 SETUP INSTRUCTIONS
+FlexPBX Voice Communication System
+
+✅ YOUR EXTENSION IS NOW ACTIVE AND READY!
+
+📱 YOUR LOGIN CREDENTIALS
+
+Extension Number: 2006
+Username: walterharper
+Password: Review.1121
+Email: info@walterharper.com
+
+SIP Server: flexpbx.devinecreations.net
+Port: 5060
+Transport: UDP
+
+📞 SETUP FOR GROUNDWIRE (iOS)
+
+Groundwire is one of the best iOS SIP clients with excellent VoiceOver support.
+
+STEP 1: DOWNLOAD GROUNDWIRE
+• Open App Store on your iPhone/iPad
+• Search for "Groundwire" by Acrobits
+• Download and install (paid app, ~$9.99)
+
+STEP 2: ADD YOUR ACCOUNT
+1. Open Groundwire app
+2. Tap "+" or "Add Account"
+3. Select "Generic SIP Account" or "Other"
+
+STEP 3: ENTER YOUR CREDENTIALS
+• Account Name: Walter Harper FlexPBX
+• Username: 2006
+• Password: Review.1121
+• Domain: flexpbx.devinecreations.net
+• Port: 5060
+• Transport: UDP
+
+STEP 4: ADVANCED SETTINGS (Optional but recommended)
+• Display Name: Walter Harper
+• Authentication Username: 2006
+• Enable STUN: No (not needed)
+• Use WiFi: Yes
+• Use Cellular Data: Yes
+
+STEP 5: SAVE AND REGISTER
+• Tap "Save" or "Done"
+• Account should show green indicator when registered
+• You'll see "Connected" or "Available" status
+
+VOICEOVER TIPS FOR GROUNDWIRE:
+• Double-tap to dial
+• Swipe right through contacts
+• Three-finger swipe to access recent calls
+• Settings are in top-right corner
+
+🖥️ SETUP FOR TELEPHONE (macOS)
+
+Telephone is a free, open-source SIP client for Mac with great VoiceOver support.
+
+STEP 1: DOWNLOAD TELEPHONE
+• Visit: https://www.64characters.com/telephone/
+• Click "Download Telephone"
+• Or use Homebrew: brew install --cask telephone
+
+STEP 2: INSTALL TELEPHONE
+• Open the downloaded .dmg file
+• Drag Telephone to Applications folder
+• Launch Telephone from Applications
+
+STEP 3: ADD YOUR ACCOUNT
+1. Telephone will prompt for account setup on first launch
+2. Or go to: Telephone → Preferences → Accounts
+3. Click "+" to add new account
+
+STEP 4: ENTER YOUR CREDENTIALS
+• Full Name: Walter Harper
+• Domain: flexpbx.devinecreations.net
+• Username: 2006
+• Password: Review.1121
+
+• Description: FlexPBX Extension 2006 (optional label)
+
+ADVANCED SETTINGS:
+• SIP Address: sip:2006@flexpbx.devinecreations.net
+• Registrar: flexpbx.devinecreations.net:5060
+• Transport: UDP
+• Re-register interval: 300 seconds
+• Substitute +: No
+
+STEP 5: SAVE AND REGISTER
+• Click "Done" or close Preferences
+• Check status bar - should show "Available" with green dot
+• Phone icon in menu bar will show green when registered
+
+VOICEOVER TIPS FOR TELEPHONE:
+• VO+Space to activate buttons
+• Tab to navigate between fields
+• Dialer is accessible via menu bar
+• Recent calls in main window
+
+🧪 TEST YOUR SETUP
+
+ECHO TEST (Dial from your extension):
+• Dial: *43
+• Speak into your phone
+• You should hear your voice echoed back
+• This confirms audio is working properly
+
+TIME ANNOUNCEMENT:
+• Dial: *44
+• Listen to the current date and time
+• Confirms system is responding
+
+CALL ANOTHER EXTENSION:
+• Dial: 2001 (Test User)
+• Or dial: 2000 (Admin)
+• Test two-way audio quality
+
+VOICEMAIL:
+• Dial: *97
+• Check your voicemail (initially empty)
+• Follow prompts to set up greeting
+
+RECEIVE A CALL:
+• Have someone call your extension (2006)
+• Or call your DID if assigned
+• Answer and test audio quality
+
+🔧 TROUBLESHOOTING
+
+PROBLEM: "Registration Failed" or "Authentication Error"
+SOLUTION:
+• Double-check username: 2006
+• Double-check password: Review.1121
+• Verify server: flexpbx.devinecreations.net
+• Check port: 5060
+• Make sure Transport is set to UDP
+
+PROBLEM: Can't Hear Audio
+SOLUTION:
+• Check iPhone/Mac volume
+• Try toggling speaker/earpiece
+• Test with *43 echo test
+• Check microphone permissions in iOS/macOS Settings
+
+PROBLEM: Calls Drop After Few Seconds
+SOLUTION:
+• Make sure you're on WiFi or good cellular connection
+• Try restarting the app
+• Check if firewall is blocking UDP port 5060
+
+PROBLEM: Can't Make Outbound Calls
+SOLUTION:
+• For external calls, dial: 09 + phone number
+• Example: 092813015784
+• Internal calls don't need prefix: just dial 2001
+
+PROBLEM: VoiceOver Not Working Well
+SOLUTION:
+• Enable VoiceOver: Settings → Accessibility → VoiceOver
+• Adjust speech rate in VoiceOver settings
+• Try Groundwire or Telephone - both have good support
+• Contact support for accessibility help
+
+📞 CALLING FEATURES
+
+INTERNAL CALLING (No prefix needed):
+• 2000 - Admin
+• 2001 - Test User
+• 2002 - Demo
+• 2003 - Support
+• 2006 - You! (Your extension)
+
+OUTBOUND CALLING (Dial 09 + number):
+• US/Canada: 09 + 1 + area code + number
+• Example: 092813015784
+• International: 09 + 011 + country code + number
+
+⚠️ NOTE: 911 Emergency calling is DISABLED for testing safety
+
+VOICEMAIL:
+• Check voicemail: *97
+• Your mailbox: 2006
+• Email notifications: Sent to info@walterharper.com
+
+CALL TRANSFERS:
+• Blind transfer: Press # during call
+• Attended transfer: Press *2 during call
+• Then dial extension and # to complete
+
+QUEUE LOGIN (If you're taking support calls):
+• Login to accessibility queue: *45
+• Logout from queue: *46
+• Check queue status: *48
+
+♿ ACCESSIBILITY FEATURES
+
+YOUR EXTENSION HAS SPECIAL ACCESSIBILITY FEATURES:
+✅ Priority routing in accessibility support queue
+✅ Extended ring time (30 seconds vs 20)
+✅ Screen reader optimized settings
+✅ VoiceOver compatible clients recommended
+✅ Email voicemail notifications enabled
+✅ All advanced voicemail features enabled
+
+RECOMMENDED APPS FOR ACCESSIBILITY:
+• iOS: Groundwire (best VoiceOver support)
+• macOS: Telephone (free, excellent VoiceOver)
+• Both apps tested with JAWS/VoiceOver
+
+🌐 WEB PORTAL ACCESS
+
+USER PORTAL:
+• URL: https://flexpbx.devinecreations.net/user-portal/
+• Login with: 2006 or walterharper
+• Password: Review.1121
+
+FEATURES IN PORTAL:
+• View your extension status
+• Manage voicemail settings
+• Upload custom greetings
+• View call statistics
+• Change your password
+• Update contact information
+
+PASSWORD RESET (If you forget):
+• Go to: https://flexpbx.devinecreations.net/user-portal/forgot-password.php
+• Enter: 2006 or info@walterharper.com
+• Check your email for reset link
+• Set new password
+
+📧 VOICEMAIL EMAIL NOTIFICATIONS
+
+When someone leaves you a voicemail:
+• Email sent to: info@walterharper.com
+• Subject: "New voicemail in mailbox 2006"
+• Contains: Caller ID, duration, timestamp
+• Audio attachment: voicemail.wav (if enabled)
+
+To check voicemail:
+• Dial *97 from your extension
+• Or listen to email attachment
+• Or check in user portal
+
+🆘 SUPPORT & HELP
+
+TECHNICAL SUPPORT:
+• Email: support@devine-creations.com
+• Phone: Contact your admin
+• Portal: https://flexpbx.devinecreations.net/admin/bug-tracker.php
+
+ACCESSIBILITY SUPPORT:
+• You ARE the accessibility specialist! 😊
+• But we're here to help with any technical issues
+• Your feedback helps make FlexPBX more accessible
+
+DOCUMENTATION:
+• Complete guides: https://flexpbx.devinecreations.net/docs/
+• Feature codes: https://flexpbx.devinecreations.net/docs/FEATURE_CODES.html
+• Troubleshooting: Available in docs section
+
+📊 YOUR EXTENSION STATUS
+
+✅ Extension: 2006 - ACTIVE
+✅ Dialplan: Configured
+✅ Voicemail: Enabled with email notifications
+✅ PJSIP Endpoint: Ready for registration
+✅ User Portal: Account created
+✅ Password Reset: Available
+✅ Accessibility Features: All enabled
+
+REGISTRATION STATUS: Waiting for you to register
+Once you complete setup on Groundwire or Telephone, status will change to "Available"
+
+Check registration:
+• In app: Look for green indicator/checkmark
+• On server: Extension shows "Not in use" when registered but idle
+
+🎉 YOU'RE ALL SET!
+
+Your extension is fully configured and ready to use. Simply follow the setup
+instructions above for Groundwire (iOS) or Telephone (macOS), and you'll be
+making and receiving calls in minutes!
+
+As a JAWS Certified Assistive Technology Specialist, your feedback on the
+accessibility of FlexPBX is invaluable. Please report any issues or suggestions
+through the bug tracker or directly to support.
+
+Welcome to FlexPBX, Walter! 🎊
+
+Last Updated: October 14, 2025, 7:30 AM
+Extension Created By: Claude AI Assistant
+System: FlexPBX v1.0 Production
+

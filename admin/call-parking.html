@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Call Parking Management - FlexPBX Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .breadcrumb {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .breadcrumb a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        .tabs {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .tab-buttons {
+            display: flex;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 15px 20px;
+            background: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.3s ease;
+        }
+
+        .tab-button.active {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            background: #f8f9fa;
+        }
+
+        .tab-button:hover {
+            background: #f8f9fa;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 30px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            margin-bottom: 25px;
+            border-radius: 8px;
+        }
+
+        .info-box h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .info-box p {
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .info-box ul {
+            margin-left: 20px;
+            color: #555;
+            line-height: 1.8;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-card .number {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .stat-card .label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .card h3 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .help-text {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .checkbox-group label {
+            margin: 0;
+            cursor: pointer;
+        }
+
+        .parking-lot-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+
+        .parking-lot-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .parking-lot-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .parking-lot-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .detail-item {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .parked-call-item {
+            background: #fff9e6;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .parked-call-info {
+            flex: 1;
+        }
+
+        .parking-space {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ffc107;
+            margin-bottom: 5px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            color: #333;
+            font-size: 24px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            cursor: help;
+            color: #667eea;
+            margin-left: 5px;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 300px;
+            background-color: #555;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -150px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="breadcrumb">
+                <a href="/admin/dashboard.html">Dashboard</a> / Call Parking
+            </div>
+            <h1>🅿️ Call Parking Management</h1>
+            <div class="header-actions">
+                <button class="btn" onclick="openCreateModal()">+ Add Parking Lot</button>
+                <button class="btn btn-success" onclick="applyConfig()">Apply Changes</button>
+                <button class="btn btn-secondary" onclick="loadParkedCalls()">🔄 Refresh</button>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab-buttons">
+                <button class="tab-button active" onclick="switchTab('parked-calls')">Active Parked Calls</button>
+                <button class="tab-button" onclick="switchTab('parking-lots')">Parking Lots</button>
+                <button class="tab-button" onclick="switchTab('history')">History & Statistics</button>
+                <button class="tab-button" onclick="switchTab('help')">How to Use</button>
+            </div>
+
+            <!-- Active Parked Calls Tab -->
+            <div id="parked-calls-tab" class="tab-content active">
+                <div class="info-box">
+                    <h3>📞 Currently Parked Calls</h3>
+                    <p>View and manage all calls that are currently parked. You can retrieve any parked call by calling the parking space number (e.g., dial 700).</p>
+                </div>
+
+                <div id="parked-calls-list">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Loading parked calls...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Parking Lots Tab -->
+            <div id="parking-lots-tab" class="tab-content">
+                <div class="info-box">
+                    <h3>🅿️ Parking Lot Configuration</h3>
+                    <p>Configure parking lots to define where calls can be parked and how they behave.</p>
+                    <ul>
+                        <li><strong>Park Extension:</strong> The code users dial to park a call (e.g., *70)</li>
+                        <li><strong>Parking Spaces:</strong> Available parking positions (e.g., 700-720)</li>
+                        <li><strong>Timeout:</strong> How long a call stays parked before returning</li>
+                        <li><strong>Return to Origin:</strong> Whether call returns to the parker or goes elsewhere</li>
+                    </ul>
+                </div>
+
+                <div id="parking-lots-list">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Loading parking lots...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Tab -->
+            <div id="history-tab" class="tab-content">
+                <div class="stats-grid" id="stats-grid">
+                    <!-- Statistics will load here -->
+                </div>
+
+                <div class="card">
+                    <h3>Parking History</h3>
+                    <div id="history-list">
+                        <div class="loading">
+                            <div class="spinner"></div>
+                            <p>Loading history...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Help Tab -->
+            <div id="help-tab" class="tab-content">
+                <div class="card">
+                    <h3>📚 How Call Parking Works</h3>
+
+                    <h4 style="margin-top: 20px; margin-bottom: 10px;">What is Call Parking?</h4>
+                    <p style="line-height: 1.6; margin-bottom: 15px;">
+                        Call parking allows you to place a call on hold in a "parking space" so that you or anyone else can pick it up from any phone.
+                        It's like a shared hold feature that makes it easy to transfer calls without needing to know exactly who will answer.
+                    </p>
+
+                    <h4 style="margin-top: 20px; margin-bottom: 10px;">How to Park a Call</h4>
+                    <ol style="line-height: 1.8; margin-left: 20px; margin-bottom: 15px;">
+                        <li>While on an active call, press the transfer button or flash hook</li>
+                        <li>Dial the park extension (default is *70)</li>
+                        <li>Asterisk will announce the parking space number (e.g., "Seven hundred")</li>
+                        <li>Write down or remember the parking space number</li>
+                        <li>Hang up - the call is now parked</li>
+                    </ol>
+
+                    <h4 style="margin-top: 20px; margin-bottom: 10px;">How to Retrieve a Parked Call</h4>
+                    <ol style="line-height: 1.8; margin-left: 20px; margin-bottom: 15px;">
+                        <li>Pick up any phone on the system</li>
+                        <li>Dial the parking space number (e.g., 700, 701, etc.)</li>
+                        <li>You'll be connected to the parked call</li>
+                    </ol>
+
+                    <h4 style="margin-top: 20px; margin-bottom: 10px;">What Happens if No One Picks Up?</h4>
+                    <p style="line-height: 1.6; margin-bottom: 15px;">
+                        If a parked call isn't retrieved within the timeout period (default 5 minutes), the call will:
+                    </p>
+                    <ul style="line-height: 1.8; margin-left: 20px; margin-bottom: 15px;">
+                        <li>Return to the person who parked it (if "Return to Origin" is enabled)</li>
+                        <li>Go to a specified extension or voicemail</li>
+                        <li>Be disconnected (not recommended)</li>
+                    </ul>
+
+                    <h4 style="margin-top: 20px; margin-bottom: 10px;">Common Use Cases</h4>
+                    <ul style="line-height: 1.8; margin-left: 20px; margin-bottom: 15px;">
+                        <li><strong>Reception desk:</strong> Park calls and announce "Call for John on parking 701"</li>
+                        <li><strong>Team environments:</strong> Park a call and send a message to the team</li>
+                        <li><strong>Moving between phones:</strong> Park on your desk phone, pick up on mobile</li>
+                        <li><strong>Call handoff:</strong> Park instead of blind transfer when you're not sure who's available</li>
+                    </ul>
+
+                    <h4 style="margin-top: 20px; margin-bottom: 10px;">Configuration Tips</h4>
+                    <ul style="line-height: 1.8; margin-left: 20px; margin-bottom: 15px;">
+                        <li><strong>Parking Spaces:</strong> Use 700-720 for up to 21 simultaneous parked calls</li>
+                        <li><strong>Timeout:</strong> 300 seconds (5 minutes) is usually good. Adjust based on your needs</li>
+                        <li><strong>Music on Hold:</strong> Choose calming music - parked callers will hear it while waiting</li>
+                        <li><strong>Announcements:</strong> Enable "announce to caller" so they know they're being parked</li>
+                    </ul>
+
+                    <h4 style="margin-top: 20px; margin-bottom: 10px;">Monitoring Parked Calls</h4>
+                    <p style="line-height: 1.6; margin-bottom: 15px;">
+                        The "Active Parked Calls" tab shows all currently parked calls in real-time. You can see:
+                    </p>
+                    <ul style="line-height: 1.8; margin-left: 20px; margin-bottom: 15px;">
+                        <li>Which parking space is being used</li>
+                        <li>Who is parked (caller ID)</li>
+                        <li>How much time is left before timeout</li>
+                        <li>Ability to retrieve the call from the admin panel</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create/Edit Parking Lot Modal -->
+    <div id="parking-lot-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modal-title">Create Parking Lot</h2>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+            <div id="modal-alerts"></div>
+            <form id="parking-lot-form">
+                <input type="hidden" id="lot-id">
+
+                <div class="form-group">
+                    <label>
+                        Parking Lot Name
+                        <span class="tooltip">❔
+                            <span class="tooltiptext">A friendly name to identify this parking lot (e.g., "Main Office", "Sales Department")</span>
+                        </span>
+                    </label>
+                    <input type="text" id="lot-name" required>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        Park Extension
+                        <span class="tooltip">❔
+                            <span class="tooltiptext">The code users dial to park a call. Common choices: *70, *71, etc. Must be unique.</span>
+                        </span>
+                    </label>
+                    <input type="text" id="park-ext" placeholder="*70" required>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        Parking Space Range
+                        <span class="tooltip">❔
+                            <span class="tooltiptext">Range of parking spaces available (e.g., "700-720" gives 21 spaces). Users dial these numbers to retrieve parked calls.</span>
+                        </span>
+                    </label>
+                    <input type="text" id="park-pos" placeholder="700-720" required>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        Parking Timeout (seconds)
+                        <span class="tooltip">❔
+                            <span class="tooltiptext">How long a call can stay parked before it returns or disconnects. 300 seconds = 5 minutes.</span>
+                        </span>
+                    </label>
+                    <input type="number" id="park-time" value="300" min="30" max="3600">
+                    <div class="help-text">Recommended: 300 (5 minutes)</div>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        Comeback Context
+                        <span class="tooltip">❔
+                            <span class="tooltiptext">The dialplan context to use when the call times out. Usually "from-internal".</span>
+                        </span>
+                    </label>
+                    <input type="text" id="comeback-context" value="from-internal">
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        Comeback Dial Time (seconds)
+                        <span class="tooltip">❔
+                            <span class="tooltiptext">How long to ring the parker's phone when returning a timed-out call.</span>
+                        </span>
+                    </label>
+                    <input type="number" id="comeback-dialtime" value="30" min="10" max="120">
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        Announce Parking Space To
+                        <span class="tooltip">❔
+                            <span class="tooltiptext">Who hears the parking space number announcement.</span>
+                        </span>
+                    </label>
+                    <select id="parked-play">
+                        <option value="caller">Caller (person being parked)</option>
+                        <option value="parked">Parker (person parking the call)</option>
+                        <option value="both">Both parties</option>
+                        <option value="no">No one (silent park)</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        Music on Hold Class
+                        <span class="tooltip">❔
+                            <span class="tooltiptext">Which music on hold class to play to the parked caller while waiting.</span>
+                        </span>
+                    </label>
+                    <input type="text" id="music-class" value="default">
+                    <div class="help-text">Use "default" or a custom MOH class name</div>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="comeback-origin" checked>
+                    <label for="comeback-origin">
+                        Return to origin on timeout
+                        <span class="tooltip">❔
+                            <span class="tooltiptext">If checked, timed-out calls return to the person who parked them. If unchecked, they follow the comeback context rules.</span>
+                        </span>
+                    </label>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="lot-enabled" checked>
+                    <label for="lot-enabled">Enable this parking lot</label>
+                </div>
+
+                <div style="margin-top: 25px; display: flex; gap: 10px;">
+                    <button type="submit" class="btn">Save Parking Lot</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let editingLotId = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            loadParkedCalls();
+            loadParkingLots();
+            loadStatistics();
+            loadHistory();
+
+            // Auto-refresh parked calls every 10 seconds
+            setInterval(loadParkedCalls, 10000);
+        });
+
+        function switchTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function loadParkedCalls() {
+            fetch('/modules/call-parking/api/call-parking.php?path=parked-calls')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const calls = data.parked_calls;
+                        const container = document.getElementById('parked-calls-list');
+
+                        if (calls.length === 0) {
+                            container.innerHTML = `
+                                <div class="empty-state">
+                                    <p>No calls currently parked</p>
+                                    <p style="margin-top: 10px; font-size: 14px;">Park a call by dialing *70 during an active call</p>
+                                </div>
+                            `;
+                        } else {
+                            let html = '';
+                            calls.forEach(call => {
+                                html += `
+                                    <div class="parked-call-item">
+                                        <div class="parked-call-info">
+                                            <div class="parking-space">Parking Space: ${call.space}</div>
+                                            <div><strong>Caller:</strong> ${call.callerid}</div>
+                                            <div><strong>Channel:</strong> ${call.channel}</div>
+                                            <div><strong>Timeout in:</strong> ${call.timeout_remaining} seconds</div>
+                                        </div>
+                                        <div>
+                                            <button class="btn btn-success btn-small" onclick="alert('Dial ${call.space} from any phone to retrieve this call')">
+                                                Retrieve
+                                            </button>
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                            container.innerHTML = html;
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading parked calls:', error);
+                });
+        }
+
+        function loadParkingLots() {
+            fetch('/modules/call-parking/api/call-parking.php?path=list')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const lots = data.parking_lots;
+                        const container = document.getElementById('parking-lots-list');
+
+                        if (lots.length === 0) {
+                            container.innerHTML = `
+                                <div class="empty-state">
+                                    <p>No parking lots configured</p>
+                                    <button class="btn" onclick="openCreateModal()">+ Create First Parking Lot</button>
+                                </div>
+                            `;
+                        } else {
+                            let html = '';
+                            lots.forEach(lot => {
+                                html += `
+                                    <div class="parking-lot-item">
+                                        <div class="parking-lot-header">
+                                            <div class="parking-lot-name">${lot.name}</div>
+                                            <div>
+                                                <button class="btn btn-secondary btn-small" onclick="editParkingLot(${lot.id})">Edit</button>
+                                                <button class="btn btn-danger btn-small" onclick="deleteParkingLot(${lot.id}, '${lot.name}')">Delete</button>
+                                            </div>
+                                        </div>
+                                        <div class="parking-lot-details">
+                                            <div class="detail-item">
+                                                <div class="detail-label">Park Extension:</div>
+                                                ${lot.park_ext}
+                                            </div>
+                                            <div class="detail-item">
+                                                <div class="detail-label">Parking Spaces:</div>
+                                                ${lot.park_pos}
+                                            </div>
+                                            <div class="detail-item">
+                                                <div class="detail-label">Timeout:</div>
+                                                ${lot.park_time} seconds
+                                            </div>
+                                            <div class="detail-item">
+                                                <div class="detail-label">Status:</div>
+                                                ${lot.enabled ? '✅ Enabled' : '❌ Disabled'}
+                                            </div>
+                                            <div class="detail-item">
+                                                <div class="detail-label">Return to Origin:</div>
+                                                ${lot.comeback_to_origin ? 'Yes' : 'No'}
+                                            </div>
+                                            <div class="detail-item">
+                                                <div class="detail-label">Music Class:</div>
+                                                ${lot.parked_music_class}
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            });
+                            container.innerHTML = html;
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading parking lots:', error);
+                });
+        }
+
+        function loadStatistics() {
+            fetch('/modules/call-parking/api/call-parking.php?path=statistics')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const stats = data.statistics;
+                        document.getElementById('stats-grid').innerHTML = `
+                            <div class="stat-card">
+                                <div class="number">${stats.total_today}</div>
+                                <div class="label">Parks Today</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="number">${stats.avg_duration_formatted}</div>
+                                <div class="label">Avg Park Duration</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="number">${stats.timeout_rate}%</div>
+                                <div class="label">Timeout Rate</div>
+                            </div>
+                        `;
+                    }
+                })
+                .catch(error => console.error('Error loading statistics:', error));
+        }
+
+        function loadHistory() {
+            fetch('/modules/call-parking/api/call-parking.php?path=history&limit=50')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const history = data.history;
+                        const container = document.getElementById('history-list');
+
+                        if (history.length === 0) {
+                            container.innerHTML = '<div class="empty-state">No parking history available</div>';
+                        } else {
+                            let html = '<table style="width: 100%; border-collapse: collapse;">';
+                            html += '<tr style="background: #f8f9fa; font-weight: bold;"><th style="padding: 10px; text-align: left;">Space</th><th style="padding: 10px; text-align: left;">Parker</th><th style="padding: 10px; text-align: left;">Caller</th><th style="padding: 10px; text-align: left;">Time</th><th style="padding: 10px; text-align: left;">Duration</th><th style="padding: 10px; text-align: left;">Status</th></tr>';
+
+                            history.forEach(item => {
+                                const status = item.timeout ? 'Timeout' : (item.abandoned ? 'Abandoned' : 'Retrieved');
+                                html += `<tr style="border-bottom: 1px solid #e0e0e0;">
+                                    <td style="padding: 10px;">${item.parking_space}</td>
+                                    <td style="padding: 10px;">${item.parker_callerid || 'Unknown'}</td>
+                                    <td style="padding: 10px;">${item.parked_callerid || 'Unknown'}</td>
+                                    <td style="padding: 10px;">${item.park_time}</td>
+                                    <td style="padding: 10px;">${item.duration_parked}s</td>
+                                    <td style="padding: 10px;">${status}</td>
+                                </tr>`;
+                            });
+
+                            html += '</table>';
+                            container.innerHTML = html;
+                        }
+                    }
+                })
+                .catch(error => console.error('Error loading history:', error));
+        }
+
+        function openCreateModal() {
+            editingLotId = null;
+            document.getElementById('modal-title').textContent = 'Create Parking Lot';
+            document.getElementById('parking-lot-form').reset();
+            document.getElementById('lot-id').value = '';
+            document.getElementById('park-time').value = '300';
+            document.getElementById('comeback-context').value = 'from-internal';
+            document.getElementById('comeback-dialtime').value = '30';
+            document.getElementById('music-class').value = 'default';
+            document.getElementById('comeback-origin').checked = true;
+            document.getElementById('lot-enabled').checked = true;
+            document.getElementById('parking-lot-modal').classList.add('active');
+        }
+
+        function editParkingLot(lotId) {
+            fetch(`/modules/call-parking/api/call-parking.php?path=list`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const lot = data.parking_lots.find(l => l.id == lotId);
+                        if (lot) {
+                            editingLotId = lotId;
+                            document.getElementById('modal-title').textContent = 'Edit Parking Lot';
+                            document.getElementById('lot-id').value = lot.id;
+                            document.getElementById('lot-name').value = lot.name;
+                            document.getElementById('park-ext').value = lot.park_ext;
+                            document.getElementById('park-pos').value = lot.park_pos;
+                            document.getElementById('park-time').value = lot.park_time;
+                            document.getElementById('comeback-context').value = lot.comeback_context;
+                            document.getElementById('comeback-dialtime').value = lot.comeback_dialtime;
+                            document.getElementById('parked-play').value = lot.parked_play;
+                            document.getElementById('music-class').value = lot.parked_music_class;
+                            document.getElementById('comeback-origin').checked = lot.comeback_to_origin == 1;
+                            document.getElementById('lot-enabled').checked = lot.enabled == 1;
+                            document.getElementById('parking-lot-modal').classList.add('active');
+                        }
+                    }
+                });
+        }
+
+        function deleteParkingLot(lotId, lotName) {
+            if (!confirm(`Are you sure you want to delete parking lot "${lotName}"?`)) {
+                return;
+            }
+
+            fetch(`/modules/call-parking/api/call-parking.php?path=delete&id=${lotId}`, {
+                method: 'DELETE'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Parking lot deleted successfully');
+                    loadParkingLots();
+                } else {
+                    alert('Error deleting parking lot: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(error => alert('Error: ' + error.message));
+        }
+
+        function closeModal() {
+            document.getElementById('parking-lot-modal').classList.remove('active');
+        }
+
+        function applyConfig() {
+            if (!confirm('Apply parking configuration to Asterisk? This will reload the parking module.')) {
+                return;
+            }
+
+            fetch('/modules/call-parking/api/call-parking.php?path=apply-config', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('✅ Parking configuration applied successfully!');
+                } else {
+                    alert('❌ Error applying configuration: ' + (data.message || 'Unknown error'));
+                }
+            })
+            .catch(error => alert('Error: ' + error.message));
+        }
+
+        // Form submission
+        document.getElementById('parking-lot-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const lotData = {
+                name: document.getElementById('lot-name').value,
+                park_ext: document.getElementById('park-ext').value,
+                park_pos: document.getElementById('park-pos').value,
+                park_time: parseInt(document.getElementById('park-time').value),
+                comeback_context: document.getElementById('comeback-context').value,
+                comeback_dialtime: parseInt(document.getElementById('comeback-dialtime').value),
+                parked_play: document.getElementById('parked-play').value,
+                parked_music_class: document.getElementById('music-class').value,
+                comeback_to_origin: document.getElementById('comeback-origin').checked ? 1 : 0,
+                enabled: document.getElementById('lot-enabled').checked ? 1 : 0
+            };
+
+            const isEdit = editingLotId !== null;
+            const url = isEdit
+                ? `/modules/call-parking/api/call-parking.php?path=update&id=${editingLotId}`
+                : '/modules/call-parking/api/call-parking.php?path=create';
+            const method = isEdit ? 'PUT' : 'POST';
+
+            fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(lotData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`✅ Parking lot ${isEdit ? 'updated' : 'created'} successfully!`);
+                    closeModal();
+                    loadParkingLots();
+                } else {
+                    alert('❌ Error: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                alert('Error: ' + error.message);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,681 @@
+<?php
+/**
+ * FlexPBX Modules Management API
+ * Handles installation, updates, and management of FlexPBX modules
+ *
+ * Endpoints:
+ * - GET  /api/modules.php?path=list - List all modules
+ * - GET  /api/modules.php?path=installed - List installed modules
+ * - GET  /api/modules.php?path=available - List available modules
+ * - GET  /api/modules.php?path=info&module=<name> - Get module info
+ * - POST /api/modules.php?path=install - Install a module
+ * - POST /api/modules.php?path=uninstall - Uninstall a module
+ * - POST /api/modules.php?path=update - Update a module
+ * - POST /api/modules.php?path=update_all - Update all modules
+ * - GET  /api/modules.php?path=check_updates - Check for updates
+ */
+
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+header('Access-Control-Allow-Headers: Content-Type, Authorization');
+
+if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
+    http_response_code(200);
+    exit();
+}
+
+// Include HubNode Monitor integration
+require_once __DIR__ . '/lib/hubnode_monitor.php';
+
+// Configuration
+$MODULES_DIR = '/home/flexpbxuser/modules';
+$MODULES_REGISTRY = '/home/flexpbxuser/modules/registry.json';
+$MODULES_INSTALLED = '/home/flexpbxuser/modules/installed.json';
+$REMOTE_REGISTRY = 'https://raw.githubusercontent.com/flexpbx/modules/main/registry.json';
+
+// Create directories if they don't exist
+@mkdir($MODULES_DIR, 0755, true);
+@mkdir($MODULES_DIR . '/available', 0755, true);
+@mkdir($MODULES_DIR . '/installed', 0755, true);
+
+// Initialize installed modules file
+if (!file_exists($MODULES_INSTALLED)) {
+    file_put_contents($MODULES_INSTALLED, json_encode(['modules' => []], JSON_PRETTY_PRINT));
+}
+
+// Get request parameters
+$method = $_SERVER['REQUEST_METHOD'];
+$path = $_GET['path'] ?? '';
+$postData = json_decode(file_get_contents('php://input'), true) ?? [];
+
+// Response helper
+function respond($success, $message, $data = null, $code = 200) {
+    http_response_code($code);
+    echo json_encode([
+        'success' => $success,
+        'message' => $message,
+        'timestamp' => gmdate('Y-m-d\TH:i:s\Z'),
+        'data' => $data
+    ], JSON_PRETTY_PRINT);
+    exit();
+}
+
+// Route requests
+switch ($path) {
+    case '':
+    case 'info':
+        handleInfo();
+        break;
+
+    case 'list':
+        handleList();
+        break;
+
+    case 'installed':
+        handleInstalled();
+        break;
+
+    case 'available':
+        handleAvailable();
+        break;
+
+    case 'module_info':
+        handleModuleInfo();
+        break;
+
+    case 'install':
+        handleInstall($postData);
+        break;
+
+    case 'uninstall':
+        handleUninstall($postData);
+        break;
+
+    case 'update':
+        handleUpdate($postData);
+        break;
+
+    case 'update_all':
+        handleUpdateAll();
+        break;
+
+    case 'check_updates':
+        handleCheckUpdates();
+        break;
+
+    case 'push_update':
+        handlePushUpdate($postData);
+        break;
+
+    default:
+        respond(false, 'Invalid path', null, 404);
+        break;
+}
+
+/**
+ * API Information
+ */
+function handleInfo() {
+    respond(true, 'FlexPBX Modules Management API', [
+        'version' => '1.0',
+        'endpoints' => [
+            'GET /api/modules.php?path=list' => 'List all modules',
+            'GET /api/modules.php?path=installed' => 'List installed modules',
+            'GET /api/modules.php?path=available' => 'List available modules',
+            'GET /api/modules.php?path=module_info&module=<name>' => 'Get module details',
+            'POST /api/modules.php?path=install' => 'Install a module',
+            'POST /api/modules.php?path=uninstall' => 'Uninstall a module',
+            'POST /api/modules.php?path=update' => 'Update a module',
+            'POST /api/modules.php?path=update_all' => 'Update all modules',
+            'GET /api/modules.php?path=check_updates' => 'Check for updates',
+            'POST /api/modules.php?path=push_update' => 'Push update to remote server'
+        ]
+    ]);
+}
+
+/**
+ * List all modules (installed + available)
+ */
+function handleList() {
+    global $MODULES_INSTALLED;
+
+    $installed = json_decode(file_get_contents($MODULES_INSTALLED), true)['modules'] ?? [];
+    $available = getAvailableModules();
+
+    $all_modules = [];
+
+    // Add installed modules
+    foreach ($installed as $module) {
+        $module['status'] = 'installed';
+        $all_modules[$module['name']] = $module;
+    }
+
+    // Add available modules (not installed)
+    foreach ($available as $module) {
+        if (!isset($all_modules[$module['name']])) {
+            $module['status'] = 'available';
+            $all_modules[$module['name']] = $module;
+        } else {
+            // Check for updates
+            if (version_compare($module['version'], $all_modules[$module['name']]['version'], '>')) {
+                $all_modules[$module['name']]['update_available'] = true;
+                $all_modules[$module['name']]['latest_version'] = $module['version'];
+            }
+        }
+    }
+
+    respond(true, 'Modules retrieved', [
+        'modules' => array_values($all_modules),
+        'total' => count($all_modules),
+        'installed_count' => count($installed),
+        'available_count' => count($available)
+    ]);
+}
+
+/**
+ * List installed modules
+ */
+function handleInstalled() {
+    global $MODULES_INSTALLED;
+
+    $data = json_decode(file_get_contents($MODULES_INSTALLED), true);
+    $modules = $data['modules'] ?? [];
+
+    respond(true, 'Installed modules retrieved', [
+        'modules' => $modules,
+        'count' => count($modules)
+    ]);
+}
+
+/**
+ * List available modules
+ */
+function handleAvailable() {
+    $modules = getAvailableModules();
+
+    respond(true, 'Available modules retrieved', [
+        'modules' => $modules,
+        'count' => count($modules)
+    ]);
+}
+
+/**
+ * Get module information
+ */
+function handleModuleInfo() {
+    $moduleName = $_GET['module'] ?? '';
+
+    if (empty($moduleName)) {
+        respond(false, 'Module name required', null, 400);
+    }
+
+    // Check installed modules
+    global $MODULES_INSTALLED;
+    $installed = json_decode(file_get_contents($MODULES_INSTALLED), true)['modules'] ?? [];
+
+    foreach ($installed as $module) {
+        if ($module['name'] === $moduleName) {
+            respond(true, 'Module info retrieved', $module);
+        }
+    }
+
+    // Check available modules
+    $available = getAvailableModules();
+    foreach ($available as $module) {
+        if ($module['name'] === $moduleName) {
+            respond(true, 'Module info retrieved', $module);
+        }
+    }
+
+    respond(false, 'Module not found', null, 404);
+}
+
+/**
+ * Install a module
+ */
+function handleInstall($data) {
+    global $MODULES_DIR, $MODULES_INSTALLED;
+
+    $moduleName = $data['module'] ?? '';
+    $moduleUrl = $data['url'] ?? '';
+
+    if (empty($moduleName)) {
+        respond(false, 'Module name required', null, 400);
+    }
+
+    // Check if already installed
+    $installed = json_decode(file_get_contents($MODULES_INSTALLED), true);
+    foreach ($installed['modules'] as $module) {
+        if ($module['name'] === $moduleName) {
+            respond(false, 'Module already installed', null, 409);
+        }
+    }
+
+    // Get module info from available modules
+    $available = getAvailableModules();
+    $moduleInfo = null;
+
+    foreach ($available as $module) {
+        if ($module['name'] === $moduleName) {
+            $moduleInfo = $module;
+            break;
+        }
+    }
+
+    if (!$moduleInfo && empty($moduleUrl)) {
+        respond(false, 'Module not found in registry', null, 404);
+    }
+
+    // Download and install module
+    try {
+        $downloadUrl = $moduleUrl ?: $moduleInfo['download_url'];
+        $targetDir = $MODULES_DIR . '/installed/' . $moduleName;
+
+        // Create target directory
+        @mkdir($targetDir, 0755, true);
+
+        // Download module (simplified - in production use proper download/extraction)
+        if ($moduleInfo) {
+            // Copy module files
+            $moduleInfo['install_date'] = date('Y-m-d H:i:s');
+            $moduleInfo['status'] = 'active';
+
+            // Add to installed modules
+            $installed['modules'][] = $moduleInfo;
+            file_put_contents($MODULES_INSTALLED, json_encode($installed, JSON_PRETTY_PRINT));
+
+            // Run install script if exists
+            $installScript = $targetDir . '/install.sh';
+            if (file_exists($installScript)) {
+                exec("bash $installScript 2>&1", $output, $returnCode);
+            }
+
+            // Log to HubNode monitor
+            HubNodeMonitor::logModuleEvent('install', $moduleName, true, [
+                'version' => $moduleInfo['version'] ?? 'unknown'
+            ]);
+
+            respond(true, 'Module installed successfully', $moduleInfo);
+        }
+
+        respond(false, 'Module installation failed', null, 500);
+
+    } catch (Exception $e) {
+        respond(false, 'Installation error: ' . $e->getMessage(), null, 500);
+    }
+}
+
+/**
+ * Uninstall a module
+ */
+function handleUninstall($data) {
+    global $MODULES_DIR, $MODULES_INSTALLED;
+
+    $moduleName = $data['module'] ?? '';
+
+    if (empty($moduleName)) {
+        respond(false, 'Module name required', null, 400);
+    }
+
+    // Load installed modules
+    $installed = json_decode(file_get_contents($MODULES_INSTALLED), true);
+    $found = false;
+    $moduleInfo = null;
+
+    foreach ($installed['modules'] as $key => $module) {
+        if ($module['name'] === $moduleName) {
+            $moduleInfo = $module;
+            $found = true;
+
+            // Run uninstall script if exists
+            $uninstallScript = $MODULES_DIR . '/installed/' . $moduleName . '/uninstall.sh';
+            if (file_exists($uninstallScript)) {
+                exec("bash $uninstallScript 2>&1", $output, $returnCode);
+            }
+
+            // Remove from installed list
+            unset($installed['modules'][$key]);
+            $installed['modules'] = array_values($installed['modules']);
+
+            // Remove module directory
+            $targetDir = $MODULES_DIR . '/installed/' . $moduleName;
+            if (is_dir($targetDir)) {
+                exec("rm -rf " . escapeshellarg($targetDir));
+            }
+
+            break;
+        }
+    }
+
+    if (!$found) {
+        respond(false, 'Module not installed', null, 404);
+    }
+
+    // Save updated list
+    file_put_contents($MODULES_INSTALLED, json_encode($installed, JSON_PRETTY_PRINT));
+
+    // Log to HubNode monitor
+    HubNodeMonitor::logModuleEvent('uninstall', $moduleName, true, [
+        'version' => $moduleInfo['version'] ?? 'unknown'
+    ]);
+
+    respond(true, 'Module uninstalled successfully', $moduleInfo);
+}
+
+/**
+ * Update a module
+ */
+function handleUpdate($data) {
+    global $MODULES_INSTALLED;
+
+    $moduleName = $data['module'] ?? '';
+
+    if (empty($moduleName)) {
+        respond(false, 'Module name required', null, 400);
+    }
+
+    // Check if module is installed
+    $installed = json_decode(file_get_contents($MODULES_INSTALLED), true);
+    $found = false;
+    $currentVersion = '';
+
+    foreach ($installed['modules'] as $key => $module) {
+        if ($module['name'] === $moduleName) {
+            $found = true;
+            $currentVersion = $module['version'];
+            break;
+        }
+    }
+
+    if (!$found) {
+        respond(false, 'Module not installed', null, 404);
+    }
+
+    // Check for updates
+    $available = getAvailableModules();
+    $updateAvailable = false;
+    $latestVersion = '';
+
+    foreach ($available as $module) {
+        if ($module['name'] === $moduleName) {
+            if (version_compare($module['version'], $currentVersion, '>')) {
+                $updateAvailable = true;
+                $latestVersion = $module['version'];
+            }
+            break;
+        }
+    }
+
+    if (!$updateAvailable) {
+        respond(false, 'No updates available', [
+            'current_version' => $currentVersion
+        ], 304);
+    }
+
+    // Perform update (simplified)
+    // In production: download, backup old version, install new version
+    $installed['modules'][$key]['version'] = $latestVersion;
+    $installed['modules'][$key]['update_date'] = date('Y-m-d H:i:s');
+
+    file_put_contents($MODULES_INSTALLED, json_encode($installed, JSON_PRETTY_PRINT));
+
+    // Log to HubNode monitor
+    HubNodeMonitor::logModuleEvent('update', $moduleName, true, [
+        'old_version' => $currentVersion,
+        'new_version' => $latestVersion
+    ]);
+
+    respond(true, 'Module updated successfully', [
+        'module' => $moduleName,
+        'old_version' => $currentVersion,
+        'new_version' => $latestVersion
+    ]);
+}
+
+/**
+ * Update all modules
+ */
+function handleUpdateAll() {
+    global $MODULES_INSTALLED;
+
+    $installed = json_decode(file_get_contents($MODULES_INSTALLED), true);
+    $available = getAvailableModules();
+
+    $updates = [];
+
+    foreach ($installed['modules'] as $key => $installedModule) {
+        foreach ($available as $availableModule) {
+            if ($availableModule['name'] === $installedModule['name']) {
+                if (version_compare($availableModule['version'], $installedModule['version'], '>')) {
+                    $updates[] = [
+                        'module' => $installedModule['name'],
+                        'old_version' => $installedModule['version'],
+                        'new_version' => $availableModule['version']
+                    ];
+
+                    // Update version
+                    $installed['modules'][$key]['version'] = $availableModule['version'];
+                    $installed['modules'][$key]['update_date'] = date('Y-m-d H:i:s');
+                }
+                break;
+            }
+        }
+    }
+
+    if (empty($updates)) {
+        respond(false, 'All modules are up to date', null, 304);
+    }
+
+    file_put_contents($MODULES_INSTALLED, json_encode($installed, JSON_PRETTY_PRINT));
+
+    respond(true, count($updates) . ' modules updated', [
+        'updates' => $updates,
+        'count' => count($updates)
+    ]);
+}
+
+/**
+ * Check for updates
+ */
+function handleCheckUpdates() {
+    global $MODULES_INSTALLED;
+
+    $installed = json_decode(file_get_contents($MODULES_INSTALLED), true)['modules'] ?? [];
+    $available = getAvailableModules();
+
+    $updates = [];
+
+    foreach ($installed as $installedModule) {
+        foreach ($available as $availableModule) {
+            if ($availableModule['name'] === $installedModule['name']) {
+                if (version_compare($availableModule['version'], $installedModule['version'], '>')) {
+                    $updates[] = [
+                        'module' => $installedModule['name'],
+                        'current_version' => $installedModule['version'],
+                        'latest_version' => $availableModule['version'],
+                        'update_available' => true
+                    ];
+                }
+                break;
+            }
+        }
+    }
+
+    respond(true, count($updates) . ' updates available', [
+        'updates' => $updates,
+        'count' => count($updates)
+    ]);
+}
+
+/**
+ * Push update to remote server
+ */
+function handlePushUpdate($data) {
+    $targetHost = $data['host'] ?? '';
+    $module = $data['module'] ?? '';
+    $apiKey = $data['api_key'] ?? '';
+
+    if (empty($targetHost) || empty($module)) {
+        respond(false, 'Host and module required', null, 400);
+    }
+
+    // Prepare update package
+    global $MODULES_DIR;
+    $modulePath = $MODULES_DIR . '/installed/' . $module;
+
+    if (!is_dir($modulePath)) {
+        respond(false, 'Module not found', null, 404);
+    }
+
+    // Create temporary archive
+    $archiveName = '/tmp/' . $module . '_' . time() . '.tar.gz';
+    exec("tar -czf " . escapeshellarg($archiveName) . " -C " . escapeshellarg($modulePath) . " .", $output, $returnCode);
+
+    if ($returnCode !== 0) {
+        respond(false, 'Failed to create archive', null, 500);
+    }
+
+    // Push to remote server
+    $targetUrl = $targetHost . '/api/modules.php?path=install';
+
+    $ch = curl_init($targetUrl);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, [
+        'module' => $module,
+        'archive' => new CURLFile($archiveName),
+        'api_key' => $apiKey
+    ]);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    // Cleanup
+    unlink($archiveName);
+
+    if ($httpCode === 200) {
+        respond(true, 'Update pushed successfully', json_decode($response, true));
+    } else {
+        respond(false, 'Failed to push update', [
+            'http_code' => $httpCode,
+            'response' => $response
+        ], 500);
+    }
+}
+
+/**
+ * Helper: Get available modules from registry
+ */
+function getAvailableModules() {
+    global $MODULES_REGISTRY, $REMOTE_REGISTRY;
+
+    // Try to fetch from remote registry
+    $modules = [];
+
+    // Try remote first
+    $remoteContent = @file_get_contents($REMOTE_REGISTRY);
+    if ($remoteContent) {
+        $remoteData = json_decode($remoteContent, true);
+        if ($remoteData && isset($remoteData['modules'])) {
+            // Cache locally
+            file_put_contents($MODULES_REGISTRY, $remoteContent);
+            return $remoteData['modules'];
+        }
+    }
+
+    // Fallback to local registry
+    if (file_exists($MODULES_REGISTRY)) {
+        $localData = json_decode(file_get_contents($MODULES_REGISTRY), true);
+        if ($localData && isset($localData['modules'])) {
+            return $localData['modules'];
+        }
+    }
+
+    // Return default modules if nothing else works
+    return getDefaultModules();
+}
+
+/**
+ * Helper: Get default/built-in modules
+ */
+function getDefaultModules() {
+    return [
+        [
+            'name' => 'bug-tracker',
+            'display_name' => 'Bug Tracker',
+            'version' => '1.0.0',
+            'description' => 'Track bugs, issues, and feature requests',
+            'category' => 'administration',
+            'author' => 'FlexPBX',
+            'homepage' => 'https://flexpbx.com/modules/bug-tracker',
+            'download_url' => 'https://flexpbx.com/downloads/bug-tracker-1.0.0.tar.gz',
+            'dependencies' => [],
+            'size' => '100 KB',
+            'last_updated' => '2025-10-17',
+            'icon' => '🐛',
+            'status' => 'stable'
+        ],
+        [
+            'name' => 'advanced-analytics',
+            'display_name' => 'Advanced Analytics',
+            'version' => '1.0.0',
+            'description' => 'Detailed call analytics and reporting',
+            'category' => 'reporting',
+            'author' => 'FlexPBX',
+            'homepage' => 'https://flexpbx.com/modules/analytics',
+            'download_url' => 'https://flexpbx.com/downloads/analytics-1.0.0.tar.gz',
+            'dependencies' => [],
+            'size' => '250 KB',
+            'last_updated' => '2025-10-17',
+            'icon' => '📊',
+            'status' => 'stable'
+        ],
+        [
+            'name' => 'crm-integration',
+            'display_name' => 'CRM Integration',
+            'version' => '1.0.0',
+            'description' => 'Integrate with popular CRM systems',
+            'category' => 'integration',
+            'author' => 'FlexPBX',
+            'homepage' => 'https://flexpbx.com/modules/crm',
+            'download_url' => 'https://flexpbx.com/downloads/crm-1.0.0.tar.gz',
+            'dependencies' => [],
+            'size' => '500 KB',
+            'last_updated' => '2025-10-15',
+            'icon' => '🔗',
+            'status' => 'beta'
+        ],
+        [
+            'name' => 'call-recording-manager',
+            'display_name' => 'Call Recording Manager',
+            'version' => '1.0.0',
+            'description' => 'Advanced call recording management and playback',
+            'category' => 'telephony',
+            'author' => 'FlexPBX',
+            'homepage' => 'https://flexpbx.com/modules/recordings',
+            'download_url' => 'https://flexpbx.com/downloads/recordings-1.0.0.tar.gz',
+            'dependencies' => [],
+            'size' => '150 KB',
+            'last_updated' => '2025-10-17',
+            'icon' => '🎙️',
+            'status' => 'stable'
+        ],
+        [
+            'name' => 'sms-gateway',
+            'display_name' => 'SMS Gateway',
+            'version' => '1.0.0',
+            'description' => 'Send and receive SMS messages',
+            'category' => 'communication',
+            'author' => 'FlexPBX',
+            'homepage' => 'https://flexpbx.com/modules/sms',
+            'download_url' => 'https://flexpbx.com/downloads/sms-1.0.0.tar.gz',
+            'dependencies' => [],
+            'size' => '200 KB',
+            'last_updated' => '2025-10-10',
+            'icon' => '💬',
+            'status' => 'stable'
+        ]
+    ];
+}

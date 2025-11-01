@@ -1,0 +1,884 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlexPhone - Devine Creations LLC</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: linear-gradient(135deg, #1e1e1e 0%, #2d2d2d 100%);
+            color: #ffffff;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Screen Reader Only Content */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ff4444;
+            transition: background 0.3s ease;
+        }
+
+        .status-indicator.connected {
+            background: #44ff44;
+        }
+
+        .connection-status {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        /* Navigation */
+        .nav-tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.7);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .nav-tab:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .nav-tab.active {
+            background: rgba(0, 123, 255, 0.2);
+            color: #007bff;
+            border-bottom: 2px solid #007bff;
+        }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Dialer */
+        .dialer {
+            text-align: center;
+        }
+
+        .dialer-input-section {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .dialer-input {
+            width: 100%;
+            padding: 16px;
+            border-radius: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 18px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .dialer-input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .dialer-input::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .auto-complete-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: rgba(30, 30, 30, 0.95);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .auto-complete-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .auto-complete-item:hover,
+        .auto-complete-item.selected {
+            background: rgba(0, 123, 255, 0.2);
+        }
+
+        .auto-complete-item:last-child {
+            border-bottom: none;
+        }
+
+        .auto-complete-name {
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .auto-complete-number {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+
+        .display {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            min-height: 60px;
+            width: 100%;
+            text-align: center;
+            font-size: 18px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+        }
+
+        .display:focus {
+            outline: 2px solid #007bff;
+            outline-offset: 2px;
+        }
+
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .dtmf-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .dtmf-indicator {
+            margin-right: 8px;
+            font-size: 14px;
+            animation: dtmf-pulse 2s infinite;
+        }
+
+        @keyframes dtmf-pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
+        }
+
+        .dtmf-status.playing .dtmf-indicator {
+            animation: dtmf-active 0.2s ease;
+        }
+
+        @keyframes dtmf-active {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .quick-actions {
+            margin-top: 16px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .quick-action-btn {
+            padding: 8px 16px;
+            border-radius: 16px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .quick-action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 1);
+            transform: translateY(-1px);
+        }
+
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .key {
+            aspect-ratio: 1;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .key:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+
+        .key:active {
+            transform: scale(0.95);
+        }
+
+        .key-letters {
+            font-size: 10px;
+            opacity: 0.6;
+            margin-top: 2px;
+        }
+
+        .call-buttons {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 24px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 12px;
+        }
+
+        .btn-call {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-call:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .btn-hangup {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-hangup:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Lists */
+        .list {
+            list-style: none;
+        }
+
+        .list-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .list-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .list-item-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(0, 123, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .list-item-content {
+            flex: 1;
+        }
+
+        .list-item-title {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .list-item-subtitle {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .list-item-meta {
+            text-align: right;
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.8;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 14px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #007bff;
+            box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 14px;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            opacity: 0.7;
+        }
+
+        /* Empty state */
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            opacity: 0.7;
+        }
+
+        /* Incoming call overlay */
+        .incoming-call-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .incoming-call-overlay.show {
+            display: flex;
+        }
+
+        .incoming-call-info {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .caller-name {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .caller-number {
+            font-size: 16px;
+            opacity: 0.7;
+        }
+
+        .incoming-call-buttons {
+            display: flex;
+            gap: 40px;
+        }
+
+        .call-action-btn {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .call-action-btn.answer {
+            background: #28a745;
+            color: white;
+        }
+
+        .call-action-btn.decline {
+            background: #dc3545;
+            color: white;
+        }
+
+        .call-action-btn:hover {
+            transform: scale(1.1);
+        }
+
+        /* Recorder Styles */
+        .recorder-section {
+            text-align: center;
+        }
+
+        .recording-status {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .recording-status #recordingIndicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #6c757d;
+            transition: all 0.3s ease;
+        }
+
+        .recording-status.recording #recordingIndicator {
+            background: #dc3545;
+            animation: recording-pulse 1s infinite;
+        }
+
+        .recording-status.paused #recordingIndicator {
+            background: #ffc107;
+        }
+
+        @keyframes recording-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .recording-timer {
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 18px;
+            color: #dc3545;
+            font-weight: bold;
+        }
+
+        .recording-controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .recording-settings,
+        .recent-recordings {
+            text-align: left;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .recordings-list {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .recording-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .recording-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .recording-info {
+            flex: 1;
+        }
+
+        .recording-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .recording-meta {
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        .recording-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .recording-action-btn {
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: none;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .recording-action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .content {
+                padding: 12px;
+            }
+
+            .keypad {
+                gap: 8px;
+            }
+
+            .key {
+                font-size: 18px;
+            }
+
+            .recording-controls {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .recording-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Accessibility Live Regions for Screen Reader Announcements -->
+    <div aria-live="polite" aria-atomic="true" id="live-region-polite" class="sr-only"></div>
+    <div aria-live="assertive" aria-atomic="true" id="live-region-assertive" class="sr-only"></div>
+    <div aria-live="off" aria-atomic="false" id="live-region-status" class="sr-only"></div>
+
+    <div class="app-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <span>FlexPhone</span>
+                <span>FlexPhone</span>
+            </div>
+            <div class="connection-info">
+                <div class="status-indicator" id="statusIndicator"></div>
+                <div class="connection-status" id="connectionStatus">Disconnected</div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-tab="dialer">Call</button>
+            <button class="nav-tab" data-tab="contacts">Contacts</button>
+            <button class="nav-tab" data-tab="history">History</button>
+            <button class="nav-tab" data-tab="messages">Messages</button>
+            <button class="nav-tab" data-tab="sip-clients">SIP Clients</button>
+            <button class="nav-tab" data-tab="recorder">Recorder</button>
+            <button class="nav-tab" data-tab="accounts">Accounts</button>
+            <button class="nav-tab" data-tab="settings">Settings</button>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <!-- Dialer Tab -->
+            <div class="tab-content active" id="dialer">
+                <div class="dialer">
+                    <!-- Input Field with Auto-Complete -->
+                    <div class="dialer-input-section">
+                        <input type="text" class="dialer-input" id="dialerInput"
+                               placeholder="Enter number, name or SMS..." autocomplete="off">
+                        <div class="auto-complete-dropdown" id="autoCompleteDropdown" style="display: none;"></div>
+                    </div>
+
+                    <!-- Input field for dialing -->
+                    <label for="dialerDisplay" class="visually-hidden">Dial Pad</label>
+                    <input type="text" class="display" id="dialerDisplay" placeholder="Dial a number or type a name" aria-label="Dial Pad" aria-describedby="dialHint" autofocus>
+                    <span id="dialHint" class="visually-hidden">Enter a phone number or contact name. Press Enter to call or use SMS button to send a message.</span>
+
+                    <!-- DTMF Status -->
+                    <div class="dtmf-status" id="dtmfStatus">
+                        <span class="dtmf-indicator" id="dtmfIndicator"></span>
+                        <span class="dtmf-text">DTMF Tones: <span id="dtmfEnabled">Enabled</span></span>
+                    </div>
+
+                    <!-- Audio Device Settings -->
+                    <div class="audio-devices-section" style="margin: 16px 0; padding: 12px; background: rgba(255,255,255,0.05); border-radius: 8px;">
+                        <h4 style="margin: 0 0 12px 0; font-size: 14px; color: #fff;">Audio Devices</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div>
+                                <label style="display: block; margin-bottom: 4px; font-size: 12px; color: #ccc;">Input Device:</label>
+                                <select class="form-select" id="audioInputDevice" style="font-size: 12px;">
+                                    <option value="">Default Input Device</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="display: block; margin-bottom: 4px; font-size: 12px; color: #ccc;">Output Device:</label>
+                                <select class="form-select" id="audioOutputDevice" style="font-size: 12px;">
+                                    <option value="">Default Output Device</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div style="margin-top: 8px; display: flex; gap: 8px;">
+                            <button class="btn btn-secondary" id="testAudioBtn" style="font-size: 11px; padding: 4px 8px;">🎵 Test Audio</button>
+                            <button class="btn btn-secondary" id="refreshDevicesBtn" style="font-size: 11px; padding: 4px 8px;">🔄 Refresh</button>
+                        </div>
+                    </div>
+
+                    <div class="keypad">
+                        <button class="key" data-digit="1">1<div class="key-letters"></div></button>
+                        <button class="key" data-digit="2">2<div class="key-letters">ABC</div></button>
+                        <button class="key" data-digit="3">3<div class="key-letters">DEF</div></button>
+                        <button class="key" data-digit="4">4<div class="key-letters">GHI</div></button>
+                        <button class="key" data-digit="5">5<div class="key-letters">JKL</div></button>
+                        <button class="key" data-digit="6">6<div class="key-letters">MNO</div></button>
+                        <button class="key" data-digit="7">7<div class="key-letters">PQRS</div></button>
+                        <button class="key" data-digit="8">8<div class="key-letters">TUV</div></button>
+                        <button class="key" data-digit="9">9<div class="key-letters">WXYZ</div></button>
+                        <button class="key" data-digit="*">*</button>
+                        <button class="key" data-digit="0">0<div class="key-letters">+</div></button>
+                        <button class="key" data-digit="#">#</button>
+                    </div>
+
+                    <div class="call-buttons">
+                        <button class="btn btn-call" id="callBtn">Call</button>
+                        <button class="btn btn-hangup" id="hangupBtn" style="display: none;">Hang Up</button>
+                        <button class="btn btn-secondary" id="clearBtn">Clear</button>
+                        <button class="btn btn-secondary" id="smsBtn">SMS</button>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="quick-actions">
+                        <button class="quick-action-btn" id="testDTMFBtn">🎵 Test DTMF</button>
+                        <button class="quick-action-btn" id="addContactBtn">👤 Add Contact</button>
+                        <button class="quick-action-btn" onclick="dialNumber('*43')">Echo Test</button>
+                        <button class="quick-action-btn" onclick="dialNumber('*44')">📊 Queue Status</button>
+                        <button class="quick-action-btn" onclick="dialNumber('*99')">🔑 Login/Logout</button>
+                        <button class="quick-action-btn" onclick="dialNumber('123')">🕐 Speaking Clock</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contacts Tab -->
+            <div class="tab-content" id="contacts">
+                <div class="loading">Loading contacts...</div>
+            </div>
+
+            <!-- History Tab -->
+            <div class="tab-content" id="history">
+                <div class="loading">📋 Loading call history...</div>
+            </div>
+
+            <!-- Messages Tab -->
+            <div class="tab-content" id="messages">
+                <div class="loading">Loading messages...</div>
+            </div>
+
+            <!-- SIP Clients Tab -->
+            <div class="tab-content" id="sip-clients">
+                <div class="sip-clients-section">
+                    <h3 style="margin-bottom: 20px; text-align: center;">🌐 Connected SIP Clients</h3>
+
+                    <!-- SIP Status Summary -->
+                    <div class="sip-status-summary" style="display: flex; gap: 12px; margin-bottom: 20px;">
+                        <div class="status-card" style="flex: 1; background: rgba(40, 167, 69, 0.2); border-radius: 8px; padding: 12px; text-align: center;">
+                            <div style="font-size: 18px; font-weight: bold;" id="onlineCount">0</div>
+                            <div style="font-size: 12px; opacity: 0.8;">Online</div>
+                        </div>
+                        <div class="status-card" style="flex: 1; background: rgba(255, 193, 7, 0.2); border-radius: 8px; padding: 12px; text-align: center;">
+                            <div style="font-size: 18px; font-weight: bold;" id="busyCount">0</div>
+                            <div style="font-size: 12px; opacity: 0.8;">In Call</div>
+                        </div>
+                        <div class="status-card" style="flex: 1; background: rgba(220, 53, 69, 0.2); border-radius: 8px; padding: 12px; text-align: center;">
+                            <div style="font-size: 18px; font-weight: bold;" id="offlineCount">0</div>
+                            <div style="font-size: 12px; opacity: 0.8;">Offline</div>
+                        </div>
+                    </div>
+
+                    <!-- Clients List -->
+                    <div class="clients-list" id="sipClientsList">
+                        <div class="empty-state">No SIP clients detected</div>
+                    </div>
+
+                    <!-- Intercom Controls -->
+                    <div class="intercom-section" style="background: rgba(255, 255, 255, 0.05); border-radius: 8px; padding: 16px; margin-top: 20px;">
+                        <h4 style="margin-bottom: 12px;">📢 Intercom & Paging</h4>
+                        <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                            <input type="text" class="form-input" id="intercomMessage" placeholder="Enter message..." style="flex: 1;">
+                            <button class="btn btn-call" id="sendIntercomBtn">📢 Send</button>
+                        </div>
+                        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                            <button class="quick-action-btn" onclick="sendQuickIntercom('All staff to front desk')">Staff to Front</button>
+                            <button class="quick-action-btn" onclick="sendQuickIntercom('Meeting in conference room')">🏢 Meeting Call</button>
+                            <button class="quick-action-btn" onclick="sendQuickIntercom('Emergency evacuation')">🚨 Emergency</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recorder Tab -->
+            <div class="tab-content" id="recorder">
+                <div class="recorder-section">
+                    <h3 style="margin-bottom: 20px; text-align: center;">Call Recorder</h3>
+
+                    <!-- Recording Status -->
+                    <div class="recording-status" id="recordingStatus">
+                        <div class="status-indicator" id="recordingIndicator"></div>
+                        <span id="recordingStatusText">Ready to Record</span>
+                        <div class="recording-timer" id="recordingTimer" style="display: none;">00:00</div>
+                    </div>
+
+                    <!-- Recording Controls -->
+                    <div class="recording-controls">
+                        <button class="btn btn-call" id="startRecordingBtn">Start Recording</button>
+                        <button class="btn btn-hangup" id="stopRecordingBtn" style="display: none;">⏹️ Stop Recording</button>
+                        <button class="btn btn-secondary" id="pauseRecordingBtn" style="display: none;">⏸️ Pause</button>
+                    </div>
+
+                    <!-- Recording Settings -->
+                    <div class="recording-settings">
+                        <h4 style="margin: 20px 0 12px 0;">Recording Settings</h4>
+    </div>
+
+    <!-- Footer -->
+    <footer style="position: fixed; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.8); color: #ffffff; text-align: center; padding: 8px; font-size: 11px; z-index: 1000;">
+        © 2025-2026 Devine Creations LLC | FlexPhone Professional Communication Suite
+    </footer>
+
+</body>
+</html>

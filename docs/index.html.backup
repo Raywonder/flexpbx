@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlexPBX Documentation Center</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .search-box {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .section h2 {
+            color: #333;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-icon {
+            font-size: 2rem;
+        }
+
+        .docs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+        }
+
+        .doc-card {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .doc-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            border-color: #667eea;
+        }
+
+        .doc-card h3 {
+            color: #333;
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .doc-card p {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .doc-links {
+            display: flex;
+            gap: 10px;
+        }
+
+        .doc-link {
+            display: inline-block;
+            padding: 8px 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .doc-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .doc-link.markdown {
+            background: #28a745;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            background: #ffc107;
+            color: #333;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .badge.new {
+            background: #28a745;
+            color: white;
+        }
+
+        .badge.important {
+            background: #dc3545;
+            color: white;
+        }
+
+        .quick-links {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .quick-links h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .quick-links-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .quick-link-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .quick-link-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .quick-link-card .icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .quick-link-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .quick-link-card p {
+            font-size: 0.85rem;
+            opacity: 0.9;
+        }
+
+        .footer {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            color: #666;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 FlexPBX Documentation Center</h1>
+            <p>Complete guides, references, and troubleshooting for administrators and support staff</p>
+        </div>
+
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="🔍 Search documentation..." onkeyup="filterDocs()">
+        </div>
+
+        <div class="quick-links">
+            <h2>⚡ Quick Access</h2>
+            <div class="quick-links-grid">
+                <a href="../admin/dashboard.html" class="quick-link-card">
+                    <div class="icon">🔧</div>
+                    <h3>Admin Dashboard</h3>
+                    <p>System management</p>
+                </a>
+                <a href="../user-portal/" class="quick-link-card">
+                    <div class="icon">👤</div>
+                    <h3>User Portal</h3>
+                    <p>User self-service</p>
+                </a>
+                <a href="FEATURE_CODES.html" class="quick-link-card">
+                    <div class="icon">📞</div>
+                    <h3>Feature Codes</h3>
+                    <p>Quick reference</p>
+                </a>
+                <a href="AUDIO_TROUBLESHOOTING.html" class="quick-link-card">
+                    <div class="icon">🔍</div>
+                    <h3>Troubleshooting</h3>
+                    <p>Common issues</p>
+                </a>
+            </div>
+        </div>
+
+        <!-- Getting Started -->
+        <div class="section">
+            <h2><span class="section-icon">🚀</span> Getting Started</h2>
+            <div class="docs-grid">
+                <div class="doc-card">
+                    <h3>Final Deployment README <span class="badge important">START HERE</span></h3>
+                    <p>Complete deployment guide and system overview. Essential reading for new administrators.</p>
+                    <div class="doc-links">
+                        <a href="FINAL-DEPLOYMENT-README.html" class="doc-link">View HTML</a>
+                        <a href="FINAL-DEPLOYMENT-README.md" download class="doc-link markdown">Download MD</a>
+                    </div>
+                </div>
+
+                <div class="doc-card">
+                    <h3>System Status</h3>
+                    <p>Current system configuration, active modules, and health status.</p>
+                    <div class="doc-links">
+                        <a href="SYSTEM-STATUS.html" class="doc-link">View HTML</a>
+                        <a href="SYSTEM-STATUS.md" download class="doc-link markdown">Download MD</a>
+                    </div>
+                </div>
+
+                <div class="doc-card">
+                    <h3>Testing Guide</h3>
+                    <p>Step-by-step testing procedures for all system features.</p>
+                    <div class="doc-links">
+                        <a href="TESTING-GUIDE.html" class="doc-link">View HTML</a>
+                        <a href="TESTING-GUIDE.md" download class="doc-link markdown">Download MD</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features & Configuration -->
+        <div class="section">
+            <h2><span class="section-icon">⚙️</span> Features & Configuration</h2>
+            <div class="docs-grid">
+                <div class="doc-card">
+                    <h3>Feature Codes Reference <span class="badge new">NEW</span></h3>
+                    <p>Complete list of all feature codes (*43, *45, *97, etc.) with usage instructions.</p>
+                    <div class="doc-links">
+                        <a href="FEATURE_CODES.html" class="doc-link">View HTML</a>
+                        <a href="FEATURE_CODES.md" download class="doc-link markdown">Download MD</a>
+                    </div>
+                </div>
+
+                <div class="doc-card">
+                    <h3>Feature Codes Manager Guide <span class="badge new">NEW</span></h3>
+                    <p>Admin guide for managing feature codes through the web interface.</p>
+                    <div class="doc-links">
+                        <a href="FEATURE_CODES_MANAGER_GUIDE.html" class="doc-link">View HTML</a>
+                        <a href="FEATURE_CODES_MANAGER_GUIDE.md" download class="doc-link markdown">Download MD</a>
+                    </div>
+                </div>
+
+                <div class="doc-card">
+                    <h3>Voicemail & Transfers Complete <span class="badge new">NEW</span></h3>
+                    <p>Complete voicemail system setup and call transfer features documentation.</p>
+                    <div class="doc-links">
+                        <a href="VOICEMAIL_AND_TRANSFERS_COMPLETE.html" class="doc-link">View HTML</a>
+                        <a href="VOICEMAIL_AND_TRANSFERS_COMPLETE.md" download class="doc-link markdown">Download MD</a>
+                    </div>
+                </div>
+
+                <div class="doc-card">
+                    <h3>Feature Summary October 2025</h3>
+                    <p>Monthly summary of all active features and recent additions.</p>
+                    <div class="doc-links">
+                        <a href="FEATURE_SUMMARY_OCTOBER_2025.html" class="doc-link">View HTML</a>
+                        <a href="FEATURE_SUMMARY_OCTOBER_2025.md" download class="doc-link markdown">Download MD</a>
+                    </div>
+                </div>
+
+                <div class="doc-card">
+                    <h3>Dialplan Guide</h3>
+                    <p>Understanding and modifying the Asterisk dialplan.</p>
+                    <div class="doc-links">
+                        <a href="DIALPLAN-GUIDE.html" class="doc-link">View HTML</a>
+                        <a href="DIALPLAN-GUIDE.md" download class="doc-link markdown">Download MD</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Troubleshooting & Support -->
+        <div class="section">
+            <h2><span class="section-icon">🔧</span> Troubleshooting & Support</h2>
+            <div class="docs-grid">
+                <div class="doc-card">
+                    <h3>Audio Troubleshooting <span class="badge important">IMPORTANT</span></h3>
+                    <p>Comprehensive guide for diagnosing and fixing audio issues.</p>
+                    <div class="doc-links">
+                        <a href="AUDIO_TROUBLESHOOTING.html" class="doc-link">View HTML</a>
+                        <a href="AUDIO_TROUBLESHOOTING.md" download class="doc-link markdown">Download MD</a>
+                    </div>
+                </div>
+
+                <div class="doc-card">
+                    <h3>Audio Fix Summary</h3>
+                    <p>Summary of audio fixes applied to the system.</p>
+                    <div class="doc-links">
+                        <a href="AUDIO_FIX_SUMMARY.html" class="doc-link">View HTML</a>
+                        <a href="AUDIO_FIX_SUMMARY.md" download class="doc-link markdown">Download MD</a>
+                    </div>
+                </div>
+
+                <div class="doc-card">
+                    <h3>PBX Server Status</h3>
+                    <p>Current server status and health monitoring information.</p>
+                    <div class="doc-links">
+                        <a href="PBX-SERVER-STATUS.html" class="doc-link">View HTML</a>
+                        <a href="PBX-SERVER-STATUS.md" download class="doc-link markdown">Download MD</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Network & Security -->
+        <div class="section">
+            <h2><span class="section-icon">🔒</span> Network & Security</h2>
+            <div class="docs-grid">
+                <div class="doc-card">
+                    <h3>Network Ports & STUN</h3>
+                    <p>Complete network configuration including ports, STUN servers, and firewall rules.</p>
+                    <div class="doc-links">
+                        <a href="NETWORK_PORTS_AND_STUN.html" class="doc-link">View HTML</a>
+                        <a href="NETWORK_PORTS_AND_STUN.md" download class="doc-link markdown">Download MD</a>
+                    </div>
+                </div>
+
+                <div class="doc-card">
+                    <h3>Security & Routing Summary</h3>
+                    <p>Security configurations and call routing setup.</p>
+                    <div class="doc-links">
+                        <a href="SECURITY-AND-ROUTING-SUMMARY.html" class="doc-link">View HTML</a>
+                        <a href="SECURITY-AND-ROUTING-SUMMARY.md" download class="doc-link markdown">Download MD</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Integration & Setup -->
+        <div class="section">
+            <h2><span class="section-icon">🔌</span> Integration & Setup</h2>
+            <div class="docs-grid">
+                <div class="doc-card">
+                    <h3>Callcentric Setup Complete</h3>
+                    <p>Step-by-step guide for integrating Callcentric SIP trunk.</p>
+                    <div class="doc-links">
+                        <a href="CALLCENTRIC-SETUP-COMPLETE.html" class="doc-link">View HTML</a>
+                        <a href="CALLCENTRIC-SETUP-COMPLETE.md" download class="doc-link markdown">Download MD</a>
+                    </div>
+                </div>
+
+                <div class="doc-card">
+                    <h3>Extension Testing Guide</h3>
+                    <p>Testing procedures for SIP extensions and registration.</p>
+                    <div class="doc-links">
+                        <a href="EXTENSION-TESTING-GUIDE.html" class="doc-link">View HTML</a>
+                        <a href="EXTENSION-TESTING-GUIDE.md" download class="doc-link markdown">Download MD</a>
+                    </div>
+                </div>
+
+                <div class="doc-card">
+                    <h3>Walter Harper Extension Setup</h3>
+                    <p>Example extension configuration and setup guide.</p>
+                    <div class="doc-links">
+                        <a href="WALTER-HARPER-EXTENSION-SETUP.html" class="doc-link">View HTML</a>
+                        <a href="WALTER-HARPER-EXTENSION-SETUP.md" download class="doc-link markdown">Download MD</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Development & Archives -->
+        <div class="section">
+            <h2><span class="section-icon">📦</span> Development & Archives</h2>
+            <div class="docs-grid">
+                <div class="doc-card">
+                    <h3>FlexPBX Deployment Summary</h3>
+                    <p>High-level deployment summary and architecture overview.</p>
+                    <div class="doc-links">
+                        <a href="FLEXPBX-DEPLOYMENT-SUMMARY.html" class="doc-link">View HTML</a>
+                        <a href="FLEXPBX-DEPLOYMENT-SUMMARY.md" download class="doc-link markdown">Download MD</a>
+                    </div>
+                </div>
+
+                <div class="doc-card">
+                    <h3>FlexPBX Development Archive</h3>
+                    <p>Historical development notes and decisions.</p>
+                    <div class="doc-links">
+                        <a href="FLEXPBX-DEVELOPMENT-ARCHIVE.html" class="doc-link">View HTML</a>
+                        <a href="FLEXPBX-DEVELOPMENT-ARCHIVE.md" download class="doc-link markdown">Download MD</a>
+                    </div>
+                </div>
+
+                <div class="doc-card">
+                    <h3>Claude Handoff</h3>
+                    <p>AI assistant context and handoff documentation.</p>
+                    <div class="doc-links">
+                        <a href="CLAUDE-HANDOFF.html" class="doc-link">View HTML</a>
+                        <a href="CLAUDE-HANDOFF.md" download class="doc-link markdown">Download MD</a>
+                    </div>
+                </div>
+
+                <div class="doc-card">
+                    <h3>PBX Test Documentation</h3>
+                    <p>Internal testing notes and procedures.</p>
+                    <div class="doc-links">
+                        <a href="pbxtest.html" class="doc-link">View HTML</a>
+                        <a href="pbxtest.md" download class="doc-link markdown">Download MD</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p><strong>FlexPBX Documentation Center</strong> | Version 1.0 | October 2025</p>
+            <p>All documentation available in both HTML (web viewing) and Markdown (download) formats</p>
+            <p style="margin-top: 10px;">
+                <a href="../admin/dashboard.html" style="color: #667eea; margin: 0 10px;">Admin Dashboard</a> |
+                <a href="../user-portal/" style="color: #667eea; margin: 0 10px;">User Portal</a> |
+                <a href="mailto:admin@flexpbx.devinecreations.net" style="color: #667eea; margin: 0 10px;">Support</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function filterDocs() {
+            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+            const docCards = document.querySelectorAll('.doc-card');
+
+            docCards.forEach(card => {
+                const title = card.querySelector('h3').textContent.toLowerCase();
+                const description = card.querySelector('p').textContent.toLowerCase();
+
+                if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+
+            // Hide empty sections
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                const visibleCards = section.querySelectorAll('.doc-card:not(.hidden)');
+                if (visibleCards.length === 0 && searchTerm !== '') {
+                    section.classList.add('hidden');
+                } else {
+                    section.classList.remove('hidden');
+                }
+            });
+        }
+    </script>
+</body>
+</html>

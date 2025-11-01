@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlexPBX Dialplan Guide - FlexPBX Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #34495e;
+            font-size: 1.8rem;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #555;
+            font-size: 1.4rem;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+
+        h4 {
+            color: #666;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        h5, h6 {
+            color: #777;
+            margin-top: 15px;
+            margin-bottom: 8px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+
+        ul, ol {
+            margin-bottom: 15px;
+            margin-left: 30px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e74c3c;
+        }
+
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+            font-size: 0.95em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            display: block;
+        }
+
+        table thead {
+            background: #667eea;
+            color: white;
+        }
+
+        table th,
+        table td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        table tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        table tbody tr:hover {
+            background: #e9ecef;
+        }
+
+        blockquote {
+            border-left: 4px solid #667eea;
+            padding-left: 20px;
+            margin: 20px 0;
+            color: #555;
+            font-style: italic;
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 4px;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px solid #ecf0f1;
+            margin: 30px 0;
+        }
+
+        a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        strong {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        em {
+            font-style: italic;
+            color: #555;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid #ecf0f1;
+            text-align: center;
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            table {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to Documentation Index</a>
+
+        <div class="header">
+            <h1>FlexPBX Dialplan Guide</h1>
+        </div>
+
+        <div class="content">
+            <h1>FlexPBX Dialplan Guide</h1><p><strong>Updated:</strong> 2025-10-13<br><strong>Outbound Prefix:</strong> 09</p><hr><h2>📞 Outbound Dialing</h2><h3>Standard Outbound Calls (Using 09 Prefix)</h3><p><strong>Format:</strong> <code>09 + Phone Number</code></p><table><tr><td>Example</td><td>What You Dial</td><td>What Gets Called</td><td>Description</td></tr><br><tr><td>---------</td><td>--------------</td><td>------------------</td><td>-------------</td></tr><br><tr><td><strong>US Local</strong></td><td><code>093364626141</code></td><td><code>+1-336-462-6141</code></td><td>09 + 10-digit number</td></tr><br><tr><td><strong>US/Canada</strong></td><td><code>095551234567</code></td><td><code>+1-555-123-4567</code></td><td>09 + 10-digit number</td></tr><br><tr><td><strong>With 1 prefix</strong></td><td><code>0915551234567</code></td><td><code>+1-555-123-4567</code></td><td>09 + 1 + 10-digit</td></tr><br><tr><td><strong>Toll-free</strong></td><td><code>098001234567</code></td><td><code>+1-800-123-4567</code></td><td>09 + 10-digit toll-free</td></tr></p><h3>International Dialing</h3><p><strong>Format:</strong> <code>09 + 011 + Country Code + Number</code></p><p><tr><td>Destination</td><td>Example</td><td>Description</td></tr><br><tr><td>-------------</td><td>---------</td><td>-------------</td></tr><br><tr><td><strong>UK</strong></td><td><code>09011442012345678</code></td><td>09 + 011 + 44 + number</td></tr><br><tr><td><strong>Mexico</strong></td><td><code>0901152555123456</code></td><td>09 + 011 + 52 + number</td></tr><br><tr><td><strong>Japan</strong></td><td><code>0901181312345678</code></td><td>09 + 011 + 81 + number</td></tr><br><tr><td><strong>Australia</strong></td><td><code>09011612345678</code></td><td>09 + 011 + 61 + number</td></tr></p><h3>Service Codes</h3><p><strong>Format:</strong> <code>09 + Service Code</code></p><p><tr><td>Service</td><td>What You Dial</td><td>Description</td></tr><br><tr><td>---------</td><td>--------------</td><td>-------------</td></tr><br><tr><td><strong>Directory</strong></td><td><code>09411</code></td><td>Directory assistance</td></tr><br><tr><td><strong>Operator</strong></td><td><code>090</code></td><td>Operator assistance</td></tr><br><tr><td><strong>Information</strong></td><td><code>09611</code></td><td>General information</td></tr></p><h3>Emergency Calls</h3><p><strong>Format:</strong> <code>911</code> (NO PREFIX NEEDED!)</p><p><tr><td>Emergency</td><td>What You Dial</td><td>Description</td></tr><br><tr><td>-----------</td><td>--------------</td><td>-------------</td></tr><br><tr><td><strong>Emergency</strong></td><td><code>911</code></td><td>Direct 911 (bypasses prefix)</td></tr><br><tr><td><strong>Police</strong></td><td><code>911</code></td><td>Emergency services</td></tr><br><tr><td><strong>Fire</strong></td><td><code>911</code></td><td>Emergency services</td></tr></p><p><strong>⚠️ IMPORTANT:</strong> Emergency calls (911) work WITHOUT the 09 prefix for safety!</p><hr><h2>📱 Internal Dialing (NO PREFIX)</h2><h3>Extensions</h3><br><strong>Format:</strong> Just dial the extension number</p><p><tr><td>Range</td><td>Description</td><td>Example</td></tr><br><tr><td>-------</td><td>-------------</td><td>---------</td></tr><br><tr><td><strong>1000-1009</strong></td><td>Sales Department</td><td>Dial <code>1001</code></td></tr><br><tr><td><strong>2000-2009</strong></td><td>Support Department</td><td>Dial <code>2001</code></td></tr><br><tr><td><strong>8000-8009</strong></td><td>Conference Rooms</td><td>Dial <code>8000</code></td></tr><br><tr><td><strong>101-199</strong></td><td>IVR Menus</td><td>Dial <code>101</code></td></tr></p><h3>Special Codes</h3><p><tr><td>Code</td><td>Function</td><td>Description</td></tr><br><tr><td>------</td><td>----------</td><td>-------------</td></tr><br><tr><td><code>*97</code></td><td>Voicemail</td><td>Access your voicemail</td></tr><br><tr><td><code>9196</code></td><td>Echo Test</td><td>Hear yourself (audio test)</td></tr><br><tr><td><code>*60</code></td><td>Time/Date</td><td>Hear current time</td></tr><br><tr><td><code>*78</code></td><td>DND On</td><td>Enable Do Not Disturb</td></tr><br><tr><td><code>*79</code></td><td>DND Off</td><td>Disable Do Not Disturb</td></tr><br><tr><td><code>*72</code></td><td>Call Forward On</td><td>Enable call forwarding</td></tr><br><tr><td><code>*73</code></td><td>Call Forward Off</td><td>Disable call forwarding</td></tr></p><hr><h2>🔧 Dialplan Configuration</h2><h3>How It Works</h3><br>  <li><strong>You dial:</strong> <code>093364626141</code></li><br><li><strong>PBX strips:</strong> <code>09</code> prefix</li><br><li><strong>PBX adds:</strong> <code>1</code> for North America</li><br><li><strong>Sends to trunk:</strong> <code>13364626141</code></li><br><li><strong>Callcentric dials:</strong> <code>+1-336-462-6141</code></li></p><h3>Pattern Matching (Asterisk Format)</h3><pre><code class="language-">_09NXXNXXXXXX    = 09 + 10-digit (3364626141)<br>_091NXXNXXXXXX   = 09 + 1 + 10-digit (13364626141)<br>_09011X.         = 09 + 011 + international<br>_09[2-9]11       = 09 + service codes (411, 611)<br>_911             = Emergency (no prefix)</code></pre><p><strong>Legend:</strong><br><ul><li><code>_</code> = Pattern start</li><br><li><code>N</code> = Digit 2-9</li><br><li><code>X</code> = Any digit 0-9</li><br><li><code>.</code> = One or more digits</li><br><li><code>[2-9]</code> = Range of digits</li></p><hr><h2>💡 Quick Examples</h2><h3>Example 1: Call Mobile Phone</h3><br><pre><code class="language-">Your mobile: (336) 462-6141<br>From extension 2001, dial: 093364626141<br>✓ Call goes through Callcentric<br>✓ Your mobile rings<br>✓ Caller ID shows your Callcentric DID</code></pre><h3>Example 2: Call Business</h3><br><pre><code class="language-">Business: (555) 123-4567<br>From extension 2001, dial: 095551234567<br>✓ Routes through Callcentric<br>✓ Business phone rings</code></pre><h3>Example 3: International Call to UK</h3><br><pre><code class="language-">UK Number: +44 20 1234 5678<br>From extension 2001, dial: 09011442012345678<br>✓ Routes via Callcentric international<br>✓ Charges apply per Callcentric rates</code></pre><h3>Example 4: Internal Call</h3><br><pre><code class="language-">Call support agent<br>From extension 1001, dial: 2001<br>✓ Direct internal call (no charges)<br>✓ No prefix needed</code></pre><h3>Example 5: Join Conference</h3><br><pre><code class="language-">Join main conference<br>From any extension, dial: 8000<br>✓ Enters conference room<br>✓ No prefix needed</code></pre><hr><h2>🚨 Common Mistakes</h2><h3>❌ Wrong: <code>93364626141</code></h3><br><strong>Missing leading 0</strong> - won&#039;t dial out</p><h3>❌ Wrong: <code>0093364626141</code></h3><br><strong>Too many zeros</strong> - won&#039;t match pattern</p><h3>❌ Wrong: <code>913364626141</code></h3><br><strong>Missing the 0</strong> - won&#039;t route</p><h3>✅ Correct: <code>093364626141</code></h3><br><strong>Perfect!</strong> - will dial out</p><h3>✅ Also Correct: <code>0913364626141</code></h3><br>If you prefer including the 1 - also works!</p><hr><h2>🎯 Testing Your Dialplan</h2><h3>Test 1: Echo Test (Internal)</h3><br><pre><code class="language-">From extension 2001:<br>Dial: 9196<br>Expected: Hear yourself back<br>Result: Confirms audio path working</code></pre><h3>Test 2: Outbound to Your Mobile</h3><br><pre><code class="language-">From extension 2001:<br>Dial: 09 + your mobile number<br>Expected: Your mobile rings<br>Result: Confirms outbound calling works</code></pre><h3>Test 3: Internal Extension</h3><br><pre><code class="language-">From extension 2001:<br>Dial: 1001<br>Expected: Extension 1001 rings<br>Result: Confirms internal routing</code></pre><hr><h2>⚙️ Modifying the Dialplan</h2><h3>To Change Outbound Prefix</h3><br>  <li>Go to: https://flexpbx.devinecreations.net/admin/trunks-dids-manager.html</li><br><li>Click &quot;Trunks&quot; tab</li><br><li>Edit CallCentric trunk</li><br><li>Modify dialpatterns</li><br><li>Save</li></p><h3>Common Prefix Options</h3><p><tr><td>Prefix</td><td>Use Case</td></tr><br><tr><td>--------</td><td>----------</td></tr><br><tr><td><code>09</code></td><td>Current (your preference)</td></tr><br><tr><td><code>9</code></td><td>Traditional PBX style</td></tr><br><tr><td><code>00</code></td><td>International style</td></tr><br><tr><td><code>8</code></td><td>Alternative</td></tr><br><tr><td>None</td><td>Direct dial (10 digits)</td></tr><br></table><br><h3>To Add New Dial Pattern</h3><p>Edit: <code>config/callcentric-trunk-config.json</code></p><p>Add to <code>dialpatterns.outbound</code>:<br><pre><code class="language-json">{<br>  &quot;pattern&quot;: &quot;_09XXXXXXX&quot;,<br>  &quot;strip&quot;: &quot;09&quot;,<br>  &quot;prepend&quot;: &quot;&quot;,<br>  &quot;description&quot;: &quot;Your custom pattern&quot;<br>}</code></pre><hr><h2>📊 Dialplan Flowchart</h2><pre><code class="language-">User Dials Number<br>        |<br>        v<br>   Starts with 09?<br>      /    \<br>    YES    NO<br>     |      |<br>     v      v<br>  Outbound  Internal?<br>   Call      /  \<br>     |     YES  NO<br>     v      |    |<br>  Strip 09  Route Error<br>     |      Internally<br>     v         |<br>  Add 1 if    Ring<br>   needed   Extension<br>     |<br>     v<br>  Send to<br> Callcentric<br>     |<br>     v<br>   Call<br>  Connects!</code></pre><hr><h2>🔐 Security &amp; Fraud Prevention</h2><h3>Restrictions</h3><br>  <li><strong>09 prefix required</strong> - prevents accidental international dialing</li><br><li><strong>Emergency always works</strong> - 911 doesn&#039;t need prefix</li><br><li><strong>Internal calls free</strong> - no charges for extension-to-extension</li><br><li><strong>Channel limits</strong> - max 2 concurrent calls</li></p><h3>Best Practices</h3><br>  <li>Don&#039;t share extension passwords</li><br><li>Monitor call logs regularly</li><br><li>Review channel usage</li><br><li>Set per-extension outbound permissions (coming soon)</li></p><hr><h2>📞 Quick Dial Reference Card</h2><p><strong>Print this for your desk!</strong></p><pre><code class="language-">┌─────────────────────────────────────┐<br>│     FLEXPBX QUICK DIAL GUIDE        │<br>├─────────────────────────────────────┤<br>│ OUTBOUND (via Callcentric):         │<br>│ • US/Canada: 09 + 10-digit          │<br>│   Example: 093364626141             │<br>│                                     │<br>│ • International: 09 + 011 + number  │<br>│   Example: 09011442012345678        │<br>│                                     │<br>│ • Emergency: 911 (no prefix!)       │<br>│                                     │<br>│ INTERNAL (free):                    │<br>│ • Extensions: Just dial number      │<br>│   Sales: 1000-1009                  │<br>│   Support: 2000-2009                │<br>│   Conferences: 8000-8009            │<br>│                                     │<br>│ • IVR Menu: 101                     │<br>│ • Voicemail: *97                    │<br>│ • Echo Test: 9196                   │<br>│                                     │<br>│ Your Extension: <strong><em></strong><strong></em></strong>_         │<br>│ Password: <strong><em></strong><strong></em></strong>_               │<br>└─────────────────────────────────────┘</code></pre><hr><h2>🛠️ Troubleshooting</h2><h3>&quot;Cannot Complete Call&quot;</h3><br><strong>Check:</strong><br><li>Did you use 09 prefix? ✓</li><br><li>Is number valid? ✓</li><br><li>Trunk registered? Check Trunks Manager</li><br><li>Channels available? Check Channels tab</li></p><h3>&quot;Fast Busy Signal&quot;</h3><br><strong>Possible causes:</strong><br><li>Invalid dialplan pattern</li><br><li>Trunk not registered</li><br><li>All channels in use</li><br><li>Invalid destination number</li></p><h3>&quot;No Audio&quot;</h3><br><strong>Check:</strong><br><li>Firewall: UDP 10000-20000</li><br><li>NAT settings</li><br><li>Codec compatibility</li><br><li>Run echo test (9196)</li></p><hr><h2>📚 Additional Resources</h2><br>  <li><strong>Trunks Manager:</strong> https://flexpbx.devinecreations.net/admin/trunks-dids-manager.html</li><br><li><strong>Call Logs:</strong> Check for dial pattern issues</li><br><li><strong>Asterisk Patterns:</strong> [Asterisk Dialplan Documentation]</li><br></ul><br><hr></p><p><strong>Summary:</strong> Dial <code>09</code> + phone number for outbound calls via Callcentric!</p><p><strong>Your Chicago DID:</strong> (312) 313-9555<br><strong>Test Extension:</strong> 2001 (techsupport1 / Support2001!)<br></p>
+        </div>
+
+        <div class="footer">
+            <p>FlexPBX Documentation | Generated from Markdown</p>
+            <p><a href="DIALPLAN-GUIDE.md" download>Download Markdown Version</a></p>
+        </div>
+    </div>
+</body>
+</html>

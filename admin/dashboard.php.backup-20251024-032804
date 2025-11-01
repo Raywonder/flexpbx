@@ -1,0 +1,516 @@
+<?php
+require_once __DIR__ . '/admin_auth_check.php';
+
+// Set page title for header
+$page_title = 'FlexPBX Admin Dashboard';
+
+// Include the admin header
+require_once __DIR__ . '/includes/admin_header.php';
+?>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px 20px 20px;
+        }
+
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .stat-card h3 {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-card .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-card .stat-label {
+            font-size: 0.8rem;
+            color: #999;
+            margin-top: 0.25rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .card h2 {
+            color: #333;
+            font-size: 20px;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-align: center;
+            display: block;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .section-title {
+            color: white;
+            font-size: 24px;
+            margin: 30px 0 20px 0;
+            font-weight: 600;
+        }
+
+        .badge {
+            display: inline-block;
+            background: #4ade80;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        .badge.new {
+            background: #f59e0b;
+        }
+    </style>
+
+    <!-- Quick Stats Section -->
+    <div class="container">
+        <div class="quick-stats">
+            <div class="stat-card">
+                <h3>Network Status</h3>
+                <div class="stat-value" style="color: <?php echo htmlspecialchars($_SESSION['network_color'] ?? '#ff6b6b'); ?>;">
+                    <?php echo $_SESSION['network_trusted'] ? 'Secure' : 'Public'; ?>
+                </div>
+                <div class="stat-label"><?php echo htmlspecialchars($_SESSION['network_name'] ?? 'Unknown'); ?></div>
+            </div>
+
+            <div class="stat-card">
+                <h3>Your IP Address</h3>
+                <div class="stat-value" style="font-size: 1.2rem; color: #333;">
+                    <?php echo htmlspecialchars($_SESSION['client_ip'] ?? 'Unknown'); ?>
+                </div>
+                <div class="stat-label">
+                    <?php if (!empty($_SESSION['public_ip'])): ?>
+                        Public: <?php echo htmlspecialchars($_SESSION['public_ip']); ?>
+                    <?php else: ?>
+                        Private network
+                    <?php endif; ?>
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <h3>Session Timeout</h3>
+                <div class="stat-value" style="font-size: 1.2rem; color: #333;">
+                    <?php echo $_SESSION['network_trusted'] ? '30 Days' : '24 Hours'; ?>
+                </div>
+                <div class="stat-label">Auto-logout timer</div>
+            </div>
+
+            <div class="stat-card">
+                <h3>Logged in as</h3>
+                <div class="stat-value" style="font-size: 1.2rem; color: #333;">
+                    <?php echo htmlspecialchars($admin_username); ?>
+                </div>
+                <div class="stat-label">Role: <?php echo htmlspecialchars($admin_role); ?></div>
+            </div>
+        </div>
+
+        <div class="header">
+            <h1>🔧 FlexPBX Admin Dashboard</h1>
+            <p class="subtitle">A system you can help build to be the best it can be. Accessible by default.</p>
+            <div style="background: #e3f2fd; border-left: 4px solid #2196f3; padding: 15px; margin-top: 20px; border-radius: 6px;">
+                <div style="font-weight: 600; color: #1976d2;">📞 Support Hotline</div>
+                <div style="font-size: 24px; font-weight: bold; color: #1976d2; margin: 10px 0;">
+                    <a href="tel:+13023139555" style="color: #1976d2; text-decoration: none;">(302) 313-9555</a>
+                </div>
+                <div style="font-size: 14px; color: #666;">Call our support team for immediate assistance</div>
+            </div>
+        </div>
+
+        <h3 class="section-title">📁 Media & Audio Management</h3>
+        <div class="grid">
+            <div class="card">
+                <div class="card-icon">🎙️</div>
+                <h2>Audio Upload Manager <span class="badge new">NEW</span></h2>
+                <p>Upload and manage IVR audio files, voicemail greetings, and custom recordings</p>
+                <a href="audio-upload.php" class="btn">Manage Audio Files</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">📂</div>
+                <h2>Media Manager</h2>
+                <p>Browse and organize all media files including music on hold</p>
+                <a href="media-manager.html" class="btn">Open Media Manager</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🎵</div>
+                <h2>Music on Hold Manager <span class="badge new">NEW</span></h2>
+                <p>Configure streaming MOH from Icecast/Shoutcast, manage volumes, and monitor audio</p>
+                <a href="moh-manager.html" class="btn">Manage MOH</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🎬</div>
+                <h2>Jellyfin MOH Streaming <span class="badge new">NEW</span></h2>
+                <p>Stream music from Jellyfin media server or internet radio (.pls, .m3u) for hold music</p>
+                <a href="jellyfin-moh-manager.html" class="btn">Configure Jellyfin MOH</a>
+            </div>
+            <div class="card">
+                <div class="card-icon">🎵</div>
+                <h2>Conference Music Control <span class="badge new">NEW</span></h2>
+                <p>Control music playback in conference rooms - start, stop, auto-play when alone</p>
+                <a href="conference-music-control.html" class="btn">Control Music</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🟢</div>
+                <h2>User Presence & Status <span class="badge new">NEW</span></h2>
+                <p>Track user online/offline status, manage devices, custom login/logout voice prompts</p>
+                <a href="presence-status-manager.html" class="btn">Manage Presence</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">☎️</div>
+                <h2>Main IVR Menu <span class="badge new">NEW</span></h2>
+                <p>Professional auto-attendant on (302) 313-9555 with 4 menu options and extension dialing</p>
+                <a href="https://flexpbx.devinecreations.net/documentation/MAIN_IVR_MENU.md" class="btn" target="_blank">View Documentation</a>
+            </div>
+        </div>
+
+        <h3 class="section-title">📞 PBX Configuration</h3>
+        <div class="grid">
+            <div class="card">
+                <div class="card-icon">👥</div>
+                <h2>Extensions Management</h2>
+                <p>Add, edit, and manage SIP extensions and user accounts</p>
+                <a href="admin-extensions-management.html" class="btn">Manage Extensions</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🌐</div>
+                <h2>Trunks Management</h2>
+                <p>Configure SIP trunks and external connectivity</p>
+                <a href="admin-trunks-management.html" class="btn">Manage Trunks</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">📱</div>
+                <h2>Trunks & DIDs Manager</h2>
+                <p>Advanced trunk configuration and DID routing</p>
+                <a href="trunks-dids-manager.html" class="btn">Configure DIDs</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">📥</div>
+                <h2>Inbound Routing</h2>
+                <p>Configure how incoming calls are routed</p>
+                <a href="inbound-routing.html" class="btn">Setup Routing</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">☁️</div>
+                <h2>Google Voice Integration</h2>
+                <p>Connect Google Voice accounts and configure settings</p>
+                <a href="admin-google-voice.html" class="btn">Google Voice Setup</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🔌</div>
+                <h2>External Integrations <span class="badge new">NEW</span></h2>
+                <p>Configure Twilio, Google Voice, manage phone numbers, SMS, calls, and webhooks</p>
+                <a href="twilio-settings.php" class="btn">Manage Integrations</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">📞</div>
+                <h2>Feature Codes Manager <span class="badge new">NEW</span></h2>
+                <p>Enable, disable, and manage PBX feature codes (*43, *45, *97, etc.)</p>
+                <a href="feature-codes-manager.html" class="btn">Manage Feature Codes</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">📬</div>
+                <h2>Voicemail Manager <span class="badge new">NEW</span></h2>
+                <p>Manage mailboxes, configure features, and control voicemail system settings</p>
+                <a href="voicemail-manager.html" class="btn">Manage Voicemail</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🅿️</div>
+                <h2>Call Parking <span class="badge new">NEW</span></h2>
+                <p>Manage parking lots, view parked calls in real-time, and configure call parking features</p>
+                <a href="call-parking.html" class="btn">Manage Parking</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">📞</div>
+                <h2>Call Queues <span class="badge new">NEW</span></h2>
+                <p>Manage call queues (ACD), assign agents, monitor real-time queue status, and view statistics</p>
+                <a href="call-queues.html" class="btn">Manage Queues</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🔄</div>
+                <h2>Ring Groups <span class="badge new">NEW</span></h2>
+                <p>Configure hunt groups to ring multiple extensions simultaneously or sequentially</p>
+                <a href="ring-groups.html" class="btn">Manage Ring Groups</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">📱</div>
+                <h2>IVR Builder <span class="badge new">NEW</span></h2>
+                <p>Create professional phone menus with custom routing, templates, and audio prompts</p>
+                <a href="ivr-builder.html" class="btn">Build IVR Menus</a>
+            </div>
+        </div>
+
+        <h3 class="section-title">📊 Monitoring & Reports</h3>
+        <div class="grid">
+            <div class="card">
+                <div class="card-icon">📞</div>
+                <h2>Call Logs <span class="badge new">NEW</span></h2>
+                <p>View call history, search records, export CDRs, and analyze statistics</p>
+                <a href="call-logs.html" class="btn">View Call Logs</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">📊</div>
+                <h2>Live Dashboard <span class="badge new">NEW</span></h2>
+                <p>Real-time system monitoring with live call data, extensions status, and API key tracking</p>
+                <a href="dashboard-live.php" class="btn">Open Live Dashboard</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🔍</div>
+                <h2>System Self-Check</h2>
+                <p>Run diagnostics and check system health</p>
+                <a href="admin-self-check.php" class="btn">Run Diagnostics</a>
+            </div>
+        </div>
+
+        <h3 class="section-title">🔒 Security</h3>
+        <div class="grid">
+            <div class="card">
+                <div class="card-icon">🛡️</div>
+                <h2>Security & IP Management</h2>
+                <p>Manage firewall rules, banned IPs, whitelist, and fail2ban settings</p>
+                <a href="admin-security.html" class="btn">Security Dashboard</a>
+            </div>
+        </div>
+
+        <h3 class="section-title">⚙️ System Tools</h3>
+        <div class="grid">
+            <div class="card">
+                <div class="card-icon">📦</div>
+                <h2>Modules Manager <span class="badge new">NEW</span></h2>
+                <p>Install, update, and manage FlexPBX modules and push updates to remote servers</p>
+                <a href="modules-manager.html" class="btn">Manage Modules</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">💾</div>
+                <h2>Backup & Restore <span class="badge new">NEW</span></h2>
+                <p>Create backups, restore configurations, and manage system snapshots</p>
+                <a href="backup-restore.html" class="btn">Manage Backups</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">👤</div>
+                <h2>Account Settings <span class="badge new">NEW</span></h2>
+                <p>Change password, update email, link extension, and manage your account</p>
+                <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                    <a href="change-password.php" class="btn" style="text-align: center;">Change Password</a>
+                    <a href="setup-email.php" class="btn" style="text-align: center; background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);">Update Email</a>
+                    <a href="link-extension.php" class="btn" style="text-align: center; background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);">Link Extension</a>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🔔</div>
+                <h2>Notification Settings <span class="badge new">NEW</span></h2>
+                <p>Manage push notifications, email alerts, and notification preferences</p>
+                <a href="notification-settings.php" class="btn">Configure Notifications</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🐛</div>
+                <h2>Bug Tracker <span class="badge new">NEW</span></h2>
+                <p>Track bugs, issues, and feature requests from testing</p>
+                <a href="bug-tracker.php" class="btn">Open Bug Tracker</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">💳</div>
+                <h2>Payment Management <span class="badge new">NEW</span></h2>
+                <p>Process payments, manage licenses, view transactions, and configure gateways (PayPal, Stripe, Crypto)</p>
+                <a href="payment-management.html" class="btn">Manage Payments</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">💻</div>
+                <h2>Admin Client</h2>
+                <p>Advanced admin client for remote management</p>
+                <a href="index.html" class="btn">Open Client</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">⚙️</div>
+                <h2>System Settings <span class="badge new">NEW</span></h2>
+                <p>Configure Asterisk integration mode (Secure vs Power User)</p>
+                <a href="system-settings.php" class="btn">Configure Settings</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">📝</div>
+                <h2>Configuration Editor <span class="badge new">NEW</span></h2>
+                <p>Edit all system config files (payment, licensing, extensions, trunks) in secure interface</p>
+                <a href="config-editor.html" class="btn">Edit Configurations</a>
+            </div>
+        </div>
+
+        <h3 class="section-title">📚 Documentation</h3>
+        <div class="grid">
+            <div class="card">
+                <div class="card-icon">📚</div>
+                <h2>Documentation Center <span class="badge new">NEW</span></h2>
+                <p>Complete guides, references, and troubleshooting for all FlexPBX features</p>
+                <a href="../docs/" class="btn">Open Documentation</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">📞</div>
+                <h2>Feature Codes Reference</h2>
+                <p>Quick reference for all feature codes (*43, *45, *97, etc.)</p>
+                <a href="../docs/FEATURE_CODES.html" class="btn">View Codes</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">📬</div>
+                <h2>Voicemail & Transfers Guide</h2>
+                <p>Complete setup guide for voicemail system and call transfers</p>
+                <a href="../docs/VOICEMAIL_AND_TRANSFERS_COMPLETE.html" class="btn">View Guide</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🔧</div>
+                <h2>Audio Troubleshooting</h2>
+                <p>Diagnose and fix audio issues with comprehensive guide</p>
+                <a href="../docs/AUDIO_TROUBLESHOOTING.html" class="btn">View Guide</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🌐</div>
+                <h2>Network Configuration</h2>
+                <p>Ports, STUN servers, and firewall setup</p>
+                <a href="../docs/NETWORK_PORTS_AND_STUN.html" class="btn">View Config</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">👤</div>
+                <h2>User Portal</h2>
+                <p>Access the user-facing portal</p>
+                <a href="../user-portal/" class="btn">Go to User Portal</a>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px; padding: 20px;">
+            <p style="color: white; opacity: 0.9; margin-bottom: 15px;">
+                <a href="/admin/bug-tracker.php" style="color: white; text-decoration: underline; margin: 0 10px;">🐛 Report a Bug</a> |
+                <a href="mailto:support@devine-creations.com" style="color: white; text-decoration: underline; margin: 0 10px;">📧 Support</a> |
+                <a href="/" style="color: white; text-decoration: underline; margin: 0 10px;">🏠 Back to Main</a>
+            </p>
+            <p style="color: white; opacity: 0.7; font-size: 0.9em;">
+                FlexPBX Admin Dashboard v1.0
+            </p>
+            <p style="color: white; opacity: 0.7; font-size: 0.9em; margin-top: 10px;">
+                Powered by <a href="https://devine-creations.com" target="_blank" style="color: white; text-decoration: underline;">Devine Creations</a> |
+                <a href="https://devinecreations.net" target="_blank" style="color: white; text-decoration: underline;">devinecreations.net</a>
+            </p>
+        </div>
+    </div>
+</main>
+
+<!-- Accessibility Tools -->
+<script src="/js/accessibility.js"></script>
+</body>
+</html>

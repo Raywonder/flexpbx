@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlexPBX MOH Provider - Free Music On Hold Streaming Service</title>
+    <meta name="description" content="Professional music on hold streaming service for Asterisk, FreePBX, and FlexPBX with accessibility-focused content">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.2rem;
+        }
+
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .stream-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .stream-card {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s;
+        }
+
+        .stream-card:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .stream-card h3 {
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        .stream-card .tag {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin: 0.2rem;
+        }
+
+        .install-section {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            padding: 2rem;
+            border-radius: 8px;
+            margin: 2rem 0;
+        }
+
+        .code-block {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 1rem;
+            border-radius: 5px;
+            overflow-x: auto;
+            font-family: monospace;
+            margin: 1rem 0;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            margin: 0.5rem;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .feature-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .api-endpoint {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-left: 4px solid #667eea;
+            margin: 1rem 0;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎵 FlexPBX MOH Provider</h1>
+            <p class="subtitle">Professional Music On Hold Streaming Service</p>
+            <p style="color: #666; margin-top: 1rem;">Free for all Asterisk, FreePBX, and FlexPBX installations</p>
+        </header>
+
+        <div class="card">
+            <h2>Service Overview</h2>
+            <p>Professional, high-quality music on hold streaming service with accessibility-focused content. Perfect for businesses, call centers, and organizations that prioritize inclusive audio experiences.</p>
+
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-number">4</div>
+                    <div class="stat-label">Streams Available</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">99.9%</div>
+                    <div class="stat-label">Uptime SLA</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">192kbps</div>
+                    <div class="stat-label">Max Quality</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">FREE</div>
+                    <div class="stat-label">Cost</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Available Streams</h2>
+            <div class="stream-grid" id="streams-grid">
+                <div class="stream-card">
+                    <h3>🎬 Raywonder Radio</h3>
+                    <p style="margin: 0.5rem 0;">Audio described TV shows, movies, and music with scheduled programming</p>
+                    <div style="margin-top: 1rem;">
+                        <span class="tag">Audio Described</span>
+                        <span class="tag">Accessibility</span>
+                        <span class="tag">Featured</span>
+                    </div>
+                </div>
+
+                <div class="stream-card">
+                    <h3>🧘 TappedIn Radio</h3>
+                    <p style="margin: 0.5rem 0;">Relaxing soundscapes, meditation music, and calming podcasts</p>
+                    <div style="margin-top: 1rem;">
+                        <span class="tag">Meditation</span>
+                        <span class="tag">Wellness</span>
+                        <span class="tag">Ambient</span>
+                    </div>
+                </div>
+
+                <div class="stream-card">
+                    <h3>🎵 ChrisMix Radio</h3>
+                    <p style="margin: 0.5rem 0;">Curated music streaming with various genres and styles</p>
+                    <div style="margin-top: 1rem;">
+                        <span class="tag">Music</span>
+                        <span class="tag">Variety</span>
+                    </div>
+                </div>
+
+                <div class="stream-card">
+                    <h3>🎶 SoulFood Radio</h3>
+                    <p style="margin: 0.5rem 0;">Soul, R&B, and classic music streaming</p>
+                    <div style="margin-top: 1rem;">
+                        <span class="tag">Soul</span>
+                        <span class="tag">R&B</span>
+                        <span class="tag">Classic</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Key Features</h2>
+            <ul class="feature-list">
+                <li>✨ Audio Described Content (Accessibility Focused)</li>
+                <li>🎯 Scheduled Programming with TV Shows, Movies, and Music</li>
+                <li>🔊 High Quality Streaming (up to 192kbps)</li>
+                <li>🌐 HTTPS Secure Streaming</li>
+                <li>📱 Works with Asterisk, FreePBX, and FlexPBX</li>
+                <li>🆓 Completely Free - No Registration Required</li>
+                <li>⚡ 99.9% Uptime SLA</li>
+                <li>🔄 Easy Installation and Configuration</li>
+            </ul>
+        </div>
+
+        <div class="install-section">
+            <h2>Quick Installation</h2>
+            <p><strong>Method 1: Automatic (Recommended)</strong></p>
+            <ol style="margin: 1rem 0; padding-left: 2rem;">
+                <li>Download the configuration automatically</li>
+                <li>Append to your musiconhold.conf</li>
+                <li>Reload Asterisk MOH module</li>
+            </ol>
+
+            <div class="code-block">
+# Download and append MOH configuration
+curl -s "https://flexpbx.devinecreations.net/api/moh-provider.php?action=config&format=asterisk" >> /etc/asterisk/musiconhold.conf
+
+# Reload MOH module
+asterisk -rx "moh reload"
+
+# Verify streams are loaded
+asterisk -rx "moh show classes"
+            </div>
+
+            <p style="margin-top: 2rem;"><strong>Method 2: Manual Installation</strong></p>
+            <ol style="margin: 1rem 0; padding-left: 2rem;">
+                <li>Edit /etc/asterisk/musiconhold.conf</li>
+                <li>Add desired stream configurations</li>
+                <li>Save and reload</li>
+            </ol>
+
+            <div class="code-block">
+# Example: Add Raywonder Radio (Audio Described)
+[raywonder-radio]
+mode=custom
+application=/usr/bin/ffmpeg -i https://stream.raywonderis.me/jellyfin-radio -f s16le -ar 8000 -ac 1 -
+format=slin
+; Audio Described TV, Movies, and Music
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>API Documentation</h2>
+            <p>Integrate our MOH provider service into your module manager or custom installation scripts.</p>
+
+            <div class="api-endpoint">
+                <strong>Provider Information</strong><br>
+                <code>GET https://flexpbx.devinecreations.net/api/moh-provider.php?action=info</code>
+            </div>
+
+            <div class="api-endpoint">
+                <strong>List All Streams</strong><br>
+                <code>GET https://flexpbx.devinecreations.net/api/moh-provider.php?action=list</code>
+            </div>
+
+            <div class="api-endpoint">
+                <strong>Search Streams</strong><br>
+                <code>GET https://flexpbx.devinecreations.net/api/moh-provider.php?action=search&q=meditation</code>
+            </div>
+
+            <div class="api-endpoint">
+                <strong>Get Asterisk Config</strong><br>
+                <code>GET https://flexpbx.devinecreations.net/api/moh-provider.php?action=config</code>
+            </div>
+
+            <div class="api-endpoint">
+                <strong>Module Manifest</strong><br>
+                <code>GET https://flexpbx.devinecreations.net/api/moh-provider.php?action=module-manifest</code>
+            </div>
+
+            <div class="api-endpoint">
+                <strong>Health Check</strong><br>
+                <code>GET https://flexpbx.devinecreations.net/api/moh-provider.php?action=health</code>
+            </div>
+
+            <div style="margin-top: 2rem; text-align: center;">
+                <a href="https://flexpbx.devinecreations.net/api/moh-provider.php?action=list" class="btn" target="_blank">View API Response</a>
+                <a href="https://flexpbx.devinecreations.net/api/moh-provider.php?action=config&format=asterisk" class="btn btn-secondary" target="_blank">Download Config</a>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Requirements</h2>
+            <ul class="feature-list">
+                <li>Asterisk 16.x, 18.x, or 20.x</li>
+                <li>FFmpeg (for HTTPS streams)</li>
+                <li>mpg123 (for HTTP streams)</li>
+                <li>Internet connection with outbound HTTPS access</li>
+                <li>res_musiconhold.so module loaded</li>
+            </ul>
+        </div>
+
+        <div class="card" style="text-align: center;">
+            <h2>Get Started Now</h2>
+            <p style="margin: 1rem 0;">Start using professional music on hold in minutes</p>
+            <a href="https://flexpbx.devinecreations.net/api/moh-provider.php?action=install" class="btn">View Installation Guide</a>
+            <a href="https://flexpbx.devinecreations.net/api/moh-provider.php?action=list" class="btn btn-secondary">Browse Streams</a>
+        </div>
+
+        <footer style="text-align: center; color: white; padding: 2rem 0;">
+            <p>&copy; 2025 Devine Creations | FlexPBX MOH Provider Service</p>
+            <p style="margin-top: 0.5rem; opacity: 0.8;">Free for all Asterisk-based PBX installations</p>
+        </footer>
+    </div>
+</body>
+</html>

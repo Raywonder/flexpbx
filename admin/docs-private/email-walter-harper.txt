@@ -1,0 +1,182 @@
+From: services@devine-creations.com
+Reply-To: support@devine-creations.com
+To: info@walterharper.com
+Subject: Your Flex PBX Extension is Ready - Extension 2006
+
+Hi Walter,
+
+Your Flex PBX phone extension has been configured and is ready to use!
+
+═══════════════════════════════════════════════════════════════════
+
+YOUR FLEX PBX EXTENSION DETAILS
+
+Extension Number: 2006
+Username: walterharper
+Password: Review.1121
+
+SIP Server: flexpbx.devinecreations.net
+Port: 5070
+Domain: flexpbx.devinecreations.net
+Transport: UDP
+
+Display Name: Walter Harper - Assistive Technology
+Title: Harper's place!
+Department: Support (Accessibility)
+
+═══════════════════════════════════════════════════════════════════
+
+FEATURES ENABLED FOR YOUR EXTENSION
+
+✓ Voicemail with Email Notifications (info@walterharper.com)
+✓ Accessibility Support (Screen Reader Compatible)
+✓ Queue Member: Accessibility Support Team
+✓ Direct Dial: 316-272-6712 forwarding (if configured)
+✓ Call Recording, Transfer, Conference Calling
+
+═══════════════════════════════════════════════════════════════════
+
+GETTING STARTED - USING A SIP CLIENT
+
+Since Flex PBX web interface is still being developed, you'll use a
+SIP softphone client to make and receive calls.
+
+RECOMMENDED FOR MAC (with VoiceOver):
+• Telephone (https://www.64characters.com/telephone/)
+  - Free, open-source
+  - Works great with VoiceOver
+  - Simple, clean interface
+
+OTHER ACCESSIBLE OPTIONS:
+• Zoiper (https://www.zoiper.com/) - Free version, screen reader friendly
+• Linphone (https://www.linphone.org/) - Free, accessible
+
+═══════════════════════════════════════════════════════════════════
+
+QUICK SETUP FOR TELEPHONE (macOS)
+
+1. Download: https://www.64characters.com/telephone/
+2. Install and open Telephone
+3. Go to Preferences (Cmd+,) → Accounts
+4. Click "+" to add account
+5. Enter:
+   • Full Name: Walter Harper
+   • Username: walterharper
+   • Password: Review.1121
+   • Domain: flexpbx.devinecreations.net
+   • Port: 5070
+6. Click Done
+7. Should show "Available" or "Registered"
+
+═══════════════════════════════════════════════════════════════════
+
+MAKING CALLS
+
+OUTBOUND CALLS:
+• Dial: 09 + phone number
+• Example: 093162726712 (to call your mobile 316-272-6712)
+• International: 09 + 011 + country + number
+• Emergency: 911 (no prefix)
+
+INTERNAL CALLS:
+• Support team: 2000-2009
+• Sales team: 1000-1009
+• IVR Menu: 101
+• Voicemail: *97
+• Echo test: 9196
+
+═══════════════════════════════════════════════════════════════════
+
+RECEIVING CALLS
+
+• Anyone can dial extension 2006 to reach you
+• External calls to (312) 313-9555 can be transferred to you
+• You're a member of the accessibility support queue
+
+═══════════════════════════════════════════════════════════════════
+
+VOICEMAIL
+
+• Enabled with email notifications to info@walterharper.com
+• Check voicemail: Dial *97
+• Notifications include caller ID, timestamp, and audio
+
+═══════════════════════════════════════════════════════════════════
+
+TESTING YOUR SETUP
+
+1. Register in Telephone app (verify "Registered" status)
+2. Dial 9196 (echo test - you should hear yourself)
+3. Dial 101 (IVR menu test)
+4. Dial 09 + your mobile to test outbound
+
+═══════════════════════════════════════════════════════════════════
+
+ACCESSIBILITY FEATURES
+
+Your extension includes:
+• Screen Reader Support (optimized for JAWS/VoiceOver)
+• Priority Routing in accessibility queue
+• Extended ring time
+• TTY support available
+• Custom accessible greetings
+
+As a JAWS certified specialist, your feedback on accessibility
+is especially valuable!
+
+═══════════════════════════════════════════════════════════════════
+
+TROUBLESHOOTING
+
+Registration Failed:
+  • Verify username: walterharper (no spaces)
+  • Check password: Review.1121 (case-sensitive)
+  • Confirm server: flexpbx.devinecreations.net
+
+No Audio:
+  • Check firewall allows UDP 10000-20000
+  • Test with echo test (9196)
+
+Cannot Dial Out:
+  • Use 09 prefix: 09 + number
+  • Internal calls don't need prefix
+
+VoiceOver:
+  • Grant Telephone accessibility permissions
+  • System Preferences → Security → Accessibility
+
+═══════════════════════════════════════════════════════════════════
+
+QUICK REFERENCE
+
+Extension: 2006
+Username: walterharper
+Password: Review.1121
+Server: flexpbx.devinecreations.net:5070
+
+Dial Out: 09 + number
+Voicemail: *97
+Echo Test: 9196
+
+═══════════════════════════════════════════════════════════════════
+
+NEXT STEPS
+
+1. Download Telephone app (or your preferred SIP client)
+2. Add your account with credentials above
+3. Test with echo test (9196)
+4. Make test call to your mobile: 093162726712
+5. Check voicemail works: *97
+
+Questions? We're here to help!
+
+Welcome to Flex PBX!
+
+Best regards,
+Flex PBX Team
+
+═══════════════════════════════════════════════════════════════════
+
+Complete setup guide: WALTER-HARPER-EXTENSION-SETUP.md
+Support: support@devine-creations.com
+Website: flexpbx.devinecreations.net

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FlexPBX Testing Guide - Callcentric Integration - FlexPBX Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #34495e;
+            font-size: 1.8rem;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #555;
+            font-size: 1.4rem;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+
+        h4 {
+            color: #666;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        h5, h6 {
+            color: #777;
+            margin-top: 15px;
+            margin-bottom: 8px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+
+        ul, ol {
+            margin-bottom: 15px;
+            margin-left: 30px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e74c3c;
+        }
+
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+            font-size: 0.95em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            display: block;
+        }
+
+        table thead {
+            background: #667eea;
+            color: white;
+        }
+
+        table th,
+        table td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        table tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        table tbody tr:hover {
+            background: #e9ecef;
+        }
+
+        blockquote {
+            border-left: 4px solid #667eea;
+            padding-left: 20px;
+            margin: 20px 0;
+            color: #555;
+            font-style: italic;
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 4px;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px solid #ecf0f1;
+            margin: 30px 0;
+        }
+
+        a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        strong {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        em {
+            font-style: italic;
+            color: #555;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid #ecf0f1;
+            text-align: center;
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            table {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to Documentation Index</a>
+
+        <div class="header">
+            <h1>FlexPBX Testing Guide - Callcentric Integration</h1>
+        </div>
+
+        <div class="content">
+            <h1>FlexPBX Testing Guide - Callcentric Integration</h1><h2>Test Extension Configuration</h2><h3>Extension 2001 - Senior Tech Support (PRIMARY TEST EXTENSION)</h3><br><pre><code class="language-">Extension: 2001<br>Username: techsupport1<br>Password: Support2001!<br>Server: flexpbx.devinecreations.net<br>Port: 5070<br>Domain: flexpbx.devinecreations.net<br>Transport: UDP<br>Codec: G.722, ulaw, alaw<br>DTMF: RFC2833</code></pre><h3>SIP Client Setup (Zoiper, Linphone, etc.)</h3><br><li>Open your SIP client</li><br><li>Create new account with settings above</li><br><li>Enable registration</li><br><li>Test registration status</li></p><h2>Callcentric Trunk Configuration</h2><h3>Current Setup</h3><br><ul><li>Provider: CallCentric</li><br><li>SIP Server: sip.callcentric.com:5060</li><br><li>Username: [YOUR<em>CALLCENTRIC</em>DID]102</li><br><li>Auth Name: raywonder</li><br><li>Status: Active (as of config)</li></p><h3>Inbound Routing</h3><br>When someone calls your Callcentric DID:<br><li>Call arrives at FlexPBX</li><br><li>Routes to IVR Extension 101 (Main Menu)</li><br><li>Caller hears main greeting</li><br><li>Options available via DTMF</li></p><h2>IVR System Testing</h2><h3>Main IVR (Extension 101)</h3><br><strong>Internal Dial:</strong> Call 101 from extension 2001</p><p><strong>IVR Menu Options:</strong><br><li>Press 1 → Sales Queue (extensions 1001-1003)</li><br><li>Press 2 → Tech Support Queue (extensions 2001-2003)</li><br><li>Press 3 → Billing (extension 2000)</li><br><li>Press 4 → Direct to extension 2001</li><br><li>Press 7 → Accessibility Support (extension 2004)</li><br><li>Press 0 → Operator (extension 2001)</li><br><li>Timeout → Routes to extension 2001</li></p><h3>Required Media Files for IVR</h3><br>Upload these to <strong>Media Manager</strong> (<code>/admin/media-manager.html</code>):<br>  <li><strong>main-greeting.wav</strong></li><br>      <li>&quot;Thank you for calling FlexPBX. For Sales press 1, for Support press 2...&quot;</li><br>  <li><strong>sales-greeting.wav</strong></li><br>      <li>&quot;Thank you for contacting sales. Please hold...&quot;</li><br>  <li><strong>support-greeting.wav</strong></li><br>      <li>&quot;Technical support. Your call is important to us...&quot;</li><br>  <li><strong>accessibility-greeting.wav</strong></li><br>      <li>&quot;Accessibility support. Connecting you now...&quot;</li></p><h2>Music on Hold Testing</h2><h3>MOH Classes Configured</h3><br><li><strong>corporate</strong> - Sales queue</li><br><li><strong>ambient</strong> - Tech support queue</li></p><h3>Upload MOH Files</h3><br>Go to: <code>https://flexpbx.devinecreations.net/admin/media-manager.html</code><br><li>Switch to &quot;Music on Hold&quot; tab</li><br><li>Upload WAV/MP3 files</li><br><li>Name them: <code>corporate.wav</code>, <code>ambient.wav</code></li></p><h3>Test MOH</h3><br><li>Call extension 2001 from another extension</li><br><li>Ask to be put on hold</li><br><li>Verify music plays</li></p><h2>Extension-to-Extension Testing</h2><h3>Internal Calling</h3><br>From Extension 2001, dial:<br><li><strong>1000-1009</strong> - Sales department</li><br><li><strong>2000-2009</strong> - Support department</li><br><li><strong>8000-8003</strong> - Conference rooms</li></p><h3>Conference Room Testing</h3><br><li>Dial 8000 (Main Conference - 50 capacity)</li><br><li>Dial 8001 (Sales Meeting - 20 capacity)</li><br><li>Dial 8002 (Support Team - 15 capacity)</li><br><li>Dial 8003 (Training Room - 30 capacity)</li></p><h2>Outbound Calling via Callcentric</h2><h3>Dial Patterns</h3><br>From Extension 2001:<br><li><strong>9 + 10-digit number</strong> - US/Canada call</li><br>    <li>Example: 9-555-123-4567</li><br><li><strong>9 + 1 + 10-digit</strong> - Long distance</li><br>    <li>Example: 9-1-555-123-4567</li><br><li><strong>9 + 011 + country + number</strong> - International</li><br>    <li>Example: 9-011-44-20-1234-5678</li><br><li><strong>911</strong> - Emergency (routes via Callcentric)</li></p><h3>Test Call Flow</h3><br><li>Register extension 2001 on SIP client</li><br><li>Dial: 9-YOUR<em>MOBILE</em>NUMBER</li><br><li>Call should route through Callcentric trunk</li><br><li>Your mobile should ring with Caller ID from Callcentric DID</li></p><h2>Special Feature Codes</h2><h3>Voicemail</h3><br><li><strong>\*97</strong> - Access voicemail</li><br><li>Dial from extension 2001 to check messages</li></p><h3>System Tests</h3><br><li><strong>9196</strong> - Echo test (dial and hear yourself back)</li><br><li><strong>\*60</strong> - Time/Date announcement</li><br><li><strong>\*78</strong> - Do Not Disturb ON</li><br><li><strong>\*79</strong> - Do Not Disturb OFF</li><br><li><strong>\*72</strong> - Call Forwarding ON</li><br><li><strong>\*73</strong> - Call Forwarding OFF</li></p><h2>Testing Checklist</h2><h3>Phase 1: Registration</h3><br><li>[ ] Extension 2001 registers successfully</li><br><li>[ ] Check SIP registration status</li><br><li>[ ] Verify bidirectional audio path</li></p><h3>Phase 2: Internal Calls</h3><br><li>[ ] Call another extension (e.g., 2002)</li><br><li>[ ] Test call transfer</li><br><li>[ ] Test call hold</li><br><li>[ ] Test 3-way calling</li></p><h3>Phase 3: IVR System</h3><br><li>[ ] Call extension 101</li><br><li>[ ] Hear main greeting</li><br><li>[ ] Test all DTMF menu options</li><br><li>[ ] Verify proper routing</li></p><h3>Phase 4: Music on Hold</h3><br><li>[ ] Upload MOH files via media manager</li><br><li>[ ] Place call on hold</li><br><li>[ ] Verify music plays</li><br><li>[ ] Test MOH class switching</li></p><h3>Phase 5: Outbound via Callcentric</h3><br><li>[ ] Dial out using 9 prefix</li><br><li>[ ] Verify call connects</li><br><li>[ ] Check audio quality (both ways)</li><br><li>[ ] Verify Caller ID display</li></p><h3>Phase 6: Inbound via Callcentric</h3><br><li>[ ] Call your Callcentric DID from mobile</li><br><li>[ ] Verify IVR answers</li><br><li>[ ] Navigate menu to reach extension</li><br><li>[ ] Complete the call</li></p><h3>Phase 7: Queue Testing</h3><br><li>[ ] Join sales queue (press 1 from IVR)</li><br><li>[ ] Verify position announcement</li><br><li>[ ] Verify hold music</li><br><li>[ ] Test callback option</li></p><h2>Quick Links</h2><br>  <li><strong>Media Manager:</strong> https://flexpbx.devinecreations.net/admin/media-manager.html</li><br><li><strong>Admin Panel:</strong> https://flexpbx.devinecreations.net/admin/</li><br><li><strong>Extensions Manager:</strong> https://flexpbx.devinecreations.net/admin/admin-extensions-management.html</li><br><li><strong>Trunks Manager:</strong> https://flexpbx.devinecreations.net/admin/admin-trunks-management.html</li></p><h2>Troubleshooting</h2><h3>No Audio</h3><br><li>Check firewall: UDP ports 10000-20000 (RTP)</li><br><li>Check NAT settings in extension config</li><br><li>Verify codec compatibility (G.722, ulaw)</li></p><h3>Registration Fails</h3><br><li>Verify server: flexpbx.devinecreations.net</li><br><li>Verify port: 5070</li><br><li>Check username/password</li><br><li>Check network connectivity</li></p><h3>IVR Not Working</h3><br><li>Verify media files uploaded to /media/sounds/</li><br><li>Check file names match config</li><br><li>Verify file format: 16-bit PCM WAV, 8kHz mono</li></p><h3>Outbound Calls Fail</h3><br><li>Verify Callcentric credentials configured</li><br><li>Check trunk registration status</li><br><li>Verify dial pattern (must start with 9)</li><br><li>Check Callcentric account balance</li><br></ul><br><h2>Support</h2><p>For issues:<br><li>Check error<em>log in /home/flexpbxuser/public</em>html/</li><br><li>Run self-check: <code>php api/admin-self-check.php</code></li><br><li>Check server status: https://flexpbx.devinecreations.net/api/status</li></p><hr><p><strong>Last Updated:</strong> 2025-10-13<br><strong>Test Extension:</strong> 2001 (techsupport1)<br><strong>Trunk Provider:</strong> Callcentric<br><strong>Status:</strong> Ready for Testing<br></p>
+        </div>
+
+        <div class="footer">
+            <p>FlexPBX Documentation | Generated from Markdown</p>
+            <p><a href="TESTING-GUIDE.md" download>Download Markdown Version</a></p>
+        </div>
+    </div>
+</body>
+</html>

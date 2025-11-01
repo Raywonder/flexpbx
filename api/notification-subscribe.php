@@ -2,7 +2,23 @@
 /**
  * FlexPBX - Push Notification Subscription API
  * Manages push notification subscriptions for users and admins
+ *
+ * @requires PHP 8.0+
+ * @recommended PHP 8.1 or 8.2
  */
+
+// Check PHP version (minimum 8.0)
+if (version_compare(PHP_VERSION, '8.0.0', '<')) {
+    header('Content-Type: application/json');
+    echo json_encode([
+        'success' => false,
+        'error' => 'PHP 8.0 or higher required',
+        'current_version' => PHP_VERSION,
+        'minimum_version' => '8.0.0',
+        'recommended_versions' => ['8.1', '8.2']
+    ]);
+    exit;
+}
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
@@ -149,7 +165,10 @@ if ($action === 'get_preferences' && $_SERVER['REQUEST_METHOD'] === 'GET') {
         'notify_voicemail' => $account_data['notify_voicemail'] ?? true,
         'notify_missed_calls' => $account_data['notify_missed_calls'] ?? true,
         'notify_sip_status' => $account_data['notify_sip_status'] ?? true,
-        'notify_system_alerts' => $account_data['notify_system_alerts'] ?? ($account_type === 'admin')
+        'notify_system_alerts' => $account_data['notify_system_alerts'] ?? ($account_type === 'admin'),
+        'notify_login' => $account_data['notify_login'] ?? false,
+        'notify_logout' => $account_data['notify_logout'] ?? false,
+        'message_sounds_enabled' => $account_data['message_sounds_enabled'] ?? true
     ];
 
     http_response_code(200);
@@ -195,6 +214,15 @@ if ($action === 'update_preferences' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($data['notify_system_alerts'])) {
         $account_data['notify_system_alerts'] = (bool)$data['notify_system_alerts'];
     }
+    if (isset($data['notify_login'])) {
+        $account_data['notify_login'] = (bool)$data['notify_login'];
+    }
+    if (isset($data['notify_logout'])) {
+        $account_data['notify_logout'] = (bool)$data['notify_logout'];
+    }
+    if (isset($data['message_sounds_enabled'])) {
+        $account_data['message_sounds_enabled'] = (bool)$data['message_sounds_enabled'];
+    }
 
     $account_data['notification_preferences_updated'] = date('Y-m-d H:i:s');
 
@@ -210,7 +238,10 @@ if ($action === 'update_preferences' && $_SERVER['REQUEST_METHOD'] === 'POST') {
             'notify_voicemail' => $account_data['notify_voicemail'] ?? true,
             'notify_missed_calls' => $account_data['notify_missed_calls'] ?? true,
             'notify_sip_status' => $account_data['notify_sip_status'] ?? true,
-            'notify_system_alerts' => $account_data['notify_system_alerts'] ?? false
+            'notify_system_alerts' => $account_data['notify_system_alerts'] ?? false,
+            'notify_login' => $account_data['notify_login'] ?? false,
+            'notify_logout' => $account_data['notify_logout'] ?? false,
+            'message_sounds_enabled' => $account_data['message_sounds_enabled'] ?? true
         ]
     ]);
     exit;

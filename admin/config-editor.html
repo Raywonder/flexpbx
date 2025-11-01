@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuration Editor - FlexPBX Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .header .tagline {
+            color: #666;
+            font-size: 16px;
+            font-style: italic;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .nav-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .config-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+        }
+
+        .config-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .config-card h3 {
+            color: #333;
+            font-size: 20px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .config-card .icon {
+            font-size: 24px;
+        }
+
+        .config-card p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .config-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: auto;
+        }
+
+        .status-exists {
+            background: #4caf50;
+            color: white;
+        }
+
+        .status-missing {
+            background: #f44336;
+            color: white;
+        }
+
+        .button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .button-secondary {
+            background: #6c757d;
+        }
+
+        .button-danger {
+            background: #f44336;
+        }
+
+        .editor-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .editor-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .editor-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .editor-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .editor-header h2 {
+            color: #333;
+            font-size: 24px;
+        }
+
+        .close-button {
+            background: #f44336;
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .close-button:hover {
+            transform: rotate(90deg);
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 400px;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+            font-size: 13px;
+            resize: vertical;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .file-info {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .file-info p {
+            margin: 5px 0;
+            font-size: 13px;
+        }
+
+        @media (max-width: 768px) {
+            .config-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚙️ Configuration Editor</h1>
+            <p class="tagline">A system you can help build to be the best it can be. Accessible by default.</p>
+
+            <div class="nav-buttons">
+                <a href="dashboard.html" class="nav-button">← Back to Dashboard</a>
+                <a href="payment-management.html" class="nav-button">Payment Management</a>
+                <a href="bug-tracker.php" class="nav-button">Bug Tracker</a>
+            </div>
+        </div>
+
+        <div id="alert-container"></div>
+
+        <div class="config-grid" id="config-grid">
+            <div class="config-card">
+                <h3>
+                    <span class="icon">💳</span>
+                    Payment Config
+                    <span class="config-status status-missing" id="status-payment">Loading...</span>
+                </h3>
+                <p>Payment gateway settings (PayPal, Stripe, Coinbase, BTCPay)</p>
+                <button class="button" onclick="editConfig('payment')">Edit Configuration</button>
+            </div>
+
+            <div class="config-card">
+                <h3>
+                    <span class="icon">🔑</span>
+                    Licensing Config
+                    <span class="config-status status-missing" id="status-licensing">Loading...</span>
+                </h3>
+                <p>License types, plans, and pricing configuration</p>
+                <button class="button" onclick="editConfig('licensing')">Edit Configuration</button>
+            </div>
+
+            <div class="config-card">
+                <h3>
+                    <span class="icon">👥</span>
+                    Extensions Config
+                    <span class="config-status status-missing" id="status-extensions">Loading...</span>
+                </h3>
+                <p>SIP extension configurations and user accounts</p>
+                <button class="button" onclick="editConfig('extensions')">Edit Configuration</button>
+            </div>
+
+            <div class="config-card">
+                <h3>
+                    <span class="icon">📞</span>
+                    Trunk Config (CallCentric)
+                    <span class="config-status status-missing" id="status-callcentric">Loading...</span>
+                </h3>
+                <p>CallCentric trunk and DID configuration</p>
+                <button class="button" onclick="editConfig('callcentric')">Edit Configuration</button>
+            </div>
+
+            <div class="config-card">
+                <h3>
+                    <span class="icon">☁️</span>
+                    Google Voice Config
+                    <span class="config-status status-missing" id="status-google-voice">Loading...</span>
+                </h3>
+                <p>Google Voice integration settings</p>
+                <button class="button" onclick="editConfig('google-voice')">Edit Configuration</button>
+            </div>
+
+            <div class="config-card">
+                <h3>
+                    <span class="icon">🎬</span>
+                    Jellyfin Integration
+                    <span class="config-status status-missing" id="status-jellyfin">Loading...</span>
+                </h3>
+                <p>Jellyfin MOH server settings and API keys</p>
+                <button class="button" onclick="editConfig('jellyfin')">Edit Configuration</button>
+            </div>
+
+            <div class="config-card">
+                <h3>
+                    <span class="icon">🎵</span>
+                    Conference Music
+                    <span class="config-status status-missing" id="status-conference-music">Loading...</span>
+                </h3>
+                <p>Conference room music control settings</p>
+                <button class="button" onclick="editConfig('conference-music')">Edit Configuration</button>
+            </div>
+
+            <div class="config-card">
+                <h3>
+                    <span class="icon">🟢</span>
+                    Presence Status
+                    <span class="config-status status-missing" id="status-presence">Loading...</span>
+                </h3>
+                <p>User presence and status tracking configuration</p>
+                <button class="button" onclick="editConfig('presence')">Edit Configuration</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Editor Modal -->
+    <div class="editor-modal" id="editor-modal">
+        <div class="editor-content">
+            <div class="editor-header">
+                <h2 id="editor-title">Edit Configuration</h2>
+                <button class="close-button" onclick="closeEditor()">×</button>
+            </div>
+
+            <div id="editor-alert" class="hidden"></div>
+
+            <div class="file-info">
+                <p><strong>File:</strong> <span id="file-path"></span></p>
+                <p><strong>Format:</strong> JSON</p>
+                <p><strong>Note:</strong> Invalid JSON will be rejected. Use a JSON validator if unsure.</p>
+            </div>
+
+            <textarea id="config-editor" placeholder="Loading configuration..."></textarea>
+
+            <div class="button-group">
+                <button class="button" onclick="saveConfig()">💾 Save Configuration</button>
+                <button class="button button-secondary" onclick="validateJSON()">✓ Validate JSON</button>
+                <button class="button button-danger" onclick="closeEditor()">✕ Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration mappings
+        const CONFIG_MAP = {
+            'payment': {
+                file: 'payment_config.json',
+                title: 'Payment Configuration',
+                path: '/home/flexpbxuser/config/payment_config.json'
+            },
+            'licensing': {
+                file: 'licensing_config.json',
+                title: 'Licensing Configuration',
+                path: '/home/flexpbxuser/config/licensing_config.json'
+            },
+            'extensions': {
+                file: 'extensions-config.json',
+                title: 'Extensions Configuration',
+                path: '/home/flexpbxuser/config/extensions-config.json'
+            },
+            'callcentric': {
+                file: 'callcentric-trunk-config.json',
+                title: 'CallCentric Trunk Configuration',
+                path: '/home/flexpbxuser/config/callcentric-trunk-config.json'
+            },
+            'google-voice': {
+                file: 'google-voice-config.json',
+                title: 'Google Voice Configuration',
+                path: '/home/flexpbxuser/config/google-voice-config.json'
+            },
+            'jellyfin': {
+                file: 'jellyfin-integration.json',
+                title: 'Jellyfin Integration',
+                path: '/home/flexpbxuser/public_html/config/jellyfin-integration.json'
+            },
+            'conference-music': {
+                file: 'conference-music.json',
+                title: 'Conference Music Configuration',
+                path: '/home/flexpbxuser/public_html/config/conference-music.json'
+            },
+            'presence': {
+                file: 'presence-status.json',
+                title: 'Presence Status Configuration',
+                path: '/home/flexpbxuser/public_html/config/presence-status.json'
+            }
+        };
+
+        let currentConfig = null;
+
+        // Load status of all configs on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAllConfigs();
+        });
+
+        // Check if all config files exist
+        async function checkAllConfigs() {
+            for (const [key, config] of Object.entries(CONFIG_MAP)) {
+                try {
+                    const response = await fetch(`/api/config-manager.php?action=check&file=${config.file}`);
+                    const data = await response.json();
+
+                    const statusEl = document.getElementById(`status-${key}`);
+                    if (data.exists) {
+                        statusEl.textContent = 'Exists';
+                        statusEl.className = 'config-status status-exists';
+                    } else {
+                        statusEl.textContent = 'Missing';
+                        statusEl.className = 'config-status status-missing';
+                    }
+                } catch (error) {
+                    console.error(`Error checking ${key}:`, error);
+                }
+            }
+        }
+
+        // Open editor for specific config
+        async function editConfig(configKey) {
+            if (!CONFIG_MAP[configKey]) {
+                showAlert('error', 'Configuration not found');
+                return;
+            }
+
+            currentConfig = configKey;
+            const config = CONFIG_MAP[configKey];
+
+            document.getElementById('editor-title').textContent = config.title;
+            document.getElementById('file-path').textContent = config.path;
+            document.getElementById('config-editor').value = 'Loading...';
+            document.getElementById('editor-modal').classList.add('active');
+
+            try {
+                const response = await fetch(`/api/config-manager.php?action=read&file=${config.file}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('config-editor').value = JSON.stringify(data.content, null, 2);
+                } else {
+                    document.getElementById('config-editor').value = '{\n  // New configuration file\n}';
+                    showEditorAlert('warning', 'File does not exist. Creating new configuration.');
+                }
+            } catch (error) {
+                showEditorAlert('error', 'Error loading configuration: ' + error.message);
+                document.getElementById('config-editor').value = '';
+            }
+        }
+
+        // Save configuration
+        async function saveConfig() {
+            if (!currentConfig) return;
+
+            const content = document.getElementById('config-editor').value;
+
+            // Validate JSON first
+            try {
+                JSON.parse(content);
+            } catch (error) {
+                showEditorAlert('error', 'Invalid JSON: ' + error.message);
+                return;
+            }
+
+            const config = CONFIG_MAP[currentConfig];
+
+            try {
+                const response = await fetch('/api/config-manager.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `action=write&file=${config.file}&content=${encodeURIComponent(content)}`
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showEditorAlert('success', 'Configuration saved successfully!');
+                    checkAllConfigs(); // Refresh status
+                    setTimeout(() => {
+                        closeEditor();
+                    }, 1500);
+                } else {
+                    showEditorAlert('error', 'Error saving: ' + (data.error || 'Unknown error'));
+                }
+            } catch (error) {
+                showEditorAlert('error', 'Error saving configuration: ' + error.message);
+            }
+        }
+
+        // Validate JSON
+        function validateJSON() {
+            const content = document.getElementById('config-editor').value;
+
+            try {
+                const parsed = JSON.parse(content);
+                showEditorAlert('success', '✓ Valid JSON! ' + Object.keys(parsed).length + ' keys found.');
+            } catch (error) {
+                showEditorAlert('error', 'Invalid JSON: ' + error.message);
+            }
+        }
+
+        // Close editor
+        function closeEditor() {
+            document.getElementById('editor-modal').classList.remove('active');
+            document.getElementById('editor-alert').className = 'hidden';
+            currentConfig = null;
+        }
+
+        // Show alert in main page
+        function showAlert(type, message) {
+            const container = document.getElementById('alert-container');
+            const alertClass = type === 'success' ? 'alert-success' : type === 'warning' ? 'alert-warning' : 'alert-error';
+
+            container.innerHTML = `<div class="alert ${alertClass}">${message}</div>`;
+
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+
+        // Show alert in editor
+        function showEditorAlert(type, message) {
+            const alertDiv = document.getElementById('editor-alert');
+            const alertClass = type === 'success' ? 'alert-success' : type === 'warning' ? 'alert-warning' : 'alert-error';
+
+            alertDiv.className = `alert ${alertClass}`;
+            alertDiv.textContent = message;
+
+            setTimeout(() => {
+                alertDiv.className = 'hidden';
+            }, 5000);
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('editor-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'editor-modal') {
+                closeEditor();
+            }
+        });
+    </script>
+</body>
+</html>

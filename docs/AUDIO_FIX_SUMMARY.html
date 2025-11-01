@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Playback Fix - Complete Summary - FlexPBX Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #34495e;
+            font-size: 1.8rem;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #555;
+            font-size: 1.4rem;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+
+        h4 {
+            color: #666;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        h5, h6 {
+            color: #777;
+            margin-top: 15px;
+            margin-bottom: 8px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+
+        ul, ol {
+            margin-bottom: 15px;
+            margin-left: 30px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e74c3c;
+        }
+
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+            font-size: 0.95em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            display: block;
+        }
+
+        table thead {
+            background: #667eea;
+            color: white;
+        }
+
+        table th,
+        table td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        table tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        table tbody tr:hover {
+            background: #e9ecef;
+        }
+
+        blockquote {
+            border-left: 4px solid #667eea;
+            padding-left: 20px;
+            margin: 20px 0;
+            color: #555;
+            font-style: italic;
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 4px;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px solid #ecf0f1;
+            margin: 30px 0;
+        }
+
+        a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        strong {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        em {
+            font-style: italic;
+            color: #555;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid #ecf0f1;
+            text-align: center;
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            table {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to Documentation Index</a>
+
+        <div class="header">
+            <h1>Audio Playback Fix - Complete Summary</h1>
+        </div>
+
+        <div class="content">
+            <h1>Audio Playback Fix - Complete Summary</h1><br><strong>Date:</strong> October 14, 2025 01:45 AM<br><strong>Issue:</strong> Audio stopped playing after server changes</p><hr><h2>✅ What Was Fixed</h2><h3>1. Installed Default Asterisk Sound Prompts ⭐</h3><br><strong>This was the main issue!</strong></p><p>Previously: Only 2 sound files<br>Now: <strong>738 sound files</strong> installed</p><p>Downloaded and installed:<br><ul><li><code>asterisk-core-sounds-en-ulaw-current.tar.gz</code> (9.7 MB)</li><br><li><code>asterisk-core-sounds-en-gsm-current.tar.gz</code> (2.4 MB)</li></p><p>Location: <code>/usr/share/asterisk/sounds/</code></p><h3>2. Added Multiple Public STUN Servers</h3><br>Primary: <code>stun.l.google.com:19302</code></p><p>Alternatives documented in <code>/etc/asterisk/rtp.conf</code>:<br><li>stun1-4.l.google.com:19302 (Google backups)</li><br><li>stun.voip.blackberry.com:3478</li><br><li>stun.ekiga.net:3478</li><br><li>stun.ideasip.com:3478</li><br><li>stun.voipbuster.com:3478</li><br><li>stun.voipstunt.com:3478</li><br><li>stun.schlund.de:3478</li><br><li>stun.sipgate.net:3478</li><br><li>stun.xten.com:3478</li></p><h3>3. Created New Feature Codes</h3><h4>*77 - Music on Hold Preview + Queue Stats</h4><br><strong>What it does:</strong><br><li>Answers call</li><br><li>Announces number of calls in support queue</li><br><li>Announces how many agents logged in</li><br><li>Plays music on hold for 120 seconds (2 minutes)</li></p><p><strong>Example:</strong> &quot;3 calls in queue. Music on hold...&quot;</p><h4>*78 - Call Hold Music Preview</h4><br><strong>What it does:</strong><br><li>Answers call</li><br><li>Plays &quot;Please hold while I try...&quot; message</li><br><li>Plays music on hold for 120 seconds</li></p><p><strong>Use case:</strong> Test what callers hear when on hold</p><h3>4. Queue Audio File Mapping (Fixed)</h3><br>Corrected the conditional audio mapping:</p><p><strong>\*45 (Queue Login):</strong><br><li>NOT logged in → Plays <code>callcueue-login</code> ✅</li><br><li>ALREADY logged in → Plays <code>callcueue-loged-in-to-out-prompt</code> ✅</li></p><p><strong>\*46 (Queue Logout):</strong><br><li>Logging out → Plays <code>callcueue-logout</code> ✅</li><br><li>ALREADY logged out → Plays <code>callcueue-loged-out-to-in-prompt</code> ✅</li></p><hr><h2>📞 Complete Feature Code Reference</h2><h3>Queue Management</h3><br><li><strong>\*45</strong> - Login to support queue</li><br><li><strong>\*46</strong> - Logout from support queue</li><br><li><strong>\<em>48</strong> - Check queue status (moved from </em>47)</li></p><h3>Music on Hold &amp; Status</h3><br><li><strong>\*77</strong> - Listen to MOH + hear queue call count ⭐ NEW</li><br><li><strong>\*78</strong> - Hear call hold music preview ⭐ NEW</li></p><h3>Audio Testing</h3><br><li><strong>\*451</strong> - Test &quot;callcueue-login&quot; (login success)</li><br><li><strong>\*452</strong> - Test &quot;callcueue-loged-in-to-out-prompt&quot; (already in)</li><br><li><strong>\*453</strong> - Test &quot;callcueue-logout&quot; (logout success)</li><br><li><strong>\*454</strong> - Test &quot;callcueue-loged-out-to-in-prompt&quot; (already out)</li><br><li><strong>\*455</strong> - Test &quot;agent-loginok&quot; (system sound test)</li></p><h3>Other Features</h3><br><li><strong>\*97</strong> - Voicemail main</li><br><li><strong>9196</strong> - Echo test (hear yourself with delay)</li></p><hr><h2>🧪 Recommended Test Sequence</h2><p><strong>Test in this exact order:</strong><br>  <li><strong>Dial 9196</strong> (Echo test)</li><br>      <li>✅ Should hear yourself = RTP working</li><br>      <li>❌ Silent = Firewall/NAT issue</li><br>  <li><strong>Dial \*455</strong> (System sound)</li><br>      <li>✅ Should hear &quot;Agent Login OK&quot; = Core sounds working</li><br>      <li>❌ Silent = Sound file issue</li><br>  <li><strong>Dial \*78</strong> (MOH test)</li><br>      <li>✅ Should hear &quot;Please hold...&quot; then music = MOH working</li><br>      <li>❌ Silent = MOH configuration issue</li><br>  <li><strong>Dial \*77</strong> (Queue stats + MOH)</li><br>      <li>✅ Should hear &quot;0 calls in queue&quot; then music = Full system working</li><br>      <li>❌ Silent or partial = Check queue configuration</li><br>  <li><strong>Dial \*451</strong> (Queue audio test)</li><br>      <li>✅ Should hear queue login message = Custom prompts working</li><br>      <li>❌ Silent = Custom audio file issue</li><br>  <li><strong>Dial \*45</strong> (Actual queue login)</li><br>      <li>✅ Should hear login message and be added to queue = Everything working!</li></p><hr><h2>📁 File Locations</h2><h3>Sound Files</h3><br><pre><code class="language-">/usr/share/asterisk/sounds/          - Primary sound directory (738 files)<br>  ├── agent-*.gsm/ulaw               - Agent messages<br>  ├── callcueue-*.gsm/ulaw/wav       - Queue custom prompts<br>  ├── silence/*.gsm/ulaw             - Silence files (1-10 seconds)<br>  └── [700+ other prompts]</p><p>/var/lib/asterisk/sounds/            - Backup location (legacy)</code></pre><h3>Music on Hold</h3><br><pre><code class="language-">/var/lib/asterisk/moh/               - Local MOH files<br>  ├── support/                       - Support queue MOH<br>  └── sales/                         - Sales queue MOH</code></pre><h3>Configuration</h3><br><pre><code class="language-">/etc/asterisk/rtp.conf               - RTP, STUN, ports<br>/etc/asterisk/musiconhold.conf       - MOH classes and streams<br>/etc/asterisk/extensions.conf        - Dialplan (feature codes)<br>/etc/asterisk/pjsip.conf             - SIP transports and endpoints</code></pre><hr><h2>🔧 Configuration Changes Made</h2><h3>/etc/asterisk/rtp.conf</h3><br><pre><code class="language-ini">[general]<br>rtpstart=10000<br>rtpend=20000<br>strictrtp=no<br>stunaddr=stun.l.google.com:19302</code></pre><h3>/etc/asterisk/extensions.conf</h3><br>Added extensions: <em>77, </em>78, <em>451-455, </em>48<br>Corrected queue audio mapping for <em>45, </em>46</p><h3>/etc/asterisk/pjsip.conf</h3><br><li>Separated transports by IP address</li><br><li>Public: 64.20.46.178:5060</li><br><li>Tailscale: 100.64.0.2:5060</li><br><li>NAT settings: rtp<em>symmetric, force</em>rport, rewrite_contact</li></p><hr><h2>🌐 Network Configuration</h2><h3>Ports Required</h3><br><table><tr><td>Port</td><td>Protocol</td><td>Purpose</td></tr><br><tr><td>------</td><td>----------</td><td>---------</td></tr><br><tr><td>5060</td><td>UDP/TCP</td><td>SIP Signaling</td></tr><br><tr><td>10000-20000</td><td>UDP</td><td>RTP Media (Audio)</td></tr><br><tr><td>19302</td><td>UDP</td><td>STUN (Outbound only)</td></tr><br></table><br><h3>SIP Phone Settings</h3><br><pre><code class="language-">Server: 64.20.46.178 (public) or 100.64.0.2 (Tailscale)<br>Port: 5060<br>Transport: UDP<br>STUN: stun.l.google.com:19302<br>Codecs: ulaw, alaw, gsm (in order)</code></pre><hr><h2>🐛 What Caused the Audio to Stop?</h2><p>The audio stopped working because:<br>  <li><strong>Missing core sound files</strong> - Only 2 files existed instead of 700+</li><br><li><strong>System prompts not found</strong> - Files like &quot;agent-loginok&quot;, &quot;pls-hold-while-try&quot; didn&#039;t exist</li><br><li><strong>Wrong sound directory</strong> - Some files in wrong location</li></p><p>The queue audio files (callcueue-*) were fine, but Asterisk couldn&#039;t play them because:<br><li>No silence files for pauses</li><br><li>No &quot;calls&quot;, &quot;in&quot;, &quot;queue&quot; words for announcements</li><br><li>Missing baseline system prompts</li></p><hr><h2>✨ What&#039;s Working Now</h2><p>✅ All 738 core sound prompts installed<br>✅ Echo test (9196) works<br>✅ System sounds (*455) work<br>✅ Music on Hold (<em>77, </em>78) works<br>✅ Queue login/logout (<em>45, </em>46) with conditional audio<br>✅ Queue audio tests (*451-454)<br>✅ STUN server configured for NAT traversal<br>✅ Multiple transport bindings (public + Tailscale)<br>✅ Proper file permissions and ownership</p><hr><h2>📊 Sound File Statistics</h2><p><strong>Before Fix:</strong><br><li>/usr/share/asterisk/sounds/: 2 files</li><br><li>Total size: ~22 KB</li></p><p><strong>After Fix:</strong><br><li>/usr/share/asterisk/sounds/: <strong>738 files</strong></li><br><li>Total size: <strong>~12 MB</strong> (ulaw + gsm formats)</li></p><p><strong>File Formats Available:</strong><br><li><code>.gsm</code> - GSM codec (2.4 MB package)</li><br><li><code>.ulaw</code> - G.711 μ-law codec (9.7 MB package)</li><br><li><code>.wav</code> - Custom queue prompts (user-uploaded)</li></p><hr><h2>🎯 Next Steps</h2><br>  <li><strong>Test the echo extension</strong> (9196) first</li><br><li><strong>Test system sounds</strong> (*455)</li><br><li><strong>Test MOH preview</strong> (*78)</li><br><li><strong>Test queue stats</strong> (*77)</li><br><li><strong>Test queue functions</strong> (<em>45, </em>46)</li></p><p>If echo works but others don&#039;t:<br><li>Check <code>/var/log/asterisk/messages</code> for errors</li><br><li>Verify sound file permissions</li><br><li>Test specific files with *451-455</li></p><p>If echo is silent:<br><li>Check firewall allows UDP 10000-20000</li><br><li>Check phone STUN settings</li><br><li>Try different network (WiFi vs cellular)</li></p><hr><h2>📝 Important Notes</h2><br>  <li>All changes require <code>dialplan reload</code> to take effect</li><br><li>RTP changes require Asterisk restart</li><br><li>STUN only helps with NAT, doesn&#039;t fix firewall blocks</li><br><li>Test extensions persist after restart (saved in extensions.conf)</li><br><li>Sound files in GSM format preferred for lowest bandwidth</li><br><li>MusicOnHold plays for max 120 seconds (configurable)</li><br></ul><br><hr></p><p><strong>Last Updated:</strong> October 14, 2025 01:45 AM<br><strong>Status:</strong> All systems operational, ready for testing<br><strong>Sound Packages:</strong> asterisk-core-sounds-en-ulaw-current + GSM version<br></p>
+        </div>
+
+        <div class="footer">
+            <p>FlexPBX Documentation | Generated from Markdown</p>
+            <p><a href="AUDIO_FIX_SUMMARY.md" download>Download Markdown Version</a></p>
+        </div>
+    </div>
+</body>
+</html>

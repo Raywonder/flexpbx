@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create required directories - FlexPBX Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        h2 {
+            color: #34495e;
+            font-size: 1.8rem;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #555;
+            font-size: 1.4rem;
+            margin-top: 25px;
+            margin-bottom: 12px;
+        }
+
+        h4 {
+            color: #666;
+            font-size: 1.2rem;
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        h5, h6 {
+            color: #777;
+            margin-top: 15px;
+            margin-bottom: 8px;
+        }
+
+        p {
+            margin-bottom: 15px;
+            line-height: 1.8;
+        }
+
+        ul, ol {
+            margin-bottom: 15px;
+            margin-left: 30px;
+        }
+
+        li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #e74c3c;
+        }
+
+        pre {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+            font-size: 0.95em;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            display: block;
+        }
+
+        table thead {
+            background: #667eea;
+            color: white;
+        }
+
+        table th,
+        table td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        table tbody tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        table tbody tr:hover {
+            background: #e9ecef;
+        }
+
+        blockquote {
+            border-left: 4px solid #667eea;
+            padding-left: 20px;
+            margin: 20px 0;
+            color: #555;
+            font-style: italic;
+            background: #f8f9fa;
+            padding: 15px 20px;
+            border-radius: 4px;
+        }
+
+        hr {
+            border: none;
+            border-top: 2px solid #ecf0f1;
+            margin: 30px 0;
+        }
+
+        a {
+            color: #667eea;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        strong {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        em {
+            font-style: italic;
+            color: #555;
+        }
+
+        input[type="checkbox"] {
+            margin-right: 8px;
+        }
+
+        .footer {
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 2px solid #ecf0f1;
+            text-align: center;
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            table {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Back to Documentation Index</a>
+
+        <div class="header">
+            <h1>Create required directories</h1>
+        </div>
+
+        <div class="content">
+            <p>Run these commands on server...<br>run self check.<br>but before doing so check if all files are already there, of so state so and check permissions with script and start server.<br>cd /home/flexpbxuser/public_html</p><h1>Create required directories</h1><br>mkdir -p api admin config docs scripts monitoring modules</p><h1>Move files to correct locations (if they exist)</h1><br>[ -f admin-self-check.php ] &amp;&amp; mv admin-self-check.php api/<br>[ -f callcentric-trunk-config.json ] &amp;&amp; mv callcentric-trunk-config.json config/<br>[ -f extensions-config.json ] &amp;&amp; mv extensions-config.json config/<br>[ -f google-voice-config.json ] &amp;&amp; mv google-voice-config.json config/<br>[ -f EXTENSION-TESTING-GUIDE.md ] &amp;&amp; mv EXTENSION-TESTING-GUIDE.md docs/<br>[ -f flexpbx-test-suite.sh ] &amp;&amp; mv flexpbx-test-suite.sh scripts/<br>[ -f flexpbx-server-setup.sh ] &amp;&amp; mv flexpbx-server-setup.sh scripts/</p><h1>Fix permissions</h1><br>chmod 755 scripts/*.sh 2&gt;/dev/null<br>chmod 644 config/*.json 2&gt;/dev/null<br>chmod 644 docs/*.md 2&gt;/dev/null<br>chmod 644 api/*.php 2&gt;/dev/null</p><h1>Check final structure</h1><br>find . -maxdepth 2 -type f | sort</p><h1>Run self-check to verify</h1><br>php api/admin-self-check.php<br><pre><code class="language-"><br><h2>🚀 <strong>One-Line Command (copy/paste this):</strong></code></pre>bash</h2><br>cd /home/flexpbxuser/public_html &amp;&amp; mkdir -p api admin config docs scripts monitoring modules &amp;&amp; [ -f admin-self-check.php ] &amp;&amp; mv admin-self-check.php api/ &amp;&amp; [ -f callcentric-trunk-config.json ] &amp;&amp; mv callcentric-trunk-config.json config/ &amp;&amp; [ -f extensions-config.json ] &amp;&amp; mv extensions-config.json config/ &amp;&amp; [ -f google-voice-config.json ] &amp;&amp; mv google-voice-config.json config/ &amp;&amp; [ -f EXTENSION-TESTING-GUIDE.md ] &amp;&amp; mv EXTENSION-TESTING-GUIDE.md docs/ &amp;&amp; [ -f flexpbx-test-suite.sh ] &amp;&amp; mv flexpbx-test-suite.sh scripts/ &amp;&amp; chmod 755 scripts/<em>.sh 2&gt;/dev/null &amp;&amp; chmod 644 config/</em>.json 2&gt;/dev/null &amp;&amp; chmod 644 api/*.php 2&gt;/dev/null &amp;&amp; echo &quot;Files organized!&quot; &amp;&amp; php api/admin-self-check.php</p>
+        </div>
+
+        <div class="footer">
+            <p>FlexPBX Documentation | Generated from Markdown</p>
+            <p><a href="pbxtest.md" download>Download Markdown Version</a></p>
+        </div>
+    </div>
+</body>
+</html>

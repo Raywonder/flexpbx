@@ -1,0 +1,17 @@
+{
+    "installation_time": 1760379420,
+    "services": {
+        "flexpbx_server": "ready",
+        "ivr_system": "ready",
+        "connection_manager": "ready",
+        "client_registry": "ready",
+        "update_manager": "ready"
+    },
+    "cron_jobs": {
+        "client_heartbeat": "scheduled",
+        "connection_cleanup": "scheduled",
+        "update_check": "scheduled",
+        "log_rotation": "scheduled",
+        "service_monitor": "scheduled"
+    }
+}

@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HubNode Monitor - FlexPBX Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .header-left h1 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .header-left .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .header-right {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-badge.online {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-badge.offline {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.online {
+            background: #10b981;
+        }
+
+        .status-indicator.offline {
+            background: #ef4444;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .btn-secondary {
+            background: #64748b;
+        }
+
+        .btn-success {
+            background: #10b981;
+        }
+
+        .btn-danger {
+            background: #ef4444;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .card-title {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .card-subtitle {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .service-status {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .service-status:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .service-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .service-status-badge {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .service-status-badge.running {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .service-status-badge.stopped {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        @media (max-width: 968px) {
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .event-feed {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .feed-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .feed-title {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 5px;
+        }
+
+        .filter-btn {
+            padding: 6px 12px;
+            border: 1px solid #ddd;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .event-item {
+            display: flex;
+            gap: 15px;
+            padding: 15px;
+            border-left: 4px solid #ddd;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            background: #f9fafb;
+            transition: all 0.2s;
+        }
+
+        .event-item:hover {
+            background: #f3f4f6;
+            transform: translateX(5px);
+        }
+
+        .event-item.backup {
+            border-left-color: #3b82f6;
+        }
+
+        .event-item.module {
+            border-left-color: #10b981;
+        }
+
+        .event-item.system {
+            border-left-color: #f59e0b;
+        }
+
+        .event-icon {
+            font-size: 24px;
+            min-width: 30px;
+        }
+
+        .event-details {
+            flex: 1;
+        }
+
+        .event-action {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .event-data {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .event-timestamp {
+            font-size: 11px;
+            color: #999;
+        }
+
+        .event-status {
+            min-width: 60px;
+            text-align: right;
+        }
+
+        .success-badge {
+            padding: 4px 8px;
+            background: #d1fae5;
+            color: #065f46;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .failure-badge {
+            padding: 4px 8px;
+            background: #fee2e2;
+            color: #991b1b;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .push-notification-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group select,
+        .form-group textarea,
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .success-message {
+            background: #d1fae5;
+            color: #065f46;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .last-updated {
+            font-size: 11px;
+            color: #999;
+            text-align: right;
+            margin-top: 10px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .back-link:hover {
+            background: rgba(255,255,255,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+
+        <div class="header">
+            <div class="header-left">
+                <h1>HubNode Monitor</h1>
+                <p class="subtitle">Real-time FlexPBX system monitoring and notifications</p>
+            </div>
+            <div class="header-right">
+                <div class="status-badge" id="hubnode-status">
+                    <span class="status-indicator offline"></span>
+                    Connecting...
+                </div>
+                <button class="btn btn-secondary" onclick="refreshData()">🔄 Refresh</button>
+            </div>
+        </div>
+
+        <!-- Service Status Cards -->
+        <div class="grid">
+            <div class="card">
+                <div class="card-title">HubNode Service</div>
+                <div class="card-value" id="hubnode-uptime">--</div>
+                <div class="card-subtitle" id="hubnode-info">Checking status...</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Asterisk Status</div>
+                <div class="card-value" id="asterisk-channels">--</div>
+                <div class="card-subtitle" id="asterisk-status">Checking status...</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Total Events</div>
+                <div class="card-value" id="total-events">--</div>
+                <div class="card-subtitle">Events logged today</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Recent Activity</div>
+                <div class="card-value" id="recent-activity">--</div>
+                <div class="card-subtitle" id="last-event-time">No events yet</div>
+            </div>
+        </div>
+
+        <!-- Two Column Layout -->
+        <div class="two-column">
+            <!-- Event Feed -->
+            <div class="event-feed">
+                <div class="feed-header">
+                    <h2 class="feed-title">Event Feed</h2>
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" data-filter="all" onclick="filterEvents('all')">All</button>
+                        <button class="filter-btn" data-filter="backup" onclick="filterEvents('backup')">📦 Backup</button>
+                        <button class="filter-btn" data-filter="module" onclick="filterEvents('module')">🔌 Modules</button>
+                        <button class="filter-btn" data-filter="system" onclick="filterEvents('system')">⚙️ System</button>
+                    </div>
+                </div>
+
+                <div id="event-list" class="loading">
+                    Loading events...
+                </div>
+
+                <div class="last-updated" id="last-updated">
+                    Last updated: Never
+                </div>
+            </div>
+
+            <!-- Push Notification Panel -->
+            <div class="push-notification-panel">
+                <h2 class="feed-title" style="margin-bottom: 20px;">Push Notifications</h2>
+
+                <div id="notification-message"></div>
+
+                <form id="push-notification-form" onsubmit="sendNotification(event)">
+                    <div class="form-group">
+                        <label for="notification-target">Target</label>
+                        <select id="notification-target" required>
+                            <option value="global">🌐 Global Broadcast</option>
+                            <option value="extension:2000">📞 Extension 2000 (Admin)</option>
+                            <option value="extension:2001">📞 Extension 2001</option>
+                            <option value="discord">💬 Discord Only</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notification-priority">Priority</label>
+                        <select id="notification-priority">
+                            <option value="normal">Normal</option>
+                            <option value="high">High</option>
+                            <option value="urgent">Urgent</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notification-message-text">Message</label>
+                        <textarea id="notification-message-text" placeholder="Enter your notification message..." required></textarea>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="submit" class="btn btn-success">📤 Send Notification</button>
+                        <button type="button" class="btn btn-secondary" onclick="testDiscordWebhook()">🧪 Test Discord</button>
+                    </div>
+                </form>
+
+                <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee;">
+                    <h3 style="margin-bottom: 15px; color: #333;">Quick Actions</h3>
+                    <div class="service-status">
+                        <span class="service-name">HubNode Monitor</span>
+                        <span class="service-status-badge" id="service-hubnode">Checking...</span>
+                    </div>
+                    <div class="service-status">
+                        <span class="service-name">Asterisk PBX</span>
+                        <span class="service-status-badge" id="service-asterisk">Checking...</span>
+                    </div>
+                    <div class="service-status">
+                        <span class="service-name">SIP Port (5060)</span>
+                        <span class="service-status-badge" id="service-sip">Checking...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentFilter = 'all';
+        let allEvents = [];
+        let refreshInterval;
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            refreshData();
+            // Auto-refresh every 30 seconds
+            refreshInterval = setInterval(refreshData, 30000);
+        });
+
+        async function refreshData() {
+            await Promise.all([
+                loadHubNodeStatus(),
+                loadEvents()
+            ]);
+        }
+
+        async function loadHubNodeStatus() {
+            try {
+                const response = await fetch('http://localhost:5003/status/flexpbx');
+
+                if (!response.ok) throw new Error('HubNode offline');
+
+                const data = await response.json();
+
+                // Update header status
+                const statusBadge = document.getElementById('hubnode-status');
+                statusBadge.innerHTML = '<span class="status-indicator online"></span> Online';
+                statusBadge.className = 'status-badge online';
+
+                // Update service cards
+                document.getElementById('hubnode-uptime').textContent = 'Online';
+                document.getElementById('hubnode-info').textContent = 'Service operational';
+
+                // Update Asterisk info
+                const channels = data.active_channels || '0 active channels';
+                document.getElementById('asterisk-channels').textContent = channels.split(' ')[0];
+                document.getElementById('asterisk-status').textContent = data.asterisk?.status || 'Unknown';
+
+                // Update service status badges
+                document.getElementById('service-hubnode').textContent = 'Running';
+                document.getElementById('service-hubnode').className = 'service-status-badge running';
+
+                document.getElementById('service-asterisk').textContent = data.asterisk?.status || 'Unknown';
+                document.getElementById('service-asterisk').className = data.asterisk?.active ? 'service-status-badge running' : 'service-status-badge stopped';
+
+                document.getElementById('service-sip').textContent = data.sip_port?.status || 'Unknown';
+                document.getElementById('service-sip').className = data.sip_port?.active ? 'service-status-badge running' : 'service-status-badge stopped';
+
+            } catch (error) {
+                console.error('Error loading HubNode status:', error);
+                const statusBadge = document.getElementById('hubnode-status');
+                statusBadge.innerHTML = '<span class="status-indicator offline"></span> Offline';
+                statusBadge.className = 'status-badge offline';
+
+                document.getElementById('hubnode-uptime').textContent = 'Offline';
+                document.getElementById('hubnode-info').textContent = 'Service unavailable';
+            }
+        }
+
+        async function loadEvents() {
+            try {
+                const response = await fetch('http://localhost:5003/events?limit=50');
+
+                if (!response.ok) throw new Error('Failed to load events');
+
+                const data = await response.json();
+                allEvents = data.events || [];
+
+                // Update stats
+                document.getElementById('total-events').textContent = data.total || 0;
+
+                if (allEvents.length > 0) {
+                    const lastEvent = allEvents[0];
+                    document.getElementById('recent-activity').textContent = allEvents.length;
+                    document.getElementById('last-event-time').textContent = 'Last: ' + lastEvent.timestamp;
+                } else {
+                    document.getElementById('recent-activity').textContent = '0';
+                    document.getElementById('last-event-time').textContent = 'No events yet';
+                }
+
+                // Update last updated time
+                document.getElementById('last-updated').textContent = 'Last updated: ' + new Date().toLocaleTimeString();
+
+                // Render filtered events
+                renderEvents();
+
+            } catch (error) {
+                console.error('Error loading events:', error);
+                document.getElementById('event-list').innerHTML = '<div class="error-message">Failed to load events. Make sure HubNode service is running.</div>';
+            }
+        }
+
+        function filterEvents(filter) {
+            currentFilter = filter;
+
+            // Update button states
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            renderEvents();
+        }
+
+        function renderEvents() {
+            const eventList = document.getElementById('event-list');
+
+            let filteredEvents = allEvents;
+            if (currentFilter !== 'all') {
+                filteredEvents = allEvents.filter(event => event.type === currentFilter);
+            }
+
+            if (filteredEvents.length === 0) {
+                eventList.innerHTML = '<div class="empty-state">No events found</div>';
+                return;
+            }
+
+            eventList.innerHTML = filteredEvents.map(event => {
+                const icon = getEventIcon(event.type);
+                const successClass = event.success ? 'success-badge' : 'failure-badge';
+                const successText = event.success ? '✓ Success' : '✗ Failed';
+
+                let dataText = '';
+                if (event.data) {
+                    if (event.data.backup_type) dataText += `Type: ${event.data.backup_type} `;
+                    if (event.data.module) dataText += `Module: ${event.data.module} `;
+                    if (event.data.request_id) dataText += `ID: ${event.data.request_id}`;
+                    if (event.data.compressed !== undefined) dataText += event.data.compressed ? ' (compressed)' : '';
+                }
+
+                return `
+                    <div class="event-item ${event.type}">
+                        <div class="event-icon">${icon}</div>
+                        <div class="event-details">
+                            <div class="event-action">${event.type.toUpperCase()}: ${event.action}</div>
+                            ${dataText ? `<div class="event-data">${dataText}</div>` : ''}
+                            <div class="event-timestamp">${event.timestamp}</div>
+                        </div>
+                        <div class="event-status">
+                            <span class="${successClass}">${successText}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getEventIcon(type) {
+            const icons = {
+                'backup': '📦',
+                'module': '🔌',
+                'system': '⚙️'
+            };
+            return icons[type] || '📝';
+        }
+
+        async function sendNotification(event) {
+            event.preventDefault();
+
+            const target = document.getElementById('notification-target').value;
+            const priority = document.getElementById('notification-priority').value;
+            const message = document.getElementById('notification-message-text').value;
+
+            const messageDiv = document.getElementById('notification-message');
+            messageDiv.innerHTML = '<div class="loading">Sending notification...</div>';
+
+            try {
+                const response = await fetch('https://flexpbx.devinecreations.net/api/system.php?path=push_notification', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        target: target,
+                        priority: priority,
+                        message: message,
+                        channels: ['discord', 'hubnode']
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    messageDiv.innerHTML = '<div class="success-message">✓ Notification sent successfully!</div>';
+                    document.getElementById('notification-message-text').value = '';
+                    // Refresh events to show the new notification event
+                    setTimeout(loadEvents, 1000);
+                } else {
+                    messageDiv.innerHTML = `<div class="error-message">✗ Failed: ${result.message || 'Unknown error'}</div>`;
+                }
+
+                // Clear message after 5 seconds
+                setTimeout(() => {
+                    messageDiv.innerHTML = '';
+                }, 5000);
+
+            } catch (error) {
+                console.error('Error sending notification:', error);
+                messageDiv.innerHTML = '<div class="error-message">✗ Failed to send notification. Check console for details.</div>';
+            }
+        }
+
+        async function testDiscordWebhook() {
+            const messageDiv = document.getElementById('notification-message');
+            messageDiv.innerHTML = '<div class="loading">Testing Discord webhook...</div>';
+
+            try {
+                const response = await fetch('http://localhost:5003/test_discord', {
+                    method: 'POST'
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    messageDiv.innerHTML = '<div class="success-message">✓ Discord webhook test successful! Check your Discord channel.</div>';
+                } else {
+                    messageDiv.innerHTML = `<div class="error-message">✗ Discord test failed: ${result.message || 'Unknown error'}</div>`;
+                }
+
+                setTimeout(() => {
+                    messageDiv.innerHTML = '';
+                }, 5000);
+
+            } catch (error) {
+                console.error('Error testing Discord:', error);
+                messageDiv.innerHTML = '<div class="error-message">✗ Failed to test Discord webhook. Make sure HubNode service is running.</div>';
+            }
+        }
+
+        // Cleanup interval on page unload
+        window.addEventListener('beforeunload', function() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+        });
+    </script>
+</body>
+</html>

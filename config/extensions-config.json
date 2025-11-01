@@ -1,0 +1,248 @@
+{
+  "extension_config": "FlexPBX Production Extensions",
+  "total_extensions": 21,
+  "departments": {
+    "sales": "1000-1009",
+    "support": "2000-2009",
+    "conference": "8000-8009"
+  },
+  "extensions": {
+    "1000": {
+      "username": "salesmanager",
+      "password": "Sales1000!",
+      "display_name": "Sales Manager",
+      "department": "sales",
+      "role": "manager",
+      "features": ["call_recording", "monitoring", "transfer", "conference"],
+      "voicemail": true,
+      "direct_did": true
+    },
+    "1001": {
+      "username": "salesrep1",
+      "password": "Sales1001!",
+      "display_name": "Sales Rep 1",
+      "department": "sales",
+      "role": "agent",
+      "features": ["transfer", "hold", "conference"],
+      "voicemail": true,
+      "queue_member": "sales-queue"
+    },
+    "1002": {
+      "username": "salesrep2",
+      "password": "Sales1002!",
+      "display_name": "Sales Rep 2",
+      "department": "sales",
+      "role": "agent",
+      "features": ["transfer", "hold", "conference"],
+      "voicemail": true,
+      "queue_member": "sales-queue"
+    },
+    "1003": {
+      "username": "salesrep3",
+      "password": "Sales1003!",
+      "display_name": "Sales Rep 3",
+      "department": "sales",
+      "role": "agent",
+      "features": ["transfer", "hold", "conference"],
+      "voicemail": true,
+      "queue_member": "sales-queue"
+    },
+    "1004": {
+      "username": "insidesales",
+      "password": "Sales1004!",
+      "display_name": "Inside Sales",
+      "department": "sales",
+      "role": "specialist",
+      "features": ["crm_integration", "lead_routing"],
+      "voicemail": true,
+      "queue_member": "inside-sales"
+    },
+    "1005": {
+      "username": "outsidesales",
+      "password": "Sales1005!",
+      "display_name": "Outside Sales",
+      "department": "sales",
+      "role": "specialist",
+      "features": ["mobile_integration", "follow_me"],
+      "voicemail": true,
+      "mobile_forwarding": true
+    },
+    "2000": {
+      "username": "supportmanager",
+      "password": "Support2000!",
+      "display_name": "Support Manager",
+      "department": "support",
+      "role": "manager",
+      "features": ["call_recording", "monitoring", "queue_control"],
+      "voicemail": true,
+      "direct_did": true
+    },
+    "2001": {
+      "username": "techsupport1",
+      "password": "Support2001!",
+      "display_name": "Senior Tech Support",
+      "department": "support",
+      "role": "senior",
+      "features": ["screen_sharing", "remote_access", "escalation"],
+      "voicemail": true,
+      "queue_member": "tech-support",
+      "skills": ["hardware", "software", "network"]
+    },
+    "2002": {
+      "username": "techsupport2",
+      "password": "Support2002!",
+      "display_name": "Tech Support 2",
+      "department": "support",
+      "role": "agent",
+      "features": ["ticket_system", "knowledge_base"],
+      "voicemail": true,
+      "queue_member": "tech-support",
+      "skills": ["software", "basic_hardware"]
+    },
+    "2003": {
+      "username": "techsupport3",
+      "password": "Support2003!",
+      "display_name": "Tech Support 3",
+      "department": "support",
+      "role": "agent",
+      "features": ["ticket_system", "knowledge_base"],
+      "voicemail": true,
+      "queue_member": "tech-support",
+      "skills": ["software", "account_management"]
+    },
+    "2004": {
+      "username": "accessibility",
+      "password": "Access2004!",
+      "display_name": "Accessibility Support",
+      "department": "support",
+      "role": "specialist",
+      "features": ["screen_reader_support", "tty", "video_relay"],
+      "voicemail": true,
+      "accessibility_enabled": true,
+      "priority_routing": true
+    },
+    "2005": {
+      "username": "networksupport",
+      "password": "Network2005!",
+      "display_name": "Network Support",
+      "department": "support",
+      "role": "specialist",
+      "features": ["network_diagnostics", "voip_troubleshooting"],
+      "voicemail": true,
+      "skills": ["network", "voip", "infrastructure"]
+    },
+    "2006": {
+      "username": "walterharper",
+      "password": "Review.1121",
+      "display_name": "Walter Harper - Assistive Technology",
+      "title": "Harper's place!",
+      "department": "support",
+      "role": "specialist",
+      "email": "info@walterharper.com",
+      "website": "walterharper.com",
+      "features": ["screen_reader_support", "assistive_tech", "accessibility", "jaws_certified"],
+      "voicemail": true,
+      "voicemail_email": "info@walterharper.com",
+      "accessibility_enabled": true,
+      "skills": ["jaws", "assistive_technology", "accessibility", "screen_readers"],
+      "bio": "Assistive Technology Hub - Empowering Every User: Technology That Sees With You",
+      "direct_phone": "316-272-6712",
+      "queue_member": "accessibility-support"
+    }
+  },
+  "queues": {
+    "sales-queue": {
+      "name": "Sales Department",
+      "strategy": "round_robin",
+      "members": ["1001", "1002", "1003"],
+      "timeout": 20,
+      "retry": 3,
+      "maxwait": 300,
+      "announce": "sales-greeting.wav",
+      "hold_music": "corporate"
+    },
+    "tech-support": {
+      "name": "Technical Support",
+      "strategy": "longest_idle",
+      "members": ["2001", "2002", "2003"],
+      "timeout": 30,
+      "retry": 5,
+      "maxwait": 600,
+      "announce": "support-greeting.wav",
+      "hold_music": "ambient"
+    },
+    "accessibility-support": {
+      "name": "Accessibility Support",
+      "strategy": "priority",
+      "members": ["2004"],
+      "timeout": 15,
+      "priority": "high",
+      "announce": "accessibility-greeting.wav"
+    }
+  },
+  "conference_rooms": {
+    "8000": {
+      "name": "Main Conference",
+      "capacity": 50,
+      "recording": true,
+      "moderated": true,
+      "pin_required": false
+    },
+    "8001": {
+      "name": "Sales Meeting",
+      "capacity": 20,
+      "recording": true,
+      "department_access": "sales"
+    },
+    "8002": {
+      "name": "Support Team",
+      "capacity": 15,
+      "recording": true,
+      "department_access": "support"
+    },
+    "8003": {
+      "name": "Training Room",
+      "capacity": 30,
+      "recording": true,
+      "features": ["presentation_mode"]
+    }
+  },
+  "ivr_menus": {
+    "main": {
+      "extension": "101",
+      "name": "Main IVR",
+      "greeting": "main-greeting.wav",
+      "options": {
+        "1": "queue:sales-queue",
+        "2": "queue:tech-support",
+        "3": "extension:billing",
+        "4": "extension:2001",
+        "5": "directory:conference",
+        "7": "queue:accessibility-support",
+        "8": "directory:company",
+        "9": "repeat",
+        "0": "extension:2001",
+        "*": "voicemail:general",
+        "#": "callback:request"
+      }
+    }
+  },
+  "special_codes": {
+    "*97": "voicemail_access",
+    "9196": "echo_test",
+    "*60": "time_date",
+    "*78": "do_not_disturb_on",
+    "*79": "do_not_disturb_off",
+    "*72": "call_forwarding_on",
+    "*73": "call_forwarding_off"
+  },
+  "server_settings": {
+    "sip_domain": "flexpbx.devinecreations.net",
+    "sip_port": 5070,
+    "rtp_start": 10000,
+    "rtp_end": 20000,
+    "codecs": ["g722", "ulaw", "alaw"],
+    "dtmf_mode": "rfc2833",
+    "nat": "auto_force_rport,auto_comedia"
+  }
+}

@@ -1,0 +1,113 @@
+{
+  "service_name": "Google Voice API",
+  "service_id": "gv_primary",
+  "provider": "google-voice",
+  "type": "api",
+  "status": "active",
+  "configuration": {
+    "authentication": {
+      "type": "oauth2",
+      "scopes": [
+        "https://www.googleapis.com/auth/voice",
+        "https://www.googleapis.com/auth/voice.sms"
+      ],
+      "credentials_file": "google-voice-credentials.json",
+      "token_file": "google-voice-token.json"
+    },
+    "numbers": {
+      "primary": {
+        "number": "12813015784",
+        "formatted": "(281) 301-5784",
+        "description": "Primary Google Voice Number",
+        "features": ["voice", "sms", "voicemail"]
+      },
+      "test_mobile": {
+        "number": "13364626141",
+        "formatted": "(336) 462-6141",
+        "description": "Test Mobile Number",
+        "features": ["testing"]
+      }
+    },
+    "api_settings": {
+      "endpoint": "https://voice.googleapis.com/v1",
+      "rate_limits": {
+        "calls_per_day": 1000,
+        "sms_per_day": 500
+      },
+      "retry_attempts": 3,
+      "timeout": 30000
+    },
+    "features": {
+      "outbound_calling": true,
+      "sms_messaging": true,
+      "voicemail_transcription": true,
+      "call_forwarding": true,
+      "caller_id": true
+    }
+  },
+  "routing": {
+    "outbound_rules": [
+      {
+        "pattern": "_1NXXNXXXXXX",
+        "route_via": "google_voice",
+        "caller_id": "12813015784"
+      },
+      {
+        "pattern": "_NXXNXXXXXX",
+        "route_via": "google_voice",
+        "prepend": "1",
+        "caller_id": "12813015784"
+      }
+    ],
+    "sms_routing": {
+      "inbound_context": "from-google-voice-sms",
+      "outbound_via": "google_voice_api"
+    }
+  },
+  "integration": {
+    "pbx_context": "from-google-voice",
+    "dialplan_priority": "high",
+    "backup_trunk": "callcentric",
+    "failover_timeout": 10
+  },
+  "testing": {
+    "test_endpoints": [
+      "12813015784",
+      "13364626141"
+    ],
+    "last_tested": "2025-10-13",
+    "api_status": "operational",
+    "authentication_valid": true
+  },
+  "inbound_routing": {
+    "default_destination": {
+      "type": "ivr",
+      "target": "101",
+      "description": "Main IVR Menu"
+    },
+    "number_routes": [
+      {
+        "number": "12813015784",
+        "formatted": "(281) 301-5784",
+        "description": "Primary Google Voice Number",
+        "destination": {
+          "type": "ivr",
+          "target": "101"
+        }
+      },
+      {
+        "number": "13364626141",
+        "formatted": "(336) 462-6141",
+        "description": "Test Mobile Number",
+        "destination": {
+          "type": "extension",
+          "target": "2001"
+        }
+      }
+    ],
+    "failover": {
+      "type": "voicemail",
+      "target": "general"
+    }
+  }
+}

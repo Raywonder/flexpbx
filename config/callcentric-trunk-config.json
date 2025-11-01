@@ -1,0 +1,117 @@
+{
+  "trunk_name": "CallCentric Primary",
+  "trunk_id": "cc_primary",
+  "provider": "callcentric",
+  "type": "sip",
+  "status": "active",
+  "channels": {
+    "max_channels": 2,
+    "current_channels": 0,
+    "per_did_limit": true
+  },
+  "configuration": {
+    "general": {
+      "username": "17778171572",
+      "password": "860719938242",
+      "authname": "Raywonder",
+      "fromuser": "17778171572",
+      "fromdomain": "sip.callcentric.com"
+    },
+    "registration": {
+      "proxy": "sip.callcentric.com",
+      "port": 5060,
+      "transport": "UDP",
+      "register": true,
+      "expires": 3600,
+      "registerattempts": 5
+    },
+    "audio": {
+      "codecs": ["g722", "ulaw", "alaw", "g729"],
+      "dtmfmode": "rfc2833",
+      "directmedia": "no"
+    },
+    "outbound": {
+      "context": "from-trunk",
+      "qualify": "yes",
+      "nat": "auto_force_rport,auto_comedia"
+    }
+  },
+  "dialpatterns": {
+    "outbound_prefix": "09",
+    "outbound": [
+      {
+        "pattern": "_09NXXNXXXXXX",
+        "strip": "09",
+        "prepend": "1",
+        "description": "Outbound: 09 + 10-digit US/Canada (e.g., 093364626141)"
+      },
+      {
+        "pattern": "_091NXXNXXXXXX",
+        "strip": "09",
+        "prepend": "",
+        "description": "Outbound: 09 + 11-digit US/Canada (e.g., 0913364626141)"
+      },
+      {
+        "pattern": "_09011X.",
+        "strip": "09",
+        "prepend": "",
+        "description": "International: 09 + 011 + country + number"
+      },
+      {
+        "pattern": "_09[2-9]11",
+        "strip": "09",
+        "prepend": "",
+        "description": "Service codes: 09 + 411, 911, etc."
+      },
+      {
+        "pattern": "_911",
+        "strip": "",
+        "prepend": "",
+        "description": "Emergency: Direct 911 (no prefix needed)"
+      }
+    ]
+  },
+  "features": {
+    "caller_id": true,
+    "call_waiting": true,
+    "call_forwarding": true,
+    "voicemail": true,
+    "conference": true,
+    "fax": true
+  },
+  "testing": {
+    "last_tested": "2025-10-02T09:51:14.705Z",
+    "registration_status": "successful",
+    "audio_quality": "HD (G.722)",
+    "dtmf_accuracy": "99.8%",
+    "production_ready": true
+  },
+  "inbound_routing": {
+    "default_destination": {
+      "type": "ivr",
+      "target": "101",
+      "description": "Main IVR Menu"
+    },
+    "did_routes": [
+      {
+        "did": "3123139555",
+        "formatted": "(312) 313-9555",
+        "description": "Main Business Line - Chicago",
+        "destination": {
+          "type": "ivr",
+          "target": "101"
+        },
+        "business_hours": {
+          "enabled": false,
+          "destination": "ivr:101",
+          "after_hours_destination": "voicemail:general"
+        },
+        "channel_limit": 2
+      }
+    ],
+    "failover": {
+      "type": "voicemail",
+      "target": "general"
+    }
+  }
+}

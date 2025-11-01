@@ -1,0 +1,227 @@
+
+           WALTER HARPER EXTENSION SETUP - COMPLETE
+                    October 13, 2025
+
+✅ EXTENSION CONFIGURED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Extension Number:      2006
+Username:              walterharper
+Password:              Review.1121
+Display Name:          Walter Harper - Assistive Technology
+Title:                 Harper's place!
+Email:                 info@walterharper.com
+Website:               walterharper.com
+Direct Phone:          316-272-6712
+Department:            Support (Accessibility)
+Queue:                 accessibility-support
+
+✅ FEATURES ENABLED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+• Voicemail with email notifications (info@walterharper.com)
+• Accessibility support optimized
+• Screen reader compatible (JAWS/VoiceOver)
+• Priority routing in accessibility queue
+• Call recording, transfer, conference
+• Extended ring time for accessibility
+• TTY support available
+
+✅ CONFIGURATION FILES UPDATED
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+File: config/extensions-config.json
+Total Extensions: Updated from 20 to 21
+Location: Lines 134-151
+Status: SAVED ✓
+
+✅ EMAIL READY TO SEND
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Email File: email-walter-harper.txt
+
+Email Headers:
+  From: services@devine-creations.com
+  Reply-To: support@devine-creations.com
+  To: info@walterharper.com
+  Subject: Your Flex PBX Extension is Ready - Extension 2006
+
+Branding: Updated to "Flex PBX" (with space) for proper screen reader
+          pronunciation - important for accessibility!
+
+                    HOW TO SEND THE EMAIL
+
+OPTION 1: Copy & Paste
+  1. Open: email-walter-harper.txt
+  2. Copy entire content
+  3. Compose new email in your email client
+  4. Set From: services@devine-creations.com
+  5. Set Reply-To: support@devine-creations.com
+  6. Paste content
+  7. Send!
+
+OPTION 2: Command Line (if mail configured)
+  cat email-walter-harper.txt | mail -s "Your Flex PBX Extension is Ready" \
+    -r "services@devine-creations.com" \
+    -S replyto="support@devine-creations.com" \
+    info@walterharper.com
+
+OPTION 3: Via Web Interface
+  1. Login to email client
+  2. New message
+  3. Copy content from email-walter-harper.txt
+  4. Send from services@devine-creations.com
+
+                    WHAT THE EMAIL CONTAINS
+
+1. Extension Credentials (2006, walterharper, Review.1121)
+2. SIP Server Details (flexpbx.devinecreations.net:5070)
+3. Features Enabled (voicemail, accessibility, etc.)
+4. Getting Started Guide:
+   - Recommended SIP clients (Telephone for Mac with VoiceOver)
+   - Other accessible options (Zoiper, Linphone)
+5. Setup Instructions for Telephone app (step-by-step)
+6. Accessibility Notes (VoiceOver tips, screen reader support)
+7. Making Calls (outbound 09 prefix, internal no prefix)
+8. Receiving Calls (extension 2006, queue routing)
+9. Voicemail Features (email notifications)
+10. Testing Steps (echo test, internal, outbound)
+11. Troubleshooting Guide
+12. Accessibility Features (priority routing, extended ring)
+13. Quick Reference Card
+14. Support Contacts
+
+                    WALTER HARPER'S BACKGROUND
+
+From walterharper.com:
+  Title: Harper's place!
+  Tagline: "Empowering Every User: Technology That Sees With You"
+  Focus: Assistive Technology Hub
+  Certification: JAWS for Windows Certified
+  Mission: Making technology accessible for everyone
+  Contact: walter@walterharper.com
+  Phone: 316-272-6712
+
+Why Accessibility Features Matter:
+  Walter is an assistive technology specialist, so his extension
+  includes priority accessibility features and screen reader
+  optimizations. His feedback will be valuable for improving
+  our system's accessibility.
+
+                    SIP CLIENT RECOMMENDATIONS
+
+PRIMARY RECOMMENDATION: Telephone (macOS)
+  • URL: https://www.64characters.com/telephone/
+  • Free, open-source
+  • Excellent VoiceOver support
+  • Clean, simple interface
+  • Keyboard shortcuts work well
+  • Perfect for accessibility testing
+
+ALTERNATIVES:
+  • Zoiper (https://www.zoiper.com/) - Multi-platform, free version
+  • Linphone (https://www.linphone.org/) - Free, open source
+
+Since Flex PBX web interface is still in development, SIP clients
+are the current method for using extensions.
+
+                    TESTING CHECKLIST
+
+After Walter registers extension 2006:
+
+□ Verify extension shows as "Registered" in system
+□ Test internal call to 2006 from another extension
+□ Test voicemail on extension 2006
+□ Confirm email notifications arrive at info@walterharper.com
+□ Test accessibility queue routing
+□ Verify screen reader compatibility
+□ Test outbound calling with 09 prefix
+□ Confirm echo test works (9196)
+□ Test call transfer to/from 2006
+□ Verify extended ring time works
+
+                    FOLLOW-UP ACTIONS
+
+1. SEND EMAIL (Priority: High)
+   □ Send email-walter-harper.txt to info@walterharper.com
+   □ From: services@devine-creations.com
+   □ Reply-To: support@devine-creations.com
+
+2. MONITOR REGISTRATION (24-48 hours)
+   □ Check if extension 2006 registers
+   □ Look for registration attempts in logs
+   □ Be ready to troubleshoot
+
+3. FOLLOW UP (48 hours)
+   □ Email to check if setup went smoothly
+   □ Offer assistance if needed
+   □ Ask for accessibility feedback
+
+4. ACCESSIBILITY IMPROVEMENTS (Ongoing)
+   □ Gather feedback from Walter on system accessibility
+   □ Implement suggestions for screen reader users
+   □ Document accessibility best practices
+
+                    DOCUMENTATION FILES CREATED
+
+1. WALTER-HARPER-EXTENSION-SETUP.md
+   - Complete setup guide (detailed)
+   - Email template
+   - Admin notes
+   - Testing checklist
+
+2. email-walter-harper.txt
+   - Ready-to-send email (plain text)
+   - Screen reader optimized ("Flex PBX" spacing)
+   - All setup instructions included
+
+3. WALTER-HARPER-SUMMARY.txt (this file)
+   - Quick reference
+   - How to send email
+   - Testing checklist
+   - Follow-up actions
+
+All files in: /home/flexpbxuser/public_html/
+
+                    QUICK REFERENCE
+
+Extension: 2006
+Username: walterharper  
+Password: Review.1121
+Email: info@walterharper.com
+Server: flexpbx.devinecreations.net:5070
+
+Email From: services@devine-creations.com
+Email Reply-To: support@devine-creations.com
+Email To: info@walterharper.com
+
+Dial Pattern: 09 + number (outbound)
+Voicemail: *97
+Echo Test: 9196
+Queue: accessibility-support
+
+                    NEXT STEPS
+
+1. SEND THE EMAIL NOW
+   • Open email-walter-harper.txt
+   • Copy and send to info@walterharper.com
+   • From services@devine-creations.com
+
+2. MONITOR FOR REGISTRATION
+   • Check admin panel for extension 2006 status
+   • Look for "Registered" or "Available" status
+
+3. BE READY TO SUPPORT
+   • Walter may have questions about setup
+   • Help with SIP client configuration if needed
+   • Gather accessibility feedback
+
+4. TEST ACCESSIBILITY FEATURES
+   • Once registered, test screen reader compatibility
+   • Verify priority routing works
+   • Confirm email notifications function
+
+✅ EXTENSION 2006 CONFIGURED & READY
+📧 EMAIL READY TO SEND
+🎯 ACCESSIBILITY OPTIMIZED
+📱 SIP CLIENT RECOMMENDED (Telephone for VoiceOver)
+
+SEND EMAIL TO: info@walterharper.com
+FROM: services@devine-creations.com
+

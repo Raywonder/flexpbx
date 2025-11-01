@@ -1,0 +1,30 @@
+# FlexPBX Media Security - Block Public Access
+# Media files should only be accessed by authenticated PBX system
+
+# Deny all direct access by default
+Order Deny,Allow
+Deny from all
+
+# Allow access from localhost (PBX server itself)
+Allow from 127.0.0.1
+Allow from ::1
+
+# Allow access from local network (if needed)
+# Allow from 10.0.0.0/8
+# Allow from 192.168.0.0/16
+# Allow from 172.16.0.0/12
+
+# Allow access via authenticated API only
+# This is handled by the PBX authentication system
+
+# Block directory listings
+Options -Indexes
+
+# Prevent .htaccess from being viewed
+<Files .htaccess>
+    Order allow,deny
+    Deny from all
+</Files>
+
+# Error document
+ErrorDocument 403 "Access Denied - Media files are restricted to authenticated PBX users only"

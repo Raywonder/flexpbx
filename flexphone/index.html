@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flexphone - Web Calling Client</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .flexphone-container {
+            max-width: 500px;
+            margin: 50px auto;
+        }
+
+        .phone-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .status-bar {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        .status-online { background: #28a745; }
+        .status-offline { background: #dc3545; }
+        .status-calling { background: #ffc107; animation: pulse 1.5s infinite; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .display {
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 24px;
+            text-align: right;
+            margin-bottom: 20px;
+            min-height: 60px;
+        }
+
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .key {
+            aspect-ratio: 1;
+            border: none;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 24px;
+            font-weight: 600;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .key:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .key:active {
+            transform: scale(0.95);
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .action-btn {
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-call {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-hangup {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-call:hover {
+            background: #218838;
+        }
+
+        .btn-hangup:hover {
+            background: #c82333;
+        }
+
+        .info-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="flexphone-container">
+        <div class="phone-card">
+            <h1 class="text-center mb-3">
+                <i class="fas fa-phone me-2"></i>Flexphone
+            </h1>
+            
+            <div class="status-bar" id="statusBar">
+                <span class="status-indicator status-offline" id="statusIndicator"></span>
+                <span id="statusText">Connecting...</span>
+            </div>
+
+            <div class="display" id="display">Ready</div>
+
+            <div class="keypad">
+                <button class="key" onclick="dialDigit('1')">1</button>
+                <button class="key" onclick="dialDigit('2')">2</button>
+                <button class="key" onclick="dialDigit('3')">3</button>
+                <button class="key" onclick="dialDigit('4')">4</button>
+                <button class="key" onclick="dialDigit('5')">5</button>
+                <button class="key" onclick="dialDigit('6')">6</button>
+                <button class="key" onclick="dialDigit('7')">7</button>
+                <button class="key" onclick="dialDigit('8')">8</button>
+                <button class="key" onclick="dialDigit('9')">9</button>
+                <button class="key" onclick="dialDigit('*')">*</button>
+                <button class="key" onclick="dialDigit('0')">0</button>
+                <button class="key" onclick="dialDigit('#')">#</button>
+            </div>
+
+            <div class="action-buttons">
+                <button class="action-btn btn-call" onclick="makeCall()">
+                    <i class="fas fa-phone me-2"></i>Call
+                </button>
+                <button class="action-btn btn-hangup" onclick="hangUp()" disabled id="hangupBtn">
+                    <i class="fas fa-phone-slash me-2"></i>Hang Up
+                </button>
+            </div>
+
+            <div class="info-card">
+                <div class="info-row">
+                    <strong>Extension:</strong>
+                    <span id="userExtension">Loading...</span>
+                </div>
+                <div class="info-row">
+                    <strong>Client:</strong>
+                    <span id="clientInfo">Flexphone Web</span>
+                </div>
+                <div class="info-row">
+                    <strong>Network:</strong>
+                    <span id="networkInfo">Detecting...</span>
+                </div>
+                <div class="info-row">
+                    <strong>SIP Status:</strong>
+                    <span id="sipStatus">Offline</span>
+                </div>
+            </div>
+
+            <div class="text-center mt-3">
+                <a href="/user-portal/" class="btn btn-outline-secondary btn-sm">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <audio id="remoteAudio" autoplay></audio>
+    <audio id="localAudio" autoplay muted></audio>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sip.js@0.21.2/dist/sip.min.js"></script>
+    <script>
+        let currentNumber = '';
+        let userAgent = null;
+        let session = null;
+        let extension = null;
+        let sipPassword = null;
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadUserInfo();
+            await loadNetworkInfo();
+            initializeWebRTC();
+        });
+
+        async function loadUserInfo() {
+            try {
+                const response = await fetch('/api/auth.php?path=session');
+                const data = await response.json();
+                
+                if (data.success && data.extension) {
+                    extension = data.extension;
+                    document.getElementById('userExtension').textContent = extension;
+                    
+                    // Load SIP credentials
+                    await loadSIPCredentials();
+                } else {
+                    window.location.href = '/user-portal/login.php';
+                }
+            } catch (error) {
+                console.error('Error loading user info:', error);
+                document.getElementById('userExtension').textContent = 'Error';
+            }
+        }
+
+        async function loadSIPCredentials() {
+            // In production, get credentials securely from API
+            // For now, prompt user (will be replaced with secure API)
+            sipPassword = prompt('Enter your SIP password to enable calling:');
+            
+            if (sipPassword) {
+                updateStatus('Ready to connect', 'offline');
+            }
+        }
+
+        async function loadNetworkInfo() {
+            try {
+                const response = await fetch('/api/user-status.php?path=network_info');
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('networkInfo').textContent = data.network_type;
+                }
+            } catch (error) {
+                console.error('Error loading network info:', error);
+            }
+        }
+
+        function initializeWebRTC() {
+            if (!extension || !sipPassword) {
+                console.log('Waiting for credentials...');
+                return;
+            }
+
+            const server = 'flexpbx.devinecreations.net';
+            const wsServer = `wss://${server}:8089/ws`;
+
+            try {
+                const uri = SIP.UserAgent.makeURI(`sip:${extension}@${server}`);
+                const transportOptions = {
+                    server: wsServer
+                };
+
+                const userAgentOptions = {
+                    authorizationUsername: extension,
+                    authorizationPassword: sipPassword,
+                    transportOptions,
+                    uri,
+                    displayName: `Flexphone ${extension}`,
+                    userAgentString: 'Flexphone/1.0 WebRTC'
+                };
+
+                userAgent = new SIP.UserAgent(userAgentOptions);
+
+                userAgent.start().then(() => {
+                    updateStatus('Connected', 'online');
+                    document.getElementById('sipStatus').textContent = 'Online';
+                }).catch(error => {
+                    console.error('Failed to connect:', error);
+                    updateStatus('Connection failed', 'offline');
+                });
+
+            } catch (error) {
+                console.error('WebRTC initialization error:', error);
+                updateStatus('WebRTC not available', 'offline');
+            }
+        }
+
+        function dialDigit(digit) {
+            currentNumber += digit;
+            updateDisplay(currentNumber);
+            
+            // Send DTMF if in call
+            if (session && session.state === SIP.SessionState.Established) {
+                session.sessionDescriptionHandler.sendDtmf(digit);
+            }
+        }
+
+        function makeCall() {
+            if (!currentNumber) {
+                alert('Please enter a number to call');
+                return;
+            }
+
+            if (!userAgent || userAgent.state !== SIP.UserAgentState.Started) {
+                alert('Not connected to server. Please refresh and try again.');
+                return;
+            }
+
+            const target = SIP.UserAgent.makeURI(`sip:${currentNumber}@flexpbx.devinecreations.net`);
+            const inviter = new SIP.Inviter(userAgent, target);
+            
+            session = inviter;
+
+            inviter.invite().then(() => {
+                updateStatus(`Calling ${currentNumber}...`, 'calling');
+                document.getElementById('hangupBtn').disabled = false;
+            }).catch(error => {
+                console.error('Call failed:', error);
+                updateStatus('Call failed', 'online');
+            });
+
+            inviter.stateChange.addListener((state) => {
+                if (state === SIP.SessionState.Established) {
+                    updateStatus('In call', 'calling');
+                } else if (state === SIP.SessionState.Terminated) {
+                    updateStatus('Call ended', 'online');
+                    document.getElementById('hangupBtn').disabled = true;
+                    session = null;
+                }
+            });
+        }
+
+        function hangUp() {
+            if (session) {
+                session.bye().then(() => {
+                    updateStatus('Call ended', 'online');
+                    document.getElementById('hangupBtn').disabled = true;
+                    session = null;
+                });
+            }
+        }
+
+        function updateDisplay(text) {
+            document.getElementById('display').textContent = text || 'Ready';
+        }
+
+        function updateStatus(text, status) {
+            document.getElementById('statusText').textContent = text;
+            const indicator = document.getElementById('statusIndicator');
+            indicator.className = `status-indicator status-${status}`;
+        }
+
+        // Backspace functionality
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && currentNumber.length > 0) {
+                currentNumber = currentNumber.slice(0, -1);
+                updateDisplay(currentNumber);
+            } else if (e.key === 'Enter') {
+                makeCall();
+            } else if (/^[0-9*#]$/.test(e.key)) {
+                dialDigit(e.key);
+            }
+        });
+    </script>
+</body>
+</html>

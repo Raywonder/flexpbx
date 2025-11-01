@@ -1,0 +1,56 @@
+{
+    "comment": "FlexPBX Trusted Networks Configuration",
+    "description": "Add custom network ranges that should be treated as trusted (30-day sessions)",
+    "version": "1.0",
+    "networks": [
+        {
+            "name": "Tailscale VPN",
+            "cidr": "100.64.0.0/10",
+            "enabled": true,
+            "type": "tailscale",
+            "description": "Tailscale mesh VPN network"
+        },
+        {
+            "name": "WireGuard VPN",
+            "cidr": "10.8.0.0/24",
+            "enabled": true,
+            "type": "wireguard",
+            "description": "WireGuard VPN server"
+        },
+        {
+            "name": "Local Network - Class A",
+            "cidr": "10.0.0.0/8",
+            "enabled": true,
+            "type": "local",
+            "description": "Private network range (10.x.x.x)"
+        },
+        {
+            "name": "Local Network - Class B",
+            "cidr": "172.16.0.0/12",
+            "enabled": true,
+            "type": "local",
+            "description": "Private network range (172.16.x.x - 172.31.x.x)"
+        },
+        {
+            "name": "Local Network - Class C",
+            "cidr": "192.168.0.0/16",
+            "enabled": true,
+            "type": "local",
+            "description": "Private network range (192.168.x.x)"
+        },
+        {
+            "name": "Example Custom VPN",
+            "cidr": "10.20.0.0/16",
+            "enabled": false,
+            "type": "custom",
+            "description": "Example: Add your custom VPN network here and set enabled to true"
+        }
+    ],
+    "settings": {
+        "trusted_session_timeout_days": 30,
+        "public_session_timeout_hours": 24,
+        "enforce_ip_validation_on_public": true,
+        "enforce_user_agent_validation": true,
+        "log_security_events": true
+    }
+}
