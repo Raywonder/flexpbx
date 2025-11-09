@@ -1,0 +1,585 @@
+{
+  "version": "1.0",
+  "templates": [
+    {
+      "id": "simple-business",
+      "name": "Simple Business Menu",
+      "category": "business",
+      "description": "Basic 3-option menu: Sales, Support, Operator",
+      "greeting_type": "recording",
+      "greeting_prompt": "vm-intro",
+      "timeout": 10,
+      "invalid_retries": 3,
+      "direct_dial_enabled": true,
+      "options": [
+        {
+          "digit": "1",
+          "description": "Sales Department",
+          "destination_type": "queue",
+          "destination_value": "5000",
+          "prompt": "ivr-sales"
+        },
+        {
+          "digit": "2",
+          "description": "Support Department",
+          "destination_type": "queue",
+          "destination_value": "5001",
+          "prompt": "ivr-support"
+        },
+        {
+          "digit": "0",
+          "description": "Operator",
+          "destination_type": "extension",
+          "destination_value": "2000",
+          "prompt": "ivr-operator"
+        },
+        {
+          "digit": "*",
+          "description": "Repeat Menu",
+          "destination_type": "repeat",
+          "destination_value": "",
+          "prompt": ""
+        }
+      ],
+      "timeout_destination": {
+        "type": "operator",
+        "value": "2000"
+      },
+      "invalid_destination": {
+        "type": "operator",
+        "value": "2000"
+      }
+    },
+    {
+      "id": "voicemail-access",
+      "name": "Voicemail Access Menu",
+      "category": "utility",
+      "description": "Simple voicemail access with feature codes",
+      "greeting_type": "recording",
+      "greeting_prompt": "vm-intro",
+      "timeout": 10,
+      "invalid_retries": 3,
+      "direct_dial_enabled": false,
+      "options": [
+        {
+          "digit": "1",
+          "description": "Check Your Voicemail",
+          "destination_type": "feature_code",
+          "destination_value": "*97",
+          "prompt": "vm-youhave"
+        },
+        {
+          "digit": "2",
+          "description": "Leave a Message",
+          "destination_type": "directory",
+          "destination_value": "*411",
+          "prompt": "ivr-enter_ext"
+        },
+        {
+          "digit": "0",
+          "description": "Operator",
+          "destination_type": "extension",
+          "destination_value": "2000",
+          "prompt": ""
+        }
+      ],
+      "timeout_destination": {
+        "type": "operator",
+        "value": "2000"
+      },
+      "invalid_destination": {
+        "type": "repeat",
+        "value": ""
+      }
+    },
+    {
+      "id": "conference-menu",
+      "name": "Conference Access Menu",
+      "category": "collaboration",
+      "description": "Access conference rooms with options",
+      "greeting_type": "recording",
+      "greeting_prompt": "conf-now-entering",
+      "timeout": 10,
+      "invalid_retries": 3,
+      "direct_dial_enabled": false,
+      "options": [
+        {
+          "digit": "1",
+          "description": "Main Conference Room",
+          "destination_type": "conference",
+          "destination_value": "8000",
+          "prompt": "conf-now-entering"
+        },
+        {
+          "digit": "2",
+          "description": "Team Conference Room",
+          "destination_type": "conference",
+          "destination_value": "8001",
+          "prompt": "conf-now-entering"
+        },
+        {
+          "digit": "0",
+          "description": "Return to Main Menu",
+          "destination_type": "ivr",
+          "destination_value": "6000",
+          "prompt": ""
+        }
+      ],
+      "timeout_destination": {
+        "type": "hangup",
+        "value": ""
+      },
+      "invalid_destination": {
+        "type": "repeat",
+        "value": ""
+      }
+    },
+    {
+      "id": "professional-business",
+      "name": "Professional Business Menu (5 Options)",
+      "category": "professional",
+      "description": "Comprehensive menu with Sales, Support, Billing, HR, Directory",
+      "greeting_type": "recording",
+      "greeting_prompt": "ivr-thank_you_for_calling",
+      "timeout": 10,
+      "invalid_retries": 3,
+      "direct_dial_enabled": true,
+      "options": [
+        {
+          "digit": "1",
+          "description": "Sales",
+          "destination_type": "queue",
+          "destination_value": "5000",
+          "prompt": "ivr-sales"
+        },
+        {
+          "digit": "2",
+          "description": "Technical Support",
+          "destination_type": "queue",
+          "destination_value": "5001",
+          "prompt": "ivr-support"
+        },
+        {
+          "digit": "3",
+          "description": "Billing & Accounts",
+          "destination_type": "queue",
+          "destination_value": "5002",
+          "prompt": "ivr-billing"
+        },
+        {
+          "digit": "4",
+          "description": "Human Resources",
+          "destination_type": "extension",
+          "destination_value": "2010",
+          "prompt": ""
+        },
+        {
+          "digit": "5",
+          "description": "Company Directory",
+          "destination_type": "feature_code",
+          "destination_value": "*411",
+          "prompt": "ivr-enter_ext"
+        },
+        {
+          "digit": "0",
+          "description": "Operator",
+          "destination_type": "extension",
+          "destination_value": "2000",
+          "prompt": ""
+        },
+        {
+          "digit": "*",
+          "description": "Repeat Menu",
+          "destination_type": "repeat",
+          "destination_value": "",
+          "prompt": ""
+        }
+      ],
+      "timeout_destination": {
+        "type": "operator",
+        "value": "2000"
+      },
+      "invalid_destination": {
+        "type": "repeat",
+        "value": ""
+      }
+    },
+    {
+      "id": "after-hours",
+      "name": "After Hours Menu",
+      "category": "utility",
+      "description": "Simple after-hours menu with voicemail and emergency option",
+      "greeting_type": "recording",
+      "greeting_prompt": "im-sorry",
+      "timeout": 10,
+      "invalid_retries": 3,
+      "direct_dial_enabled": false,
+      "options": [
+        {
+          "digit": "1",
+          "description": "Leave Voicemail for Sales",
+          "destination_type": "voicemail",
+          "destination_value": "2000",
+          "prompt": "vm-intro"
+        },
+        {
+          "digit": "2",
+          "description": "Leave Voicemail for Support",
+          "destination_type": "voicemail",
+          "destination_value": "2001",
+          "prompt": "vm-intro"
+        },
+        {
+          "digit": "9",
+          "description": "Emergency/On-Call",
+          "destination_type": "extension",
+          "destination_value": "2999",
+          "prompt": ""
+        },
+        {
+          "digit": "0",
+          "description": "Return to Main Menu",
+          "destination_type": "ivr",
+          "destination_value": "6000",
+          "prompt": ""
+        }
+      ],
+      "timeout_destination": {
+        "type": "voicemail",
+        "value": "2000"
+      },
+      "invalid_destination": {
+        "type": "repeat",
+        "value": ""
+      }
+    },
+    {
+      "id": "medical-office",
+      "name": "Medical Office Menu",
+      "category": "medical",
+      "description": "Healthcare practice with appointments, prescriptions, emergency",
+      "greeting_type": "recording",
+      "greeting_prompt": "ivr-thank_you_for_calling",
+      "timeout": 12,
+      "invalid_retries": 3,
+      "direct_dial_enabled": false,
+      "options": [
+        {
+          "digit": "1",
+          "description": "Schedule Appointment",
+          "destination_type": "queue",
+          "destination_value": "5000",
+          "prompt": ""
+        },
+        {
+          "digit": "2",
+          "description": "Prescription Refills",
+          "destination_type": "queue",
+          "destination_value": "5001",
+          "prompt": ""
+        },
+        {
+          "digit": "3",
+          "description": "Test Results",
+          "destination_type": "queue",
+          "destination_value": "5002",
+          "prompt": ""
+        },
+        {
+          "digit": "4",
+          "description": "Billing Questions",
+          "destination_type": "extension",
+          "destination_value": "2003",
+          "prompt": ""
+        },
+        {
+          "digit": "9",
+          "description": "Medical Emergency",
+          "destination_type": "extension",
+          "destination_value": "2999",
+          "prompt": "tt-monty-knights"
+        },
+        {
+          "digit": "0",
+          "description": "Operator",
+          "destination_type": "extension",
+          "destination_value": "2000",
+          "prompt": ""
+        }
+      ],
+      "timeout_destination": {
+        "type": "operator",
+        "value": "2000"
+      },
+      "invalid_destination": {
+        "type": "repeat",
+        "value": ""
+      }
+    },
+    {
+      "id": "support-helpdesk",
+      "name": "IT Help Desk Menu",
+      "category": "support",
+      "description": "Technical support with priority levels and callback",
+      "greeting_type": "recording",
+      "greeting_prompt": "ivr-thank_you_for_calling",
+      "timeout": 10,
+      "invalid_retries": 3,
+      "direct_dial_enabled": false,
+      "options": [
+        {
+          "digit": "1",
+          "description": "Critical/System Down",
+          "destination_type": "queue",
+          "destination_value": "5000",
+          "prompt": ""
+        },
+        {
+          "digit": "2",
+          "description": "Standard Support",
+          "destination_type": "queue",
+          "destination_value": "5001",
+          "prompt": ""
+        },
+        {
+          "digit": "3",
+          "description": "Password Reset",
+          "destination_type": "queue",
+          "destination_value": "5002",
+          "prompt": ""
+        },
+        {
+          "digit": "4",
+          "description": "Request Callback",
+          "destination_type": "voicemail",
+          "destination_value": "2020",
+          "prompt": "vm-intro"
+        },
+        {
+          "digit": "5",
+          "description": "Check Ticket Status",
+          "destination_type": "extension",
+          "destination_value": "2021",
+          "prompt": ""
+        },
+        {
+          "digit": "0",
+          "description": "Help Desk Manager",
+          "destination_type": "extension",
+          "destination_value": "2000",
+          "prompt": ""
+        }
+      ],
+      "timeout_destination": {
+        "type": "queue",
+        "value": "5001"
+      },
+      "invalid_destination": {
+        "type": "repeat",
+        "value": ""
+      }
+    },
+    {
+      "id": "ecommerce-store",
+      "name": "Online Store Support Menu",
+      "category": "ecommerce",
+      "description": "E-commerce support with orders, shipping, returns",
+      "greeting_type": "recording",
+      "greeting_prompt": "ivr-thank_you_for_calling",
+      "timeout": 10,
+      "invalid_retries": 3,
+      "direct_dial_enabled": false,
+      "options": [
+        {
+          "digit": "1",
+          "description": "Order Status",
+          "destination_type": "queue",
+          "destination_value": "5000",
+          "prompt": ""
+        },
+        {
+          "digit": "2",
+          "description": "Shipping Information",
+          "destination_type": "queue",
+          "destination_value": "5001",
+          "prompt": ""
+        },
+        {
+          "digit": "3",
+          "description": "Returns & Exchanges",
+          "destination_type": "queue",
+          "destination_value": "5002",
+          "prompt": ""
+        },
+        {
+          "digit": "4",
+          "description": "Product Support",
+          "destination_type": "queue",
+          "destination_value": "5003",
+          "prompt": ""
+        },
+        {
+          "digit": "5",
+          "description": "Sales & New Orders",
+          "destination_type": "queue",
+          "destination_value": "5004",
+          "prompt": ""
+        },
+        {
+          "digit": "0",
+          "description": "Customer Service Manager",
+          "destination_type": "extension",
+          "destination_value": "2000",
+          "prompt": ""
+        }
+      ],
+      "timeout_destination": {
+        "type": "operator",
+        "value": "2000"
+      },
+      "invalid_destination": {
+        "type": "repeat",
+        "value": ""
+      }
+    }
+  ],
+  "feature_code_mappings": {
+    "*97": {
+      "name": "Your Voicemail",
+      "description": "Access your own voicemail mailbox",
+      "type": "voicemail_main",
+      "context": "flexpbx-internal",
+      "enabled": true
+    },
+    "*98": {
+      "name": "Any Voicemail",
+      "description": "Access any voicemail mailbox (enter mailbox number)",
+      "type": "voicemail_main",
+      "context": "flexpbx-internal",
+      "enabled": true
+    },
+    "*43": {
+      "name": "Echo Test",
+      "description": "Test your audio connection with echo",
+      "type": "echo_test",
+      "context": "flexpbx-internal",
+      "enabled": true
+    },
+    "*411": {
+      "name": "Company Directory",
+      "description": "Dial by name directory",
+      "type": "directory",
+      "context": "flexpbx-internal",
+      "enabled": true
+    },
+    "700": {
+      "name": "Park Call",
+      "description": "Park the current call",
+      "type": "call_parking",
+      "context": "flexpbx-internal",
+      "enabled": true
+    },
+    "701": {
+      "name": "Retrieve Parked Call 701",
+      "description": "Pickup parked call from slot 701",
+      "type": "call_parking",
+      "context": "flexpbx-internal",
+      "enabled": true
+    },
+    "702": {
+      "name": "Retrieve Parked Call 702",
+      "description": "Pickup parked call from slot 702",
+      "type": "call_parking",
+      "context": "flexpbx-internal",
+      "enabled": true
+    },
+    "8000": {
+      "name": "Main Conference Room",
+      "description": "Join main conference bridge",
+      "type": "conference",
+      "context": "flexpbx-internal",
+      "enabled": true
+    },
+    "8001": {
+      "name": "Team Conference Room",
+      "description": "Join team conference bridge",
+      "type": "conference",
+      "context": "flexpbx-internal",
+      "enabled": true
+    }
+  },
+  "freepbx_prompts": {
+    "voicemail": [
+      "vm-login",
+      "vm-password",
+      "vm-incorrect",
+      "vm-intro",
+      "vm-youhave",
+      "vm-messages",
+      "vm-INBOX",
+      "vm-Old",
+      "vm-first",
+      "vm-last",
+      "vm-next",
+      "vm-prev",
+      "vm-repeat",
+      "vm-delete",
+      "vm-undelete",
+      "vm-forward",
+      "vm-savedto",
+      "vm-Urgent"
+    ],
+    "ivr": [
+      "ivr-enter_ext",
+      "ivr-invalid",
+      "ivr-thank_you_for_calling",
+      "pbx-transfer",
+      "pbx-invalid",
+      "please-hold",
+      "transfer",
+      "goodbye"
+    ],
+    "testing": [
+      "demo-echotest",
+      "echo-test"
+    ],
+    "system": [
+      "welcome",
+      "goodbye",
+      "please-hold",
+      "transfer",
+      "im-sorry",
+      "invalid",
+      "digits/0",
+      "digits/1",
+      "digits/2",
+      "digits/3",
+      "digits/4",
+      "digits/5",
+      "digits/6",
+      "digits/7",
+      "digits/8",
+      "digits/9",
+      "digits/star",
+      "digits/pound"
+    ],
+    "conference": [
+      "conf-now-entering",
+      "conf-adminmenu",
+      "conf-has-joined",
+      "conf-has-left",
+      "conf-lockednow",
+      "conf-unlockednow",
+      "conf-onlyperson",
+      "conf-placeintoconf",
+      "conf-thereare",
+      "conf-otherinparty"
+    ],
+    "directory": [
+      "dir-intro",
+      "dir-multi",
+      "dir-nomore",
+      "dir-welcome"
+    ]
+  }
+}
