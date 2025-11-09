@@ -1,0 +1,1392 @@
+<?php require_once __DIR__ . '/admin_auth_check.php'; ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ring Groups - FlexPBX Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .nav-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .back-link {
+            display: inline-block;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+            flex-wrap: wrap;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 15px;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .tab:hover {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+            margin-left: 5px;
+            cursor: help;
+        }
+
+        .tooltiptext {
+            visibility: hidden;
+            width: 300px;
+            background-color: #333;
+            color: #fff;
+            text-align: left;
+            border-radius: 6px;
+            padding: 10px;
+            position: absolute;
+            z-index: 1000;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -150px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 13px;
+            line-height: 1.4;
+            font-weight: normal;
+        }
+
+        .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #333 transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border-left: 4px solid #17a2b8;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            color: #856404;
+            border-left: 4px solid #ffc107;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 20px;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .help-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .help-section h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .help-section h4 {
+            color: #333;
+            margin: 15px 0 10px 0;
+        }
+
+        .help-section ul, .help-section ol {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+
+        .help-section code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            color: #e83e8c;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .loading::after {
+            content: "...";
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: "."; }
+            40% { content: ".."; }
+            60%, 100% { content: "..."; }
+        }
+
+        .member-list {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+
+        .member-item {
+            background: white;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔄 Ring Groups</h1>
+            <p class="subtitle">Manage ring groups (hunt groups) for distributing calls to multiple extensions</p>
+            <div class="nav-links">
+                <a href="call-queues.html" class="nav-link">📞 Call Queues</a>
+                <a href="call-parking.html" class="nav-link">🅿️ Call Parking</a>
+                <a href="callcenter-dashboard.php" class="nav-link">📊 Call Center Dashboard</a>
+            </div>
+            <div style="margin-top: 10px;">
+                <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('overview')">Overview</button>
+                <button class="tab" onclick="switchTab('manage')">Manage Ring Groups</button>
+                <button class="tab" onclick="switchTab('members')">Members</button>
+                <button class="tab" onclick="switchTab('help')">How to Use</button>
+            </div>
+
+            <div id="alert-container"></div>
+
+            <!-- Overview Tab -->
+            <div id="overview-tab" class="tab-content active">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2>Ring Groups</h2>
+                    <button class="btn" onclick="refreshGroups()">🔄 Refresh</button>
+                </div>
+
+                <div id="groups-list">
+                    <div class="loading">Loading ring groups</div>
+                </div>
+            </div>
+
+            <!-- Manage Ring Groups Tab -->
+            <div id="manage-tab" class="tab-content">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2>Ring Group Configuration</h2>
+                    <button class="btn" onclick="showCreateGroupModal()">➕ Create New Ring Group</button>
+                </div>
+
+                <div id="manage-groups-list">
+                    <div class="loading">Loading ring groups</div>
+                </div>
+            </div>
+
+            <!-- Members Tab -->
+            <div id="members-tab" class="tab-content">
+                <h2>Ring Group Members</h2>
+                <p style="color: #666; margin-bottom: 20px;">Add extensions or external numbers to ring groups</p>
+
+                <div class="form-group">
+                    <label>Select Ring Group:</label>
+                    <select id="member-group-select" onchange="loadGroupMembers()">
+                        <option value="">-- Select a Ring Group --</option>
+                    </select>
+                </div>
+
+                <div id="group-members-content" style="display: none;">
+                    <button class="btn btn-success" style="margin-bottom: 20px;" onclick="showAddMemberModal()">➕ Add Member</button>
+
+                    <div id="members-list">
+                        <div class="loading">Loading members</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Help Tab -->
+            <div id="help-tab" class="tab-content">
+                <h2>📚 Ring Groups Guide</h2>
+
+                <div class="help-section">
+                    <h3>What are Ring Groups?</h3>
+                    <p>Ring groups (also called hunt groups) allow you to ring multiple extensions simultaneously or sequentially when someone calls a single number. This is perfect for departments, teams, or ensuring calls are always answered.</p>
+                </div>
+
+                <div class="help-section">
+                    <h3>Common Use Cases</h3>
+                    <ul>
+                        <li><strong>Reception:</strong> Ring receptionist's desk phone and mobile simultaneously</li>
+                        <li><strong>Departments:</strong> Sales extension rings all sales team members</li>
+                        <li><strong>Support:</strong> Technical support line rings all support staff</li>
+                        <li><strong>On-Call:</strong> After-hours number rings on-call staff in order</li>
+                        <li><strong>Executive:</strong> CEO's line rings desk, assistant, and mobile</li>
+                    </ul>
+                </div>
+
+                <div class="help-section">
+                    <h3>Ring Strategies</h3>
+
+                    <h4>Ring All (Simultaneous)</h4>
+                    <p>All members ring at the same time. First person to answer gets the call.</p>
+                    <p><strong>Best for:</strong> Small teams where fastest answer is priority.</p>
+
+                    <h4>Hunt (Sequential)</h4>
+                    <p>Rings members one at a time in order. If first doesn't answer, tries second, then third, etc.</p>
+                    <p><strong>Best for:</strong> Priority-based answering (receptionist first, then backup).</p>
+
+                    <h4>Memory Hunt</h4>
+                    <p>Like hunt, but remembers where it left off. If member 2 answered last call, next call starts at member 3.</p>
+                    <p><strong>Best for:</strong> Fair distribution among team members.</p>
+
+                    <h4>Random</h4>
+                    <p>Randomly selects which member to ring first, then proceeds through the rest.</p>
+                    <p><strong>Best for:</strong> Equal distribution without predictable patterns.</p>
+                </div>
+
+                <div class="help-section">
+                    <h3>How to Create a Ring Group</h3>
+                    <ol>
+                        <li>Go to <strong>"Manage Ring Groups"</strong> tab</li>
+                        <li>Click <strong>"Create New Ring Group"</strong></li>
+                        <li>Enter a group number (e.g., 6000 for Sales, 6001 for Support)</li>
+                        <li>Give it a descriptive name</li>
+                        <li>Choose ring strategy (start with "ringall")</li>
+                        <li>Set ring time (20-30 seconds is typical)</li>
+                        <li>Configure no-answer destination (usually voicemail)</li>
+                        <li>Click <strong>"Create Ring Group"</strong></li>
+                    </ol>
+                </div>
+
+                <div class="help-section">
+                    <h3>How to Add Members</h3>
+                    <ol>
+                        <li>Go to <strong>"Members"</strong> tab</li>
+                        <li>Select the ring group from dropdown</li>
+                        <li>Click <strong>"Add Member"</strong></li>
+                        <li>Choose member type:
+                            <ul>
+                                <li><strong>Extension:</strong> Internal SIP extension (2000, 2001, etc.)</li>
+                                <li><strong>External:</strong> Outside phone number (mobile, PSTN)</li>
+                            </ul>
+                        </li>
+                        <li>Enter extension number or phone number</li>
+                        <li>Set order (for hunt strategy - lower numbers ring first)</li>
+                        <li>Click <strong>"Add Member"</strong></li>
+                        <li>Click <strong>"Apply Configuration"</strong> to activate</li>
+                    </ol>
+                </div>
+
+                <div class="help-section">
+                    <h3>Understanding Settings</h3>
+
+                    <h4>Ring Time</h4>
+                    <p>How long to ring before giving up or trying next member. 20-30 seconds is standard.</p>
+
+                    <h4>Skip Busy</h4>
+                    <p>If enabled, members already on a call won't ring. Recommended: ON.</p>
+
+                    <h4>Confirm Calls</h4>
+                    <p>Member must press 1 to accept the call. Prevents calls going to voicemail when ringing mobile phones.</p>
+                    <p><strong>Use when:</strong> Ring group includes external mobile numbers.</p>
+
+                    <h4>Announcement</h4>
+                    <p>Audio file played to caller before ringing starts. E.g., "Please hold while we connect you."</p>
+
+                    <h4>No Answer Destination</h4>
+                    <p>Where to send call if no one answers:</p>
+                    <ul>
+                        <li><strong>Voicemail:</strong> Send to voicemail box</li>
+                        <li><strong>Extension:</strong> Forward to specific extension</li>
+                        <li><strong>Queue:</strong> Send to call queue</li>
+                        <li><strong>IVR:</strong> Return to menu</li>
+                        <li><strong>Hangup:</strong> Play goodbye and disconnect</li>
+                    </ul>
+                </div>
+
+                <div class="help-section">
+                    <h3>Ring Groups vs. Call Queues</h3>
+
+                    <h4>Use Ring Groups When:</h4>
+                    <ul>
+                        <li>Small team (2-10 people)</li>
+                        <li>Simple ring all or sequential</li>
+                        <li>No need for statistics or wallboard</li>
+                        <li>Quick setup required</li>
+                    </ul>
+
+                    <h4>Use Call Queues When:</h4>
+                    <ul>
+                        <li>Larger teams (5+ agents)</li>
+                        <li>Need for statistics and SLA tracking</li>
+                        <li>Agent pause/unpause required</li>
+                        <li>Caller position announcements needed</li>
+                        <li>Call center environment</li>
+                    </ul>
+
+                    <p><strong>You can use both together!</strong> Ring group can overflow to a queue, or queue can overflow to ring group.</p>
+                </div>
+
+                <div class="help-section">
+                    <h3>Best Practices</h3>
+                    <ul>
+                        <li><strong>Keep it Simple:</strong> 3-5 members per ring group is ideal</li>
+                        <li><strong>Use Confirm Calls:</strong> Enable when using mobile phones</li>
+                        <li><strong>Set Reasonable Ring Time:</strong> 20-30 seconds per member</li>
+                        <li><strong>Always Set No-Answer Destination:</strong> Never leave calls hanging</li>
+                        <li><strong>Test Before Deploying:</strong> Call the ring group to verify behavior</li>
+                        <li><strong>Document Member Order:</strong> For hunt groups, document the priority order</li>
+                        <li><strong>Use Meaningful Numbers:</strong> 6000s for departments, 7000s for teams, etc.</li>
+                    </ul>
+                </div>
+
+                <div class="help-section">
+                    <h3>Integration with Other Features</h3>
+
+                    <h4>With Call Queues</h4>
+                    <p>Ring group can overflow to queue after timeout, or queue can overflow to ring group for escalation.</p>
+
+                    <h4>With Call Parking</h4>
+                    <p>Members can park calls using *70 and others can pick up from any device.</p>
+
+                    <h4>With IVR Menus</h4>
+                    <p>IVR options can route to ring groups: "Press 1 for Sales" → Ring Group 6000</p>
+
+                    <h4>With Time Conditions</h4>
+                    <p>Route to different ring groups based on business hours vs. after hours.</p>
+                </div>
+
+                <div class="help-section">
+                    <h3>Troubleshooting</h3>
+
+                    <h4>Ring group not ringing</h4>
+                    <ul>
+                        <li>Verify ring group is enabled</li>
+                        <li>Check that members are added</li>
+                        <li>Ensure "Apply Configuration" was clicked after changes</li>
+                        <li>Verify dialplan reloaded successfully</li>
+                    </ul>
+
+                    <h4>Only some members ring</h4>
+                    <ul>
+                        <li>Check if members are registered (admin dashboard)</li>
+                        <li>Verify "Skip Busy" setting if members are on calls</li>
+                        <li>Check member enabled status</li>
+                    </ul>
+
+                    <h4>External numbers go to voicemail immediately</h4>
+                    <ul>
+                        <li>Enable "Confirm Calls" setting</li>
+                        <li>This requires user to press 1 to accept</li>
+                        <li>Prevents mobile voicemail from grabbing the call</li>
+                    </ul>
+
+                    <h4>Calls not reaching no-answer destination</h4>
+                    <ul>
+                        <li>Verify destination is configured correctly</li>
+                        <li>Check that destination extension/queue exists</li>
+                        <li>Review Asterisk CLI for errors</li>
+                    </ul>
+                </div>
+
+                <div class="help-section">
+                    <h3>Example Configurations</h3>
+
+                    <h4>Reception Desk (Ring All)</h4>
+                    <ul>
+                        <li>Group Number: 6000</li>
+                        <li>Strategy: Ring All</li>
+                        <li>Members: Extension 2000 (desk), Extension 2010 (mobile softphone)</li>
+                        <li>Ring Time: 25 seconds</li>
+                        <li>No Answer: Voicemail 6000</li>
+                    </ul>
+
+                    <h4>Sales Team (Hunt)</h4>
+                    <ul>
+                        <li>Group Number: 6001</li>
+                        <li>Strategy: Memory Hunt</li>
+                        <li>Members: 2001, 2002, 2003, 2004 (in order)</li>
+                        <li>Ring Time: 20 seconds</li>
+                        <li>No Answer: Queue 5001 (Sales Queue)</li>
+                    </ul>
+
+                    <h4>On-Call After Hours (Sequential)</h4>
+                    <ul>
+                        <li>Group Number: 6100</li>
+                        <li>Strategy: Hunt</li>
+                        <li>Members: Primary on-call (order 1), Backup (order 2), Manager (order 3)</li>
+                        <li>Ring Time: 30 seconds each</li>
+                        <li>Confirm Calls: Yes (calling mobile phones)</li>
+                        <li>No Answer: Voicemail with urgent callback number</li>
+                    </ul>
+                </div>
+
+                <div class="alert alert-info" style="margin-top: 30px;">
+                    <strong>💡 Pro Tip:</strong> Use ring groups for simple team coverage and call queues for formal call center operations. Combine them for powerful routing: Ring group tries immediate team → overflow to queue with all agents → final voicemail.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create/Edit Ring Group Modal -->
+    <div id="group-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeGroupModal()">&times;</span>
+            <h2 id="group-modal-title">Create New Ring Group</h2>
+            <form id="group-form" onsubmit="saveGroup(event)">
+                <input type="hidden" id="group-id" name="id">
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>
+                            Group Number *
+                            <span class="tooltip">❔
+                                <span class="tooltiptext">Extension number for this ring group. Typically 6000-6999. Must be unique and not conflict with other extensions.</span>
+                            </span>
+                        </label>
+                        <input type="text" id="group-number" name="group_number" required pattern="[0-9]+" placeholder="e.g., 6000">
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            Group Name *
+                            <span class="tooltip">❔
+                                <span class="tooltiptext">Descriptive name for this ring group. E.g., "Sales Team", "Reception", "Technical Support"</span>
+                            </span>
+                        </label>
+                        <input type="text" id="group-name" name="group_name" required placeholder="e.g., Sales Team">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>
+                            Ring Strategy *
+                            <span class="tooltip">❔
+                                <span class="tooltiptext">
+                                    <strong>ringall:</strong> All ring simultaneously<br>
+                                    <strong>hunt:</strong> Sequential, one at a time<br>
+                                    <strong>memoryhunt:</strong> Sequential with memory<br>
+                                    <strong>random:</strong> Random order
+                                </span>
+                            </span>
+                        </label>
+                        <select id="group-strategy" name="strategy" required>
+                            <option value="ringall">Ring All (Simultaneous)</option>
+                            <option value="hunt">Hunt (Sequential)</option>
+                            <option value="memoryhunt">Memory Hunt</option>
+                            <option value="random">Random</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            Ring Time (seconds) *
+                            <span class="tooltip">❔
+                                <span class="tooltiptext">How long to ring before moving to next member or no-answer destination. 20-30 seconds is typical.</span>
+                            </span>
+                        </label>
+                        <input type="number" id="group-ring-time" name="ring_time" required value="20" min="5" max="120">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox" id="group-skip-busy" name="skip_busy" checked style="width: auto;">
+                            <span>
+                                Skip Busy Members
+                                <span class="tooltip">❔
+                                    <span class="tooltiptext">Don't ring members who are already on a call. Recommended: ON.</span>
+                                </span>
+                            </span>
+                        </label>
+                    </div>
+
+                    <div class="form-group">
+                        <label style="display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox" id="group-confirm" name="confirm_calls" style="width: auto;">
+                            <span>
+                                Confirm Calls (Press 1)
+                                <span class="tooltip">❔
+                                    <span class="tooltiptext">Member must press 1 to accept call. Use when ringing mobile phones to prevent voicemail from answering.</span>
+                                </span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        Announcement
+                        <span class="tooltip">❔
+                            <span class="tooltiptext">Optional audio file to play to caller before ringing starts. E.g., "custom/please-hold". Leave blank for no announcement.</span>
+                        </span>
+                    </label>
+                    <input type="text" id="group-announcement" name="announcement" placeholder="Optional: custom/announcement">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>
+                            No Answer Destination Type
+                            <span class="tooltip">❔
+                                <span class="tooltiptext">Where to send the call if no one answers in the ring group.</span>
+                            </span>
+                        </label>
+                        <select id="group-dest-type" name="destination_type">
+                            <option value="voicemail">Voicemail</option>
+                            <option value="extension">Extension</option>
+                            <option value="queue">Call Queue</option>
+                            <option value="ivr">IVR Menu</option>
+                            <option value="hangup">Hangup</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>
+                            Destination Value
+                            <span class="tooltip">❔
+                                <span class="tooltiptext">
+                                    Voicemail: Extension number (e.g., 6000)<br>
+                                    Extension: Extension number (e.g., 2000)<br>
+                                    Queue: Queue number (e.g., 5000)<br>
+                                    IVR: IVR extension<br>
+                                    Hangup: Leave blank
+                                </span>
+                            </span>
+                        </label>
+                        <input type="text" id="group-dest-value" name="destination_value" placeholder="e.g., 6000">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 10px;">
+                        <input type="checkbox" id="group-enabled" name="enabled" checked style="width: auto;">
+                        <span>
+                            Ring Group Enabled
+                            <span class="tooltip">❔
+                                <span class="tooltiptext">Enable or disable this ring group. Disabled groups won't accept calls but configuration is preserved.</span>
+                            </span>
+                        </span>
+                    </label>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 30px;">
+                    <button type="submit" class="btn btn-success">💾 Save Ring Group</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeGroupModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Member Modal -->
+    <div id="member-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeMemberModal()">&times;</span>
+            <h2>Add Member to Ring Group</h2>
+            <form id="member-form" onsubmit="saveMember(event)">
+                <input type="hidden" id="member-group-id" name="ring_group_id">
+
+                <div class="form-group">
+                    <label>
+                        Member Type *
+                        <span class="tooltip">❔
+                            <span class="tooltiptext">
+                                <strong>Extension:</strong> Internal SIP extension<br>
+                                <strong>External:</strong> External phone number (mobile, PSTN)
+                            </span>
+                        </span>
+                    </label>
+                    <select id="member-type" name="member_type" required>
+                        <option value="extension">Extension (Internal)</option>
+                        <option value="external">External Number</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        Extension / Phone Number *
+                        <span class="tooltip">❔
+                            <span class="tooltiptext">For extension: enter extension number (e.g., 2000). For external: enter full phone number with country code (e.g., 12813015784).</span>
+                        </span>
+                    </label>
+                    <input type="text" id="member-value" name="member_value" required placeholder="e.g., 2000">
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        Order (for hunt strategy)
+                        <span class="tooltip">❔
+                            <span class="tooltiptext">Priority order for hunt/sequential strategies. Lower numbers ring first. 0 = highest priority. Ignored for ringall strategy.</span>
+                        </span>
+                    </label>
+                    <input type="number" id="member-order" name="member_order" value="0" min="0">
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 30px;">
+                    <button type="submit" class="btn btn-success">➕ Add Member</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeMemberModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            refreshGroups();
+        });
+
+        // Tab Switching
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            document.getElementById(tabName + '-tab').classList.add('active');
+            event.target.classList.add('active');
+
+            if (tabName === 'overview') {
+                refreshGroups();
+            } else if (tabName === 'manage') {
+                loadManageGroups();
+            } else if (tabName === 'members') {
+                loadMemberGroups();
+            }
+        }
+
+        // Alert Functions
+        function showAlert(message, type = 'success') {
+            const container = document.getElementById('alert-container');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            container.appendChild(alert);
+
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        // Overview Functions
+        async function refreshGroups() {
+            const container = document.getElementById('groups-list');
+            container.innerHTML = '<div class="loading">Loading ring groups</div>';
+
+            try {
+                const response = await fetch('/api/ring-groups.php?path=list');
+                const result = await response.json();
+
+                if (result.success) {
+                    displayGroups(result.data);
+                } else {
+                    container.innerHTML = `<div class="alert alert-error">${result.message}</div>`;
+                }
+            } catch (error) {
+                container.innerHTML = `<div class="alert alert-error">Error loading ring groups: ${error.message}</div>`;
+            }
+        }
+
+        function displayGroups(groups) {
+            const container = document.getElementById('groups-list');
+
+            if (groups.length === 0) {
+                container.innerHTML = `
+                    <div class="alert alert-info">
+                        <strong>No ring groups configured yet.</strong><br>
+                        Click "Manage Ring Groups" tab to create your first ring group.
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '<table><thead><tr>';
+            html += '<th>Group Number</th>';
+            html += '<th>Name</th>';
+            html += '<th>Strategy</th>';
+            html += '<th>Members</th>';
+            html += '<th>Ring Time</th>';
+            html += '<th>Status</th>';
+            html += '</tr></thead><tbody>';
+
+            groups.forEach(group => {
+                const statusBadge = group.enabled == 1
+                    ? '<span class="badge badge-success">Active</span>'
+                    : '<span class="badge badge-danger">Disabled</span>';
+
+                html += `<tr>
+                    <td><strong>${group.group_number}</strong></td>
+                    <td>${group.group_name}</td>
+                    <td>${group.strategy}</td>
+                    <td>${group.member_count || 0} members</td>
+                    <td>${group.ring_time}s</td>
+                    <td>${statusBadge}</td>
+                </tr>`;
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        // Manage Groups Functions
+        async function loadManageGroups() {
+            const container = document.getElementById('manage-groups-list');
+            container.innerHTML = '<div class="loading">Loading ring groups</div>';
+
+            try {
+                const response = await fetch('/api/ring-groups.php?path=list');
+                const result = await response.json();
+
+                if (result.success) {
+                    displayManageGroups(result.data);
+                } else {
+                    container.innerHTML = `<div class="alert alert-error">${result.message}</div>`;
+                }
+            } catch (error) {
+                container.innerHTML = `<div class="alert alert-error">Error: ${error.message}</div>`;
+            }
+        }
+
+        function displayManageGroups(groups) {
+            const container = document.getElementById('manage-groups-list');
+
+            if (groups.length === 0) {
+                container.innerHTML = `
+                    <div class="alert alert-info">
+                        No ring groups configured. Click "Create New Ring Group" to add your first ring group.
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '<table><thead><tr>';
+            html += '<th>Group</th>';
+            html += '<th>Strategy</th>';
+            html += '<th>Settings</th>';
+            html += '<th>Status</th>';
+            html += '<th>Actions</th>';
+            html += '</tr></thead><tbody>';
+
+            groups.forEach(group => {
+                const statusBadge = group.enabled == 1
+                    ? '<span class="badge badge-success">Enabled</span>'
+                    : '<span class="badge badge-danger">Disabled</span>';
+
+                const confirmBadge = group.confirm_calls == 1
+                    ? '<span class="badge badge-info">Confirm</span>'
+                    : '';
+
+                html += `<tr>
+                    <td>
+                        <strong>${group.group_number}</strong><br>
+                        <small>${group.group_name}</small>
+                    </td>
+                    <td>${group.strategy}</td>
+                    <td>
+                        <small>
+                            Ring Time: ${group.ring_time}s<br>
+                            Members: ${group.member_count || 0}<br>
+                            ${confirmBadge}
+                        </small>
+                    </td>
+                    <td>${statusBadge}</td>
+                    <td>
+                        <button class="btn btn-small btn-secondary" onclick='editGroup(${JSON.stringify(group)})'>✏️ Edit</button>
+                        <button class="btn btn-small btn-danger" onclick="deleteGroup(${group.id}, '${group.group_name}')">🗑️ Delete</button>
+                    </td>
+                </tr>`;
+            });
+
+            html += '</tbody></table>';
+            html += '<div style="margin-top: 20px;"><button class="btn btn-success" onclick="applyConfiguration()">✅ Apply Configuration to Asterisk</button></div>';
+            container.innerHTML = html;
+        }
+
+        function showCreateGroupModal() {
+            document.getElementById('group-modal-title').textContent = 'Create New Ring Group';
+            document.getElementById('group-form').reset();
+            document.getElementById('group-id').value = '';
+            document.getElementById('group-enabled').checked = true;
+            document.getElementById('group-skip-busy').checked = true;
+            document.getElementById('group-modal').style.display = 'block';
+        }
+
+        function editGroup(group) {
+            document.getElementById('group-modal-title').textContent = 'Edit Ring Group';
+            document.getElementById('group-id').value = group.id;
+            document.getElementById('group-number').value = group.group_number;
+            document.getElementById('group-name').value = group.group_name;
+            document.getElementById('group-strategy').value = group.strategy;
+            document.getElementById('group-ring-time').value = group.ring_time;
+            document.getElementById('group-skip-busy').checked = group.skip_busy == 1;
+            document.getElementById('group-confirm').checked = group.confirm_calls == 1;
+            document.getElementById('group-announcement').value = group.announcement || '';
+            document.getElementById('group-dest-type').value = group.destination_type;
+            document.getElementById('group-dest-value').value = group.destination_value || '';
+            document.getElementById('group-enabled').checked = group.enabled == 1;
+            document.getElementById('group-modal').style.display = 'block';
+        }
+
+        function closeGroupModal() {
+            document.getElementById('group-modal').style.display = 'none';
+        }
+
+        async function saveGroup(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const data = {};
+
+            formData.forEach((value, key) => {
+                if (key === 'enabled' || key === 'skip_busy' || key === 'confirm_calls') {
+                    data[key] = document.getElementById('group-' + key.replace('_', '-')).checked ? 1 : 0;
+                } else {
+                    data[key] = value;
+                }
+            });
+
+            const groupId = document.getElementById('group-id').value;
+            const isEdit = groupId !== '';
+
+            try {
+                const url = isEdit
+                    ? `/api/ring-groups.php?path=update&id=${groupId}`
+                    : '/api/ring-groups.php?path=create';
+
+                const response = await fetch(url, {
+                    method: isEdit ? 'PUT' : 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showAlert(isEdit ? 'Ring group updated successfully!' : 'Ring group created successfully!', 'success');
+                    closeGroupModal();
+                    loadManageGroups();
+                } else {
+                    showAlert(result.message, 'error');
+                }
+            } catch (error) {
+                showAlert('Error saving ring group: ' + error.message, 'error');
+            }
+        }
+
+        async function deleteGroup(id, name) {
+            if (!confirm(`Are you sure you want to delete ring group "${name}"?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/ring-groups.php?path=delete&id=${id}`, {
+                    method: 'DELETE'
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showAlert('Ring group deleted successfully!', 'success');
+                    loadManageGroups();
+                } else {
+                    showAlert(result.message, 'error');
+                }
+            } catch (error) {
+                showAlert('Error deleting ring group: ' + error.message, 'error');
+            }
+        }
+
+        async function applyConfiguration() {
+            if (!confirm('Apply ring group configuration to Asterisk? This will reload the dialplan.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/ring-groups.php?path=apply-config', {
+                    method: 'POST'
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showAlert(`Configuration applied successfully! ${result.groups_configured} ring groups configured.`, 'success');
+                } else {
+                    showAlert('Error applying configuration: ' + result.message, 'error');
+                }
+            } catch (error) {
+                showAlert('Error: ' + error.message, 'error');
+            }
+        }
+
+        // Members Functions
+        async function loadMemberGroups() {
+            const select = document.getElementById('member-group-select');
+            select.innerHTML = '<option value="">-- Select a Ring Group --</option>';
+
+            try {
+                const response = await fetch('/api/ring-groups.php?path=list');
+                const result = await response.json();
+
+                if (result.success) {
+                    result.data.forEach(group => {
+                        const option = document.createElement('option');
+                        option.value = group.id;
+                        option.textContent = `${group.group_number} - ${group.group_name}`;
+                        select.appendChild(option);
+                    });
+                }
+            } catch (error) {
+                showAlert('Error loading ring groups: ' + error.message, 'error');
+            }
+        }
+
+        async function loadGroupMembers() {
+            const groupId = document.getElementById('member-group-select').value;
+            const content = document.getElementById('group-members-content');
+            const membersList = document.getElementById('members-list');
+
+            if (!groupId) {
+                content.style.display = 'none';
+                return;
+            }
+
+            content.style.display = 'block';
+            membersList.innerHTML = '<div class="loading">Loading members</div>';
+
+            try {
+                const response = await fetch(`/api/ring-groups.php?path=members&group_id=${groupId}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    displayMembers(result.data, groupId);
+                } else {
+                    membersList.innerHTML = `<div class="alert alert-error">${result.message}</div>`;
+                }
+            } catch (error) {
+                membersList.innerHTML = `<div class="alert alert-error">Error: ${error.message}</div>`;
+            }
+        }
+
+        function displayMembers(members, groupId) {
+            const container = document.getElementById('members-list');
+
+            if (members.length === 0) {
+                container.innerHTML = `
+                    <div class="alert alert-info">
+                        No members in this ring group yet. Click "Add Member" to add extensions or phone numbers.
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '<table><thead><tr>';
+            html += '<th>Type</th>';
+            html += '<th>Extension/Number</th>';
+            html += '<th>Order</th>';
+            html += '<th>Status</th>';
+            html += '<th>Actions</th>';
+            html += '</tr></thead><tbody>';
+
+            members.forEach(member => {
+                const statusBadge = member.enabled == 1
+                    ? '<span class="badge badge-success">Active</span>'
+                    : '<span class="badge badge-danger">Disabled</span>';
+
+                html += `<tr>
+                    <td>${member.member_type === 'extension' ? '📞 Extension' : '📱 External'}</td>
+                    <td><strong>${member.member_value}</strong></td>
+                    <td>${member.member_order}</td>
+                    <td>${statusBadge}</td>
+                    <td>
+                        <button class="btn btn-small btn-danger" onclick="removeMember(${member.id}, ${groupId}, '${member.member_value}')">🗑️ Remove</button>
+                    </td>
+                </tr>`;
+            });
+
+            html += '</tbody></table>';
+            container.innerHTML = html;
+        }
+
+        function showAddMemberModal() {
+            const groupId = document.getElementById('member-group-select').value;
+            if (!groupId) {
+                showAlert('Please select a ring group first', 'warning');
+                return;
+            }
+
+            document.getElementById('member-group-id').value = groupId;
+            document.getElementById('member-form').reset();
+            document.getElementById('member-group-id').value = groupId;
+            document.getElementById('member-modal').style.display = 'block';
+        }
+
+        function closeMemberModal() {
+            document.getElementById('member-modal').style.display = 'none';
+        }
+
+        async function saveMember(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const data = {};
+
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+
+            try {
+                const response = await fetch('/api/ring-groups.php?path=add-member', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showAlert('Member added to ring group successfully!', 'success');
+                    closeMemberModal();
+                    loadGroupMembers();
+                } else {
+                    showAlert(result.message, 'error');
+                }
+            } catch (error) {
+                showAlert('Error adding member: ' + error.message, 'error');
+            }
+        }
+
+        async function removeMember(memberId, groupId, memberValue) {
+            if (!confirm(`Remove ${memberValue} from this ring group?`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/ring-groups.php?path=remove-member&id=${memberId}`, {
+                    method: 'DELETE'
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showAlert('Member removed successfully!', 'success');
+                    loadGroupMembers();
+                } else {
+                    showAlert(result.message, 'error');
+                }
+            } catch (error) {
+                showAlert('Error removing member: ' + error.message, 'error');
+            }
+        }
+
+        // Close modals when clicking outside
+        window.onclick = function(event) {
+            if (event.target.className === 'modal') {
+                event.target.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

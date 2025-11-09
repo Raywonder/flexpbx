@@ -1,0 +1,814 @@
+<?php require_once __DIR__ . '/admin_auth_check.php'; ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security & IP Management - FlexPBX Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .status-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .status-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .status-card h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .status-card .value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .status-card.danger .value {
+            color: #dc3545;
+        }
+
+        .status-card.success .value {
+            color: #28a745;
+        }
+
+        .status-card.warning .value {
+            color: #ffc107;
+        }
+
+        .content-section {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .section-header h2 {
+            color: #333;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-sm {
+            padding: 5px 15px;
+            font-size: 12px;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background: #f8f9fa;
+            color: #333;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .badge-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .badge-warning {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .alert {
+            padding: 15px 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .alert-info {
+            background: #cfe2ff;
+            color: #084298;
+            border: 1px solid #b6d4fe;
+        }
+
+        .alert-success {
+            background: #d1e7dd;
+            color: #0f5132;
+            border: 1px solid #badbcc;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            color: #842029;
+            border: 1px solid #f5c2c7;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close {
+            font-size: 28px;
+            font-weight: bold;
+            color: #aaa;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+            font-weight: 600;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .ip-check-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #dee2e6;
+        }
+
+        .ip-display {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+            margin: 10px 0;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .empty-state svg {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🔒 Security & IP Management</h1>
+            <p>Monitor and manage firewall rules, banned IPs, and security settings</p>
+        </div>
+
+        <!-- Status Cards -->
+        <div class="status-cards">
+            <div class="status-card success">
+                <h3>Firewall Status</h3>
+                <div class="value" id="firewall-status">--</div>
+            </div>
+            <div class="status-card danger">
+                <h3>Banned IPs</h3>
+                <div class="value" id="banned-count">--</div>
+            </div>
+            <div class="status-card warning">
+                <h3>Failed Attempts</h3>
+                <div class="value" id="failed-attempts">--</div>
+            </div>
+            <div class="status-card">
+                <h3>Whitelisted IPs</h3>
+                <div class="value" id="whitelist-count">--</div>
+            </div>
+        </div>
+
+        <!-- Your IP Status -->
+        <div class="content-section">
+            <div class="section-header">
+                <h2>Your IP Status</h2>
+                <button class="btn btn-primary btn-sm" onclick="checkCurrentIP()">🔄 Refresh</button>
+            </div>
+            <div class="ip-check-box" id="current-ip-box">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Checking your IP status...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Banned IPs -->
+        <div class="content-section">
+            <div class="section-header">
+                <h2>Banned IP Addresses</h2>
+                <button class="btn btn-primary" onclick="refreshBannedIPs()">🔄 Refresh</button>
+            </div>
+            <div id="banned-alert" style="display:none;"></div>
+            <div class="table-container">
+                <table id="banned-table">
+                    <thead>
+                        <tr>
+                            <th>IP Address</th>
+                            <th>Source</th>
+                            <th>Service</th>
+                            <th>Reason</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="banned-tbody">
+                        <tr>
+                            <td colspan="5" class="loading">
+                                <div class="spinner"></div>
+                                <p>Loading banned IPs...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Whitelisted IPs -->
+        <div class="content-section">
+            <div class="section-header">
+                <h2>Whitelisted IP Addresses</h2>
+                <button class="btn btn-success" onclick="showAddWhitelistModal()">➕ Add IP</button>
+            </div>
+            <div id="whitelist-alert" style="display:none;"></div>
+            <div class="table-container">
+                <table id="whitelist-table">
+                    <thead>
+                        <tr>
+                            <th>IP Address</th>
+                            <th>Comment</th>
+                            <th>Source</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="whitelist-tbody">
+                        <tr>
+                            <td colspan="4" class="loading">
+                                <div class="spinner"></div>
+                                <p>Loading whitelisted IPs...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Security Log -->
+        <div class="content-section">
+            <div class="section-header">
+                <h2>Recent Security Events</h2>
+                <button class="btn btn-primary" onclick="refreshSecurityLog()">🔄 Refresh</button>
+            </div>
+            <div class="table-container">
+                <table id="log-table">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Action</th>
+                            <th>Target IP</th>
+                            <th>User</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody id="log-tbody">
+                        <tr>
+                            <td colspan="5" class="loading">
+                                <div class="spinner"></div>
+                                <p>Loading security log...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Whitelist Modal -->
+    <div id="addWhitelistModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add IP to Whitelist</h2>
+                <span class="close" onclick="closeAddWhitelistModal()">&times;</span>
+            </div>
+            <form onsubmit="addWhitelistIP(event)">
+                <div class="form-group">
+                    <label for="whitelist-ip">IP Address</label>
+                    <input type="text" id="whitelist-ip" required pattern="^(\d{1,3}\.){3}\d{1,3}$"
+                           placeholder="e.g., 192.168.1.100">
+                </div>
+                <div class="form-group">
+                    <label for="whitelist-comment">Comment</label>
+                    <input type="text" id="whitelist-comment"
+                           placeholder="e.g., Home Office">
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-success" style="width:100%;">Add to Whitelist</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // API Base URL
+        const API_BASE = '/api/security.php';
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboard();
+        });
+
+        // Load all dashboard data
+        async function loadDashboard() {
+            await Promise.all([
+                loadFirewallStatus(),
+                loadFail2banStatus(),
+                checkCurrentIP(),
+                refreshBannedIPs(),
+                refreshWhitelist(),
+                refreshSecurityLog()
+            ]);
+        }
+
+        // Check current user's IP status
+        async function checkCurrentIP() {
+            try {
+                const response = await fetch(API_BASE + '?path=check-ip', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ip: await getUserIP() })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.result) {
+                    const result = data.result;
+                    let html = `
+                        <h3>Your IP Address: <span class="ip-display">${result.ip}</span></h3>
+                    `;
+
+                    if (result.banned) {
+                        html += `
+                            <div class="alert alert-danger">
+                                <strong>⚠️ Your IP is BANNED!</strong><br>
+                                ${result.details.map(d => `${d.source} (${d.service})`).join(', ')}<br>
+                                <button class="btn btn-danger" style="margin-top:10px;" onclick="unbanCurrentIP()">Request Unban</button>
+                            </div>
+                        `;
+                    } else if (result.whitelisted) {
+                        html += `
+                            <div class="alert alert-success">
+                                <strong>✅ Your IP is WHITELISTED</strong><br>
+                                You have full access to the system.
+                            </div>
+                        `;
+                    } else {
+                        html += `
+                            <div class="alert alert-info">
+                                <strong>ℹ️ Your IP is not banned or whitelisted</strong><br>
+                                You can add it to the whitelist for permanent access.
+                                <button class="btn btn-success btn-sm" style="margin-top:10px;" onclick="whitelistCurrentIP()">Add to Whitelist</button>
+                            </div>
+                        `;
+                    }
+
+                    document.getElementById('current-ip-box').innerHTML = html;
+                }
+            } catch (error) {
+                console.error('Error checking current IP:', error);
+                showErrorBox('current-ip-box', 'Failed to check your IP status');
+            }
+        }
+
+        // Get user's public IP
+        async function getUserIP() {
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                return data.ip;
+            } catch (error) {
+                console.error('Error getting user IP:', error);
+                return 'unknown';
+            }
+        }
+
+        // Load firewall status
+        async function loadFirewallStatus() {
+            try {
+                const response = await fetch(API_BASE + '?path=firewall/status');
+                const data = await response.json();
+
+                if (data.success && data.firewall) {
+                    const status = data.firewall.csf_enabled && data.firewall.lfd_enabled ? 'Active' : 'Inactive';
+                    document.getElementById('firewall-status').textContent = status;
+                }
+            } catch (error) {
+                console.error('Error loading firewall status:', error);
+                document.getElementById('firewall-status').textContent = 'Error';
+            }
+        }
+
+        // Load fail2ban status
+        async function loadFail2banStatus() {
+            try {
+                const response = await fetch(API_BASE + '?path=fail2ban/status');
+                const data = await response.json();
+
+                if (data.success && data.fail2ban) {
+                    document.getElementById('failed-attempts').textContent = data.fail2ban.currently_failed || 0;
+                }
+            } catch (error) {
+                console.error('Error loading fail2ban status:', error);
+            }
+        }
+
+        // Refresh banned IPs
+        async function refreshBannedIPs() {
+            try {
+                const response = await fetch(API_BASE + '?path=banned-ips');
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('banned-count').textContent = data.total || 0;
+
+                    const tbody = document.getElementById('banned-tbody');
+                    if (data.banned_ips.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No banned IPs</td></tr>';
+                    } else {
+                        tbody.innerHTML = data.banned_ips.map(ip => `
+                            <tr>
+                                <td><strong>${ip.ip}</strong></td>
+                                <td><span class="badge badge-danger">${ip.source}</span></td>
+                                <td>${ip.service}</td>
+                                <td>${ip.reason || 'N/A'}</td>
+                                <td>
+                                    ${ip.can_unban ? `<button class="btn btn-success btn-sm" onclick="unbanIP('${ip.ip}', '${ip.source}')">Unban</button>` : ''}
+                                </td>
+                            </tr>
+                        `).join('');
+                    }
+                }
+            } catch (error) {
+                console.error('Error refreshing banned IPs:', error);
+                showError('banned-alert', 'Failed to load banned IPs');
+            }
+        }
+
+        // Refresh whitelist
+        async function refreshWhitelist() {
+            try {
+                const response = await fetch(API_BASE + '?path=whitelist');
+                const data = await response.json();
+
+                if (data.success) {
+                    document.getElementById('whitelist-count').textContent = data.total || 0;
+
+                    const tbody = document.getElementById('whitelist-tbody');
+                    if (data.whitelist.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="4" class="empty-state">No whitelisted IPs</td></tr>';
+                    } else {
+                        tbody.innerHTML = data.whitelist.map(ip => `
+                            <tr>
+                                <td><strong>${ip.ip}</strong></td>
+                                <td>${ip.comment || 'N/A'}</td>
+                                <td><span class="badge badge-success">${ip.source}</span></td>
+                                <td>
+                                    <button class="btn btn-danger btn-sm" onclick="removeWhitelistIP('${ip.ip}')">Remove</button>
+                                </td>
+                            </tr>
+                        `).join('');
+                    }
+                }
+            } catch (error) {
+                console.error('Error refreshing whitelist:', error);
+                showError('whitelist-alert', 'Failed to load whitelist');
+            }
+        }
+
+        // Refresh security log
+        async function refreshSecurityLog() {
+            try {
+                const response = await fetch(API_BASE + '?path=security-log&limit=50');
+                const data = await response.json();
+
+                if (data.success) {
+                    const tbody = document.getElementById('log-tbody');
+                    if (data.entries.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No security events</td></tr>';
+                    } else {
+                        tbody.innerHTML = data.entries.map(entry => `
+                            <tr>
+                                <td>${new Date(entry.timestamp).toLocaleString()}</td>
+                                <td><span class="badge badge-warning">${entry.action}</span></td>
+                                <td>${entry.target_ip}</td>
+                                <td>${entry.user}</td>
+                                <td>${entry.details || 'N/A'}</td>
+                            </tr>
+                        `).join('');
+                    }
+                }
+            } catch (error) {
+                console.error('Error refreshing security log:', error);
+            }
+        }
+
+        // Unban IP
+        async function unbanIP(ip, source) {
+            if (!confirm(`Are you sure you want to unban ${ip} from ${source}?`)) return;
+
+            try {
+                const response = await fetch(API_BASE + '?path=unban', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ip, source })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    showSuccess('banned-alert', `Successfully unbanned ${ip}`);
+                    await refreshBannedIPs();
+                } else {
+                    showError('banned-alert', 'Failed to unban IP');
+                }
+            } catch (error) {
+                console.error('Error unbanning IP:', error);
+                showError('banned-alert', 'Failed to unban IP');
+            }
+        }
+
+        // Unban current user IP
+        async function unbanCurrentIP() {
+            const ip = await getUserIP();
+            await unbanIP(ip, 'all');
+            await checkCurrentIP();
+        }
+
+        // Whitelist current IP
+        async function whitelistCurrentIP() {
+            const ip = await getUserIP();
+            document.getElementById('whitelist-ip').value = ip;
+            document.getElementById('whitelist-comment').value = 'My IP - Admin';
+            showAddWhitelistModal();
+        }
+
+        // Add IP to whitelist
+        async function addWhitelistIP(event) {
+            event.preventDefault();
+
+            const ip = document.getElementById('whitelist-ip').value;
+            const comment = document.getElementById('whitelist-comment').value || 'Added via admin panel';
+
+            try {
+                const response = await fetch(API_BASE + '?path=whitelist', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ip, comment })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    showSuccess('whitelist-alert', `Successfully whitelisted ${ip}`);
+                    closeAddWhitelistModal();
+                    await refreshWhitelist();
+                } else {
+                    alert('Failed to add IP to whitelist');
+                }
+            } catch (error) {
+                console.error('Error adding to whitelist:', error);
+                alert('Failed to add IP to whitelist');
+            }
+        }
+
+        // Remove from whitelist
+        async function removeWhitelistIP(ip) {
+            if (!confirm(`Are you sure you want to remove ${ip} from the whitelist?`)) return;
+
+            try {
+                const response = await fetch(API_BASE + '?path=whitelist', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ ip })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    showSuccess('whitelist-alert', `Successfully removed ${ip} from whitelist`);
+                    await refreshWhitelist();
+                } else {
+                    showError('whitelist-alert', 'Failed to remove IP from whitelist');
+                }
+            } catch (error) {
+                console.error('Error removing from whitelist:', error);
+                showError('whitelist-alert', 'Failed to remove IP from whitelist');
+            }
+        }
+
+        // Show/hide add whitelist modal
+        function showAddWhitelistModal() {
+            document.getElementById('addWhitelistModal').style.display = 'block';
+        }
+
+        function closeAddWhitelistModal() {
+            document.getElementById('addWhitelistModal').style.display = 'none';
+            document.getElementById('whitelist-ip').value = '';
+            document.getElementById('whitelist-comment').value = '';
+        }
+
+        // Alert helpers
+        function showSuccess(elementId, message) {
+            const alert = document.getElementById(elementId);
+            alert.className = 'alert alert-success';
+            alert.textContent = message;
+            alert.style.display = 'block';
+            setTimeout(() => alert.style.display = 'none', 5000);
+        }
+
+        function showError(elementId, message) {
+            const alert = document.getElementById(elementId);
+            alert.className = 'alert alert-danger';
+            alert.textContent = message;
+            alert.style.display = 'block';
+            setTimeout(() => alert.style.display = 'none', 5000);
+        }
+
+        function showErrorBox(elementId, message) {
+            document.getElementById(elementId).innerHTML = `
+                <div class="alert alert-danger">${message}</div>
+            `;
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('addWhitelistModal');
+            if (event.target == modal) {
+                closeAddWhitelistModal();
+            }
+        }
+    </script>
+</body>
+</html>

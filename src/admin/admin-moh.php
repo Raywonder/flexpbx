@@ -1,0 +1,526 @@
+<?php require_once __DIR__ . '/admin_auth_check.php'; ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music on Hold - FlexPBX Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .header-card h1 {
+            margin: 0;
+            color: #333;
+        }
+
+        .class-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .class-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .class-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .class-name {
+            font-size: 24px;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .file-list {
+            margin-top: 15px;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .file-icon {
+            font-size: 24px;
+            color: #667eea;
+        }
+
+        .btn-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        .btn-custom:hover {
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .stats-badge {
+            display: inline-block;
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .upload-zone {
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-zone:hover {
+            background: #e3f2fd;
+            border-color: #764ba2;
+        }
+
+        .upload-zone.dragover {
+            background: #e3f2fd;
+            border-color: #764ba2;
+            transform: scale(1.02);
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header-card">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1><i class="fas fa-music me-3"></i>Music on Hold Management</h1>
+                    <p class="text-muted mb-0">Manage MOH classes and audio files</p>
+                </div>
+                <div>
+                    <button class="btn btn-custom me-2" onclick="showCreateClassModal()">
+                        <i class="fas fa-plus me-2"></i>New Class
+                    </button>
+                    <button class="btn btn-outline-primary me-2" onclick="reloadMOH()">
+                        <i class="fas fa-sync me-2"></i>Reload
+                    </button>
+                    <a href="dashboard.html" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div id="classesContainer">
+            <div class="text-center">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Class Modal -->
+    <div class="modal fade" id="createClassModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create MOH Class</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="className" class="form-label">Class Name</label>
+                        <input type="text" class="form-control" id="className" placeholder="e.g., lobby, queue1">
+                        <div class="form-text">Use only letters, numbers, dash, and underscore</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="classMode" class="form-label">Mode</label>
+                        <select class="form-select" id="classMode">
+                            <option value="files">Files (Play audio files)</option>
+                            <option value="custom">Custom Application</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-custom" onclick="createClass()">Create Class</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upload File Modal -->
+    <div class="modal fade" id="uploadModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Upload Audio File</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="uploadClassName">
+                    <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3"></i>
+                        <h5>Click to select or drag & drop audio file</h5>
+                        <p class="text-muted">Supported formats: .ulaw, .gsm, .wav, .mp3 (Max 50MB)</p>
+                        <input type="file" id="fileInput" accept=".ulaw,.gsm,.wav,.mp3" style="display: none;" onchange="handleFileSelect(this.files)">
+                    </div>
+                    <div id="uploadProgress" class="mt-3" style="display: none;">
+                        <div class="progress">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentClasses = [];
+
+        // Load MOH classes on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadClasses();
+            setupDragDrop();
+        });
+
+        async function loadClasses() {
+            try {
+                const response = await fetch('/api/moh.php?path=classes');
+                const data = await response.json();
+
+                if (data.success) {
+                    currentClasses = data.classes;
+                    renderClasses(data.classes);
+                } else {
+                    showAlert('Error loading classes: ' + data.message, 'danger');
+                }
+            } catch (error) {
+                showAlert('Failed to load MOH classes: ' + error.message, 'danger');
+            }
+        }
+
+        function renderClasses(classes) {
+            const container = document.getElementById('classesContainer');
+
+            if (classes.length === 0) {
+                container.innerHTML = `
+                    <div class="class-card">
+                        <div class="empty-state">
+                            <i class="fas fa-music fa-4x mb-3" style="color: #ddd;"></i>
+                            <h4>No MOH Classes Found</h4>
+                            <p>Create your first MOH class to get started</p>
+                            <button class="btn btn-custom" onclick="showCreateClassModal()">
+                                <i class="fas fa-plus me-2"></i>Create Class
+                            </button>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+
+            classes.forEach(cls => {
+                html += `
+                    <div class="class-card">
+                        <div class="class-header">
+                            <div>
+                                <span class="class-name">${cls.name}</span>
+                                <span class="stats-badge ms-3">
+                                    <i class="fas fa-file-audio me-1"></i>${cls.file_count} files
+                                </span>
+                            </div>
+                            <div>
+                                <button class="btn btn-sm btn-custom" onclick="showUploadModal('${cls.name}')">
+                                    <i class="fas fa-upload me-1"></i>Upload
+                                </button>
+                                ${cls.name !== 'default' ? `
+                                    <button class="btn btn-sm btn-outline-danger ms-2" onclick="deleteClass('${cls.name}')">
+                                        <i class="fas fa-trash me-1"></i>Delete Class
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <small class="text-muted">
+                                <i class="fas fa-folder me-1"></i>${cls.directory}
+                                <i class="fas fa-cog ms-3 me-1"></i>Mode: ${cls.mode}
+                            </small>
+                        </div>
+                        <div class="file-list">
+                            ${renderFiles(cls)}
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function renderFiles(cls) {
+            if (!cls.files || cls.files.length === 0) {
+                return `<div class="empty-state"><small class="text-muted">No audio files uploaded</small></div>`;
+            }
+
+            let html = '';
+            cls.files.forEach(file => {
+                html += `
+                    <div class="file-item">
+                        <div class="file-info">
+                            <i class="fas fa-file-audio file-icon"></i>
+                            <div>
+                                <strong>${file.name}</strong><br>
+                                <small class="text-muted">${file.size_formatted} • ${file.modified}</small>
+                            </div>
+                        </div>
+                        <div>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteFile('${cls.name}', '${file.name}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            return html;
+        }
+
+        function showCreateClassModal() {
+            const modal = new bootstrap.Modal(document.getElementById('createClassModal'));
+            modal.show();
+        }
+
+        async function createClass() {
+            const name = document.getElementById('className').value.trim();
+            const mode = document.getElementById('classMode').value;
+
+            if (!name) {
+                alert('Please enter a class name');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/moh.php?path=create_class', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, mode })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('MOH class created successfully', 'success');
+                    bootstrap.Modal.getInstance(document.getElementById('createClassModal')).hide();
+                    loadClasses();
+                } else {
+                    showAlert('Error: ' + data.message, 'danger');
+                }
+            } catch (error) {
+                showAlert('Failed to create class: ' + error.message, 'danger');
+            }
+        }
+
+        function showUploadModal(className) {
+            document.getElementById('uploadClassName').value = className;
+            const modal = new bootstrap.Modal(document.getElementById('uploadModal'));
+            modal.show();
+        }
+
+        function setupDragDrop() {
+            const uploadZone = document.getElementById('uploadZone');
+
+            uploadZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadZone.classList.add('dragover');
+            });
+
+            uploadZone.addEventListener('dragleave', () => {
+                uploadZone.classList.remove('dragover');
+            });
+
+            uploadZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadZone.classList.remove('dragover');
+                handleFileSelect(e.dataTransfer.files);
+            });
+        }
+
+        async function handleFileSelect(files) {
+            if (files.length === 0) return;
+
+            const file = files[0];
+            const className = document.getElementById('uploadClassName').value;
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('class', className);
+
+            const progressDiv = document.getElementById('uploadProgress');
+            const progressBar = progressDiv.querySelector('.progress-bar');
+
+            progressDiv.style.display = 'block';
+            progressBar.style.width = '50%';
+
+            try {
+                const response = await fetch('/api/moh.php?path=upload', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                progressBar.style.width = '100%';
+
+                if (data.success) {
+                    showAlert('File uploaded successfully', 'success');
+                    setTimeout(() => {
+                        bootstrap.Modal.getInstance(document.getElementById('uploadModal')).hide();
+                        loadClasses();
+                        progressDiv.style.display = 'none';
+                        progressBar.style.width = '0%';
+                    }, 1000);
+                } else {
+                    showAlert('Upload error: ' + data.message, 'danger');
+                    progressDiv.style.display = 'none';
+                }
+            } catch (error) {
+                showAlert('Upload failed: ' + error.message, 'danger');
+                progressDiv.style.display = 'none';
+            }
+        }
+
+        async function deleteFile(className, fileName) {
+            if (!confirm(`Delete ${fileName} from ${className}?`)) return;
+
+            try {
+                const response = await fetch('/api/moh.php?path=delete', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ class: className, file: fileName })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('File deleted successfully', 'success');
+                    loadClasses();
+                } else {
+                    showAlert('Error: ' + data.message, 'danger');
+                }
+            } catch (error) {
+                showAlert('Failed to delete file: ' + error.message, 'danger');
+            }
+        }
+
+        async function deleteClass(className) {
+            if (!confirm(`Delete MOH class "${className}" and all its files?`)) return;
+
+            try {
+                const response = await fetch('/api/moh.php?path=delete_class', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: className })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('Class deleted successfully', 'success');
+                    loadClasses();
+                } else {
+                    showAlert('Error: ' + data.message, 'danger');
+                }
+            } catch (error) {
+                showAlert('Failed to delete class: ' + error.message, 'danger');
+            }
+        }
+
+        async function reloadMOH() {
+            try {
+                const response = await fetch('/api/moh.php?path=reload', {
+                    method: 'POST'
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    showAlert('MOH configuration reloaded', 'success');
+                    loadClasses();
+                } else {
+                    showAlert('Error: ' + data.message, 'danger');
+                }
+            } catch (error) {
+                showAlert('Failed to reload: ' + error.message, 'danger');
+            }
+        }
+
+        function showAlert(message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 start-50 translate-middle-x mt-3`;
+            alertDiv.style.zIndex = '9999';
+            alertDiv.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.body.appendChild(alertDiv);
+
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
