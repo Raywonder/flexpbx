@@ -1,0 +1,59 @@
+{
+  "providers": [
+    {
+      "type": "whmcs",
+      "name": "WHMCS",
+      "enabled": false,
+      "server_url": "https://your-whmcs.com",
+      "username": "",
+      "password_hash": "",
+      "tfa_secret": "",
+      "auth_endpoint": "/admin/login.php",
+      "api_endpoint": "/includes/api.php"
+    },
+    {
+      "type": "cpanel",
+      "name": "cPanel",
+      "enabled": false,
+      "server_url": "https://your-server.com:2083",
+      "username": "",
+      "password_hash": "",
+      "tfa_secret": "",
+      "auth_endpoint": "/login/?login_only=1",
+      "api_endpoint": "/execute"
+    },
+    {
+      "type": "whm",
+      "name": "WHM",
+      "enabled": false,
+      "server_url": "https://your-server.com:2087",
+      "username": "",
+      "password_hash": "",
+      "tfa_secret": "",
+      "auth_endpoint": "/login/?login_only=1",
+      "api_endpoint": "/json-api"
+    },
+    {
+      "type": "directadmin",
+      "name": "DirectAdmin",
+      "enabled": false,
+      "server_url": "https://your-server.com:2222",
+      "username": "",
+      "password_hash": "",
+      "tfa_secret": "",
+      "auth_endpoint": "/CMD_LOGIN",
+      "api_endpoint": "/CMD_API"
+    },
+    {
+      "type": "plesk",
+      "name": "Plesk",
+      "enabled": false,
+      "server_url": "https://your-server.com:8443",
+      "username": "",
+      "password_hash": "",
+      "tfa_secret": "",
+      "auth_endpoint": "/login_up.php",
+      "api_endpoint": "/api/v2"
+    }
+  ]
+}

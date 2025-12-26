@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<module>
+    <id>flexpbx</id>
+    <name>FlexPBX Management</name>
+    <description>PBX management integration for Plesk</description>
+    <version>2.0.0</version>
+    <vendor>FlexPBX Team</vendor>
+    <url>https://flexpbx.com</url>
+</module>
