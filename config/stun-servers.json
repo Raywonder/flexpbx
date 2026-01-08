@@ -1,0 +1,42 @@
+{
+  "stun_config": {
+    "mode": "devine_primary",
+    "description": "STUN/TURN server configuration",
+    "options": [
+      {
+        "id": "devine_primary",
+        "name": "Devine Servers (Recommended)",
+        "primary": "64.20.46.178:3478",
+        "backup": "208.73.204.162:3478",
+        "turn_enabled": true,
+        "turn_username": "asterisk",
+        "turn_password": ""
+      },
+      {
+        "id": "local_primary",
+        "name": "Local Primary with Devine Backup",
+        "primary": "{{LOCAL_IP}}:3478",
+        "backup": "64.20.46.178:3478",
+        "turn_enabled": true
+      },
+      {
+        "id": "public_only",
+        "name": "Public STUN Only",
+        "servers": [
+          "stun.l.google.com:19302",
+          "stun1.l.google.com:19302",
+          "stun.ekiga.net:3478"
+        ],
+        "turn_enabled": false
+      }
+    ]
+  },
+  "coturn_template": {
+    "listening_port": 3478,
+    "realm": "flexpbx.local",
+    "min_port": 49152,
+    "max_port": 65535,
+    "fingerprint": true,
+    "lt_cred_mech": true
+  }
+}

@@ -1,0 +1,35 @@
+; Callcentric Inbound/Outbound Context Template
+; FlexPBX - Replace {{VARIABLE}} with actual values
+
+;=============================================================================
+; INBOUND FROM CALLCENTRIC
+;=============================================================================
+[from-callcentric]
+exten => _X.,1,NoOp(Inbound Callcentric DID ${EXTEN} from ${CALLERID(num)})
+ same => n,Set(CALLDATE=${STRFTIME(${EPOCH},,%Y%m%d-%H%M%S)})
+ same => n,MixMonitor(/var/spool/asterisk/monitor/inbound/${CALLDATE}-${CALLERID(num)}-${EXTEN}.wav,b)
+ same => n,Goto(ivr-main-menu,s,1)
+
+exten => s,1,NoOp(Inbound Callcentric no DID from ${CALLERID(num)})
+ same => n,Goto(ivr-main-menu,s,1)
+
+;=============================================================================
+; OUTBOUND VIA CALLCENTRIC
+;=============================================================================
+[callcentric-outbound]
+exten => _9XXXXXXXXXX,1,NoOp(Outbound 9 prefix via Callcentric)
+ same => n,Set(CALLERID(num)={{CALLERID}})
+ same => n,Set(CALLERID(name)=FlexPBX)
+ same => n,Set(DIAL_NUMBER=1${EXTEN:1})
+ same => n,Dial(PJSIP/${DIAL_NUMBER}@callcentric-endpoint,60,tT)
+ same => n,Hangup()
+
+exten => _91XXXXXXXXXX,1,NoOp(Outbound 91 prefix via Callcentric)
+ same => n,Set(CALLERID(num)={{CALLERID}})
+ same => n,Set(CALLERID(name)=FlexPBX)
+ same => n,Dial(PJSIP/${EXTEN:1}@callcentric-endpoint,60,tT)
+ same => n,Hangup()
+
+exten => 911,1,NoOp(Emergency 911)
+ same => n,Dial(PJSIP/911@callcentric-endpoint,60)
+ same => n,Hangup()

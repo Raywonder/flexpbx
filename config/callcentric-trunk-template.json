@@ -1,0 +1,46 @@
+{
+  "trunk_name": "Callcentric SIP Trunk",
+  "trunk_id": "callcentric",
+  "provider": "callcentric",
+  "type": "pjsip",
+  "status": "template",
+  "description": "Callcentric VoIP SIP Trunk - requires account credentials",
+  "signup_url": "https://www.callcentric.com/",
+  "channels": {
+    "max_channels": 2,
+    "per_did_limit": true
+  },
+  "configuration": {
+    "general": {
+      "username": "",
+      "password": "",
+      "fromuser": "",
+      "fromdomain": "sip.callcentric.com",
+      "note": "Username format: <10-digit-number>100"
+    },
+    "registration": {
+      "server_uri": "sip:sip.callcentric.com",
+      "port": 5060,
+      "transport": "udp",
+      "expires": 3600
+    },
+    "endpoint": {
+      "context": "from-callcentric",
+      "codecs": ["ulaw", "alaw", "g722"],
+      "dtmf_mode": "rfc4733"
+    },
+    "identify_ips": ["199.87.144.64", "199.87.144.65", "199.87.144.66"]
+  },
+  "dialpatterns": {
+    "outbound_prefix": "9",
+    "patterns": [
+      {"pattern": "_9XXXXXXXXXX", "strip": 1, "prepend": "1", "desc": "US 10-digit"},
+      {"pattern": "_91XXXXXXXXXX", "strip": 1, "prepend": "", "desc": "US 11-digit"},
+      {"pattern": "_911", "strip": 0, "prepend": "", "desc": "Emergency"}
+    ]
+  },
+  "stun_servers": {
+    "primary": "64.20.46.178:3478",
+    "backup": "208.73.204.162:3478"
+  }
+}

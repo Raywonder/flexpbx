@@ -1,0 +1,106 @@
+{
+    "version": "2.0.0",
+    "backup_contents": {
+        "asterisk_config": {
+            "enabled": true,
+            "required": true,
+            "description": "Asterisk Configuration",
+            "path": "/etc/asterisk"
+        },
+        "flexpbx_app": {
+            "enabled": true,
+            "required": true,
+            "description": "FlexPBX Application",
+            "path": "/home/flexpbxuser/apps/flexpbx"
+        },
+        "database": {
+            "enabled": true,
+            "required": true,
+            "description": "FlexPBX Database"
+        },
+        "cdr": {
+            "enabled": true,
+            "required": false,
+            "description": "Call Detail Records"
+        },
+        "voicemail": {
+            "enabled": true,
+            "required": false,
+            "description": "Voicemail Messages",
+            "path": "/var/spool/asterisk/voicemail"
+        },
+        "moh": {
+            "enabled": true,
+            "required": false,
+            "description": "Music on Hold",
+            "path": "/var/lib/asterisk/moh"
+        },
+        "sounds": {
+            "enabled": true,
+            "required": false,
+            "description": "Custom Sounds",
+            "path": "/var/lib/asterisk/sounds/custom"
+        },
+        "recordings": {
+            "enabled": true,
+            "required": false,
+            "description": "Call Recordings",
+            "path": "/var/spool/asterisk/monitor",
+            "max_age_days": 30
+        },
+        "fax": {
+            "enabled": false,
+            "required": false,
+            "description": "Fax Documents",
+            "path": "/var/spool/asterisk/fax"
+        },
+        "system_logs": {
+            "enabled": false,
+            "required": false,
+            "description": "System Logs"
+        }
+    },
+    "compression": {
+        "enabled": true,
+        "level": 6
+    },
+    "encryption": {
+        "enabled": false,
+        "method": "aes-256-cbc",
+        "key": ""
+    },
+    "storage_options": {
+        "local": {
+            "enabled": true,
+            "path": "/var/backups/flexpbx",
+            "max_backups": 10
+        },
+        "remote_cloud": {
+            "enabled": false,
+            "endpoint": "https://backup.devine-creations.com/api/v1",
+            "api_key": "",
+            "current_plan": "free"
+        },
+        "s3_compatible": {
+            "enabled": false,
+            "config": {}
+        },
+        "sftp": {
+            "enabled": false,
+            "config": {}
+        }
+    },
+    "plans": [
+        {"id": "free", "name": "Free", "storage_gb": 5, "price_monthly": 0},
+        {"id": "starter", "name": "Starter", "storage_gb": 10, "price_monthly": 4.99},
+        {"id": "basic", "name": "Basic", "storage_gb": 20, "price_monthly": 9.99},
+        {"id": "professional", "name": "Professional", "storage_gb": 50, "price_monthly": 24.99},
+        {"id": "business", "name": "Business", "storage_gb": 100, "price_monthly": 49.99},
+        {"id": "enterprise", "name": "Enterprise", "storage_gb": 500, "price_monthly": 99.99}
+    ],
+    "payment_methods": [
+        {"id": "ecripto", "name": "eCripto Wallet", "enabled": true, "discount": 15},
+        {"id": "stripe", "name": "Credit Card", "enabled": true},
+        {"id": "paypal", "name": "PayPal", "enabled": true}
+    ]
+}

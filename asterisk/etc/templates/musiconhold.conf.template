@@ -1,0 +1,33 @@
+; FlexPBX Music On Hold Configuration
+; Uses local files for reliability
+
+[general]
+cachertclasses=yes
+preferchannelclass=yes
+
+; Default MOH - Local files (most reliable)
+[default]
+mode=files
+directory=/var/lib/asterisk/moh
+random=yes
+sort=random
+
+; Support queue hold music
+[support]
+mode=files
+directory=/var/lib/asterisk/moh/support
+random=yes
+
+; Sales queue hold music  
+[sales]
+mode=files
+directory=/var/lib/asterisk/moh/sales
+random=yes
+
+; Streaming option (if available) - requires ffmpeg
+; Uncomment to use TappedIn Radio stream
+;[tappedin-stream]
+;mode=custom
+;application=/usr/bin/ffmpeg -i https://stream.tappedin.fm/listen/tappedin_radio/radio.mp3 -f s16le -ar 8000 -ac 1 -
+;format=slin
+

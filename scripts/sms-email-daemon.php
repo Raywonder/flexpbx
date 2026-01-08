@@ -33,9 +33,9 @@ if (file_exists($config_file)) {
     define('DB_PASS', '');
 }
 
-define('IMAP_SERVER', 'dvc.raywonderis.me');
+define('IMAP_SERVER', 'mail.tappedin.fm');
 define('IMAP_PORT', 993);
-define('IMAP_USER', 'sms@raywonderis.me');
+define('IMAP_USER', 'sms@tappedin.fm');
 define('IMAP_PASS', 'FlexPBX_SMS_2025!');
 define('IMAP_MAILBOX', 'INBOX');
 
