@@ -149,6 +149,30 @@ $pdo->exec("CREATE TABLE IF NOT EXISTS webhook_logs (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
 echo "✓ webhook_logs\n";
 
+// Table 7: queue_callback_requests
+$pdo->exec("CREATE TABLE IF NOT EXISTS queue_callback_requests (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    queue_id INT NOT NULL,
+    caller_number VARCHAR(32) NOT NULL,
+    caller_name VARCHAR(120) DEFAULT NULL,
+    caller_extension VARCHAR(32) DEFAULT NULL,
+    requested_channel ENUM('ivr', 'agent', 'api', 'voicemail', 'admin') DEFAULT 'api',
+    callback_number VARCHAR(32) NOT NULL,
+    status ENUM('pending', 'offered', 'scheduled', 'processing', 'completed', 'failed', 'cancelled') DEFAULT 'pending',
+    priority INT DEFAULT 0,
+    notes TEXT DEFAULT NULL,
+    queue_position_at_request INT DEFAULT NULL,
+    estimated_wait_seconds INT DEFAULT NULL,
+    scheduled_for TIMESTAMP NULL DEFAULT NULL,
+    processed_at TIMESTAMP NULL DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_queue_callback_queue (queue_id),
+    INDEX idx_queue_callback_status (status),
+    INDEX idx_queue_callback_number (callback_number)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+echo "✓ queue_callback_requests\n";
+
 // Insert default providers
 $pdo->exec("INSERT IGNORE INTO sms_providers (provider_name, provider_type, enabled, priority) VALUES
     ('TextNow', 'textnow', 0, 3),

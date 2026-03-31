@@ -309,21 +309,39 @@ function getAuthInfo($extension) {
         return [
             'extension' => $extension,
             'password' => trim($matches[1]),
-            'realm' => 'flexpbx.devinecreations.net'
+            'realm' => flexpbxProvisionRealm()
         ];
     }
 
     return null;
 }
 
+function flexpbxProvisionRealm() {
+    $host = $_SERVER['HTTP_HOST'] ?? 'flexpbx.devinecreations.net';
+    $host = trim(explode(':', $host)[0]);
+    return filter_var($host, FILTER_VALIDATE_IP) ? 'flexpbx.devinecreations.net' : $host;
+}
+
+function flexpbxProvisionServer() {
+    $explicit = $_GET['server'] ?? $_GET['server_host'] ?? null;
+    if (is_string($explicit) && trim($explicit) !== '') {
+        return trim($explicit);
+    }
+
+    $host = $_SERVER['HTTP_HOST'] ?? 'flexpbx.devinecreations.net';
+    return trim(explode(':', $host)[0]);
+}
+
 function generateSipConfig($extension, $password) {
-    $server = 'flexpbx.devinecreations.net';
+    $server = flexpbxProvisionServer();
     $port = 5060;
     $transport = 'udp';
     $dialplan = '(2xxx|*xx|1[2-9]xxxxxxxxx|011xxxxxxxxxxx)';
+    $realm = flexpbxProvisionRealm();
 
     return [
         'server' => $server,
+        'realm' => $realm,
         'port' => $port,
         'username' => $extension,
         'password' => $password,
@@ -334,6 +352,7 @@ function generateSipConfig($extension, $password) {
         'sip_uri' => "sip:{$extension}@{$server}:{$port};password={$password};transport={$transport};dialplan={$dialplan}",
         'manual_config' => [
             'Server' => $server,
+            'Realm' => $realm,
             'Port' => $port,
             'Username' => $extension,
             'Password' => $password,

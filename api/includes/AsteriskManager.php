@@ -36,6 +36,8 @@ class AsteriskManager {
             return false;
         }
 
+        stream_set_timeout($this->socket, $this->timeout);
+
         // Read welcome message
         $welcome = fgets($this->socket, 1024);
 
@@ -90,7 +92,13 @@ class AsteriskManager {
 
         while ($line !== "\r\n") {
             $line = fgets($this->socket, 1024);
-            if ($line === false) break;
+            if ($line === false) {
+                $meta = stream_get_meta_data($this->socket);
+                if (!empty($meta['timed_out'])) {
+                    $response['TimedOut'] = 'true';
+                }
+                break;
+            }
 
             $line = trim($line);
             if (empty($line)) continue;

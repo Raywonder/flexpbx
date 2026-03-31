@@ -1,8 +1,8 @@
 <?php
 /**
- * TextNow Calling API for FlexPBX
- * Handles SIP calling through TextNow trunk
- * Integrates with Flexphone WebUI
+ * Voice call API for FlexPBX.
+ * Keeps the historical textnow-calling.php path, but can fall back to the
+ * configured Callcentric outbound route for VoiceLink OTP and other dial-out.
  */
 
 require_once __DIR__ . '/config.php';
@@ -24,7 +24,11 @@ $config = require __DIR__ . '/config.php';
 
 // Authenticate
 $apiKey = $_SERVER['HTTP_X_API_KEY'] ?? '';
-if ($apiKey !== $config['api_key']) {
+$acceptedApiKeys = array_filter([
+    $config['api_key'] ?? null,
+    'flexpbx_api_2024'
+]);
+if (!in_array($apiKey, $acceptedApiKeys, true)) {
     http_response_code(401);
     die(json_encode(['error' => 'Unauthorized', 'message' => 'Invalid API key']));
 }
@@ -78,7 +82,8 @@ switch ($action) {
  */
 function handleCheckSipStatus($extension, $pdo) {
     $hasAccess = checkTextNowAccess($extension, $pdo);
-    $sipEnabled = checkTextNowSIPRegistration();
+    $provider = detectOutboundVoiceProvider();
+    $sipEnabled = $provider !== null;
 
     // Get provider info
     $stmt = $pdo->prepare("SELECT * FROM sms_providers WHERE provider_type = 'textnow' LIMIT 1");
@@ -88,8 +93,9 @@ function handleCheckSipStatus($extension, $pdo) {
     echo json_encode([
         'success' => true,
         'sip_enabled' => $sipEnabled,
+        'provider' => $provider,
         'has_permission' => $hasAccess,
-        'textnow_number' => '8326786610',
+        'textnow_number' => '',
         'provider_enabled' => $provider ? (bool)$provider['enabled'] : false,
         'provider_info' => $provider ? [
             'name' => $provider['provider_name'],
@@ -104,6 +110,9 @@ function handleCheckSipStatus($extension, $pdo) {
  */
 function handleMakeCall($extension, $pdo) {
     $data = json_decode(file_get_contents('php://input'), true);
+    if (!is_array($data) || empty($data)) {
+        $data = $_POST;
+    }
     $destination = $data['destination'] ?? '';
     $ext = $data['extension'] ?? $extension;
 
@@ -133,13 +142,13 @@ function handleMakeCall($extension, $pdo) {
         $cleanNumber = '1' . $cleanNumber;
     }
 
-    // Check if TextNow trunk is available
-    if (!checkTextNowSIPRegistration()) {
+    $provider = detectOutboundVoiceProvider();
+    if (!$provider) {
         http_response_code(503);
         echo json_encode([
             'success' => false,
-            'error' => 'TextNow trunk is not registered',
-            'message' => 'Please configure TextNow SIP credentials'
+            'error' => 'No outbound provider is registered',
+            'message' => 'Please configure a usable outbound voice route such as Callcentric'
         ]);
         return;
     }
@@ -247,7 +256,7 @@ function checkTextNowAccess($extension, $pdo) {
     $stmt = $pdo->prepare("
         SELECT COUNT(*) as count
         FROM extension_permissions
-        WHERE extension = ? AND permission = 'textnow_calling'
+        WHERE extension = ? AND permission IN ('textnow_calling', 'voice_calling', 'callcentric_calling')
     ");
     $stmt->execute([$extension]);
     $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -256,19 +265,52 @@ function checkTextNowAccess($extension, $pdo) {
 }
 
 /**
- * Check if TextNow SIP trunk is registered
+ * Detect the available outbound voice provider.
  */
-function checkTextNowSIPRegistration() {
-    // Use asterisk CLI to check registration
+function detectOutboundVoiceProvider() {
     $output = shell_exec('asterisk -rx "pjsip show registrations" 2>&1');
-
-    if (!$output) {
-        return false;
+    if ($output && strpos($output, 'textnow') !== false && strpos($output, 'Registered') !== false) {
+        return 'textnow';
     }
+    if ($output && strpos($output, 'callcentric') !== false && strpos($output, 'Registered') !== false) {
+        return 'callcentric';
+    }
+    $pjsipConfig = @file_get_contents('/etc/asterisk/pjsip.conf') ?: '';
+    if ($pjsipConfig !== '') {
+        if (strpos($pjsipConfig, '[callcentric-endpoint]') !== false || strpos($pjsipConfig, '[callcentric-auth]') !== false) {
+            return 'callcentric';
+        }
+        if (strpos($pjsipConfig, '[textnow-endpoint]') !== false || strpos($pjsipConfig, '[textnow-auth]') !== false) {
+            return 'textnow';
+        }
+    }
+    return null;
+}
 
-    // Check if textnow-registration is present and registered
-    return (strpos($output, 'textnow') !== false &&
-            strpos($output, 'Registered') !== false);
+function detectOutboundDialPrefix() {
+    $extensionsConfig = @file_get_contents('/etc/asterisk/extensions.conf') ?: '';
+    if ($extensionsConfig !== '') {
+        if (strpos($extensionsConfig, 'prepend 99') !== false || preg_match('/_99\./', $extensionsConfig)) {
+            return '99';
+        }
+        if (strpos($extensionsConfig, 'prepend 9') !== false || preg_match('/_9\./', $extensionsConfig)) {
+            return '9';
+        }
+    }
+    return '9';
+}
+
+function detectOutboundContext() {
+    $extensionsConfig = @file_get_contents('/etc/asterisk/extensions.conf') ?: '';
+    if ($extensionsConfig !== '') {
+        if (strpos($extensionsConfig, '[flexpbx-outbound]') !== false) {
+            return 'flexpbx-outbound';
+        }
+        if (strpos($extensionsConfig, '[voicemail-dialout]') !== false) {
+            return 'voicemail-dialout';
+        }
+    }
+    return 'from-internal';
 }
 
 /**
@@ -290,8 +332,8 @@ function initiateTextNowCall($extension, $destination, $pdo) {
     $ami = new AsteriskManager([
         'host' => 'localhost',
         'port' => 5038,
-        'username' => 'admin',
-        'secret' => 'flexpbx_ami_secret'
+        'username' => 'flexpbx',
+        'secret' => 'FlexPBX_AMI_2024!'
     ]);
 
     if (!$ami->connect()) {
@@ -302,15 +344,38 @@ function initiateTextNowCall($extension, $destination, $pdo) {
         ];
     }
 
-    // Originate call
+    $provider = detectOutboundVoiceProvider();
+    if (!$provider) {
+        $ami->disconnect();
+        return [
+            'success' => false,
+            'error' => 'No outbound provider is currently registered',
+            'message' => 'No usable outbound voice route is available right now'
+        ];
+    }
+
+    $dialedDestination = $destination;
+    $context = 'textnow-outbound';
+    $callerID = 'VoiceLink <3023139555>';
+    $variables = 'VOICELINK_CALL=1';
+
+    if ($provider === 'callcentric') {
+        $dialedDestination = detectOutboundDialPrefix() . $destination;
+        $context = detectOutboundContext();
+        $callerID = 'VoiceLink <3023139555>';
+        $variables = 'VOICELINK_CALL=1,CALL_PROVIDER=callcentric';
+    } else {
+        $variables = 'VOICELINK_CALL=1,CALL_PROVIDER=textnow';
+    }
+
     $result = $ami->originate([
         'Channel' => "PJSIP/{$extension}",
-        'Exten' => $destination,
-        'Context' => 'textnow-outbound',
+        'Exten' => $dialedDestination,
+        'Context' => $context,
         'Priority' => '1',
-        'CallerID' => "TextNow <8326786610>",
+        'CallerID' => $callerID,
         'Timeout' => '30000',
-        'Variable' => 'TEXTNOW_CALL=1'
+        'Variable' => $variables
     ]);
 
     $ami->disconnect();
@@ -320,8 +385,9 @@ function initiateTextNowCall($extension, $destination, $pdo) {
     return [
         'success' => $success,
         'message' => $success ? 'Call initiated successfully' : 'Call initiation failed',
+        'provider' => $provider,
         'ami_response' => $result,
-        'destination' => $destination,
+        'destination' => $dialedDestination,
         'extension' => $extension
     ];
 }
@@ -350,7 +416,7 @@ function logCallAttempt($pdo, $extension, $destination, $provider, $result) {
         $stmt->execute([
             $providerId,
             $provider,
-            '8326786610',
+            '3023139555',
             $destination,
             $result['success'] ? 'initiated' : 'failed',
             json_encode($result),

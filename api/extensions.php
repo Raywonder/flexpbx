@@ -36,6 +36,12 @@ $pjsip_conf = '/etc/asterisk/pjsip.conf';
 $extensions_conf = '/etc/asterisk/extensions.conf';
 $voicemail_conf = '/etc/asterisk/voicemail.conf';
 
+function flexpbxSipRealm() {
+    $host = $_SERVER['HTTP_HOST'] ?? 'flexpbx.devinecreations.net';
+    $host = trim(explode(':', $host)[0]);
+    return filter_var($host, FILTER_VALIDATE_IP) ? 'flexpbx.devinecreations.net' : $host;
+}
+
 // Route requests
 switch ($path) {
     case '':
@@ -200,7 +206,7 @@ type=auth
 auth_type=userpass
 password={$password}
 username={$extension}
-realm=flexpbx.devinecreations.net
+realm=" . flexpbxSipRealm() . "
 
 [{$extension}]
 type=aor

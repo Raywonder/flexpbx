@@ -180,6 +180,29 @@ CREATE TABLE `call_queues` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `queue_number` (`queue_number`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE `queue_callback_requests` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `queue_id` int(11) NOT NULL,
+  `caller_number` varchar(32) NOT NULL,
+  `caller_name` varchar(120) DEFAULT NULL,
+  `caller_extension` varchar(32) DEFAULT NULL,
+  `requested_channel` enum('ivr','agent','api','voicemail','admin') DEFAULT 'api',
+  `callback_number` varchar(32) NOT NULL,
+  `status` enum('pending','offered','scheduled','processing','completed','failed','cancelled') DEFAULT 'pending',
+  `priority` int(11) DEFAULT 0,
+  `notes` text DEFAULT NULL,
+  `queue_position_at_request` int(11) DEFAULT NULL,
+  `estimated_wait_seconds` int(11) DEFAULT NULL,
+  `scheduled_for` timestamp NULL DEFAULT NULL,
+  `processed_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`id`),
+  KEY `idx_queue_callback_queue` (`queue_id`),
+  KEY `idx_queue_callback_status` (`status`),
+  KEY `idx_queue_callback_number` (`callback_number`),
+  CONSTRAINT `queue_callback_requests_ibfk_1` FOREIGN KEY (`queue_id`) REFERENCES `call_queues` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE `call_records` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `call_id` varchar(128) NOT NULL,
