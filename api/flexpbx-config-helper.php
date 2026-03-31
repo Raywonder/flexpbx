@@ -121,17 +121,88 @@ class FlexPBXConfig {
      * @return array ['success' => bool, 'output' => string]
      */
     public function execAsteriskCommand($command) {
-        $output = [];
-        $return_var = 0;
-
-        // Always use sudo to run as asterisk user
         $safe_command = escapeshellarg($command);
-        exec("sudo -u asterisk /usr/sbin/asterisk -rx $safe_command 2>&1", $output, $return_var);
+        $candidates = [
+            "/usr/sbin/asterisk -rx $safe_command 2>&1",
+            "asterisk -rx $safe_command 2>&1",
+            "sudo -n -u asterisk /usr/sbin/asterisk -rx $safe_command 2>&1",
+            "sudo -n /usr/sbin/asterisk -rx $safe_command 2>&1",
+            "sudo -n asterisk -rx $safe_command 2>&1"
+        ];
+
+        $attempts = [];
+        foreach ($candidates as $candidate) {
+            $output = [];
+            $return_var = 0;
+            exec($candidate, $output, $return_var);
+            $joined = trim(implode("\n", $output));
+            $attempts[] = [
+                'command' => $candidate,
+                'return_code' => $return_var,
+                'output' => $joined
+            ];
+
+            $sudoBlocked = stripos($joined, 'password is required') !== false
+                || stripos($joined, 'a terminal is required') !== false
+                || stripos($joined, 'no tty present') !== false;
+
+            if ($return_var === 0 && !$sudoBlocked) {
+                return [
+                    'success' => true,
+                    'output' => $joined,
+                    'return_code' => 0,
+                    'attempts' => $attempts
+                ];
+            }
+        }
 
         return [
-            'success' => ($return_var === 0),
-            'output' => implode("\n", $output),
-            'return_code' => $return_var
+            'success' => false,
+            'output' => $attempts ? end($attempts)['output'] : '',
+            'return_code' => $attempts ? end($attempts)['return_code'] : 1,
+            'attempts' => $attempts,
+            'error' => 'Unable to execute Asterisk CLI command without interactive sudo.'
+        ];
+    }
+
+    public function execShellCommand($command) {
+        $candidates = [
+            $command . ' 2>&1',
+            'sudo -n ' . $command . ' 2>&1'
+        ];
+
+        $attempts = [];
+        foreach ($candidates as $candidate) {
+            $output = [];
+            $return_var = 0;
+            exec($candidate, $output, $return_var);
+            $joined = trim(implode("\n", $output));
+            $attempts[] = [
+                'command' => $candidate,
+                'return_code' => $return_var,
+                'output' => $joined
+            ];
+
+            $sudoBlocked = stripos($joined, 'password is required') !== false
+                || stripos($joined, 'a terminal is required') !== false
+                || stripos($joined, 'no tty present') !== false;
+
+            if ($return_var === 0 && !$sudoBlocked) {
+                return [
+                    'success' => true,
+                    'output' => $joined,
+                    'return_code' => 0,
+                    'attempts' => $attempts
+                ];
+            }
+        }
+
+        return [
+            'success' => false,
+            'output' => $attempts ? end($attempts)['output'] : '',
+            'return_code' => $attempts ? end($attempts)['return_code'] : 1,
+            'attempts' => $attempts,
+            'error' => 'Unable to execute shell command without interactive sudo.'
         ];
     }
 

@@ -5,11 +5,12 @@
  */
 
 require_once __DIR__ . '/auth.php';
+require_once __DIR__ . '/flexpbx-config-helper.php';
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
+header('Access-Control-Allow-Headers: Content-Type, Authorization, X-API-Key');
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
@@ -79,17 +80,24 @@ function handleListTrunks($method) {
     $trunks = [];
 
     // Get all registrations
-    exec('sudo asterisk -rx "pjsip show registrations" 2>/dev/null', $output, $ret);
+    $registrationResult = flexpbx_config()->execAsteriskCommand('pjsip show registrations');
+    $output = preg_split('/\R/', $registrationResult['output'] ?? '');
+    $ret = $registrationResult['return_code'] ?? 1;
 
     if ($ret === 0) {
         foreach ($output as $line) {
+            $line = trim($line);
+            if ($line === '' || stripos($line, 'Unable to access') === 0 || stripos($line, 'Objects found:') === 0) {
+                continue;
+            }
+
             // Parse trunk registration lines
-            if (preg_match('/^\s*(\S+)\s+\S+\s+(\w+)/', $line, $matches)) {
-                $trunk_name = $matches[1];
+            if (preg_match('/^([A-Za-z0-9_.:-]+)(?:\/[^\s]+)?\s+\S+\s+(Registered|Rejected|Unregistered|Request|Denied|Unknown|Failed|NoAuth|Added|Removed|Registered\.)/i', $line, $matches)) {
+                $trunk_name = preg_replace('/\/.*$/', '', $matches[1]);
                 $state = $matches[2];
 
                 // Skip if it's an extension (numeric only)
-                if (preg_match('/^\d+$/', $trunk_name)) {
+                if (preg_match('/^\d+$/', $trunk_name) || in_array($trunk_name, ['Unable', 'Objects', 'No'], true)) {
                     continue;
                 }
 
@@ -108,13 +116,28 @@ function handleListTrunks($method) {
     }
 
     // Also check for non-registering trunks (inbound only)
-    exec('sudo asterisk -rx "pjsip show endpoints" 2>/dev/null', $endpoint_output);
+    $endpointResult = flexpbx_config()->execAsteriskCommand('pjsip show endpoints');
+    $endpoint_output = preg_split('/\R/', $endpointResult['output'] ?? '');
     foreach ($endpoint_output as $line) {
-        if (preg_match('/^\s*(\S+)\//', $line, $matches)) {
-            $endpoint_name = $matches[1];
+        $line = trim($line);
+        if ($line === '' || stripos($line, 'Unable to access') === 0 || stripos($line, 'Objects found:') === 0) {
+            continue;
+        }
 
+        $endpoint_name = null;
+        if (preg_match('/^Endpoint:\s+([A-Za-z0-9_.:-]+)(?:\/[^\s]+)?\s+/i', $line, $matches)) {
+            $endpoint_name = $matches[1];
+        } elseif (preg_match('/^([A-Za-z0-9_.:-]+)(?:\/[^\s]+)?\s+/', $line, $matches)) {
+            $endpoint_name = preg_replace('/\/.*$/', '', $matches[1]);
+        }
+
+        if ($endpoint_name !== null) {
             // Skip extensions and already listed trunks
-            if (preg_match('/^\d+$/', $endpoint_name)) {
+            if (
+                preg_match('/^\d+$/', $endpoint_name) ||
+                str_ends_with($endpoint_name, ':') ||
+                in_array($endpoint_name, ['Unable', 'Objects', 'No', 'I', 'Endpoint:', 'Aor:', 'Contact:', 'Transport:', 'Identify:', 'Match:', 'Channel:', 'Exten:', 'InAuth:', 'OutAuth:'], true)
+            ) {
                 continue;
             }
 
@@ -130,14 +153,18 @@ function handleListTrunks($method) {
                 $details = getTrunkDetails($endpoint_name);
                 $trunks[] = [
                     'name' => $endpoint_name,
-                    'status' => 'No-Registration',
-                    'registered' => false,
-                    'type' => 'Inbound-Only',
+                    'status' => $details['status'] ?? 'No-Registration',
+                    'registered' => $details['registered'] ?? false,
+                    'type' => $details['type'] ?? 'Inbound-Only',
                     'server' => $details['server'] ?? '',
                     'username' => $details['username'] ?? ''
                 ];
             }
         }
+    }
+
+    if (count($trunks) === 0) {
+        $trunks = parseTrunksFromPjsipConfig($GLOBALS['pjsip_conf']);
     }
 
     echo json_encode([
@@ -478,52 +505,177 @@ function handleTestTrunk($method, $trunk_id) {
 // Helper functions
 
 function getTrunkDetails($trunk_name) {
-    exec("sudo asterisk -rx \"pjsip show endpoint $trunk_name\" 2>/dev/null", $output, $ret);
+    $endpointResult = flexpbx_config()->execAsteriskCommand("pjsip show endpoint $trunk_name");
+    $output = preg_split('/\R/', $endpointResult['output'] ?? '');
+    $ret = $endpointResult['return_code'] ?? 1;
 
-    if ($ret !== 0) {
-        return [];
+    if ($ret !== 0 || empty(trim($endpointResult['output'] ?? ''))) {
+        return getTrunkDetailsFromPjsipConfig($trunk_name, $GLOBALS['pjsip_conf']);
     }
 
     $details = ['name' => $trunk_name];
 
     foreach ($output as $line) {
-        if (preg_match('/context\s+:\s+(.+)/', $line, $matches)) {
+        $line = trim($line);
+        if ($line === '' || stripos($line, 'Unable to access') === 0 || stripos($line, 'Endpoint:') === 0 || stripos($line, 'ParameterName') === 0) {
+            continue;
+        }
+
+        if (preg_match('/context\s*:\s*(.+)/i', $line, $matches)) {
             $details['context'] = trim($matches[1]);
         }
-        if (preg_match('/outbound_auth\s+:\s+(.+)/', $line, $matches)) {
+        if (preg_match('/outbound_auth\s*:\s*(.+)/i', $line, $matches)) {
             $details['auth'] = trim($matches[1]);
         }
-        if (preg_match('/from_user\s+:\s+(.+)/', $line, $matches)) {
+        if (preg_match('/from_user\s*:\s*(.+)/i', $line, $matches)) {
             $details['from_user'] = trim($matches[1]);
         }
-        if (preg_match('/from_domain\s+:\s+(.+)/', $line, $matches)) {
+        if (preg_match('/from_domain\s*:\s*(.+)/i', $line, $matches)) {
             $details['from_domain'] = trim($matches[1]);
         }
     }
 
     // Get auth details
     if (isset($details['auth'])) {
-        exec("sudo asterisk -rx \"pjsip show auth {$details['auth']}\" 2>/dev/null", $auth_output);
+        $authResult = flexpbx_config()->execAsteriskCommand("pjsip show auth {$details['auth']}");
+        $auth_output = preg_split('/\R/', $authResult['output'] ?? '');
         foreach ($auth_output as $line) {
-            if (preg_match('/username\s+:\s+(.+)/', $line, $matches)) {
+            if (preg_match('/username\s*:\s*(.+)/i', trim($line), $matches)) {
                 $details['username'] = trim($matches[1]);
             }
         }
     }
 
     // Get registration info
-    exec("sudo asterisk -rx \"pjsip show registration $trunk_name\" 2>/dev/null", $reg_output);
+    $regResult = flexpbx_config()->execAsteriskCommand("pjsip show registration $trunk_name");
+    $reg_output = preg_split('/\R/', $regResult['output'] ?? '');
     foreach ($reg_output as $line) {
-        if (preg_match('/Server URI\s+:\s+sip:(.+?)(:|\s|$)/', $line, $matches)) {
+        $line = trim($line);
+        if (preg_match('/Server URI\s*:\s*sip:(.+?)(:|\s|$)/i', $line, $matches)) {
             $details['server'] = trim($matches[1]);
             $details['type'] = 'Outbound';
         }
-        if (preg_match('/Status\s+:\s+(.+)/', $line, $matches)) {
+        if (preg_match('/Status\s*:\s*(.+)/i', $line, $matches)) {
             $details['status'] = trim($matches[1]);
         }
     }
 
     return $details;
+}
+
+function parseTrunksFromPjsipConfig($configPath) {
+    $sections = parsePjsipSections($configPath);
+    $trunks = [];
+
+    foreach ($sections as $name => $entries) {
+        if (($entries['type'] ?? '') !== 'endpoint') {
+            continue;
+        }
+        if (preg_match('/^\d+$/', $name)) {
+            continue;
+        }
+        if (!isset($entries['outbound_auth']) && !isset($entries['from_domain']) && !isset($entries['context'])) {
+            continue;
+        }
+
+        $details = getTrunkDetailsFromPjsipConfig($name, $configPath);
+        $trunks[] = [
+            'name' => $name,
+            'status' => $details['status'] ?? 'Configured',
+            'registered' => ($details['registered'] ?? false),
+            'type' => $details['type'] ?? 'Configured',
+            'server' => $details['server'] ?? '',
+            'username' => $details['username'] ?? ''
+        ];
+    }
+
+    usort($trunks, function ($a, $b) {
+        return strcmp($a['name'], $b['name']);
+    });
+
+    return $trunks;
+}
+
+function getTrunkDetailsFromPjsipConfig($trunk_name, $configPath) {
+    $sections = parsePjsipSections($configPath);
+    $entries = $sections[$trunk_name] ?? null;
+    if (!$entries || ($entries['type'] ?? '') !== 'endpoint') {
+        return [];
+    }
+
+    $details = [
+        'name' => $trunk_name,
+        'context' => $entries['context'] ?? '',
+        'auth' => $entries['outbound_auth'] ?? '',
+        'from_user' => $entries['from_user'] ?? '',
+        'from_domain' => $entries['from_domain'] ?? '',
+        'type' => 'Configured',
+        'registered' => false
+    ];
+
+    if (!empty($details['from_domain'])) {
+        $details['server'] = $details['from_domain'];
+    }
+
+    if (!empty($details['auth']) && isset($sections[$details['auth']]['username'])) {
+        $details['username'] = $sections[$details['auth']]['username'];
+    }
+
+    foreach ($sections as $name => $section) {
+        if (($section['type'] ?? '') === 'registration' && ($section['outbound_auth'] ?? '') === $details['auth']) {
+            $details['type'] = 'Outbound';
+            $details['registered'] = true;
+            $details['status'] = 'Registered';
+            if (!empty($section['server_uri']) && preg_match('/sip:([^:;>]+)/i', $section['server_uri'], $matches)) {
+                $details['server'] = $matches[1];
+            }
+            break;
+        }
+    }
+
+    return $details;
+}
+
+function parsePjsipSections($configPath) {
+    $configResult = flexpbx_config()->readAsteriskConfig($configPath);
+    $content = $configResult['success'] ? ($configResult['content'] ?? '') : '';
+
+    if ($content === '') {
+        $shellResult = flexpbx_config()->execShellCommand('cat ' . escapeshellarg($configPath));
+        if ($shellResult['success']) {
+            $content = $shellResult['output'] ?? '';
+        }
+    }
+
+    if ($content === '') {
+        return [];
+    }
+
+    $lines = preg_split('/\R/', $content);
+
+    $sections = [];
+    $current = null;
+
+    foreach ($lines as $rawLine) {
+        $line = trim($rawLine);
+        if ($line === '' || $line[0] === ';' || $line[0] === '#') {
+            continue;
+        }
+        if (preg_match('/^\[(.+)\]$/', $line, $matches)) {
+            $current = trim($matches[1]);
+            if (!isset($sections[$current])) {
+                $sections[$current] = [];
+            }
+            continue;
+        }
+        if ($current === null || strpos($line, '=') === false) {
+            continue;
+        }
+        [$key, $value] = array_map('trim', explode('=', $line, 2));
+        $sections[$current][strtolower($key)] = $value;
+    }
+
+    return $sections;
 }
 
 function createTrunkDialplan($trunk_name, $context) {
@@ -555,13 +707,5 @@ function logAction($action, $trunk, $ip) {
         'user' => $_SESSION['username'] ?? 'unknown'
     ];
     file_put_contents($log_file, json_encode($entry) . "\n", FILE_APPEND);
-}
-
-function checkAuth() {
-    session_start();
-    return [
-        'authenticated' => isset($_SESSION['authenticated']) && $_SESSION['authenticated'] === true,
-        'username' => $_SESSION['username'] ?? null
-    ];
 }
 ?>

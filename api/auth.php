@@ -9,11 +9,120 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+function getFlexPBXConfig() {
+    static $config = null;
+    if ($config !== null) {
+        return $config;
+    }
+
+    $configPath = __DIR__ . '/config.php';
+    if (is_file($configPath)) {
+        $loaded = include $configPath;
+        if (is_array($loaded)) {
+            $config = $loaded;
+            return $config;
+        }
+    }
+
+    $config = [];
+    return $config;
+}
+
+function getApiCredentialCandidates() {
+    $config = getFlexPBXConfig();
+    $candidates = ['flexpbx_api_2024'];
+
+    $configured = $config['api_key'] ?? null;
+    if (is_string($configured) && $configured !== '') {
+        $candidates[] = $configured;
+    }
+
+    return array_values(array_unique($candidates));
+}
+
+function readAuthorizationBearerToken() {
+    $header = $_SERVER['HTTP_AUTHORIZATION'] ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? '';
+    if (stripos($header, 'Bearer ') === 0) {
+        return trim(substr($header, 7));
+    }
+    return null;
+}
+
+function readAuthorizationBasicCredentials() {
+    $header = $_SERVER['HTTP_AUTHORIZATION'] ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? '';
+    if (stripos($header, 'Basic ') !== 0) {
+        return [null, null];
+    }
+
+    $decoded = base64_decode(trim(substr($header, 6)), true);
+    if ($decoded === false || strpos($decoded, ':') === false) {
+        return [null, null];
+    }
+
+    [$user, $pass] = explode(':', $decoded, 2);
+    return [$user, $pass];
+}
+
+function getApiAuthIdentity() {
+    $validKeys = getApiCredentialCandidates();
+
+    $headerKey = $_SERVER['HTTP_X_API_KEY'] ?? null;
+    if (is_string($headerKey) && in_array($headerKey, $validKeys, true)) {
+        return [
+            'authenticated' => true,
+            'user_type' => 'api',
+            'username' => 'api',
+            'role' => 'admin',
+            'auth_method' => 'x-api-key'
+        ];
+    }
+
+    $bearerToken = readAuthorizationBearerToken();
+    if (is_string($bearerToken) && in_array($bearerToken, $validKeys, true)) {
+        return [
+            'authenticated' => true,
+            'user_type' => 'api',
+            'username' => 'api',
+            'role' => 'admin',
+            'auth_method' => 'bearer'
+        ];
+    }
+
+    $basicUser = $_SERVER['PHP_AUTH_USER'] ?? null;
+    $basicPass = $_SERVER['PHP_AUTH_PW'] ?? null;
+    if (!is_string($basicUser) || !is_string($basicPass)) {
+        [$parsedUser, $parsedPass] = readAuthorizationBasicCredentials();
+        $basicUser = $basicUser ?? $parsedUser;
+        $basicPass = $basicPass ?? $parsedPass;
+    }
+    if (
+        is_string($basicUser) &&
+        is_string($basicPass) &&
+        ($basicUser === 'admin' || $basicUser === 'api') &&
+        in_array($basicPass, $validKeys, true)
+    ) {
+        return [
+            'authenticated' => true,
+            'user_type' => 'api',
+            'username' => $basicUser,
+            'role' => 'admin',
+            'auth_method' => 'basic'
+        ];
+    }
+
+    return null;
+}
+
 /**
  * Check if user is authenticated
  * Returns authentication status and user info
  */
 function checkAuth() {
+    $apiAuth = getApiAuthIdentity();
+    if ($apiAuth !== null) {
+        return $apiAuth;
+    }
+
     // Check admin session
     if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
         return [

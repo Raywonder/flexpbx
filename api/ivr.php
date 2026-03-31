@@ -21,7 +21,7 @@
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
+header('Access-Control-Allow-Headers: Content-Type, Authorization, X-API-Key');
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
@@ -44,12 +44,123 @@ try {
     exit;
 }
 
+ensureIVRTables($pdo);
+seedDefaultIVR($pdo);
+
 // Load permission helper
 require_once __DIR__ . '/permission-helper.php';
 $permissionHelper = new PermissionHelper();
 
 $method = $_SERVER['REQUEST_METHOD'];
 $path = $_GET['path'] ?? '';
+
+function ensureIVRTables(PDO $pdo) {
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS ivr_menus (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            ivr_number VARCHAR(20) NOT NULL UNIQUE,
+            ivr_name VARCHAR(255) NOT NULL,
+            description TEXT NULL,
+            greeting_type ENUM('recording', 'tts') NOT NULL DEFAULT 'recording',
+            greeting_text TEXT NULL,
+            greeting_file VARCHAR(255) NULL,
+            timeout INT NOT NULL DEFAULT 10,
+            invalid_retries INT NOT NULL DEFAULT 3,
+            invalid_destination_type VARCHAR(50) NOT NULL DEFAULT 'extension',
+            invalid_destination_value VARCHAR(255) NULL,
+            timeout_destination_type VARCHAR(50) NOT NULL DEFAULT 'extension',
+            timeout_destination_value VARCHAR(255) NULL,
+            direct_dial_enabled TINYINT(1) NOT NULL DEFAULT 1,
+            enabled TINYINT(1) NOT NULL DEFAULT 1,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    ");
+
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS ivr_options (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            ivr_menu_id INT NOT NULL,
+            digit VARCHAR(10) NOT NULL,
+            option_description VARCHAR(255) NULL,
+            destination_type VARCHAR(50) NOT NULL DEFAULT 'extension',
+            destination_value VARCHAR(255) NULL,
+            enabled TINYINT(1) NOT NULL DEFAULT 1,
+            sort_order INT NOT NULL DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            CONSTRAINT fk_ivr_options_menu
+                FOREIGN KEY (ivr_menu_id) REFERENCES ivr_menus(id)
+                ON DELETE CASCADE,
+            INDEX idx_ivr_menu_id (ivr_menu_id),
+            INDEX idx_digit (digit)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    ");
+
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS ivr_statistics (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            ivr_menu_id INT NOT NULL,
+            date DATE NOT NULL,
+            calls_total INT NOT NULL DEFAULT 0,
+            calls_answered INT NOT NULL DEFAULT 0,
+            calls_timed_out INT NOT NULL DEFAULT 0,
+            invalid_entries INT NOT NULL DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+            CONSTRAINT fk_ivr_statistics_menu
+                FOREIGN KEY (ivr_menu_id) REFERENCES ivr_menus(id)
+                ON DELETE CASCADE,
+            UNIQUE KEY uniq_ivr_date (ivr_menu_id, date)
+        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+    ");
+}
+
+function seedDefaultIVR(PDO $pdo) {
+    $count = (int)$pdo->query("SELECT COUNT(*) FROM ivr_menus")->fetchColumn();
+    if ($count > 0) {
+        return;
+    }
+
+    $stmt = $pdo->prepare("
+        INSERT INTO ivr_menus (
+            ivr_number, ivr_name, description,
+            greeting_type, greeting_text, greeting_file,
+            timeout, invalid_retries,
+            invalid_destination_type, invalid_destination_value,
+            timeout_destination_type, timeout_destination_value,
+            direct_dial_enabled, enabled
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ");
+
+    $stmt->execute([
+        '101',
+        'Main IVR',
+        'Default inbound auto attendant created automatically because IVR tables were missing.',
+        'recording',
+        null,
+        'thank-you-for-calling',
+        10,
+        3,
+        'extension',
+        '2000',
+        'extension',
+        '2000',
+        1,
+        1
+    ]);
+
+    $ivrId = (int)$pdo->lastInsertId();
+    $optionStmt = $pdo->prepare("
+        INSERT INTO ivr_options (
+            ivr_menu_id, digit, option_description,
+            destination_type, destination_value, enabled, sort_order
+        ) VALUES (?, ?, ?, ?, ?, ?, ?)
+    ");
+
+    $optionStmt->execute([$ivrId, '1', 'Dial main extension 2000', 'extension', '2000', 1, 1]);
+    $optionStmt->execute([$ivrId, '0', 'Dial operator extension 2000', 'extension', '2000', 1, 2]);
+}
 
 // Route requests
 switch ($path) {
@@ -626,7 +737,7 @@ function generateIVRDialplan($ivr, $options) {
     $dialplan .= "same => n(greeting),NoOp(Playing IVR Greeting)\n";
 
     if ($ivr['greeting_type'] === 'recording' && $ivr['greeting_file']) {
-        $dialplan .= "same => n,Background({$ivr['greeting_file']})\n";
+        $dialplan .= "same => n,Playback({$ivr['greeting_file']})\n";
     } elseif ($ivr['greeting_type'] === 'tts' && $ivr['greeting_text']) {
         // TTS would require additional setup with festival or Google TTS
         $dialplan .= "same => n,Playback(silence/1)\n";

@@ -9,6 +9,7 @@ header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
+require_once __DIR__ . '/flexpbx-config-helper.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
@@ -98,7 +99,8 @@ function handleInfo() {
  * List all MOH classes
  */
 function handleListClasses() {
-    exec('sudo -u asterisk /usr/sbin/asterisk -rx "moh show classes" 2>&1', $output, $return_code);
+    $mohResult = flexpbx_config()->execAsteriskCommand('moh show classes');
+    $output = preg_split('/\R/', $mohResult['output'] ?? '');
 
     $classes = [];
     $currentClass = null;
@@ -110,6 +112,8 @@ function handleListClasses() {
                 'name' => $currentClass,
                 'mode' => '',
                 'directory' => '',
+                'application' => '',
+                'format' => '',
                 'file_count' => 0,
                 'files' => []
             ];
@@ -120,7 +124,7 @@ function handleListClasses() {
             $classes[$currentClass]['directory'] = $directory;
 
             // Count files in directory
-            if (is_dir($directory)) {
+            if ($directory !== 'nodir' && is_dir($directory)) {
                 $files = glob($directory . '/*');
                 $classes[$currentClass]['file_count'] = count($files);
 
@@ -133,6 +137,17 @@ function handleListClasses() {
                     ];
                 }
             }
+        } elseif ($currentClass && preg_match('/^\s+Application:\s+(.+)$/', $line, $matches)) {
+            $classes[$currentClass]['application'] = trim($matches[1]);
+        } elseif ($currentClass && preg_match('/^\s+Format:\s+(.+)$/', $line, $matches)) {
+            $classes[$currentClass]['format'] = trim($matches[1]);
+        }
+    }
+
+    if (count($classes) === 0) {
+        $configClasses = parseMohConfigClasses('/etc/asterisk/musiconhold.conf');
+        if (!empty($configClasses)) {
+            $classes = $configClasses;
         }
     }
 
@@ -140,6 +155,82 @@ function handleListClasses() {
         'count' => count($classes),
         'classes' => array_values($classes)
     ]);
+}
+
+function parseMohConfigClasses($configPath) {
+    if (!is_readable($configPath)) {
+        return [];
+    }
+
+    $lines = file($configPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    if ($lines === false) {
+        return [];
+    }
+
+    $classes = [];
+    $currentClass = null;
+
+    foreach ($lines as $rawLine) {
+        $line = trim($rawLine);
+
+        if ($line === '' || $line[0] === ';' || $line[0] === '#') {
+            continue;
+        }
+
+        if (preg_match('/^\[(.+)\]$/', $line, $matches)) {
+            $section = trim($matches[1]);
+            if (strcasecmp($section, 'general') === 0) {
+                $currentClass = null;
+                continue;
+            }
+
+            $currentClass = $section;
+            $classes[$currentClass] = [
+                'name' => $currentClass,
+                'mode' => '',
+                'directory' => '',
+                'application' => '',
+                'format' => '',
+                'file_count' => 0,
+                'files' => []
+            ];
+            continue;
+        }
+
+        if ($currentClass === null || strpos($line, '=') === false) {
+            continue;
+        }
+
+        [$key, $value] = array_map('trim', explode('=', $line, 2));
+        switch (strtolower($key)) {
+            case 'mode':
+                $classes[$currentClass]['mode'] = $value;
+                break;
+            case 'directory':
+                $classes[$currentClass]['directory'] = $value;
+                if (is_dir($value)) {
+                    $files = glob($value . '/*');
+                    $classes[$currentClass]['file_count'] = count($files);
+                    foreach ($files as $file) {
+                        $classes[$currentClass]['files'][] = [
+                            'name' => basename($file),
+                            'size' => filesize($file),
+                            'size_formatted' => formatBytes(filesize($file)),
+                            'modified' => date('Y-m-d H:i:s', filemtime($file))
+                        ];
+                    }
+                }
+                break;
+            case 'application':
+                $classes[$currentClass]['application'] = $value;
+                break;
+            case 'format':
+                $classes[$currentClass]['format'] = $value;
+                break;
+        }
+    }
+
+    return $classes;
 }
 
 /**

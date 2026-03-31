@@ -5,11 +5,12 @@
  */
 
 require_once __DIR__ . '/auth.php';
+require_once __DIR__ . '/flexpbx-config-helper.php';
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, Authorization');
+header('Access-Control-Allow-Headers: Content-Type, Authorization, X-API-Key');
 
 // Handle OPTIONS preflight
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
@@ -93,15 +94,22 @@ function handleListExtensions($method) {
     $extensions = [];
 
     // Get all endpoints from Asterisk
-    exec('sudo asterisk -rx "pjsip show endpoints" 2>/dev/null', $output, $ret);
+    $endpointResult = flexpbx_config()->execAsteriskCommand('pjsip show endpoints');
+    $output = preg_split('/\R/', $endpointResult['output'] ?? '');
+    $ret = $endpointResult['return_code'] ?? 1;
 
     if ($ret === 0) {
         foreach ($output as $line) {
+            $line = trim($line);
+            if ($line === '' || stripos($line, 'Unable to access') === 0 || stripos($line, 'Objects found:') === 0) {
+                continue;
+            }
+
             // Parse endpoint lines
-            if (preg_match('/^\s*(\d+)\/\d+\s+(\w+)\s+(\d+)/', $line, $matches)) {
+            if (preg_match('/^(\d+)(?:\/[^\s]+)?\s+(\w+)(?:\s+(\d+))?/', $line, $matches)) {
                 $ext = $matches[1];
                 $state = $matches[2];
-                $channels = $matches[3];
+                $channels = isset($matches[3]) ? (int)$matches[3] : 0;
 
                 // Get additional details
                 $details = getExtensionDetails($ext);
@@ -109,7 +117,7 @@ function handleListExtensions($method) {
                 $extensions[] = [
                     'extension' => $ext,
                     'status' => $state,
-                    'active_channels' => (int)$channels,
+                    'active_channels' => $channels,
                     'callerid' => $details['callerid'] ?? '',
                     'context' => $details['context'] ?? '',
                     'transport' => $details['transport'] ?? '',
@@ -117,6 +125,10 @@ function handleListExtensions($method) {
                 ];
             }
         }
+    }
+
+    if (count($extensions) === 0) {
+        $extensions = parseExtensionsFromPjsipConfig($GLOBALS['pjsip_conf']);
     }
 
     echo json_encode([
@@ -465,30 +477,178 @@ function handleBulkCreate($method) {
 // Helper functions
 
 function getExtensionDetails($extension) {
-    exec("sudo asterisk -rx \"pjsip show endpoint $extension\" 2>/dev/null", $output, $ret);
+    $endpointResult = flexpbx_config()->execAsteriskCommand("pjsip show endpoint $extension");
+    $output = preg_split('/\R/', $endpointResult['output'] ?? '');
+    $ret = $endpointResult['return_code'] ?? 1;
 
-    if ($ret !== 0) {
-        return [];
+    if ($ret !== 0 || empty(trim($endpointResult['output'] ?? ''))) {
+        return getExtensionDetailsFromPjsipConfig($extension, $GLOBALS['pjsip_conf']);
     }
 
     $details = ['extension' => $extension];
 
     foreach ($output as $line) {
-        if (preg_match('/callerid\s+:\s+(.+)/', $line, $matches)) {
+        $line = trim($line);
+        if ($line === '' || stripos($line, 'Unable to access') === 0 || stripos($line, 'Endpoint:') === 0 || stripos($line, 'ParameterName') === 0) {
+            continue;
+        }
+
+        if (preg_match('/callerid\s*:\s*(.+)/i', $line, $matches)) {
             $details['callerid'] = trim($matches[1]);
         }
-        if (preg_match('/context\s+:\s+(.+)/', $line, $matches)) {
+        if (preg_match('/context\s*:\s*(.+)/i', $line, $matches)) {
             $details['context'] = trim($matches[1]);
         }
-        if (preg_match('/transport\s+:\s+(.+)/', $line, $matches)) {
+        if (preg_match('/transport\s*:\s*(.+)/i', $line, $matches)) {
             $details['transport'] = trim($matches[1]);
         }
-        if (preg_match('/auth\s+:\s+(.+)/', $line, $matches)) {
+        if (preg_match('/auth\s*:\s*(.+)/i', $line, $matches)) {
             $details['auth'] = trim($matches[1]);
         }
     }
 
     return $details;
+}
+
+function parseExtensionsFromPjsipConfig($configPath) {
+    $sections = parsePjsipEndpointDefinitions($configPath);
+    $extensions = [];
+
+    foreach ($sections as $name => $entries) {
+        if (!preg_match('/^\d{3,5}$/', $name)) {
+            continue;
+        }
+
+        $details = getExtensionDetailsFromPjsipConfig($name, $configPath);
+        $extensions[] = [
+            'extension' => $name,
+            'status' => 'Unknown',
+            'active_channels' => 0,
+            'callerid' => $details['callerid'] ?? '',
+            'context' => $details['context'] ?? '',
+            'transport' => $details['transport'] ?? '',
+            'voicemail' => extensionHasVoicemail($name)
+        ];
+    }
+
+    usort($extensions, function ($a, $b) {
+        return (int) $a['extension'] <=> (int) $b['extension'];
+    });
+
+    return $extensions;
+}
+
+function getExtensionDetailsFromPjsipConfig($extension, $configPath) {
+    $sections = parsePjsipEndpointDefinitions($configPath);
+    $entries = $sections[$extension] ?? null;
+    if (!$entries) {
+        return [];
+    }
+
+    return [
+        'extension' => $extension,
+        'callerid' => $entries['callerid'] ?? '',
+        'context' => $entries['context'] ?? '',
+        'transport' => $entries['transport'] ?? '',
+        'auth' => $entries['auth'] ?? ''
+    ];
+}
+
+function parsePjsipEndpointDefinitions($configPath) {
+    $configResult = flexpbx_config()->readAsteriskConfig($configPath);
+    $content = $configResult['success'] ? ($configResult['content'] ?? '') : '';
+
+    if ($content === '') {
+        $shellResult = flexpbx_config()->execShellCommand('cat ' . escapeshellarg($configPath));
+        if ($shellResult['success']) {
+            $content = $shellResult['output'] ?? '';
+        }
+    }
+
+    if ($content === '') {
+        return [];
+    }
+
+    $lines = preg_split('/\R/', $content);
+    $definitions = [];
+    $currentName = null;
+    $currentEntries = [];
+
+    $commitSection = static function () use (&$currentName, &$currentEntries, &$definitions) {
+        if ($currentName === null) {
+            return;
+        }
+        if (($currentEntries['type'] ?? '') === 'endpoint' && !isset($definitions[$currentName])) {
+            $definitions[$currentName] = $currentEntries;
+        }
+    };
+
+    foreach ($lines as $rawLine) {
+        $line = trim($rawLine);
+        if ($line === '' || $line[0] === ';' || $line[0] === '#') {
+            continue;
+        }
+
+        if (preg_match('/^\[(.+)\]$/', $line, $matches)) {
+            $commitSection();
+            $currentName = trim($matches[1]);
+            $currentEntries = [];
+            continue;
+        }
+
+        if ($currentName === null || strpos($line, '=') === false) {
+            continue;
+        }
+
+        [$key, $value] = array_map('trim', explode('=', $line, 2));
+        $currentEntries[strtolower($key)] = $value;
+    }
+
+    $commitSection();
+
+    return $definitions;
+}
+
+function parsePjsipSections($configPath) {
+    $configResult = flexpbx_config()->readAsteriskConfig($configPath);
+    $content = $configResult['success'] ? ($configResult['content'] ?? '') : '';
+
+    if ($content === '') {
+        $shellResult = flexpbx_config()->execShellCommand('cat ' . escapeshellarg($configPath));
+        if ($shellResult['success']) {
+            $content = $shellResult['output'] ?? '';
+        }
+    }
+
+    if ($content === '') {
+        return [];
+    }
+
+    $lines = preg_split('/\R/', $content);
+
+    $sections = [];
+    $current = null;
+
+    foreach ($lines as $rawLine) {
+        $line = trim($rawLine);
+        if ($line === '' || $line[0] === ';' || $line[0] === '#') {
+            continue;
+        }
+        if (preg_match('/^\[(.+)\]$/', $line, $matches)) {
+            $current = trim($matches[1]);
+            if (!isset($sections[$current])) {
+                $sections[$current] = [];
+            }
+            continue;
+        }
+        if ($current === null || strpos($line, '=') === false) {
+            continue;
+        }
+        [$key, $value] = array_map('trim', explode('=', $line, 2));
+        $sections[$current][strtolower($key)] = $value;
+    }
+
+    return $sections;
 }
 
 function extensionHasVoicemail($extension) {
@@ -553,11 +713,6 @@ exten => $extension,2,Dial(PJSIP/$extension,60,Tt)
     exec('sudo asterisk -rx "dialplan reload"');
 }
 
-function generatePassword($length = 12) {
-    $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%';
-    return substr(str_shuffle(str_repeat($chars, $length)), 0, $length);
-}
-
 function generatePin($length = 4) {
     return str_pad(rand(0, 9999), $length, '0', STR_PAD_LEFT);
 }
@@ -584,10 +739,10 @@ function handleGetMOHClasses($method) {
         return;
     }
 
-    exec('sudo -u asterisk /usr/sbin/asterisk -rx "moh show classes" 2>&1', $output, $ret);
+    $mohResult = flexpbx_config()->execAsteriskCommand('moh show classes');
+    $output = preg_split('/\R/', $mohResult['output'] ?? '');
 
     $moh_classes = [];
-    $current_class = null;
 
     foreach ($output as $line) {
         if (preg_match('/^Class:\s+(.+)$/', $line, $matches)) {
