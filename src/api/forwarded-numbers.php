@@ -50,6 +50,66 @@ if (!$extension) {
 
 $user_file = "/home/flexpbxuser/users/user_{$extension}.json";
 
+function normalizeForwardingSettings(array $user_data): array {
+    $settings = $user_data['forwarding_settings'] ?? [];
+    return [
+        'active_noanswer_number' => preg_replace('/\D/', '', (string)($settings['active_noanswer_number'] ?? '')),
+        'queue_only_noanswer' => (bool)($settings['queue_only_noanswer'] ?? false),
+        'queue_name' => preg_replace('/[^a-zA-Z0-9_-]/', '', (string)($settings['queue_name'] ?? 'support')),
+        'noanswer_timeout' => max(5, min(300, (int)($settings['noanswer_timeout'] ?? 60)))
+    ];
+}
+
+function selectActiveForwardNumber(array $user_data, array $settings): ?array {
+    $forwarded = $user_data['forwarded_numbers'] ?? [];
+    if (empty($forwarded)) {
+        return null;
+    }
+
+    $activeNumber = $settings['active_noanswer_number'] ?? '';
+    foreach ($forwarded as $entry) {
+        $candidate = preg_replace('/\D/', '', (string)($entry['number'] ?? ''));
+        if (($entry['enabled'] ?? false) && $activeNumber !== '' && $candidate === $activeNumber) {
+            return $entry;
+        }
+    }
+
+    foreach ($forwarded as $entry) {
+        if (($entry['enabled'] ?? false) && !empty($entry['number'])) {
+            return $entry;
+        }
+    }
+
+    return null;
+}
+
+function syncNoAnswerForwardToAsterisk(string $extension, array &$user_data): void {
+    $settings = normalizeForwardingSettings($user_data);
+    $selected = selectActiveForwardNumber($user_data, $settings);
+    $family = 'CF/' . preg_replace('/\D/', '', $extension);
+
+    if ($selected) {
+        $number = preg_replace('/\D/', '', (string)$selected['number']);
+        $timeout = isset($selected['ring_time']) ? (int)$selected['ring_time'] : $settings['noanswer_timeout'];
+        $timeout = max(5, min(300, $timeout));
+        $settings['active_noanswer_number'] = $number;
+        $settings['noanswer_timeout'] = $timeout;
+
+        exec('sudo asterisk -rx ' . escapeshellarg("database put {$family} noanswer {$number}") . ' 2>&1');
+        exec('sudo asterisk -rx ' . escapeshellarg("database put {$family} noanswer_timeout {$timeout}") . ' 2>&1');
+    } else {
+        $settings['active_noanswer_number'] = '';
+        exec('sudo asterisk -rx ' . escapeshellarg("database del {$family} noanswer") . ' 2>&1');
+        exec('sudo asterisk -rx ' . escapeshellarg("database del {$family} noanswer_timeout") . ' 2>&1');
+    }
+
+    $queueName = $settings['queue_name'] !== '' ? $settings['queue_name'] : 'support';
+    exec('sudo asterisk -rx ' . escapeshellarg("database put {$family} queue_login_noanswer_required " . ($settings['queue_only_noanswer'] ? '1' : '0')) . ' 2>&1');
+    exec('sudo asterisk -rx ' . escapeshellarg("database put {$family} queue_login_noanswer_queue {$queueName}") . ' 2>&1');
+
+    $user_data['forwarding_settings'] = $settings;
+}
+
 // Handle different request methods
 $method = $_SERVER['REQUEST_METHOD'];
 
@@ -59,10 +119,12 @@ switch ($method) {
         if (file_exists($user_file)) {
             $user_data = json_decode(file_get_contents($user_file), true);
             $forwarded_numbers = $user_data['forwarded_numbers'] ?? [];
+            $forwarding_settings = normalizeForwardingSettings($user_data);
             echo json_encode([
                 'success' => true,
                 'extension' => $extension,
-                'forwarded_numbers' => $forwarded_numbers
+                'forwarded_numbers' => $forwarded_numbers,
+                'forwarding_settings' => $forwarding_settings
             ]);
         } else {
             http_response_code(404);
@@ -84,6 +146,7 @@ switch ($method) {
         $description = htmlspecialchars(trim($input['description'] ?? ''), ENT_QUOTES, 'UTF-8');
         $ring_time = intval($input['ring_time'] ?? 30);
         $enabled = isset($input['enabled']) ? (bool)$input['enabled'] : true;
+        $queue_only_noanswer = isset($input['queue_only_noanswer']) ? (bool)$input['queue_only_noanswer'] : null;
 
         if (strlen($number) < 10) {
             http_response_code(400);
@@ -123,6 +186,13 @@ switch ($method) {
                 'added_date' => date('Y-m-d H:i:s')
             ];
 
+            if ($queue_only_noanswer !== null) {
+                $settings = normalizeForwardingSettings($user_data);
+                $settings['queue_only_noanswer'] = $queue_only_noanswer;
+                $user_data['forwarding_settings'] = $settings;
+            }
+
+            syncNoAnswerForwardToAsterisk($extension, $user_data);
             $user_data['updated_at'] = date('Y-m-d H:i:s');
 
             if (file_put_contents($user_file, json_encode($user_data, JSON_PRETTY_PRINT))) {
@@ -153,6 +223,9 @@ switch ($method) {
         }
 
         $number = preg_replace('/[^0-9]/', '', $input['number']);
+        $settings = file_exists($user_file)
+            ? normalizeForwardingSettings(json_decode(file_get_contents($user_file), true))
+            : normalizeForwardingSettings([]);
 
         if (file_exists($user_file)) {
             $user_data = json_decode(file_get_contents($user_file), true);
@@ -188,12 +261,29 @@ switch ($method) {
                 }
             }
 
+            if (isset($input['active_noanswer_number'])) {
+                $settings['active_noanswer_number'] = preg_replace('/\D/', '', (string)$input['active_noanswer_number']);
+            }
+            if (isset($input['queue_only_noanswer'])) {
+                $settings['queue_only_noanswer'] = (bool)$input['queue_only_noanswer'];
+            }
+            if (isset($input['queue_name'])) {
+                $settings['queue_name'] = preg_replace('/[^a-zA-Z0-9_-]/', '', (string)$input['queue_name']) ?: 'support';
+            }
+            if (isset($input['noanswer_timeout'])) {
+                $settings['noanswer_timeout'] = max(5, min(300, (int)$input['noanswer_timeout']));
+            }
+            $user_data['forwarding_settings'] = $settings;
+
             if (!$found) {
-                http_response_code(404);
-                echo json_encode(['success' => false, 'error' => 'Number not found']);
-                exit;
+                if (!isset($input['active_noanswer_number']) && !isset($input['queue_only_noanswer']) && !isset($input['queue_name']) && !isset($input['noanswer_timeout'])) {
+                    http_response_code(404);
+                    echo json_encode(['success' => false, 'error' => 'Number not found']);
+                    exit;
+                }
             }
 
+            syncNoAnswerForwardToAsterisk($extension, $user_data);
             $user_data['updated_at'] = date('Y-m-d H:i:s');
 
             if (file_put_contents($user_file, json_encode($user_data, JSON_PRETTY_PRINT))) {
@@ -248,6 +338,7 @@ switch ($method) {
                 exit;
             }
 
+            syncNoAnswerForwardToAsterisk($extension, $user_data);
             $user_data['updated_at'] = date('Y-m-d H:i:s');
 
             if (file_put_contents($user_file, json_encode($user_data, JSON_PRETTY_PRINT))) {

@@ -6,13 +6,16 @@
 
 session_start();
 
-// Check if user is logged in
-if (!isset($_SESSION['user_logged_in']) || $_SESSION['user_logged_in'] !== true) {
+$isUser = isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true;
+$isAdmin = isset($_SESSION['account_type']) && $_SESSION['account_type'] === 'admin' && !empty($_SESSION['username']);
+
+if (!$isUser && !$isAdmin) {
     header('Location: /user-portal/login.php');
     exit;
 }
 
-$extension = $_SESSION['user_extension'] ?? '';
+$extension = $isUser ? ($_SESSION['user_extension'] ?? '') : preg_replace('/\D/', '', $_GET['extension'] ?? '');
+$manageQuery = $isAdmin && $extension !== '' ? '?extension=' . rawurlencode($extension) : '';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -64,6 +67,7 @@ $extension = $_SESSION['user_extension'] ?? '';
         input[type="text"],
         input[type="tel"],
         input[type="number"],
+        select,
         textarea {
             width: 100%;
             padding: 0.75rem;
@@ -151,6 +155,31 @@ $extension = $_SESSION['user_extension'] ?? '';
             font-size: 0.9rem;
             line-height: 1.6;
         }
+        .toggle-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        .toggle-info {
+            flex: 1;
+            margin-right: 1rem;
+        }
+        .toggle-info h4 {
+            color: #2c3e50;
+            margin-bottom: 0.25rem;
+        }
+        .toggle-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
         .toggle-switch {
             position: relative;
             width: 50px;
@@ -229,6 +258,9 @@ $extension = $_SESSION['user_extension'] ?? '';
             .form-row {
                 grid-template-columns: 1fr;
             }
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
             .number-header {
                 flex-direction: column;
                 align-items: flex-start;
@@ -245,6 +277,38 @@ $extension = $_SESSION['user_extension'] ?? '';
         </div>
 
         <div id="alert-container"></div>
+
+        <div class="card">
+            <h2>⚙️ No-Answer Forwarding</h2>
+            <form id="forwarding-settings-form">
+                <div class="settings-grid">
+                    <div class="form-group">
+                        <label for="active-noanswer-number">Active No-Answer Number</label>
+                        <select id="active-noanswer-number" aria-describedby="active-noanswer-help">
+                            <option value="">No external no-answer forwarding</option>
+                        </select>
+                        <small id="active-noanswer-help" style="color: #666; display: block; margin-top: 0.3rem;">Calls ring your extension first. If unanswered, the selected external number is tried before voicemail.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="noanswer-timeout">External Ring Time (seconds)</label>
+                        <input type="number" id="noanswer-timeout" min="5" max="300" value="60" aria-label="External no-answer forwarding ring time">
+                    </div>
+                </div>
+
+                <div class="toggle-container" style="margin-bottom: 1rem;">
+                    <div class="toggle-info">
+                        <h4>Only Forward While Logged Into Queue</h4>
+                        <p>Useful for support/operator extensions like 2000. Other extensions can leave this off for normal forwarding.</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="queue-only-noanswer" aria-label="Only forward to external number while logged into queue">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn" aria-label="Save no-answer forwarding settings">Save Forwarding Settings</button>
+            </form>
+        </div>
 
         <!-- Add Number Card -->
         <div class="card">
@@ -380,6 +444,13 @@ $extension = $_SESSION['user_extension'] ?? '';
 
     <script>
         const extension = '<?= addslashes($extension) ?>';
+        const manageQuery = '<?= addslashes($manageQuery) ?>';
+        let currentForwardingSettings = {
+            active_noanswer_number: '',
+            queue_only_noanswer: false,
+            queue_name: 'support',
+            noanswer_timeout: 60
+        };
 
         // Load numbers on page load
         document.addEventListener('DOMContentLoaded', () => {
@@ -401,7 +472,7 @@ $extension = $_SESSION['user_extension'] ?? '';
             };
 
             try {
-                const response = await fetch('/api/forwarded-numbers.php', {
+                const response = await fetch(`/api/forwarded-numbers.php${manageQuery}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(formData)
@@ -429,7 +500,7 @@ $extension = $_SESSION['user_extension'] ?? '';
         // Load forwarded numbers
         async function loadNumbers() {
             try {
-                const response = await fetch('/api/forwarded-numbers.php');
+                const response = await fetch(`/api/forwarded-numbers.php${manageQuery}`);
                 const data = await response.json();
 
                 const loadingMsg = document.getElementById('loading-message');
@@ -441,8 +512,12 @@ $extension = $_SESSION['user_extension'] ?? '';
                 if (data.success && data.forwarded_numbers && data.forwarded_numbers.length > 0) {
                     emptyMsg.style.display = 'none';
                     numbersList.style.display = 'block';
-                    renderNumbers(data.forwarded_numbers);
+                    currentForwardingSettings = data.forwarding_settings || currentForwardingSettings;
+                    renderNumbers(data.forwarded_numbers, currentForwardingSettings);
+                    syncForwardingSettingsForm(data.forwarded_numbers, currentForwardingSettings);
                 } else {
+                    currentForwardingSettings = data.forwarding_settings || currentForwardingSettings;
+                    syncForwardingSettingsForm([], currentForwardingSettings);
                     emptyMsg.style.display = 'block';
                     numbersList.style.display = 'none';
                 }
@@ -453,7 +528,7 @@ $extension = $_SESSION['user_extension'] ?? '';
         }
 
         // Render numbers list
-        function renderNumbers(numbers) {
+        function renderNumbers(numbers, forwardingSettings) {
             const list = document.getElementById('numbers-list');
             list.innerHTML = '';
 
@@ -464,6 +539,7 @@ $extension = $_SESSION['user_extension'] ?? '';
                 const formattedNumber = formatPhoneNumber(number.number);
                 const addedDate = new Date(number.added_date).toLocaleDateString();
 
+                const isActiveForward = forwardingSettings && forwardingSettings.active_noanswer_number === number.number;
                 li.innerHTML = `
                     <div class="number-header">
                         <div class="number-display">${formattedNumber}</div>
@@ -497,6 +573,7 @@ $extension = $_SESSION['user_extension'] ?? '';
                         ${number.description ? `<div><strong>Description:</strong> ${escapeHtml(number.description)}</div>` : ''}
                         <div><strong>Ring Time:</strong> ${number.ring_time} seconds</div>
                         <div><strong>Status:</strong> ${number.enabled ? '✓ Enabled' : '✗ Disabled'}</div>
+                        <div><strong>No-Answer Forward:</strong> ${isActiveForward ? '✓ Active target' : 'Not selected'}</div>
                         <div><strong>Added:</strong> ${addedDate}</div>
                     </div>
                 `;
@@ -508,7 +585,7 @@ $extension = $_SESSION['user_extension'] ?? '';
         // Toggle number enabled/disabled
         async function toggleNumber(number, enabled) {
             try {
-                const response = await fetch('/api/forwarded-numbers.php', {
+                const response = await fetch(`/api/forwarded-numbers.php${manageQuery}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ number, enabled })
@@ -553,7 +630,7 @@ $extension = $_SESSION['user_extension'] ?? '';
             const ring_time = parseInt(document.getElementById('edit-ring-time').value);
 
             try {
-                const response = await fetch('/api/forwarded-numbers.php', {
+                const response = await fetch(`/api/forwarded-numbers.php${manageQuery}`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ number, description, ring_time })
@@ -581,7 +658,7 @@ $extension = $_SESSION['user_extension'] ?? '';
             }
 
             try {
-                const response = await fetch('/api/forwarded-numbers.php', {
+                const response = await fetch(`/api/forwarded-numbers.php${manageQuery}`, {
                     method: 'DELETE',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ number })
@@ -600,6 +677,49 @@ $extension = $_SESSION['user_extension'] ?? '';
                 showAlert('error', 'An error occurred. Please try again.');
             }
         }
+
+        function syncForwardingSettingsForm(numbers, settings) {
+            const select = document.getElementById('active-noanswer-number');
+            select.innerHTML = '<option value="">No external no-answer forwarding</option>';
+            numbers.forEach((entry) => {
+                const option = document.createElement('option');
+                option.value = entry.number;
+                option.textContent = `${formatPhoneNumber(entry.number)}${entry.description ? ` - ${entry.description}` : ''}${entry.enabled ? '' : ' (disabled)'}`;
+                select.appendChild(option);
+            });
+            select.value = settings.active_noanswer_number || '';
+            document.getElementById('queue-only-noanswer').checked = !!settings.queue_only_noanswer;
+            document.getElementById('noanswer-timeout').value = settings.noanswer_timeout || 60;
+        }
+
+        document.getElementById('forwarding-settings-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const payload = {
+                number: document.getElementById('active-noanswer-number').value || '0',
+                active_noanswer_number: document.getElementById('active-noanswer-number').value || '',
+                queue_only_noanswer: document.getElementById('queue-only-noanswer').checked,
+                noanswer_timeout: parseInt(document.getElementById('noanswer-timeout').value || '60', 10)
+            };
+
+            try {
+                const response = await fetch(`/api/forwarded-numbers.php${manageQuery}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await response.json();
+                if (data.success) {
+                    showAlert('success', 'No-answer forwarding settings saved.');
+                    await loadNumbers();
+                } else {
+                    showAlert('error', data.error || 'Failed to save forwarding settings');
+                }
+            } catch (error) {
+                console.error('Error saving forwarding settings:', error);
+                showAlert('error', 'An error occurred while saving forwarding settings.');
+            }
+        });
 
         // Show alert message
         function showAlert(type, message) {

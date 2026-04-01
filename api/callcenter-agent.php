@@ -105,6 +105,29 @@ function getAgentStatus($extension) {
     return $status;
 }
 
+function syncQueueNoAnswerForwardState($extension, $enabled, $queue = 'support') {
+    $extension = preg_replace('/\D/', '', (string)$extension);
+    $queue = preg_replace('/[^a-zA-Z0-9_-]/', '', (string)$queue);
+    if ($extension === '' || $queue === '') {
+        return;
+    }
+
+    $dbFamily = "CF/{$extension}";
+    $queueKey = "queue_login_noanswer_enabled_{$queue}";
+    $activeQueueKey = 'queue_login_noanswer_active_queue';
+    $activeFlagKey = 'queue_login_noanswer_active';
+
+    if ($enabled) {
+        exec('sudo asterisk -rx ' . escapeshellarg("database put {$dbFamily} {$queueKey} 1") . ' 2>&1');
+        exec('sudo asterisk -rx ' . escapeshellarg("database put {$dbFamily} {$activeQueueKey} {$queue}") . ' 2>&1');
+        exec('sudo asterisk -rx ' . escapeshellarg("database put {$dbFamily} {$activeFlagKey} 1") . ' 2>&1');
+    } else {
+        exec('sudo asterisk -rx ' . escapeshellarg("database del {$dbFamily} {$queueKey}") . ' 2>&1');
+        exec('sudo asterisk -rx ' . escapeshellarg("database del {$dbFamily} {$activeQueueKey}") . ' 2>&1');
+        exec('sudo asterisk -rx ' . escapeshellarg("database del {$dbFamily} {$activeFlagKey}") . ' 2>&1');
+    }
+}
+
 /**
  * Login to queue
  */
@@ -126,6 +149,9 @@ function loginToQueue($extension, $queue = 'support') {
 
     // Log the login event
     logAgentEvent($extension, $queue, 'LOGIN');
+    if ($success) {
+        syncQueueNoAnswerForwardState($extension, true, $queue);
+    }
 
     return [
         'success' => $success,
@@ -154,6 +180,9 @@ function logoutFromQueue($extension, $queue = 'support') {
 
     // Log the logout event
     logAgentEvent($extension, $queue, 'LOGOUT');
+    if ($success) {
+        syncQueueNoAnswerForwardState($extension, false, $queue);
+    }
 
     return [
         'success' => $success,
