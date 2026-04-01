@@ -8,6 +8,7 @@
  */
 
 require_once __DIR__ . '/auth.php';
+require_once __DIR__ . '/flexpbx-config-helper.php';
 
 header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
@@ -102,6 +103,10 @@ switch ($path) {
 
     case 'update-callback':
         handleUpdateCallback($method);
+        break;
+
+    case 'process-callbacks':
+        handleProcessCallbacks($method);
         break;
 
     case 'apply-config':
@@ -797,6 +802,271 @@ function handleUpdateCallback($method) {
     }
 }
 
+function getQueueRuntimeState() {
+    $queueState = [];
+    $queueResult = flexpbx_config()->execAsteriskCommand('queue show');
+    $output = preg_split('/\R/', $queueResult['output'] ?? '');
+
+    $currentQueue = null;
+    foreach ($output as $line) {
+        $line = trim(stripAnsiSequences($line));
+
+        if (preg_match('/^([A-Za-z0-9_-]+)\s+has\s+(\d+)\s+calls.*\'([^\']+)\'\s+strategy/', $line, $matches)) {
+            $currentQueue = $matches[1];
+            $queueState[$currentQueue] = [
+                'queue' => $currentQueue,
+                'calls_waiting' => (int)$matches[2],
+                'strategy' => $matches[3],
+                'members' => [],
+                'available_members' => 0,
+                'ready_for_callback' => false
+            ];
+            continue;
+        }
+
+        if ($currentQueue && preg_match('/^(.*?)\((PJSIP\/(\d+)|Local\/[^)]+)\).*?\((Not in use|Unavailable|In use|Invalid|Ringing|Unknown)\)\s+has\s+taken\s+(?:(\d+)\s+calls|no\s+calls\s+yet)/i', $line, $matches)) {
+            $interface = $matches[2];
+            $extension = $matches[3] ?? null;
+            $status = trim($matches[4]);
+            $member = [
+                'name' => trim($matches[1]),
+                'interface' => $interface,
+                'extension' => $extension,
+                'status' => $status,
+                'calls_taken' => isset($matches[5]) && $matches[5] !== '' ? (int)$matches[5] : 0,
+                'available' => isQueueMemberAvailable($status)
+            ];
+            $queueState[$currentQueue]['members'][] = $member;
+            if ($member['available']) {
+                $queueState[$currentQueue]['available_members']++;
+            }
+        }
+    }
+
+    foreach ($queueState as $queueName => $state) {
+        $queueState[$queueName]['ready_for_callback'] =
+            $state['available_members'] > 0 && $state['calls_waiting'] === 0;
+    }
+
+    return $queueState;
+}
+
+function isQueueMemberAvailable($status) {
+    $normalized = strtolower(trim((string)$status));
+    return in_array($normalized, ['not in use', 'avail', 'available', 'free'], true);
+}
+
+function stripAnsiSequences($value) {
+    return preg_replace('/\e\[[0-9;]*[A-Za-z]/', '', (string)$value) ?? (string)$value;
+}
+
+function getQueueCallbackDialExtension($queue) {
+    $queueNumber = trim((string)($queue['queue_number'] ?? ''));
+    $queueName = strtolower(trim((string)($queue['queue_name'] ?? '')));
+    $fallbacks = [
+        'support' => '7000',
+        'sales' => '7001'
+    ];
+    foreach ($fallbacks as $keyword => $extension) {
+        if ($queueName === $keyword || strpos($queueName, $keyword) !== false) {
+            return $extension;
+        }
+    }
+    if ($queueNumber === '7000' || $queueNumber === '7001') {
+        return $queueNumber;
+    }
+    return null;
+}
+
+function getQueueRuntimeLookupKeys($queue) {
+    $keys = [];
+    $queueNumber = strtolower(trim((string)($queue['queue_number'] ?? '')));
+    $queueName = strtolower(trim((string)($queue['queue_name'] ?? '')));
+
+    foreach ([$queueNumber, $queueName] as $value) {
+        if ($value !== '') {
+            $keys[] = $value;
+        }
+    }
+
+    if (strpos($queueName, 'support') !== false || $queueNumber === '7000' || $queueNumber === '8000') {
+        $keys[] = 'support';
+    }
+    if (strpos($queueName, 'sales') !== false || $queueNumber === '7001' || $queueNumber === '8001') {
+        $keys[] = 'sales';
+    }
+
+    return array_values(array_unique($keys));
+}
+
+function originateQueueCallbackCall($callbackNumber, $queueExtension) {
+    $dialTarget = '9' . $callbackNumber;
+    $commandText = "channel originate Local/{$dialTarget}@flexpbx-outbound extension {$queueExtension}@flexpbx-queues";
+    $result = flexpbx_config()->execAsteriskCommand($commandText);
+    $outputText = trim($result['output'] ?? '');
+    $returnCode = $result['return_code'] ?? 1;
+
+    $failedPatterns = [
+        'failed',
+        'no such',
+        'invalid',
+        'cannot',
+        'unable',
+        'error'
+    ];
+    $lower = strtolower($outputText);
+    $success = $returnCode === 0;
+    foreach ($failedPatterns as $pattern) {
+        if (strpos($lower, $pattern) !== false) {
+            $success = false;
+            break;
+        }
+    }
+
+    return [
+        'success' => $success,
+        'command' => $commandText,
+        'dial_target' => $dialTarget,
+        'queue_extension' => $queueExtension,
+        'output' => $outputText
+    ];
+}
+
+function handleProcessCallbacks($method) {
+    global $pdo;
+
+    if (!in_array($method, ['GET', 'POST'], true)) {
+        http_response_code(405);
+        echo json_encode(['error' => 'Method not allowed']);
+        return;
+    }
+
+    ensureQueueCallbackTables($pdo);
+    $data = $method === 'POST' ? (json_decode(file_get_contents('php://input'), true) ?? []) : $_GET;
+    $queueId = $data['queue_id'] ?? null;
+    $dryRun = filter_var($data['dry_run'] ?? false, FILTER_VALIDATE_BOOLEAN);
+
+    try {
+        $conditions = ["qcr.status IN ('pending', 'scheduled', 'offered')"];
+        $values = [];
+
+        if ($queueId) {
+            $conditions[] = 'qcr.queue_id = ?';
+            $values[] = $queueId;
+        }
+
+        $stmt = $pdo->prepare("
+            SELECT qcr.*, q.queue_name, q.queue_number, q.max_wait_time, q.callback_enabled
+            FROM queue_callback_requests qcr
+            INNER JOIN call_queues q ON q.id = qcr.queue_id
+            WHERE " . implode(' AND ', $conditions) . "
+            ORDER BY qcr.priority DESC, qcr.created_at ASC
+        ");
+        $stmt->execute($values);
+        $requests = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $runtimeState = getQueueRuntimeState();
+        $results = [];
+
+        foreach ($requests as $request) {
+            $state = null;
+            foreach (getQueueRuntimeLookupKeys($request) as $lookupKey) {
+                if (isset($runtimeState[$lookupKey])) {
+                    $state = $runtimeState[$lookupKey];
+                    break;
+                }
+            }
+            $queueExtension = getQueueCallbackDialExtension($request);
+            $result = [
+                'request_id' => (int)$request['id'],
+                'queue' => [
+                    'id' => (int)$request['queue_id'],
+                    'name' => $request['queue_name'],
+                    'number' => $request['queue_number']
+                ],
+                'callback_number' => $request['callback_number'],
+                'status' => $request['status'],
+                'action' => 'skipped'
+            ];
+
+            if ((int)$request['callback_enabled'] !== 1) {
+                $result['reason'] = 'Callback is disabled for this queue';
+                $results[] = $result;
+                continue;
+            }
+
+            if ($request['scheduled_for'] && strtotime((string)$request['scheduled_for']) > time()) {
+                $result['reason'] = 'Scheduled callback time has not been reached yet';
+                $results[] = $result;
+                continue;
+            }
+
+            if (!$queueExtension) {
+                $result['reason'] = 'No queue dial extension is available for callback routing';
+                $results[] = $result;
+                continue;
+            }
+
+            if (!$state || !$state['ready_for_callback']) {
+                $result['reason'] = 'Queue is not ready for callback';
+                $result['queue_runtime'] = $state;
+                $results[] = $result;
+                continue;
+            }
+
+            if ($dryRun) {
+                $result['action'] = 'ready';
+                $result['queue_runtime'] = $state;
+                $result['queue_extension'] = $queueExtension;
+                $results[] = $result;
+                continue;
+            }
+
+            $pdo->prepare("UPDATE queue_callback_requests SET status = 'processing', processed_at = ?, notes = CONCAT(COALESCE(notes, ''), ?) WHERE id = ?")
+                ->execute([
+                    date('Y-m-d H:i:s'),
+                    "\n[" . date('c') . "] Queue ready; placing callback.",
+                    $request['id']
+                ]);
+
+            $originate = originateQueueCallbackCall($request['callback_number'], $queueExtension);
+            if ($originate['success']) {
+                $pdo->prepare("UPDATE queue_callback_requests SET status = 'completed', processed_at = ?, notes = CONCAT(COALESCE(notes, ''), ?) WHERE id = ?")
+                    ->execute([
+                        date('Y-m-d H:i:s'),
+                        "\n[" . date('c') . "] Callback launched to {$originate['dial_target']} via queue {$queueExtension}.",
+                        $request['id']
+                    ]);
+                $result['action'] = 'originated';
+            } else {
+                $pdo->prepare("UPDATE queue_callback_requests SET status = 'failed', processed_at = ?, notes = CONCAT(COALESCE(notes, ''), ?) WHERE id = ?")
+                    ->execute([
+                        date('Y-m-d H:i:s'),
+                        "\n[" . date('c') . "] Callback launch failed: " . ($originate['output'] ?: 'unknown error'),
+                        $request['id']
+                    ]);
+                $result['action'] = 'failed';
+            }
+
+            $result['originate'] = $originate;
+            $result['queue_runtime'] = $state;
+            $result['queue_extension'] = $queueExtension;
+            $results[] = $result;
+        }
+
+        echo json_encode([
+            'success' => true,
+            'processed' => $results,
+            'total' => count($results),
+            'dry_run' => $dryRun,
+            'timestamp' => date('c')
+        ]);
+    } catch (PDOException $e) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Database error: ' . $e->getMessage()]);
+    }
+}
+
 /**
  * Get live queue status from Asterisk
  */
@@ -807,13 +1077,16 @@ function getSipRegistrationInfo() {
     $sip_info = [];
 
     // Get endpoint status
-    exec('sudo asterisk -rx "pjsip show endpoints" 2>&1', $endpoints_output);
+    $endpointsResult = flexpbx_config()->execAsteriskCommand('pjsip show endpoints');
+    $endpoints_output = preg_split('/\R/', $endpointsResult['output'] ?? '');
 
     // Get contact details (includes user-agent)
-    exec('sudo asterisk -rx "pjsip show contacts" 2>&1', $contacts_output);
+    $contactsResult = flexpbx_config()->execAsteriskCommand('pjsip show contacts');
+    $contacts_output = preg_split('/\R/', $contactsResult['output'] ?? '');
 
     // Parse endpoints
     foreach ($endpoints_output as $line) {
+        $line = stripAnsiSequences($line);
         if (preg_match('/^\s*(\d+)\s+.*\s+(Avail|Unavail)/', $line, $matches)) {
             $extension = $matches[1];
             $status = ($matches[2] === 'Avail') ? 'registered' : 'unregistered';
@@ -832,6 +1105,7 @@ function getSipRegistrationInfo() {
     // Parse contacts for user-agent
     $current_ext = null;
     foreach ($contacts_output as $line) {
+        $line = stripAnsiSequences($line);
         // Contact line: "2000/sip:2000@192.168.1.100:5060"
         if (preg_match('/^\s*(\d+)\/sip:.*@([^:]+):/', $line, $matches)) {
             $current_ext = $matches[1];
@@ -919,13 +1193,14 @@ function handleLiveStatus($method) {
     $sip_info = getSipRegistrationInfo();
 
     // Get queue status from Asterisk
-    exec('sudo asterisk -rx "queue show" 2>&1', $output);
+    $queueResult = flexpbx_config()->execAsteriskCommand('queue show');
+    $output = preg_split('/\R/', $queueResult['output'] ?? '');
 
     $queues = [];
     $current_queue = null;
 
     foreach ($output as $line) {
-        $line = trim($line);
+        $line = trim(stripAnsiSequences($line));
 
         // Queue name line: "8000 has 0 calls (max unlimited) in 'ringall' strategy..."
         if (preg_match('/^(\d+)\s+has\s+(\d+)\s+calls.*\'(\w+)\'\s+strategy/', $line, $matches)) {
@@ -942,13 +1217,14 @@ function handleLiveStatus($method) {
         }
 
         // Member line: "PJSIP/2000 (ringinuse disabled) (dynamic) (Not in use) has taken no calls yet"
-        if ($current_queue && preg_match('/^\s+(PJSIP\/(\d+)|Local\/.+)\s+.*\(([^)]+)\)\s+has\s+taken\s+(\d+)\s+calls/', $line, $matches)) {
-            $interface = $matches[1];
-            $extension = $matches[2] ?? null;
-            $status = $matches[3];
-            $calls_taken = (int)$matches[4];
+        if ($current_queue && preg_match('/^(.*?)\((PJSIP\/(\d+)|Local\/[^)]+)\).*?\((Not in use|Unavailable|In use|Invalid|Ringing|Unknown)\)\s+has\s+taken\s+(?:(\d+)\s+calls|no\s+calls\s+yet)/i', $line, $matches)) {
+            $interface = $matches[2];
+            $extension = $matches[3] ?? null;
+            $status = $matches[4];
+            $calls_taken = isset($matches[5]) && $matches[5] !== '' ? (int)$matches[5] : 0;
 
             $member = [
+                'name' => trim($matches[1]),
                 'interface' => $interface,
                 'extension' => $extension,
                 'status' => $status,
