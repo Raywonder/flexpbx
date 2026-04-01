@@ -332,10 +332,138 @@ function flexpbxProvisionServer() {
     return trim(explode(':', $host)[0]);
 }
 
+function flexpbxProvisionProfiles() {
+    return [
+        'standard-desktop' => [
+            'name' => 'standard-desktop',
+            'timers' => 'no',
+            'transport' => 'udp',
+            'ice_support' => 'no',
+            'rewrite_contact' => 'yes',
+            'rtp_symmetric' => 'yes',
+            'direct_media' => 'no'
+        ],
+        'strict-timers' => [
+            'name' => 'strict-timers',
+            'timers' => 'yes',
+            'transport' => 'udp',
+            'ice_support' => 'no',
+            'rewrite_contact' => 'yes',
+            'rtp_symmetric' => 'yes',
+            'direct_media' => 'no'
+        ]
+    ];
+}
+
+function parseTypedProvisionPjsipSections($extension) {
+    if (!file_exists(ASTERISK_PJSIP_CONF)) {
+        return [];
+    }
+
+    $content = file_get_contents(ASTERISK_PJSIP_CONF);
+    if ($content === false || $content === '') {
+        return [];
+    }
+
+    $lines = preg_split('/\R/', $content);
+    $sections = [];
+    $currentName = null;
+    $currentEntries = [];
+
+    $commitSection = static function () use (&$sections, &$currentName, &$currentEntries, $extension) {
+        if ($currentName === null || $currentName !== $extension) {
+            return;
+        }
+        $sections[] = [
+            'name' => $currentName,
+            'type' => strtolower($currentEntries['type'] ?? ''),
+            'entries' => $currentEntries
+        ];
+    };
+
+    foreach ($lines as $rawLine) {
+        $line = trim($rawLine);
+        if ($line === '' || $line[0] === ';' || $line[0] === '#') {
+            continue;
+        }
+        if (preg_match('/^\[(.+)\]$/', $line, $matches)) {
+            $commitSection();
+            $currentName = trim($matches[1]);
+            $currentEntries = [];
+            continue;
+        }
+        if ($currentName === null || strpos($line, '=') === false) {
+            continue;
+        }
+
+        [$key, $value] = array_map('trim', explode('=', $line, 2));
+        $key = strtolower($key);
+        if (isset($currentEntries[$key])) {
+            if (!is_array($currentEntries[$key])) {
+                $currentEntries[$key] = [$currentEntries[$key]];
+            }
+            $currentEntries[$key][] = $value;
+        } else {
+            $currentEntries[$key] = $value;
+        }
+    }
+
+    $commitSection();
+
+    return $sections;
+}
+
+function getEndpointCompatibilityProfile($extension) {
+    $profiles = flexpbxProvisionProfiles();
+    $profileName = 'standard-desktop';
+    $values = $profiles[$profileName];
+    $endpointEntries = [];
+
+    foreach (parseTypedProvisionPjsipSections($extension) as $section) {
+        if (($section['type'] ?? '') === 'endpoint') {
+            $endpointEntries = $section['entries'] ?? [];
+            break;
+        }
+    }
+
+    if (!empty($endpointEntries)) {
+        foreach (['timers', 'transport', 'ice_support', 'rewrite_contact', 'rtp_symmetric', 'direct_media'] as $field) {
+            if (isset($endpointEntries[$field])) {
+                $value = $endpointEntries[$field];
+                $values[$field] = is_array($value) ? trim((string) end($value)) : trim((string) $value);
+            }
+        }
+        $setVars = $endpointEntries['set_var'] ?? [];
+        if (!is_array($setVars)) {
+            $setVars = [$setVars];
+        }
+        foreach ($setVars as $setVar) {
+            if (preg_match('/^SIP_PROFILE=(.+)$/i', trim((string) $setVar), $m)) {
+                $candidate = trim($m[1]);
+                if (isset($profiles[$candidate])) {
+                    $profileName = $candidate;
+                }
+                break;
+            }
+        }
+        if ($profileName === 'standard-desktop' && ($values['timers'] ?? 'yes') !== 'no' && empty($setVars)) {
+            $profileName = 'strict-timers';
+        } elseif (($values['timers'] ?? 'yes') === 'no') {
+            $profileName = 'standard-desktop';
+        } elseif ($profileName !== 'strict-timers') {
+            $profileName = 'strict-timers';
+        }
+    }
+
+    $values['name'] = $profileName;
+    return $values;
+}
+
 function generateSipConfig($extension, $password) {
     $server = flexpbxProvisionServer();
     $port = 5060;
-    $transport = 'udp';
+    $profile = getEndpointCompatibilityProfile($extension);
+    $transport = strtolower($profile['transport'] ?? 'udp');
     $dialplan = '(2xxx|*xx|1[2-9]xxxxxxxxx|011xxxxxxxxxxx)';
     $realm = flexpbxProvisionRealm();
 
@@ -348,6 +476,21 @@ function generateSipConfig($extension, $password) {
         'auth_username' => $extension,
         'display_name' => "Extension $extension",
         'transport' => $transport,
+        'sip_profile' => $profile['name'],
+        'compatibility' => [
+            'timers' => $profile['timers'],
+            'ice_support' => $profile['ice_support'],
+            'rewrite_contact' => $profile['rewrite_contact'],
+            'rtp_symmetric' => $profile['rtp_symmetric'],
+            'direct_media' => $profile['direct_media']
+        ],
+        'client_hint' => [
+            'transport' => strtoupper($transport),
+            'disable_session_timers' => ($profile['timers'] ?? 'yes') !== 'yes',
+            'disable_stun' => true,
+            'disable_ice' => ($profile['ice_support'] ?? 'no') !== 'yes',
+            'disable_proxy' => true
+        ],
         'dialplan' => $dialplan,
         'sip_uri' => "sip:{$extension}@{$server}:{$port};password={$password};transport={$transport};dialplan={$dialplan}",
         'manual_config' => [
@@ -357,7 +500,11 @@ function generateSipConfig($extension, $password) {
             'Username' => $extension,
             'Password' => $password,
             'Transport' => strtoupper($transport),
-            'Dial Plan' => $dialplan
+            'Dial Plan' => $dialplan,
+            'Session Timers' => strtoupper($profile['timers'] ?? 'yes'),
+            'Use STUN' => 'NO',
+            'Use ICE' => strtoupper($profile['ice_support'] ?? 'no'),
+            'Proxy' => 'OFF'
         ]
     ];
 }

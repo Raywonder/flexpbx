@@ -42,6 +42,113 @@ function flexpbxSipRealm() {
     return filter_var($host, FILTER_VALIDATE_IP) ? 'flexpbx.devinecreations.net' : $host;
 }
 
+function flexpbxSipProfiles() {
+    return [
+        'standard-desktop' => [
+            'name' => 'standard-desktop',
+            'description' => 'Default desktop softphone compatibility profile',
+            'transport' => 'transport-udp',
+            'allow' => 'ulaw,alaw',
+            'direct_media' => 'no',
+            'ice_support' => 'no',
+            'force_rport' => 'yes',
+            'rewrite_contact' => 'yes',
+            'rtp_symmetric' => 'yes',
+            'dtmf_mode' => 'rfc4733',
+            'timers' => 'no',
+            'timers_min_se' => '90',
+            'timers_sess_expires' => '1800',
+            'max_contacts' => '5'
+        ],
+        'strict-timers' => [
+            'name' => 'strict-timers',
+            'description' => 'Desktop/client profile with SIP session timers enabled',
+            'transport' => 'transport-udp',
+            'allow' => 'ulaw,alaw',
+            'direct_media' => 'no',
+            'ice_support' => 'no',
+            'force_rport' => 'yes',
+            'rewrite_contact' => 'yes',
+            'rtp_symmetric' => 'yes',
+            'dtmf_mode' => 'rfc4733',
+            'timers' => 'yes',
+            'timers_min_se' => '90',
+            'timers_sess_expires' => '1800',
+            'max_contacts' => '5'
+        ]
+    ];
+}
+
+function normalizeSipProfileName($profileName = null) {
+    $profiles = flexpbxSipProfiles();
+    $requested = strtolower(trim((string)($profileName ?? '')));
+    return isset($profiles[$requested]) ? $requested : 'standard-desktop';
+}
+
+function getEffectiveSipProfile($profileName = null, $existingEntries = []) {
+    $profiles = flexpbxSipProfiles();
+    $name = normalizeSipProfileName($profileName ?: ($existingEntries['sip_profile'] ?? null));
+    $profile = $profiles[$name];
+    if (!empty($existingEntries['transport'])) $profile['transport'] = $existingEntries['transport'];
+    if (!empty($existingEntries['allow'])) $profile['allow'] = $existingEntries['allow'];
+    if (!empty($existingEntries['max_contacts'])) $profile['max_contacts'] = $existingEntries['max_contacts'];
+    $profile['name'] = $name;
+    return $profile;
+}
+
+function buildExtensionBundle($extension, $details = [], $existingEntries = []) {
+    $profile = getEffectiveSipProfile($details['sip_profile'] ?? null, $existingEntries);
+    $password = $details['password'] ?? $existingEntries['password'] ?? generatePassword();
+    $calleridName = $details['callerid_name'] ?? $existingEntries['callerid_name'] ?? "Extension $extension";
+    $calleridNum = $details['callerid_num'] ?? $existingEntries['callerid_num'] ?? $extension;
+    $context = $details['context'] ?? $existingEntries['context'] ?? 'flexpbx-internal';
+    $mohClass = $details['moh_class'] ?? $existingEntries['moh_suggest'] ?? 'default';
+    $realm = $details['realm'] ?? $existingEntries['realm'] ?? flexpbxSipRealm();
+
+    return "\n; Extension $extension\n"
+        . "[$extension]\n"
+        . "type=endpoint\n"
+        . "context=$context\n"
+        . "disallow=all\n"
+        . "allow={$profile['allow']}\n"
+        . "auth=$extension\n"
+        . "aors=$extension\n"
+        . "identify_by=username,auth_username\n"
+        . "callerid=\"{$calleridName}\" <{$calleridNum}>\n"
+        . "moh_suggest=$mohClass\n"
+        . "transport={$profile['transport']}\n"
+        . "direct_media={$profile['direct_media']}\n"
+        . "rtp_symmetric={$profile['rtp_symmetric']}\n"
+        . "force_rport={$profile['force_rport']}\n"
+        . "rewrite_contact={$profile['rewrite_contact']}\n"
+        . "ice_support={$profile['ice_support']}\n"
+        . "dtmf_mode={$profile['dtmf_mode']}\n"
+        . "timers={$profile['timers']}\n"
+        . "timers_min_se={$profile['timers_min_se']}\n"
+        . "timers_sess_expires={$profile['timers_sess_expires']}\n"
+        . "set_var=SIP_PROFILE={$profile['name']}\n\n"
+        . "[$extension]\n"
+        . "type=auth\n"
+        . "auth_type=userpass\n"
+        . "password=$password\n"
+        . "username=$extension\n"
+        . "realm=$realm\n\n"
+        . "[$extension]\n"
+        . "type=aor\n"
+        . "max_contacts={$profile['max_contacts']}\n"
+        . "qualify_frequency=60\n"
+        . "remove_existing=yes\n";
+}
+
+function replaceExtensionBundle($content, $extension, $bundle) {
+    $quoted = preg_quote($extension, '/');
+    $pattern = '/(?:^|\R)(?:;\s*Extension\s+' . $quoted . '\R)?\[' . $quoted . '\]\R(?:(?!^\[(?!' . $quoted . '\])|\z).)*(?=^\[(?!' . $quoted . '\])|\z)/ms';
+    if (preg_match($pattern, $content)) {
+        return preg_replace($pattern, rtrim($bundle, "\n"), $content, 1);
+    }
+    return rtrim($content) . "\n" . ltrim($bundle, "\n");
+}
+
 // Route requests
 switch ($path) {
     case '':
@@ -182,37 +289,15 @@ function handleCreateExtension($method) {
         return;
     }
 
-    // Create PJSIP configuration
-    $pjsip_config = "
-; Extension $extension
-[{$extension}]
-type=endpoint
-context={$context}
-disallow=all
-allow=ulaw,alaw,gsm
-auth={$extension}
-aors={$extension}
-callerid=\"{$callerid_name}\" <{$callerid_num}>
-direct_media=no
-ice_support=yes
-force_rport=yes
-rewrite_contact=yes
-rtp_symmetric=yes
-dtmf_mode=rfc4733
-moh_suggest={$moh_class}
-
-[{$extension}]
-type=auth
-auth_type=userpass
-password={$password}
-username={$extension}
-realm=" . flexpbxSipRealm() . "
-
-[{$extension}]
-type=aor
-max_contacts=1
-remove_existing=yes
-";
+    $sip_profile = normalizeSipProfileName($data['sip_profile'] ?? null);
+    $pjsip_config = buildExtensionBundle($extension, [
+        'password' => $password,
+        'callerid_name' => $callerid_name,
+        'callerid_num' => $callerid_num,
+        'context' => $context,
+        'moh_class' => $moh_class,
+        'sip_profile' => $sip_profile
+    ]);
 
     // Add to pjsip.conf
     global $pjsip_conf;
@@ -246,6 +331,8 @@ remove_existing=yes
         'extension' => [
             'extension' => $extension,
             'password' => $password,
+            'sip_profile' => $sip_profile,
+            'compatibility' => getEffectiveSipProfile($sip_profile),
             'voicemail_pin' => $voicemail_pin,
             'callerid' => "$callerid_name <$callerid_num>",
             'context' => $context,
@@ -271,15 +358,59 @@ function handleUpdateExtension($method, $extension_id) {
         return;
     }
 
-    $data = json_decode(file_get_contents('php://input'), true);
+    $data = json_decode(file_get_contents('php://input'), true) ?? [];
+    $existing = getExtensionDetailsFromPjsipConfig($extension_id, $GLOBALS['pjsip_conf']);
+    if (empty($existing)) {
+        http_response_code(404);
+        echo json_encode(['error' => 'Extension not found']);
+        return;
+    }
 
-    // For now, return a placeholder response
-    // Full implementation would update pjsip.conf and reload
+    global $pjsip_conf;
+    $configResult = flexpbx_config()->readAsteriskConfig($pjsip_conf);
+    $config = $configResult['success'] ? ($configResult['content'] ?? '') : '';
+    if ($config === '') {
+        $shellResult = flexpbx_config()->execShellCommand('cat ' . escapeshellarg($pjsip_conf));
+        $config = $shellResult['success'] ? ($shellResult['output'] ?? '') : '';
+    }
+    if ($config === '') {
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to read configuration']);
+        return;
+    }
+
+    $sip_profile = normalizeSipProfileName($data['sip_profile'] ?? ($existing['sip_profile'] ?? null));
+    $updatedBundle = buildExtensionBundle($extension_id, [
+        'password' => $data['password'] ?? ($existing['password'] ?? null),
+        'callerid_name' => $data['callerid_name'] ?? ($existing['callerid_name'] ?? null),
+        'callerid_num' => $data['callerid_num'] ?? ($existing['callerid_num'] ?? null),
+        'context' => $data['context'] ?? ($existing['context'] ?? null),
+        'moh_class' => $data['moh_class'] ?? ($existing['moh_suggest'] ?? null),
+        'sip_profile' => $sip_profile
+    ], $existing);
+
+    $config = replaceExtensionBundle($config, $extension_id, $updatedBundle);
+    if (file_put_contents($pjsip_conf, $config) === false) {
+        http_response_code(500);
+        echo json_encode(['error' => 'Failed to update configuration']);
+        return;
+    }
+
+    exec("sudo chown asterisk:asterisk $pjsip_conf");
+    exec("sudo chmod 640 $pjsip_conf");
+    exec('sudo asterisk -rx "pjsip reload" 2>&1', $reload_output, $reload_ret);
+
+    $updated = getExtensionDetailsFromPjsipConfig($extension_id, $pjsip_conf);
+    logAction('extension_updated', $extension_id, $_SERVER['REMOTE_ADDR']);
 
     echo json_encode([
         'success' => true,
-        'message' => "Extension $extension_id update functionality coming soon",
-        'note' => 'Use delete and recreate for now',
+        'message' => "Extension $extension_id updated successfully",
+        'extension' => $updated,
+        'reload' => [
+            'success' => $reload_ret === 0,
+            'output' => $reload_output
+        ],
         'timestamp' => date('c')
     ]);
 }
@@ -551,12 +682,29 @@ function getExtensionDetailsFromPjsipConfig($extension, $configPath) {
         return [];
     }
 
+    $sipProfile = extractSipProfileFromEntries($entries);
+
     return [
         'extension' => $extension,
         'callerid' => $entries['callerid'] ?? '',
+        'callerid_name' => preg_replace('/^"?(.+?)"?\s*<.*$/', '$1', $entries['callerid'] ?? '') ?: '',
+        'callerid_num' => preg_match('/<([^>]+)>/', $entries['callerid'] ?? '', $m) ? $m[1] : $extension,
         'context' => $entries['context'] ?? '',
         'transport' => $entries['transport'] ?? '',
-        'auth' => $entries['auth'] ?? ''
+        'auth' => $entries['auth'] ?? '',
+        'allow' => $entries['allow'] ?? '',
+        'moh_suggest' => $entries['moh_suggest'] ?? 'default',
+        'direct_media' => $entries['direct_media'] ?? 'no',
+        'ice_support' => $entries['ice_support'] ?? 'no',
+        'rewrite_contact' => $entries['rewrite_contact'] ?? 'yes',
+        'rtp_symmetric' => $entries['rtp_symmetric'] ?? 'yes',
+        'timers' => $entries['timers'] ?? 'yes',
+        'timers_min_se' => $entries['timers_min_se'] ?? '90',
+        'timers_sess_expires' => $entries['timers_sess_expires'] ?? '1800',
+        'sip_profile' => $sipProfile,
+        'compatibility' => getEffectiveSipProfile($sipProfile, $entries),
+        'password' => extractAuthPasswordFromConfig($extension, $configPath),
+        'realm' => extractAuthRealmFromConfig($extension, $configPath)
     ];
 }
 
@@ -655,6 +803,110 @@ function parsePjsipSections($configPath) {
     }
 
     return $sections;
+}
+
+function parseTypedPjsipSections($configPath, $targetSectionName = null) {
+    $configResult = flexpbx_config()->readAsteriskConfig($configPath);
+    $content = $configResult['success'] ? ($configResult['content'] ?? '') : '';
+
+    if ($content === '') {
+        $shellResult = flexpbx_config()->execShellCommand('cat ' . escapeshellarg($configPath));
+        if ($shellResult['success']) {
+            $content = $shellResult['output'] ?? '';
+        }
+    }
+
+    if ($content === '') {
+        return [];
+    }
+
+    $lines = preg_split('/\R/', $content);
+    $sections = [];
+    $currentName = null;
+    $currentEntries = [];
+
+    $commitSection = static function () use (&$sections, &$currentName, &$currentEntries, $targetSectionName) {
+        if ($currentName === null) {
+            return;
+        }
+        if ($targetSectionName !== null && $currentName !== $targetSectionName) {
+            return;
+        }
+        $sections[] = [
+            'name' => $currentName,
+            'type' => strtolower($currentEntries['type'] ?? ''),
+            'entries' => $currentEntries
+        ];
+    };
+
+    foreach ($lines as $rawLine) {
+        $line = trim($rawLine);
+        if ($line === '' || $line[0] === ';' || $line[0] === '#') {
+            continue;
+        }
+
+        if (preg_match('/^\[(.+)\]$/', $line, $matches)) {
+            $commitSection();
+            $currentName = trim($matches[1]);
+            $currentEntries = [];
+            continue;
+        }
+
+        if ($currentName === null || strpos($line, '=') === false) {
+            continue;
+        }
+
+        [$key, $value] = array_map('trim', explode('=', $line, 2));
+        $key = strtolower($key);
+        if (isset($currentEntries[$key])) {
+            if (!is_array($currentEntries[$key])) {
+                $currentEntries[$key] = [$currentEntries[$key]];
+            }
+            $currentEntries[$key][] = $value;
+        } else {
+            $currentEntries[$key] = $value;
+        }
+    }
+
+    $commitSection();
+
+    return $sections;
+}
+
+function findTypedPjsipSection($configPath, $sectionName, $sectionType) {
+    $sectionType = strtolower($sectionType);
+    foreach (parseTypedPjsipSections($configPath, $sectionName) as $section) {
+        if (($section['type'] ?? '') === $sectionType) {
+            return $section['entries'];
+        }
+    }
+    return [];
+}
+
+function extractSipProfileFromEntries($entries) {
+    $setVars = $entries['set_var'] ?? [];
+    if (!is_array($setVars)) {
+        $setVars = [$setVars];
+    }
+    foreach ($setVars as $value) {
+        if (!is_string($value)) {
+            continue;
+        }
+        if (preg_match('/^SIP_PROFILE=(.+)$/i', trim($value), $matches)) {
+            return normalizeSipProfileName($matches[1]);
+        }
+    }
+    return (($entries['timers'] ?? 'yes') === 'no') ? 'standard-desktop' : 'strict-timers';
+}
+
+function extractAuthPasswordFromConfig($extension, $configPath) {
+    $entries = findTypedPjsipSection($configPath, $extension, 'auth');
+    return $entries['password'] ?? null;
+}
+
+function extractAuthRealmFromConfig($extension, $configPath) {
+    $entries = findTypedPjsipSection($configPath, $extension, 'auth');
+    return $entries['realm'] ?? flexpbxSipRealm();
 }
 
 function extensionHasVoicemail($extension) {
