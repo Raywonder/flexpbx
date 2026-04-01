@@ -473,7 +473,7 @@ function healthCheck() {
     $streams = [
         'raywonder-radio' => 'https://stream.raywonderis.me/jellyfin-radio',
         'tappedin-radio' => 'https://stream.tappedin.fm/tappedin-radio',
-        'chrismix-radio' => 'http://s23.myradiostream.com:9372/',
+        'chrismix-radio' => 'http://streammadness.com:8030/stream',
         'soulfood-radio' => 'http://s38.myradiostream.com:15874'
     ];
 
