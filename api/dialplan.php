@@ -56,15 +56,18 @@ function handleDialRules($format) {
             'max_length' => 4
         ],
         'feature_codes' => [
-            'pattern' => '*xx',
-            'description' => 'Feature codes (*97 voicemail, *45 queue login, etc.)',
-            'regex' => '^\*[0-9]{2}$',
-            'min_length' => 3,
+            'pattern' => '*xx or xx',
+            'description' => 'Feature codes with numeric fallbacks (*97/97 voicemail, *45/45 queue login, etc.)',
+            'regex' => '^(\*?[0-9]{2})$',
+            'min_length' => 2,
             'max_length' => 3,
             'codes' => [
                 '*97' => 'Voicemail Access',
+                '97' => 'Voicemail Access (fallback)',
                 '*45' => 'Queue Agent Login',
+                '45' => 'Queue Agent Login (fallback)',
                 '*46' => 'Queue Agent Logout',
+                '46' => 'Queue Agent Logout (fallback)',
                 '*65' => 'Call Recording On',
                 '*66' => 'Call Recording Off'
             ]
@@ -91,7 +94,7 @@ function handleDialRules($format) {
             // Groundwire dial plan format
             echo json_encode([
                 'success' => true,
-                'dial_plan' => '(2xxx|*xx|1[2-9]xxxxxxxxx|011xxxxxxxxxxx)',
+                'dial_plan' => '(2xxx|*xx|xx|1[2-9]xxxxxxxxx|011xxxxxxxxxxx)',
                 'rules' => $rules,
                 'format' => 'groundwire'
             ]);
@@ -135,7 +138,7 @@ function handleDialRules($format) {
             echo json_encode([
                 'success' => true,
                 'dial_rules' => $rules,
-                'combined_pattern' => '(2xxx|*xx|1[2-9]xxxxxxxxx|011xxxxxxxxxxx)',
+                'combined_pattern' => '(2xxx|*xx|xx|1[2-9]xxxxxxxxx|011xxxxxxxxxxx)',
                 'inter_digit_timeout' => 3,
                 'timestamp' => date('c')
             ]);
@@ -158,11 +161,11 @@ function handleDialPatterns() {
                 'examples' => ['2000', '2001', '2006']
             ],
             'feature_codes' => [
-                'range' => '*00-*99',
-                'pattern' => '*xx',
-                'length' => 3,
+                'range' => '*00-*99 and 00-99',
+                'pattern' => '*xx or xx',
+                'length' => '2-3',
                 'type' => 'feature',
-                'examples' => ['*97', '*45', '*46']
+                'examples' => ['*97', '97', '*45', '45', '*46', '46']
             ],
             'us_local' => [
                 'pattern' => '[2-9]xxxxxx',
@@ -220,16 +223,19 @@ function handleFeatureCodes() {
         'feature_codes' => [
             'voicemail' => [
                 'code' => '*97',
+                'fallback_code' => '97',
                 'description' => 'Check your voicemail',
                 'enabled' => true
             ],
             'queue_login' => [
                 'code' => '*45',
+                'fallback_code' => '45',
                 'description' => 'Login to call queue as agent',
                 'enabled' => true
             ],
             'queue_logout' => [
                 'code' => '*46',
+                'fallback_code' => '46',
                 'description' => 'Logout from call queue',
                 'enabled' => true
             ],
