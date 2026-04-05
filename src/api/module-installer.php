@@ -102,6 +102,14 @@ function listModules() {
             'category' => 'optional',
             'size' => '12 KB',
             'download_url' => MASTER_SERVER . '/downloads/modules/optional/mastodon-auth-1.0.0.tar.gz'
+        ],
+        [
+            'key' => 'voicelink-flexpbx',
+            'name' => 'VoiceLink FlexPBX Bridge',
+            'version' => '1.0.0',
+            'category' => 'optional',
+            'size' => '24 KB',
+            'download_url' => MASTER_SERVER . '/downloads/modules/optional/voicelink-flexpbx-1.0.0.tar.gz'
         ]
     ];
 
@@ -584,6 +592,11 @@ function getModuleInfo($moduleKey) {
             'key' => 'mastodon-auth',
             'version' => '1.0.0',
             'download_url' => MASTER_SERVER . '/downloads/modules/optional/mastodon-auth-1.0.0.tar.gz'
+        ],
+        'voicelink-flexpbx' => [
+            'key' => 'voicelink-flexpbx',
+            'version' => '1.0.0',
+            'download_url' => MASTER_SERVER . '/downloads/modules/optional/voicelink-flexpbx-1.0.0.tar.gz'
         ]
     ];
 
