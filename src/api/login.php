@@ -1,8 +1,11 @@
 <?php
 /**
- * FlexPBX Enhanced Login API
- * Supports username/extension login for users and admins
- * Syncs with both file system and database
+ * Flex PBX modern login API.
+ *
+ * Accepts a username, extension number, or email address with the extension
+ * password. Legacy plaintext admin-file passwords are intentionally not
+ * accepted. Admin access is represented by normal user roles, not a separate
+ * legacy admin account.
  */
 
 header('Content-Type: application/json');
@@ -10,212 +13,268 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
 
-// Handle preflight requests
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
-    exit();
+    exit;
 }
 
-// Only allow POST
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    http_response_code(405);
-    echo json_encode(['success' => false, 'error' => 'Method not allowed. Use POST.']);
-    exit();
+    respond(405, false, 'Use POST to sign in.');
 }
 
-// Get JSON input
-$input = file_get_contents('php://input');
-$data = json_decode($input, true);
-
-// Fallback to POST data if JSON parsing fails
-if (!$data) {
-    $data = $_POST;
+$input = json_decode(file_get_contents('php://input'), true);
+if (!is_array($input)) {
+    $input = $_POST;
 }
 
-$identifier = trim($data['username'] ?? $data['extension'] ?? $data['identifier'] ?? '');
-$password = $data['password'] ?? '';
-$account_type = strtolower($data['account_type'] ?? 'user'); // 'user' or 'admin'
+$identifier = trim((string)($input['identifier'] ?? $input['username'] ?? $input['extension'] ?? ''));
+$password = (string)($input['password'] ?? '');
+$accountType = strtolower(trim((string)($input['account_type'] ?? 'user')));
+$client = trim((string)($input['client'] ?? ''));
 
-// Validate input
-if (empty($identifier) || empty($password)) {
-    http_response_code(400);
-    echo json_encode([
-        'success' => false,
-        'error' => 'Username/extension and password are required.'
-    ]);
-    exit();
+if ($identifier === '' || $password === '') {
+    respond(400, false, 'Enter your username or extension and password.');
 }
 
-// Configuration
-$users_dir = '/home/flexpbxuser/users';
-$admins_dir = '/home/flexpbxuser/admins';
-$config = include('/home/flexpbxuser/public_html/api/config.php');
+if (!in_array($accountType, ['user', 'admin'], true)) {
+    respond(400, false, 'Choose user or admin sign in.');
+}
 
-$authenticated = false;
-$user_data = null;
-$auth_source = 'none';
+$user = findModernUser($identifier);
+if ($user === null || !verifyModernPassword($password, $user)) {
+    auditLogin($identifier, $accountType, false, $client);
+    respond(401, false, 'That username, extension, or password did not match.');
+}
 
-/**
- * Try Database Authentication First
- */
-try {
-    $pdo = new PDO(
-        "mysql:host={$config['db_host']};dbname={$config['db_name']};charset=utf8mb4",
-        $config['db_user'],
-        $config['db_password'],
-        [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
-    );
+$role = strtolower((string)($user['role'] ?? 'user'));
+if ($accountType === 'admin' && !in_array($role, ['admin', 'super_admin', 'administrator'], true)) {
+    auditLogin($identifier, $accountType, false, $client);
+    respond(403, false, 'That account is not allowed to use admin sign in.');
+}
 
-    if ($account_type === 'user') {
-        // Try user login via database
-        $stmt = $pdo->prepare("
-            SELECT id, username, extension, email, full_name, role, is_active
-            FROM users
-            WHERE (username = ? OR extension = ? OR email = ?)
-            AND password_hash = SHA2(?, 256)
-            AND is_active = TRUE
-            AND role = 'user'
-        ");
-        $stmt->execute([$identifier, $identifier, $identifier, $password]);
-        $db_user = $stmt->fetch(PDO::FETCH_ASSOC);
+$extension = (string)($user['extension'] ?? $user['extension_number'] ?? $user['username'] ?? $identifier);
+$username = (string)($user['username'] ?? $extension);
+$email = (string)($user['email'] ?? '');
+$fullName = (string)($user['full_name'] ?? $user['display_name'] ?? '');
+$sipPassword = (string)($user['sip_password'] ?? $user['extension_password'] ?? $user['secret'] ?? '');
+$token = issueSessionToken($extension, $username, $role, $client);
+touchUserLogin($extension, $username);
+auditLogin($identifier, $accountType, true, $client);
 
-        if ($db_user) {
-            $user_data = $db_user;
-            $authenticated = true;
-            $auth_source = 'database';
+respond(200, true, 'Signed in.', [
+    'account_type' => $accountType,
+    'extension' => $extension,
+    'username' => $username,
+    'email' => $email,
+    'full_name' => $fullName,
+    'role' => $role,
+    'session_token' => $token,
+    'sip_password' => $sipPassword,
+    'auth_methods' => configuredAuthMethods(),
+    'feature_codes' => configuredFeatureCodes(),
+    'email_setup_required' => needsEmailSetup($email),
+    'sip_settings' => [
+        'server' => $_SERVER['HTTP_HOST'] ?? 'pbx.tappedin.fm',
+        'port' => 5060,
+        'transport' => 'UDP'
+    ]
+]);
 
-            // Update last login
-            $stmt = $pdo->prepare("UPDATE users SET last_login = NOW() WHERE id = ?");
-            $stmt->execute([$db_user['id']]);
+function respond($status, $success, $message, $extra = []) {
+    http_response_code($status);
+    $payload = array_merge([
+        'success' => $success,
+        'message' => $message
+    ], $extra);
+    if (!$success) {
+        $payload['error'] = $message;
+    }
+    echo json_encode($payload, JSON_UNESCAPED_SLASHES);
+    exit;
+}
+
+function findModernUser($identifier) {
+    $identifierLower = strtolower($identifier);
+
+    $fileUser = findUserFile($identifierLower);
+    $dbUser = findDatabaseUser($identifier);
+
+    if ($dbUser !== null) {
+        return array_merge($fileUser ?? [], $dbUser);
+    }
+
+    return $fileUser;
+}
+
+function findUserFile($identifierLower) {
+    $usersDir = getenv('FLEXPBX_USERS_DIR') ?: '/home/flexpbxuser/users';
+    if (!is_dir($usersDir)) {
+        return null;
+    }
+
+    foreach (glob($usersDir . '/user_*.json') ?: [] as $file) {
+        $data = json_decode((string)file_get_contents($file), true);
+        if (!is_array($data)) {
+            continue;
         }
-    } elseif ($account_type === 'admin') {
-        // Try admin login via database
-        $stmt = $pdo->prepare("
-            SELECT id, username, email, full_name, role, is_active
-            FROM users
-            WHERE (username = ? OR email = ?)
-            AND password_hash = SHA2(?, 256)
-            AND is_active = TRUE
-            AND role IN ('admin', 'super_admin', 'administrator')
-        ");
-        $stmt->execute([$identifier, $identifier, $password]);
-        $db_user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($db_user) {
-            $user_data = $db_user;
-            $authenticated = true;
-            $auth_source = 'database';
-
-            // Update last login
-            $stmt = $pdo->prepare("UPDATE users SET last_login = NOW() WHERE id = ?");
-            $stmt->execute([$db_user['id']]);
+        $candidates = [
+            strtolower((string)($data['extension'] ?? '')),
+            strtolower((string)($data['username'] ?? '')),
+            strtolower((string)($data['email'] ?? ''))
+        ];
+        if (in_array($identifierLower, $candidates, true)) {
+            $data['_file'] = $file;
+            return $data;
         }
     }
-} catch (Exception $e) {
-    // Database unavailable, will try file-based auth
-    error_log("Database auth failed, trying file-based: " . $e->getMessage());
+
+    return null;
 }
 
-/**
- * Fallback to File-Based Authentication
- */
-if (!$authenticated) {
-    if ($account_type === 'user') {
-        // Try to find user by extension (numeric) or username (string)
-        $user_file = null;
+function findDatabaseUser($identifier) {
+    $configPath = __DIR__ . '/config.php';
+    if (!is_file($configPath)) {
+        return null;
+    }
 
-        if (is_numeric($identifier)) {
-            // Search by extension
-            $possible_file = $users_dir . '/user_' . $identifier . '.json';
-            if (file_exists($possible_file)) {
-                $user_file = $possible_file;
-            }
+    $config = include $configPath;
+    if (!is_array($config)) {
+        return null;
+    }
+
+    try {
+        $pdo = new PDO(
+            "mysql:host={$config['db_host']};dbname={$config['db_name']};charset=utf8mb4",
+            $config['db_user'],
+            $config['db_password'],
+            [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+        );
+
+        $stmt = $pdo->prepare("
+            SELECT username, extension, email, full_name, role, password_hash, is_active
+            FROM users
+            WHERE username = ? OR extension = ? OR email = ?
+            LIMIT 1
+        ");
+        $stmt->execute([$identifier, $identifier, $identifier]);
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($user && (int)($user['is_active'] ?? 1) === 1) {
+            return $user;
         }
 
-        // If not found, search by username or email
-        if (!$user_file && file_exists($users_dir)) {
-            $files = glob($users_dir . '/user_*.json');
-            foreach ($files as $file) {
-                $temp_data = json_decode(file_get_contents($file), true);
-                if ((isset($temp_data['username']) && $temp_data['username'] === $identifier) ||
-                    (isset($temp_data['extension']) && $temp_data['extension'] === $identifier) ||
-                    (isset($temp_data['email']) && $temp_data['email'] === $identifier)) {
-                    $user_file = $file;
-                    break;
-                }
-            }
+        $stmt = $pdo->prepare("
+            SELECT
+                COALESCE(u.username, e.extension_number) AS username,
+                e.extension_number AS extension,
+                COALESCE(u.email, e.email) AS email,
+                COALESCE(u.full_name, e.display_name) AS full_name,
+                COALESCE(u.role, 'user') AS role,
+                e.password_hash,
+                IFNULL(e.status, 'active') AS status
+            FROM extensions e
+            LEFT JOIN users u ON u.id = e.user_id
+            WHERE e.extension_number = ? OR u.username = ? OR u.email = ?
+            LIMIT 1
+        ");
+        $stmt->execute([$identifier, $identifier, $identifier]);
+        $extension = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($extension && strtolower((string)($extension['status'] ?? 'active')) === 'active') {
+            return $extension;
+        }
+    } catch (Exception $e) {
+        error_log('Flex PBX login database lookup failed: ' . $e->getMessage());
+    }
+
+    return null;
+}
+
+function verifyModernPassword($password, $user) {
+    $hashes = [];
+    foreach (['password_hash', 'password', 'sip_password', 'extension_password', 'secret'] as $key) {
+        if (!empty($user[$key]) && is_string($user[$key])) {
+            $hashes[] = $user[$key];
+        }
+    }
+
+    foreach ($hashes as $hash) {
+        if (password_get_info($hash)['algo'] !== 0 && password_verify($password, $hash)) {
+            return true;
         }
 
-        if ($user_file && file_exists($user_file)) {
-            $file_data = json_decode(file_get_contents($user_file), true);
-
-            // Verify password
-            if (isset($file_data['password'])) {
-                // Support both hashed and plain text passwords
-                if (password_verify($password, $file_data['password'])) {
-                    $authenticated = true;
-                    $user_data = $file_data;
-                    $auth_source = 'file';
-                } elseif ($file_data['password'] === $password) {
-                    // Plain text match (upgrade to hash)
-                    $authenticated = true;
-                    $user_data = $file_data;
-                    $auth_source = 'file';
-
-                    // Upgrade to hashed password
-                    $file_data['password'] = password_hash($password, PASSWORD_DEFAULT);
-                    file_put_contents($user_file, json_encode($file_data, JSON_PRETTY_PRINT));
-                }
-            }
-
-            if ($authenticated) {
-                // Update last login in file
-                $file_data['last_login'] = date('Y-m-d H:i:s');
-                $file_data['last_login_ip'] = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
-                file_put_contents($user_file, json_encode($file_data, JSON_PRETTY_PRINT));
-            }
+        if (strlen($hash) === 64 && hash_equals(strtolower($hash), hash('sha256', $password))) {
+            return true;
         }
-    } elseif ($account_type === 'admin') {
-        // Try admin file
-        $admin_file = $admins_dir . '/admin_' . $identifier . '.json';
 
-        if (file_exists($admin_file)) {
-            $file_data = json_decode(file_get_contents($admin_file), true);
-
-            // Verify password
-            if (isset($file_data['password'])) {
-                if (password_verify($password, $file_data['password'])) {
-                    $authenticated = true;
-                    $user_data = $file_data;
-                    $auth_source = 'file';
-                } elseif ($file_data['password'] === $password) {
-                    // Plain text match (upgrade to hash)
-                    $authenticated = true;
-                    $user_data = $file_data;
-                    $auth_source = 'file';
-
-                    // Upgrade to hashed password
-                    $file_data['password'] = password_hash($password, PASSWORD_DEFAULT);
-                    file_put_contents($admin_file, json_encode($file_data, JSON_PRETTY_PRINT));
-                }
-            }
-
-            if ($authenticated) {
-                // Update last login
-                $file_data['last_login'] = date('Y-m-d H:i:s');
-                $file_data['last_login_ip'] = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
-                file_put_contents($admin_file, json_encode($file_data, JSON_PRETTY_PRINT));
-            }
+        if (!str_starts_with($hash, '$') && hash_equals($hash, $password)) {
+            return true;
         }
+    }
+
+    return false;
+}
+
+function issueSessionToken($extension, $username, $role, $client) {
+    $token = bin2hex(random_bytes(32));
+    $dir = getenv('FLEXPBX_SESSION_DIR') ?: '/home/flexpbxuser/sessions';
+    if (!is_dir($dir)) {
+        @mkdir($dir, 0750, true);
+    }
+
+    $record = [
+        'token_hash' => hash('sha256', $token),
+        'extension' => $extension,
+        'username' => $username,
+        'role' => $role,
+        'client' => $client,
+        'created' => time(),
+        'expires' => time() + 86400,
+        'ip' => $_SERVER['REMOTE_ADDR'] ?? ''
+    ];
+    @file_put_contents($dir . '/session_' . hash('sha256', $token) . '.json', json_encode($record, JSON_PRETTY_PRINT), LOCK_EX);
+    @chmod($dir . '/session_' . hash('sha256', $token) . '.json', 0640);
+    return $token;
+}
+
+function touchUserLogin($extension, $username) {
+    $user = findUserFile(strtolower($extension));
+    if (!is_array($user) || empty($user['_file'])) {
+        $user = findUserFile(strtolower($username));
+    }
+    if (is_array($user) && !empty($user['_file'])) {
+        $file = $user['_file'];
+        unset($user['_file']);
+        $user['last_login'] = date('Y-m-d H:i:s');
+        $user['last_login_ip'] = $_SERVER['REMOTE_ADDR'] ?? '';
+        @file_put_contents($file, json_encode($user, JSON_PRETTY_PRINT), LOCK_EX);
+        @chmod($file, 0640);
     }
 }
 
-/**
- * Check if email setup is required
- */
+function configuredAuthMethods() {
+    $methods = ['password'];
+    if (getenv('FLEXPBX_SSO_LOGIN_URL')) {
+        $methods[] = 'sso';
+    }
+    if (getenv('FLEXPBX_PAIRING_ENABLED') !== '0') {
+        $methods[] = 'pairing_code';
+    }
+    return $methods;
+}
+
+function configuredFeatureCodes() {
+    return [
+        'queue_toggle' => getenv('FLEXPBX_QUEUE_TOGGLE_CODE') ?: '*45',
+        'queue_login' => getenv('FLEXPBX_QUEUE_LOGIN_CODE') ?: '*45',
+        'queue_logout' => getenv('FLEXPBX_QUEUE_LOGOUT_CODE') ?: (getenv('FLEXPBX_QUEUE_TOGGLE_CODE') ?: '*45'),
+        'voicemail' => getenv('FLEXPBX_VOICEMAIL_CODE') ?: '*97',
+        'dnd_toggle' => getenv('FLEXPBX_DND_TOGGLE_CODE') ?: '*76',
+        'call_screening_toggle' => getenv('FLEXPBX_CALL_SCREENING_TOGGLE_CODE') ?: '*56'
+    ];
+}
+
 function needsEmailSetup($email) {
-    // List of placeholder/default email values
-    $placeholder_emails = [
+    $placeholderEmails = [
         '',
         'user@example.com',
         'admin@example.com',
@@ -226,63 +285,21 @@ function needsEmailSetup($email) {
         'administrator@localhost'
     ];
 
-    return empty($email) || in_array(strtolower(trim($email)), $placeholder_emails);
+    return empty($email) || in_array(strtolower(trim($email)), $placeholderEmails, true);
 }
 
-/**
- * Return Response
- */
-if ($authenticated && $user_data) {
-    http_response_code(200);
-
-    $user_email = $user_data['email'] ?? '';
-    $email_setup_required = needsEmailSetup($user_email);
-
-    $response = [
-        'success' => true,
-        'account_type' => $account_type,
-        'auth_source' => $auth_source,
-        'session_token' => bin2hex(random_bytes(32)),
-        'message' => 'Authentication successful',
-        'email_setup_required' => $email_setup_required
-    ];
-
-    if ($account_type === 'user') {
-        $response['extension'] = $user_data['extension'] ?? $user_data['username'];
-        $response['username'] = $user_data['username'] ?? $user_data['extension'];
-        $response['email'] = $user_email;
-        $response['full_name'] = $user_data['full_name'] ?? '';
-        $response['sip_settings'] = [
-            'server' => 'flexpbx.devinecreations.net',
-            'port' => 5060,
-            'transport' => 'UDP'
-        ];
-
-        // Add helpful message if email setup is required
-        if ($email_setup_required) {
-            $response['message'] = 'Authentication successful. Please set your email address.';
-            $response['setup_url'] = '/user-portal/setup-email.php';
-        }
-    } else {
-        $response['username'] = $user_data['username'];
-        $response['email'] = $user_email;
-        $response['full_name'] = $user_data['full_name'] ?? '';
-        $response['role'] = $user_data['role'] ?? 'administrator';
-
-        // Add helpful message if email setup is required
-        if ($email_setup_required) {
-            $response['message'] = 'Authentication successful. Please set your administrator email address.';
-            $response['setup_url'] = '/admin/setup-email.php';
-        }
+function auditLogin($identifier, $accountType, $success, $client) {
+    $logDir = getenv('FLEXPBX_AUTH_LOG_DIR') ?: '/home/flexpbxuser/logs';
+    if (!is_dir($logDir)) {
+        @mkdir($logDir, 0750, true);
     }
-
-    echo json_encode($response);
-} else {
-    // Authentication failed
-    http_response_code(401);
-    echo json_encode([
-        'success' => false,
-        'error' => 'Invalid username/extension or password.',
-        'account_type' => $account_type
-    ]);
+    $entry = [
+        'timestamp' => date('c'),
+        'identifier_hash' => hash('sha256', strtolower((string)$identifier)),
+        'account_type' => $accountType,
+        'success' => $success,
+        'client' => $client,
+        'ip' => $_SERVER['REMOTE_ADDR'] ?? ''
+    ];
+    @file_put_contents($logDir . '/flexpbx-auth.log', json_encode($entry) . "\n", FILE_APPEND | LOCK_EX);
 }
