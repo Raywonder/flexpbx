@@ -100,7 +100,13 @@ function findModernUser($identifier) {
     $dbUser = findDatabaseUser($identifier);
 
     if ($dbUser !== null) {
-        return array_merge($fileUser ?? [], $dbUser);
+        $user = array_merge($fileUser ?? [], $dbUser);
+        foreach (['sip_password', 'extension_password', 'secret'] as $credentialKey) {
+            if (empty($user[$credentialKey]) && !empty($fileUser[$credentialKey])) {
+                $user[$credentialKey] = $fileUser[$credentialKey];
+            }
+        }
+        return $user;
     }
 
     return $fileUser;
