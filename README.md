@@ -118,6 +118,7 @@ flexpbx/
 - ✅ User invitation system with email notifications
 - ✅ **User migration** (change extensions, move departments)
 - ✅ Extension auto-assignment (2000-2999 range)
+- ✅ Flex Phone account recovery API with email confirmation for username recovery, password reset, and optional current-password delivery; password changes update Asterisk and FlexPBX extension records only, never trunk settings
 - ✅ Department management with automatic queue updates
 - ✅ Bulk user operations
 - ✅ Complete migration history audit trail

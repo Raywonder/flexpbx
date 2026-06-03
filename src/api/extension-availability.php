@@ -63,7 +63,7 @@ if ($action === 'check' && !empty($requested)) {
 
 // Suggest next available extension (sequential)
 if ($action === 'suggest') {
-    $start_range = 100; // Start at 100
+    $start_range = 200; // Keep lower numbers available for internal services.
     $end_range = 9999;
 
     for ($i = $start_range; $i <= $end_range; $i++) {
@@ -81,14 +81,14 @@ if ($action === 'suggest') {
 
     echo json_encode([
         'available' => false,
-        'message' => 'No extensions available in range 100-9999'
+        'message' => 'No extensions available in range 200-9999'
     ]);
     exit;
 }
 
 // Random extension suggestion
 if ($action === 'random') {
-    $start_range = 100;
+    $start_range = 200;
     $end_range = 9999;
 
     // Get all available extensions
@@ -116,7 +116,7 @@ if ($action === 'random') {
 
     echo json_encode([
         'available' => false,
-        'message' => 'No extensions available in range 100-9999'
+        'message' => 'No extensions available in range 200-9999'
     ]);
     exit;
 }
@@ -125,5 +125,5 @@ if ($action === 'random') {
 echo json_encode([
     'taken' => $taken_extensions,
     'count' => count($taken_extensions),
-    'available_range' => '2004-9999'
+    'available_range' => '200-9999'
 ]);

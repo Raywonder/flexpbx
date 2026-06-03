@@ -298,8 +298,15 @@ class EmailService {
 
         // Headers
         $headers = [];
-        $headers[] = "From: {$this->config['default_from_name']} <{$this->config['default_from_email']}>";
-        $headers[] = "Reply-To: $reply_to";
+        $fromEmail = filter_var($this->config['default_from_email'] ?? '', FILTER_VALIDATE_EMAIL)
+            ? $this->config['default_from_email']
+            : 'services@devine-creations.com';
+        $fromName = trim((string)($this->config['default_from_name'] ?? 'Flex PBX'));
+        $replyTo = filter_var($reply_to, FILTER_VALIDATE_EMAIL)
+            ? $reply_to
+            : 'support@devine-creations.com';
+        $headers[] = "From: {$fromName} <{$fromEmail}>";
+        $headers[] = "Reply-To: {$replyTo}";
         $headers[] = "MIME-Version: 1.0";
         $headers[] = "Content-Type: multipart/alternative; boundary=\"$boundary\"";
         $headers[] = "X-Mailer: FlexPBX Email Service 1.0";
@@ -333,7 +340,7 @@ class EmailService {
 
         // Send email
         $recipient = $to_name ? "$to_name <$to>" : $to;
-        return mail($recipient, $subject, $message, implode("\r\n", $headers));
+        return mail($recipient, $subject, $message, implode("\r\n", $headers), '-f' . $fromEmail);
     }
 
     /**

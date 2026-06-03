@@ -43,9 +43,9 @@ $defaultConfig = [
             'auto_update_enabled' => true
         ],
         'flexphone' => [
-            'current_version' => '1.5.0',
-            'minimum_version' => '1.4.0',
-            'download_path' => 'mobile-apps/',
+            'current_version' => '1.0.4',
+            'minimum_version' => '1.0.4',
+            'download_path' => 'flexphone/FlexPhone-1.0.4-win-x64-portable.zip',
             'auto_update_enabled' => true
         ],
         'public-desktop' => [

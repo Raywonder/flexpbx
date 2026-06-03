@@ -221,7 +221,7 @@ class AutoProvisioning {
 
         if ($next_ext === null) {
             // Fallback to old method
-            $next_ext = 3000;
+            $next_ext = 200;
             while ($this->isExtensionInUse($next_ext)) {
                 $next_ext++;
             }

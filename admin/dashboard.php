@@ -6,6 +6,50 @@ $page_title = 'FlexPBX Admin Dashboard';
 
 // Include the admin header
 require_once __DIR__ . '/includes/admin_header.php';
+
+// Include announcements banner
+require_once __DIR__ . '/../includes/announcements-banner.php';
+
+function flexphone_dashboard_duration($seconds) {
+    $seconds = max(0, (int)$seconds);
+    $days = intdiv($seconds, 86400);
+    $seconds %= 86400;
+    $hours = intdiv($seconds, 3600);
+    $seconds %= 3600;
+    $minutes = intdiv($seconds, 60);
+
+    $parts = [];
+    if ($days > 0) $parts[] = $days . 'd';
+    if ($hours > 0) $parts[] = $hours . 'h';
+    $parts[] = $minutes . 'm';
+    return implode(' ', $parts);
+}
+
+function flexphone_dashboard_devices() {
+    $dir = '/home/flexpbxuser/device_status';
+    if (!is_dir($dir)) {
+        return [];
+    }
+
+    $devices = [];
+    foreach (glob($dir . '/device_*.json') ?: [] as $file) {
+        $record = json_decode((string)file_get_contents($file), true);
+        if (!is_array($record)) {
+            continue;
+        }
+
+        $record['online'] = !empty($record['last_seen'])
+            && strtotime((string)$record['last_seen']) !== false
+            && (time() - strtotime((string)$record['last_seen'])) < 120;
+        $devices[] = $record;
+    }
+
+    usort($devices, function ($a, $b) {
+        return strcmp((string)($b['last_seen'] ?? ''), (string)($a['last_seen'] ?? ''));
+    });
+
+    return $devices;
+}
 ?>
     <style>
         * {
@@ -197,12 +241,29 @@ require_once __DIR__ . '/includes/admin_header.php';
         <div class="header">
             <h1>🔧 FlexPBX Admin Dashboard</h1>
             <p class="subtitle">A system you can help build to be the best it can be. Accessible by default.</p>
-            <div style="background: #e3f2fd; border-left: 4px solid #2196f3; padding: 15px; margin-top: 20px; border-radius: 6px;">
-                <div style="font-weight: 600; color: #1976d2;">📞 Support Hotline</div>
-                <div style="font-size: 24px; font-weight: bold; color: #1976d2; margin: 10px 0;">
+            <!-- Main Company Number -->
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; margin-top: 20px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
+                <div style="font-weight: 600; color: white; font-size: 16px; margin-bottom: 8px;">📞 Main Company Number</div>
+                <div style="font-size: 32px; font-weight: bold; color: white; margin: 10px 0; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+                    <a href="tel:+13023139555" style="color: white; text-decoration: none;">(302) 313-9555</a>
+                </div>
+                <div style="background: rgba(255,255,255,0.2); padding: 12px; border-radius: 6px; margin-top: 12px;">
+                    <div style="font-size: 14px; color: white; margin-bottom: 8px;">
+                        <strong>👨‍💼 For Admins:</strong> Share this number with clients and external callers
+                    </div>
+                    <div style="font-size: 14px; color: white;">
+                        <strong>👤 For Users:</strong> Users without their own DID can provide this number to outside callers and direct them to dial their extension
+                    </div>
+                </div>
+            </div>
+
+            <!-- Support Hotline -->
+            <div style="background: #e3f2fd; border-left: 4px solid #2196f3; padding: 15px; margin-top: 15px; border-radius: 6px;">
+                <div style="font-weight: 600; color: #1976d2;">🆘 Technical Support</div>
+                <div style="font-size: 20px; font-weight: bold; color: #1976d2; margin: 8px 0;">
                     <a href="tel:+13023139555" style="color: #1976d2; text-decoration: none;">(302) 313-9555</a>
                 </div>
-                <div style="font-size: 14px; color: #666;">Call our support team for immediate assistance</div>
+                <div style="font-size: 13px; color: #666;">Call our support team for immediate assistance with FlexPBX</div>
             </div>
         </div>
 
@@ -241,7 +302,7 @@ require_once __DIR__ . '/includes/admin_header.php';
                 <div class="card-icon">🎵</div>
                 <h2>Music on Hold Manager <span class="badge new">NEW</span></h2>
                 <p>Configure streaming MOH from Icecast/Shoutcast, manage volumes, and monitor audio</p>
-                <a href="moh-manager.html" class="btn">Manage MOH</a>
+                <a href="admin-moh.php" class="btn">Manage MOH</a>
             </div>
 
             <div class="card">
@@ -260,6 +321,13 @@ require_once __DIR__ . '/includes/admin_header.php';
                 <h2>Radio Players <span class="badge new">NEW</span></h2>
                 <p>Listen to TappedIn Radio Network stations - 4 live streaming channels</p>
                 <a href="/radio-players.php" class="btn">Open Players</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">📡</div>
+                <h2>Media Stream Control <span class="badge new">NEW</span></h2>
+                <p>Real-time control of media streams - monitor active streams, control playback</p>
+                <a href="media-stream-control.php" class="btn">Control Streams</a>
             </div>
                 <p>Stream music from Jellyfin, AzuraCast, or internet radio (.pls, .m3u) for hold music</p>
                 <a href="jellyfin-moh-manager.html" class="btn">Configure Jellyfin MOH</a>
@@ -410,6 +478,13 @@ require_once __DIR__ . '/includes/admin_header.php';
         <h3 class="section-title">⚙️ System Tools</h3>
         <div class="grid">
             <div class="card">
+                <div class="card-icon">📢</div>
+                <h2>Announcements <span class="badge new">NEW</span></h2>
+                <p>Create and manage system-wide announcements, notifications, and alerts for users</p>
+                <a href="announcements.php" class="btn">Manage Announcements</a>
+            </div>
+
+            <div class="card">
                 <div class="card-icon">📦</div>
                 <h2>Modules Manager <span class="badge new">NEW</span></h2>
                 <p>Install, update, and manage FlexPBX modules and push updates to remote servers</p>
@@ -477,13 +552,44 @@ require_once __DIR__ . '/includes/admin_header.php';
             </div>
         </div>
 
+        <h3 class="section-title">👥 User & Department Management</h3>
+        <div class="grid">
+            <div class="card">
+                <div class="card-icon">✉️</div>
+                <h2>Invite Users <span class="badge new">NEW</span></h2>
+                <p>Send invitations to new users and assign them extensions</p>
+                <a href="send-invite.php" class="btn">Send Invitation</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🏢</div>
+                <h2>Department Management <span class="badge new">NEW</span></h2>
+                <p>Create and manage departments, assign extensions to teams</p>
+                <a href="department-management.php" class="btn">Manage Departments</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">👥</div>
+                <h2>Extensions Management</h2>
+                <p>View and manage all user extensions and settings</p>
+                <a href="admin-extensions-management.php" class="btn">Manage Extensions</a>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🔄</div>
+                <h2>User Migration <span class="badge new">NEW</span></h2>
+                <p>Move users between extensions and departments, update queues automatically</p>
+                <a href="user-migration.php" class="btn">Migrate Users</a>
+            </div>
+        </div>
+
         <h3 class="section-title">📚 Documentation</h3>
         <div class="grid">
             <div class="card">
                 <div class="card-icon">📚</div>
                 <h2>Documentation Center <span class="badge new">NEW</span></h2>
                 <p>Complete guides, references, and troubleshooting for all FlexPBX features</p>
-                <a href="../docs/" class="btn">Open Documentation</a>
+                <a href="documentation-center.php" class="btn">Open Documentation</a>
             </div>
 
             <div class="card">
@@ -520,6 +626,51 @@ require_once __DIR__ . '/includes/admin_header.php';
                 <p>Access the user-facing portal</p>
                 <a href="../user-portal/" class="btn">Go to User Portal</a>
             </div>
+        </div>
+
+        <h3 class="section-title">Flex Phone Devices</h3>
+        <div class="card" style="overflow-x: auto;">
+            <h2>Registered Flex Phone clients</h2>
+            <p>Live client heartbeats, queue status, active line, and network type. Secrets are never shown here.</p>
+            <?php $flexphoneDevices = flexphone_dashboard_devices(); ?>
+            <?php if (empty($flexphoneDevices)): ?>
+                <p>No Flex Phone devices have reported in yet.</p>
+            <?php else: ?>
+                <table style="width: 100%; border-collapse: collapse; color: #333;">
+                    <thead>
+                    <tr>
+                        <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Extension</th>
+                        <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Device</th>
+                        <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Version</th>
+                        <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Queue</th>
+                        <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Line</th>
+                        <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Calls</th>
+                        <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Network</th>
+                        <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Last seen</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach ($flexphoneDevices as $device): ?>
+                        <tr>
+                            <td style="padding: 8px; border-bottom: 1px solid #eee;">
+                                <?= htmlspecialchars((string)($device['extension'] ?? ''), ENT_QUOTES, 'UTF-8') ?>
+                                <?= !empty($device['online']) ? '<span class="badge">online</span>' : '<span class="badge">offline</span>' ?>
+                            </td>
+                            <td style="padding: 8px; border-bottom: 1px solid #eee;"><?= htmlspecialchars((string)($device['device_name'] ?? ''), ENT_QUOTES, 'UTF-8') ?></td>
+                            <td style="padding: 8px; border-bottom: 1px solid #eee;"><?= htmlspecialchars((string)($device['app_version'] ?? ''), ENT_QUOTES, 'UTF-8') ?></td>
+                            <td style="padding: 8px; border-bottom: 1px solid #eee;">
+                                <?= htmlspecialchars((string)($device['queue_state'] ?? 'out'), ENT_QUOTES, 'UTF-8') ?>
+                                for <?= htmlspecialchars(flexphone_dashboard_duration((int)($device['queue_state_age_seconds'] ?? 0)), ENT_QUOTES, 'UTF-8') ?>
+                            </td>
+                            <td style="padding: 8px; border-bottom: 1px solid #eee;"><?= htmlspecialchars((string)($device['active_line'] ?? ''), ENT_QUOTES, 'UTF-8') ?></td>
+                            <td style="padding: 8px; border-bottom: 1px solid #eee;"><?= htmlspecialchars((string)($device['active_call_count'] ?? '0'), ENT_QUOTES, 'UTF-8') ?></td>
+                            <td style="padding: 8px; border-bottom: 1px solid #eee;"><?= htmlspecialchars((string)($device['network_type'] ?? 'unknown'), ENT_QUOTES, 'UTF-8') ?></td>
+                            <td style="padding: 8px; border-bottom: 1px solid #eee;"><?= htmlspecialchars((string)($device['last_seen'] ?? ''), ENT_QUOTES, 'UTF-8') ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php endif; ?>
         </div>
 
         <div style="text-align: center; margin-top: 40px; padding: 20px;">
@@ -646,5 +797,21 @@ require_once __DIR__ . '/includes/admin_header.php';
     });
 })();
 </script>
+
+<?php
+// Add FlexPhone widget with admin extension
+if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in']) {
+    // Get admin's linked extension
+    $admin_extension = $_SESSION['linked_extension'] ?? null;
+
+    require_once __DIR__ . '/../includes/flexphone-widget.php';
+    renderFlexPhoneWidget($admin_extension, [
+        'position' => 'bottom-right',
+        'theme' => 'dark',
+        'auto_register' => true
+    ]);
+}
+?>
+
 </body>
 </html>

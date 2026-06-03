@@ -9,6 +9,47 @@ require_once __DIR__ . '/includes/admin_header.php';
 
 // Include announcements banner
 require_once __DIR__ . '/../includes/announcements-banner.php';
+
+function flexphone_dashboard_duration($seconds) {
+    $seconds = max(0, (int)$seconds);
+    $days = intdiv($seconds, 86400);
+    $seconds %= 86400;
+    $hours = intdiv($seconds, 3600);
+    $seconds %= 3600;
+    $minutes = intdiv($seconds, 60);
+
+    $parts = [];
+    if ($days > 0) $parts[] = $days . 'd';
+    if ($hours > 0) $parts[] = $hours . 'h';
+    $parts[] = $minutes . 'm';
+    return implode(' ', $parts);
+}
+
+function flexphone_dashboard_devices() {
+    $dir = '/home/flexpbxuser/device_status';
+    if (!is_dir($dir)) {
+        return [];
+    }
+
+    $devices = [];
+    foreach (glob($dir . '/device_*.json') ?: [] as $file) {
+        $record = json_decode((string)file_get_contents($file), true);
+        if (!is_array($record)) {
+            continue;
+        }
+
+        $record['online'] = !empty($record['last_seen'])
+            && strtotime((string)$record['last_seen']) !== false
+            && (time() - strtotime((string)$record['last_seen'])) < 120;
+        $devices[] = $record;
+    }
+
+    usort($devices, function ($a, $b) {
+        return strcmp((string)($b['last_seen'] ?? ''), (string)($a['last_seen'] ?? ''));
+    });
+
+    return $devices;
+}
 ?>
     <style>
         * {
@@ -585,6 +626,51 @@ require_once __DIR__ . '/../includes/announcements-banner.php';
                 <p>Access the user-facing portal</p>
                 <a href="../user-portal/" class="btn">Go to User Portal</a>
             </div>
+        </div>
+
+        <h3 class="section-title">Flex Phone Devices</h3>
+        <div class="card" style="overflow-x: auto;">
+            <h2>Registered Flex Phone clients</h2>
+            <p>Live client heartbeats, queue status, active line, and network type. Secrets are never shown here.</p>
+            <?php $flexphoneDevices = flexphone_dashboard_devices(); ?>
+            <?php if (empty($flexphoneDevices)): ?>
+                <p>No Flex Phone devices have reported in yet.</p>
+            <?php else: ?>
+                <table style="width: 100%; border-collapse: collapse; color: #333;">
+                    <thead>
+                    <tr>
+                        <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Extension</th>
+                        <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Device</th>
+                        <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Version</th>
+                        <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Queue</th>
+                        <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Line</th>
+                        <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Calls</th>
+                        <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Network</th>
+                        <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Last seen</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach ($flexphoneDevices as $device): ?>
+                        <tr>
+                            <td style="padding: 8px; border-bottom: 1px solid #eee;">
+                                <?= htmlspecialchars((string)($device['extension'] ?? ''), ENT_QUOTES, 'UTF-8') ?>
+                                <?= !empty($device['online']) ? '<span class="badge">online</span>' : '<span class="badge">offline</span>' ?>
+                            </td>
+                            <td style="padding: 8px; border-bottom: 1px solid #eee;"><?= htmlspecialchars((string)($device['device_name'] ?? ''), ENT_QUOTES, 'UTF-8') ?></td>
+                            <td style="padding: 8px; border-bottom: 1px solid #eee;"><?= htmlspecialchars((string)($device['app_version'] ?? ''), ENT_QUOTES, 'UTF-8') ?></td>
+                            <td style="padding: 8px; border-bottom: 1px solid #eee;">
+                                <?= htmlspecialchars((string)($device['queue_state'] ?? 'out'), ENT_QUOTES, 'UTF-8') ?>
+                                for <?= htmlspecialchars(flexphone_dashboard_duration((int)($device['queue_state_age_seconds'] ?? 0)), ENT_QUOTES, 'UTF-8') ?>
+                            </td>
+                            <td style="padding: 8px; border-bottom: 1px solid #eee;"><?= htmlspecialchars((string)($device['active_line'] ?? ''), ENT_QUOTES, 'UTF-8') ?></td>
+                            <td style="padding: 8px; border-bottom: 1px solid #eee;"><?= htmlspecialchars((string)($device['active_call_count'] ?? '0'), ENT_QUOTES, 'UTF-8') ?></td>
+                            <td style="padding: 8px; border-bottom: 1px solid #eee;"><?= htmlspecialchars((string)($device['network_type'] ?? 'unknown'), ENT_QUOTES, 'UTF-8') ?></td>
+                            <td style="padding: 8px; border-bottom: 1px solid #eee;"><?= htmlspecialchars((string)($device['last_seen'] ?? ''), ENT_QUOTES, 'UTF-8') ?></td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+            <?php endif; ?>
         </div>
 
         <div style="text-align: center; margin-top: 40px; padding: 20px;">
