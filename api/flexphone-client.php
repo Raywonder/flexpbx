@@ -86,7 +86,8 @@ function deviceAuthorization($action, $input) {
         @mkdir($dir, 0750, true);
     }
 
-    $host = $_SERVER['HTTP_HOST'] ?? 'pbx.tappedin.fm';
+    $host = $_SERVER['HTTP_X_FORWARDED_HOST'] ?? $_SERVER['HTTP_HOST'] ?? 'pbx.tappedin.fm';
+    $host = preg_replace('/[^A-Za-z0-9.\-:]/', '', (string)$host) ?: 'pbx.tappedin.fm';
     $url = 'https://' . $host . '/flexphone/link?token=' . urlencode($token) . '&email=' . urlencode($email);
     $record = [
         'token_hash' => hash('sha256', $token),
@@ -488,7 +489,14 @@ function loadUsers() {
     $users = [];
     $dir = getenv('FLEXPBX_USERS_DIR') ?: '/home/flexpbxuser/users';
     foreach (glob($dir . '/user_*.json') ?: [] as $file) {
-        $data = json_decode((string)file_get_contents($file), true);
+        if (!is_readable($file)) {
+            continue;
+        }
+        $raw = @file_get_contents($file);
+        if ($raw === false) {
+            continue;
+        }
+        $data = json_decode((string)$raw, true);
         if (is_array($data)) {
             $users[] = $data;
         }
