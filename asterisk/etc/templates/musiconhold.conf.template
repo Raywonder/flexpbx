@@ -24,18 +24,21 @@ random=yes
 [devine-hold]
 mode=files
 directory=/var/lib/asterisk/moh/flexphone-hold
+format=wav
 random=yes
 sort=random
 
 [tappedin-hold]
 mode=files
 directory=/var/lib/asterisk/moh/flexphone-hold
+format=wav
 random=yes
 sort=random
 
 [support-hold]
 mode=files
 directory=/var/lib/asterisk/moh/flexphone-hold
+format=wav
 random=yes
 sort=random
 
