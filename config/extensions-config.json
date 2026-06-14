@@ -207,6 +207,15 @@
       "retry": 2,
       "maxwait": 120,
       "hold_music": "support-hold"
+    },
+    "shared-operator-ring": {
+      "name": "Shared Operator Queue",
+      "strategy": "ringall",
+      "members": ["2000", "3000", "6040"],
+      "timeout": 30,
+      "retry": 2,
+      "maxwait": 120,
+      "hold_music": "support-hold"
     }
   },
   "conference_rooms": {
