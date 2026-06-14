@@ -18,6 +18,27 @@ mode=files
 directory=/var/lib/asterisk/moh/support
 random=yes
 
+; Shared Callcentric DID hold music classes. These use the Flex Phone bundled
+; local hold files so queues still have hold audio when an internet stream is
+; unavailable.
+[devine-hold]
+mode=files
+directory=/var/lib/asterisk/moh/flexphone-hold
+random=yes
+sort=random
+
+[tappedin-hold]
+mode=files
+directory=/var/lib/asterisk/moh/flexphone-hold
+random=yes
+sort=random
+
+[support-hold]
+mode=files
+directory=/var/lib/asterisk/moh/flexphone-hold
+random=yes
+sort=random
+
 ; Sales queue hold music  
 [sales]
 mode=files

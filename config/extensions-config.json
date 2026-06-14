@@ -178,6 +178,35 @@
       "timeout": 15,
       "priority": "high",
       "announce": "accessibility-greeting.wav"
+    },
+    "devine-creations-ring": {
+      "name": "Devine Creations Ring Queue",
+      "strategy": "ringall",
+      "members": ["2000", "2002", "2003", "2004", "2006"],
+      "timeout": 30,
+      "retry": 2,
+      "maxwait": 120,
+      "announce": "flexpbx-devine-menu.wav",
+      "hold_music": "devine-hold"
+    },
+    "tappedin-ring": {
+      "name": "TappedIn Ring Queue",
+      "strategy": "ringall",
+      "members": ["3000", "6040"],
+      "timeout": 30,
+      "retry": 2,
+      "maxwait": 120,
+      "announce": "flexpbx-tappedin-menu.wav",
+      "hold_music": "tappedin-hold"
+    },
+    "shared-support": {
+      "name": "Shared Support Queue",
+      "strategy": "ringall",
+      "members": ["2000", "2002", "2003", "2004", "2006", "3000"],
+      "timeout": 30,
+      "retry": 2,
+      "maxwait": 120,
+      "hold_music": "support-hold"
     }
   },
   "conference_rooms": {
