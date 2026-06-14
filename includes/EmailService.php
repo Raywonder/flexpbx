@@ -77,17 +77,60 @@ class EmailService {
      * Load email configuration from database
      */
     private function loadConfig() {
-        $stmt = $this->db->prepare("
-            SELECT * FROM email_system_config
-            WHERE is_active = 1
-            ORDER BY id DESC
-            LIMIT 1
-        ");
-        $stmt->execute();
-        $this->config = $stmt->fetch(PDO::FETCH_ASSOC);
+        $this->config = [
+            'smtp_host' => 'localhost',
+            'smtp_port' => 25,
+            'smtp_security' => '',
+            'smtp_username' => '',
+            'smtp_password' => '',
+            'default_from_email' => 'services@devine-creations.com',
+            'default_from_name' => 'Flex PBX',
+            'default_reply_to' => 'support@devine-creations.com',
+            'rate_limit_per_hour' => 100
+        ];
+
+        try {
+            $columns = $this->tableColumns('email_system_config');
+            if ($columns) {
+                $sql = "SELECT * FROM email_system_config";
+                if (in_array('is_active', $columns, true)) {
+                    $sql .= " WHERE is_active = 1";
+                }
+                $sql .= " ORDER BY id DESC LIMIT 1";
+                $stmt = $this->db->prepare($sql);
+                $stmt->execute();
+                $row = $stmt->fetch(PDO::FETCH_ASSOC);
+                if (is_array($row)) {
+                    $this->config = array_merge($this->config, $row);
+                }
+            }
+        } catch (Throwable $e) {
+            $this->log('Email config load fallback: ' . $e->getMessage(), 'warning');
+        }
+
+        if (!empty($this->config['from_email'])) {
+            $this->config['default_from_email'] = $this->config['from_email'];
+        }
+        if (!empty($this->config['from_name'])) {
+            $this->config['default_from_name'] = $this->config['from_name'];
+        }
+        if (empty($this->config['default_reply_to'])) {
+            $this->config['default_reply_to'] = $this->config['default_from_email'];
+        }
 
         if ($this->config && !empty($this->config['smtp_password'])) {
             $this->config['smtp_password'] = $this->decrypt($this->config['smtp_password']);
+        }
+    }
+
+    private function tableColumns($table) {
+        try {
+            $stmt = $this->db->query('DESCRIBE ' . $table);
+            return array_map(static function ($row) {
+                return $row['Field'];
+            }, $stmt->fetchAll(PDO::FETCH_ASSOC));
+        } catch (Throwable $e) {
+            return [];
         }
     }
 
@@ -499,12 +542,21 @@ class EmailService {
      * @return bool
      */
     private function isEmailSuppressed($email) {
+        if (!$this->tableColumns('email_bounces')) {
+            return false;
+        }
+
+        try {
         $stmt = $this->db->prepare("
             SELECT is_suppressed FROM email_bounces
             WHERE email = ? AND is_suppressed = 1
         ");
         $stmt->execute([$email]);
         return (bool) $stmt->fetch();
+        } catch (Throwable $e) {
+            $this->log('Email suppression check skipped: ' . $e->getMessage(), 'warning');
+            return false;
+        }
     }
 
     /**
@@ -514,6 +566,11 @@ class EmailService {
      * @return bool
      */
     private function checkRateLimit($email) {
+        if (!$this->tableColumns('email_rate_limit')) {
+            return true;
+        }
+
+        try {
         // Clean up expired rate limit entries
         $this->db->prepare("
             DELETE FROM email_rate_limit
@@ -535,6 +592,10 @@ class EmailService {
         $limit = $this->config['rate_limit_per_hour'] ?? 100;
 
         return $current_count < $limit;
+        } catch (Throwable $e) {
+            $this->log('Email rate-limit check skipped: ' . $e->getMessage(), 'warning');
+            return true;
+        }
     }
 
     /**
@@ -543,6 +604,11 @@ class EmailService {
      * @param string $email
      */
     private function incrementRateLimit($email) {
+        if (!$this->tableColumns('email_rate_limit')) {
+            return;
+        }
+
+        try {
         $window_start = date('Y-m-d H:00:00');
         $window_end = date('Y-m-d H:59:59');
 
@@ -557,6 +623,9 @@ class EmailService {
             ON DUPLICATE KEY UPDATE count = count + 1
         ");
         $stmt->execute([$email, $window_start, $window_end]);
+        } catch (Throwable $e) {
+            $this->log('Email rate-limit increment skipped: ' . $e->getMessage(), 'warning');
+        }
     }
 
     /**
@@ -579,6 +648,12 @@ class EmailService {
         $error = null,
         $queue_id = null
     ) {
+        if (!$this->tableColumns('email_log')) {
+            $this->log("Email {$status}: {$to} {$subject}", $status === 'failed' ? 'error' : 'info');
+            return;
+        }
+
+        try {
         $stmt = $this->db->prepare("
             INSERT INTO email_log (
                 queue_id,
@@ -608,6 +683,9 @@ class EmailService {
             $error,
             $_SERVER['REMOTE_ADDR'] ?? null
         ]);
+        } catch (Throwable $e) {
+            $this->log('Email DB log skipped: ' . $e->getMessage(), 'warning');
+        }
     }
 
     /**

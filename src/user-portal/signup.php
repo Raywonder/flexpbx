@@ -8,6 +8,45 @@ session_start();
 
 $success_message = '';
 $error_message = '';
+$username = '';
+$email = filter_var($_GET['email'] ?? '', FILTER_VALIDATE_EMAIL) ? (string)$_GET['email'] : '';
+$extension_requested = '';
+$display_name = '';
+$did_requested = '';
+$did_own_number = '';
+$extension_category = '';
+$extension_purpose = '';
+$reason = '';
+
+require_once __DIR__ . '/../includes/AutoProvisioning.php';
+require_once __DIR__ . '/../includes/EmailService.php';
+
+function flexpbx_signup_username(string $name, string $email): string {
+    $base = strtolower(preg_replace('/[^a-z0-9]+/i', '', $name));
+    if ($base === '') {
+        $base = strtolower(preg_replace('/[^a-z0-9]+/i', '', strtok($email, '@') ?: 'user'));
+    }
+    return substr($base, 0, 32);
+}
+
+function flexpbx_signup_admin_notice(string $subject, string $body): void {
+    try {
+        $emailService = new EmailService();
+        $emailService->sendEmail(
+            'support@devine-creations.com',
+            $subject,
+            $body,
+            null,
+            [],
+            null,
+            false,
+            2,
+            'FlexPBX Support'
+        );
+    } catch (Throwable $e) {
+        error_log('FlexPBX signup admin notification failed: ' . $e->getMessage());
+    }
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $username = $_POST['username'] ?? '';
@@ -28,7 +67,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif (!preg_match('/^[0-9]{4}$/', $extension_requested)) {
         $error_message = "Extension must be 4 digits";
     } else {
-        // Save signup request to file
+        $signup_dir = '/home/flexpbxuser/signups';
+        @mkdir($signup_dir, 0755, true);
+
         $signup_data = [
             'timestamp' => date('Y-m-d H:i:s'),
             'username' => htmlspecialchars($username),
@@ -43,17 +84,63 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'status' => 'pending'
         ];
 
-        $signup_file = '/home/flexpbxuser/signups/user_' . $extension_requested . '_' . time() . '.json';
-        @mkdir('/home/flexpbxuser/signups', 0755, true);
+        $signup_file = $signup_dir . '/user_' . $extension_requested . '_' . time() . '.json';
+
+        try {
+            $provisioning = new AutoProvisioning();
+            $provision_username = flexpbx_signup_username($username, $email);
+            $result = $provisioning->provisionNewUser(
+                $provision_username,
+                $email,
+                $extension_requested,
+                null,
+                $display_name ?: $username,
+                'user',
+                ['send_email' => true]
+            );
+
+            if ($result['success']) {
+                $signup_data['status'] = 'approved';
+                $signup_data['approved_at'] = gmdate('Y-m-d H:i:s') . ' UTC';
+                $signup_data['approval_notes'] = "Auto-provisioned extension {$result['extension']} from public signup.";
+                $signup_data['provisioned_username'] = $provision_username;
+
+                flexpbx_signup_admin_notice(
+                    "FlexPBX signup approved: " . ($display_name ?: $username) . " extension {$result['extension']}",
+                    "FlexPBX automatically approved a public signup.\n\nName: " . ($display_name ?: $username) . "\nEmail: $email\nExtension: {$result['extension']}\nUsername: $provision_username\n\nNo passwords or SIP secrets are included in this notice."
+                );
+
+                $success_message = "Your FlexPBX extension {$result['extension']} is ready. Setup instructions were sent to $email.";
+
+                $username = '';
+                $email = '';
+                $extension_requested = '';
+                $display_name = '';
+                $did_requested = '';
+                $did_own_number = '';
+                $extension_category = '';
+                $extension_purpose = '';
+                $reason = '';
+            } else {
+                $signup_data['approval_notes'] = 'Automatic provisioning failed: ' . $result['error'];
+                $error_message = "Your request was saved, but automatic approval needs administrator review: " . $result['error'];
+
+                flexpbx_signup_admin_notice(
+                    "FlexPBX signup needs review: " . ($display_name ?: $username),
+                    "FlexPBX could not automatically approve a public signup.\n\nName: " . ($display_name ?: $username) . "\nEmail: $email\nRequested extension: $extension_requested\nReason: {$result['error']}\n\nNo passwords or SIP secrets are included in this notice."
+                );
+            }
+        } catch (Throwable $e) {
+            $signup_data['approval_notes'] = 'Automatic provisioning exception: ' . $e->getMessage();
+            $error_message = "Your request was saved, but automatic approval needs administrator review.";
+
+            flexpbx_signup_admin_notice(
+                "FlexPBX signup auto-approval error: " . ($display_name ?: $username),
+                "FlexPBX hit an exception while processing a public signup.\n\nName: " . ($display_name ?: $username) . "\nEmail: $email\nRequested extension: $extension_requested\nError: {$e->getMessage()}\n\nNo passwords or SIP secrets are included in this notice."
+            );
+        }
+
         file_put_contents($signup_file, json_encode($signup_data, JSON_PRETTY_PRINT));
-
-        $success_message = "Sign-up request submitted! An administrator will review and contact you at $email";
-
-        // Clear form
-        $username = '';
-        $email = '';
-        $extension_requested = '';
-        $reason = '';
     }
 }
 ?>
@@ -172,6 +259,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div class="signup-box">
             <h2 style="margin-bottom: 1.5rem; color: #2c3e50;">Create Your Account</h2>
+
+            <div class="form-group">
+                <label for="signup-instructions">What happens next</label>
+                <textarea id="signup-instructions" readonly rows="5">After you submit this request, Flex PBX saves it for administrator review. If your request is approved, Flex PBX sends an email with your next setup step. That email may include a secure link to set your portal password and finish linking Flex Phone. Keep this page open until you hear that the request was submitted.</textarea>
+            </div>
 
             <?php if ($success_message): ?>
             <div class="alert alert-success">

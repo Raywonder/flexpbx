@@ -97,7 +97,7 @@ class AutoProvisioning {
             $voicemail_pin = $this->generateVoicemailPin();
 
             // Step 5: Create user account in database
-            $user_id = $this->createUserAccount($username, $email, $full_name, $role);
+            $user_id = $this->createUserAccount($username, $email, $full_name, $role, $password);
             $this->log('create_user', $extension, "Created user account: $username (ID: $user_id)", 'success');
 
             // Step 6: Create extension in database
@@ -132,15 +132,21 @@ class AutoProvisioning {
             $this->reloadAsteriskConfig();
             $this->log('reload_asterisk', $extension, "Reloaded Asterisk configuration", 'success');
 
-            // Step 14: Send welcome email
+            // Step 14: Keep the legacy file-backed portal/client paths in sync.
+            $setupLink = $this->createPasswordSetupToken($extension, $email);
+            $this->createUserFile($username, $email, $full_name, $role, $extension, $password, $voicemail_pin);
+            $this->log('sync_user_file', $extension, "Created file-backed user record for extension: $extension", 'success');
+
+            // Step 15: Send welcome email
             $credentials = [
                 'username' => $username,
                 'extension' => $extension,
                 'password' => $password,
                 'voicemail_pin' => $voicemail_pin,
                 'did' => $this->mainDID,
-                'server' => 'flexpbx.devinecreations.net',
-                'email' => $email
+                'server' => $this->publicHost(),
+                'email' => $email,
+                'setup_link' => $setupLink
             ];
 
             if ($options['send_email'] ?? true) {
@@ -276,8 +282,8 @@ class AutoProvisioning {
      * @param string $role
      * @return int User ID
      */
-    private function createUserAccount($username, $email, $full_name, $role) {
-        $password_hash = password_hash($this->generateSecurePassword(), PASSWORD_DEFAULT);
+    private function createUserAccount($username, $email, $full_name, $role, $password) {
+        $password_hash = password_hash($password, PASSWORD_DEFAULT);
         $api_key = bin2hex(random_bytes(32));
 
         $stmt = $this->db->prepare("
@@ -287,6 +293,85 @@ class AutoProvisioning {
 
         $stmt->execute([$username, $email, $password_hash, $full_name, $role, $api_key]);
         return $this->db->lastInsertId();
+    }
+
+    /**
+     * Create/update the legacy JSON user file consumed by the portal and Flex Phone client.
+     */
+    private function createUserFile($username, $email, $full_name, $role, $extension, $password, $voicemail_pin) {
+        $usersDir = getenv('FLEXPBX_USERS_DIR') ?: '/home/flexpbxuser/users';
+        if (!is_dir($usersDir)) {
+            @mkdir($usersDir, 0750, true);
+        }
+
+        $record = [
+            'username' => $username,
+            'extension' => (string)$extension,
+            'extension_number' => (string)$extension,
+            'email' => $email,
+            'full_name' => $full_name,
+            'display_name' => $full_name,
+            'role' => $role,
+            'status' => 'active',
+            'password' => password_hash($password, PASSWORD_DEFAULT),
+            'password_setup_required' => true,
+            'sip_password' => $password,
+            'extension_password' => $password,
+            'voicemail_pin' => $voicemail_pin,
+            'did' => $this->mainDID,
+            'created_at' => date('c'),
+            'updated_at' => date('c')
+        ];
+
+        $file = $usersDir . '/user_' . preg_replace('/[^0-9A-Za-z_-]/', '', (string)$extension) . '.json';
+        @file_put_contents($file, json_encode($record, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES), LOCK_EX);
+        @chmod($file, 0640);
+    }
+
+    /**
+     * Create a one-time password setup token used by user-portal/reset-password.php.
+     */
+    private function createPasswordSetupToken($extension, $email) {
+        $dir = getenv('FLEXPBX_RESET_TOKENS_DIR') ?: '/home/flexpbxuser/reset_tokens';
+        if (!is_dir($dir)) {
+            @mkdir($dir, 0750, true);
+        }
+
+        $token = bin2hex(random_bytes(32));
+        $tokenData = [
+            'token' => $token,
+            'extension' => (string)$extension,
+            'email' => $email,
+            'type' => 'user',
+            'purpose' => 'initial_password_setup',
+            'created' => time(),
+            'expires' => time() + 86400
+        ];
+
+        $file = $dir . '/token_' . $token . '.json';
+        @file_put_contents($file, json_encode($tokenData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES), LOCK_EX);
+        @chmod($file, 0640);
+
+        return 'https://' . $this->publicHost() . '/user-portal/reset-password.php?token=' . urlencode($token);
+    }
+
+    /**
+     * Resolve the public host for links sent to users.
+     */
+    private function publicHost() {
+        $host = getenv('FLEXPBX_PUBLIC_HOST');
+        if (!$host && !empty($_SERVER['HTTP_X_FORWARDED_HOST'])) {
+            $host = $_SERVER['HTTP_X_FORWARDED_HOST'];
+        }
+        if (!$host && !empty($_SERVER['HTTP_HOST'])) {
+            $host = $_SERVER['HTTP_HOST'];
+        }
+
+        $host = strtolower(preg_replace('/[^A-Za-z0-9.\-:]/', '', (string)$host));
+        $host = preg_replace('/:\d+$/', '', $host);
+        $allowed = ['pbx.tappedin.fm', 'pbx.devinecreations.net'];
+
+        return in_array($host, $allowed, true) ? $host : 'pbx.tappedin.fm';
     }
 
     /**
@@ -318,20 +403,50 @@ class AutoProvisioning {
      */
     private function createPJSIPEndpoint($extension, $password, $display_name) {
         $config = "; Extension $extension - $display_name - Auto-provisioned " . date('Y-m-d H:i:s') . "\n";
-        $config .= "[$extension](user_defaults)\n";
-        $config .= "auth = $extension\n";
-        $config .= "aors = $extension\n";
-        $config .= "callerid = \"$display_name\" <$extension>\n\n";
+        $config .= "[$extension]\n";
+        $config .= "type=endpoint\n";
+        $config .= "context=flexpbx-internal\n";
+        $config .= "disallow=all\n";
+        $config .= "allow=ulaw,alaw\n";
+        $config .= "mailboxes=$extension@flexpbx\n";
+        $config .= "auth=$extension\n";
+        $config .= "aors=$extension\n";
+        $config .= "identify_by=username,auth_username\n";
+        $config .= "callerid=\"$display_name\" <$extension>\n";
+        $config .= "moh_suggest=default\n";
+        $config .= "trust_id_inbound=yes\n";
+        $config .= "trust_id_outbound=yes\n";
+        $config .= "transport=transport-udp\n";
+        $config .= "direct_media=no\n";
+        $config .= "rtp_symmetric=yes\n";
+        $config .= "force_rport=yes\n";
+        $config .= "rewrite_contact=yes\n";
+        $config .= "ice_support=no\n";
+        $config .= "dtmf_mode=rfc4733\n";
+        $config .= "timers=no\n";
+        $config .= "timers_min_se=90\n";
+        $config .= "timers_sess_expires=1800\n";
+        $config .= "set_var=SIP_PROFILE=standard-desktop\n\n";
 
-        $config .= "[$extension](auth_defaults)\n";
-        $config .= "username = $extension\n";
-        $config .= "password = $password\n\n";
+        $config .= "[$extension]\n";
+        $config .= "type=auth\n";
+        $config .= "auth_type=userpass\n";
+        $config .= "password=$password\n";
+        $config .= "username=$extension\n\n";
 
-        $config .= "[$extension](aor_defaults)\n";
-        $config .= "max_contacts = 5\n\n";
+        $config .= "[$extension]\n";
+        $config .= "type=aor\n";
+        $config .= "max_contacts=5\n";
+        $config .= "qualify_frequency=60\n";
+        $config .= "remove_existing=yes\n\n";
 
         // Append to pjsip.conf
         $pjsip_file = '/etc/asterisk/pjsip.conf';
+        $existing = file_exists($pjsip_file) ? file_get_contents($pjsip_file) : '';
+        if (preg_match('/^\[' . preg_quote($extension, '/') . '\]$/m', $existing)) {
+            throw new Exception("PJSIP endpoint already exists for extension $extension");
+        }
+
         file_put_contents($pjsip_file, $config, FILE_APPEND);
     }
 
@@ -444,16 +559,27 @@ class AutoProvisioning {
      * @param string $display_name
      */
     private function createDialplanEntry($extension, $display_name) {
-        $dialplan = "; Extension $extension - $display_name - Auto-provisioned " . date('Y-m-d H:i:s') . "\n";
-        $dialplan .= "exten => $extension,1,NoOp(Calling $display_name at extension $extension)\n";
-        $dialplan .= "same => n,Dial(PJSIP/$extension,30,Tt)\n";
-        $dialplan .= "same => n,Voicemail($extension@flexpbx,su)\n";
-        $dialplan .= "same => n,Hangup()\n\n";
+        $dialplan = "exten => $extension,1,NoOp(Call to $extension from \${CALLERID(num)})\n";
+        $dialplan .= "same => n,Set(CALLDATE=\${STRFTIME(\${EPOCH},,%Y%m%d-%H%M%S)})\n";
+        $dialplan .= "same => n,MixMonitor(/var/spool/asterisk/monitor/internal/\${CALLDATE}-\${CALLERID(num)}-$extension.wav,b)\n";
+        $dialplan .= "same => n,Gosub(sub-forward-check,s,1($extension))\n";
+        $dialplan .= "same => n,Hangup()\n";
 
-        // Append to extensions.conf in [from-internal] context
-        // Note: In production, you'd want to insert this in the right context
         $extensions_file = '/etc/asterisk/extensions.conf';
-        file_put_contents($extensions_file, $dialplan, FILE_APPEND);
+        $content = file_exists($extensions_file) ? file_get_contents($extensions_file) : '';
+
+        if (preg_match('/^exten\s*=>\s*' . preg_quote($extension, '/') . ',/m', $content)) {
+            return;
+        }
+
+        $context_pattern = '/(^\[flexpbx-internal\]\R)(.*?)(?=^\[[^\]]+\]\R|\z)/ms';
+        if (preg_match($context_pattern, $content)) {
+            $content = preg_replace($context_pattern, '$1$2' . $dialplan . "\n", $content, 1);
+        } else {
+            $content .= "\n[flexpbx-internal]\n" . $dialplan . "\n";
+        }
+
+        file_put_contents($extensions_file, $content);
     }
 
     /**

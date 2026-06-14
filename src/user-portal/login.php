@@ -34,12 +34,17 @@ if (!isset($_SESSION['user_logged_in']) && isset($_COOKIE['flexpbx_remember_user
     }
 }
 
+$requested_redirect = safeRedirectTarget($_GET['redirect'] ?? $_POST['redirect'] ?? '');
+if ($requested_redirect !== '') {
+    $_SESSION['redirect_after_login'] = $requested_redirect;
+}
+
 // Redirect if already logged in
 if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true) {
     if (!isset($_SESSION['email_setup_complete'])) {
         header('Location: /user-portal/setup-email.php');
     } else {
-        header('Location: /user-portal/');
+        header('Location: ' . postLoginTarget());
     }
     exit;
 }
@@ -163,7 +168,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
             exit;
         } else {
             $_SESSION['email_setup_complete'] = true;
-            header('Location: /user-portal/');
+            header('Location: ' . postLoginTarget());
             exit;
         }
     } else {
@@ -176,6 +181,31 @@ if (isset($_GET['logout'])) {
     session_destroy();
     header('Location: /user-portal/login.php');
     exit;
+}
+
+function safeRedirectTarget($value) {
+    $value = trim((string)$value);
+    if ($value === '' || strpos($value, '//') === 0 || strpos($value, '://') !== false) {
+        return '';
+    }
+
+    if (preg_match('/[\r\n]/', $value)) {
+        return '';
+    }
+
+    foreach (['/user-portal/', '/flexphone/'] as $prefix) {
+        if ($value === $prefix || strpos($value, $prefix) === 0) {
+            return $value;
+        }
+    }
+
+    return '';
+}
+
+function postLoginTarget() {
+    $target = safeRedirectTarget($_SESSION['redirect_after_login'] ?? '');
+    unset($_SESSION['redirect_after_login']);
+    return $target === '' ? '/user-portal/' : $target;
 }
 ?>
 <!DOCTYPE html>
@@ -433,6 +463,9 @@ if (isset($_GET['logout'])) {
         <?php endif; ?>
 
         <form method="POST">
+            <?php if (!empty($_SESSION['redirect_after_login'])): ?>
+            <input type="hidden" name="redirect" value="<?= htmlspecialchars((string)$_SESSION['redirect_after_login']) ?>">
+            <?php endif; ?>
             <div class="form-group">
                 <label for="extension">Extension / Username</label>
                 <input

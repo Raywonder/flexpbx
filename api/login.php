@@ -73,11 +73,7 @@ respond(200, true, 'Signed in.', [
     'auth_methods' => configuredAuthMethods(),
     'feature_codes' => configuredFeatureCodes(),
     'email_setup_required' => needsEmailSetup($email),
-    'sip_settings' => [
-        'server' => $_SERVER['HTTP_HOST'] ?? 'pbx.tappedin.fm',
-        'port' => 5060,
-        'transport' => 'UDP'
-    ]
+    'sip_settings' => flexPhoneSipSettings()
 ]);
 
 function respond($status, $success, $message, $extra = []) {
@@ -158,12 +154,20 @@ function findDatabaseUser($identifier) {
         );
 
         $stmt = $pdo->prepare("
-            SELECT username, extension, email, full_name, role, password_hash, is_active
-            FROM users
-            WHERE username = ? OR extension = ? OR email = ?
+            SELECT
+                u.username,
+                e.extension_number AS extension,
+                u.email,
+                u.full_name,
+                u.role,
+                COALESCE(e.password_hash, u.password_hash) AS password_hash,
+                u.is_active
+            FROM users u
+            LEFT JOIN extensions e ON e.user_id = u.id
+            WHERE u.username = ? OR u.email = ?
             LIMIT 1
         ");
-        $stmt->execute([$identifier, $identifier, $identifier]);
+        $stmt->execute([$identifier, $identifier]);
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($user && (int)($user['is_active'] ?? 1) === 1) {
             return $user;
@@ -240,6 +244,61 @@ function issueSessionToken($extension, $username, $role, $client) {
     @file_put_contents($dir . '/session_' . hash('sha256', $token) . '.json', json_encode($record, JSON_PRETTY_PRINT), LOCK_EX);
     @chmod($dir . '/session_' . hash('sha256', $token) . '.json', 0640);
     return $token;
+}
+
+function flexPhoneSipSettings() {
+    $publicHost = flexPhonePublicSipHost();
+    $routes = [
+        [
+            'label' => 'Public SIP',
+            'server' => $publicHost,
+            'host' => $publicHost,
+            'port' => 5060,
+            'transport' => 'UDP',
+            'route_type' => 'public',
+            'preferred' => true
+        ],
+        [
+            'label' => 'Secure Headscale server',
+            'server' => '100.64.0.2',
+            'host' => '100.64.0.2',
+            'port' => 5060,
+            'transport' => 'UDP',
+            'route_type' => 'headscale',
+            'preferred' => false
+        ],
+        [
+            'label' => 'Secure Headscale PBX node',
+            'server' => '100.64.0.3',
+            'host' => '100.64.0.3',
+            'port' => 5060,
+            'transport' => 'UDP',
+            'route_type' => 'headscale',
+            'preferred' => false
+        ]
+    ];
+
+    return [
+        'server' => $publicHost,
+        'host' => $publicHost,
+        'port' => 5060,
+        'transport' => 'UDP',
+        'routes' => $routes,
+        'fallbacks' => array_slice($routes, 1)
+    ];
+}
+
+function flexPhonePublicSipHost() {
+    $host = $_SERVER['HTTP_X_FORWARDED_HOST'] ?? $_SERVER['HTTP_HOST'] ?? 'pbx.tappedin.fm';
+    $host = strtolower(preg_replace('/[^A-Za-z0-9.\-:]/', '', (string)$host) ?: 'pbx.tappedin.fm');
+    $host = preg_replace('/:\d+$/', '', $host) ?: 'pbx.tappedin.fm';
+    $allowed = [
+        'pbx.devinecreations.net',
+        'pbx.tappedin.fm',
+        'flexpbx.devinecreations.net'
+    ];
+
+    return in_array($host, $allowed, true) ? $host : 'pbx.tappedin.fm';
 }
 
 function touchUserLogin($extension, $username) {

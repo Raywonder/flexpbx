@@ -34,12 +34,17 @@ if (!isset($_SESSION['user_logged_in']) && isset($_COOKIE['flexpbx_remember_user
     }
 }
 
+$requested_redirect = safeRedirectTarget($_GET['redirect'] ?? $_POST['redirect'] ?? '');
+if ($requested_redirect !== '') {
+    $_SESSION['redirect_after_login'] = $requested_redirect;
+}
+
 // Redirect if already logged in
 if (isset($_SESSION['user_logged_in']) && $_SESSION['user_logged_in'] === true) {
     if (!isset($_SESSION['email_setup_complete'])) {
         header('Location: /user-portal/setup-email.php');
     } else {
-        header('Location: /user-portal/');
+        header('Location: ' . postLoginTarget());
     }
     exit;
 }
@@ -59,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
     // Try to find and authenticate user from JSON files
     if (is_numeric($identifier)) {
         $user_file = $users_dir . '/user_' . $identifier . '.json';
-        if (file_exists($user_file)) {
+        if (is_readable($user_file)) {
             $user_data = json_decode(file_get_contents($user_file), true);
             if (isset($user_data['password']) && password_verify($password, $user_data['password'])) {
                 $authenticated = true;
@@ -71,6 +76,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
     if (!$authenticated && file_exists($users_dir)) {
         $files = glob($users_dir . '/user_*.json');
         foreach ($files as $file) {
+            if (!is_readable($file)) {
+                continue;
+            }
             $temp_data = json_decode(file_get_contents($file), true);
             if ((isset($temp_data['username']) && $temp_data['username'] === $identifier) ||
                 (isset($temp_data['extension']) && $temp_data['extension'] === $identifier) ||
@@ -82,6 +90,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
                     break;
                 }
             }
+        }
+    }
+
+    // Newer provisioning writes database rows first. Fall back to the database
+    // so email/username/extension sign-in works even if the legacy JSON file is
+    // missing or has not synced yet.
+    if (!$authenticated) {
+        $db_user = findPortalDatabaseUser($identifier);
+        if ($db_user && verifyPortalPassword($password, $db_user)) {
+            $user_data = $db_user;
+            $user_file = null;
+            $authenticated = true;
         }
     }
 
@@ -163,7 +183,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['login'])) {
             exit;
         } else {
             $_SESSION['email_setup_complete'] = true;
-            header('Location: /user-portal/');
+            header('Location: ' . postLoginTarget());
             exit;
         }
     } else {
@@ -176,6 +196,129 @@ if (isset($_GET['logout'])) {
     session_destroy();
     header('Location: /user-portal/login.php');
     exit;
+}
+
+function safeRedirectTarget($value) {
+    $value = trim((string)$value);
+    if ($value === '' || strpos($value, '//') === 0 || strpos($value, '://') !== false) {
+        return '';
+    }
+
+    if (preg_match('/[\r\n]/', $value)) {
+        return '';
+    }
+
+    foreach (['/user-portal/', '/flexphone/'] as $prefix) {
+        if ($value === $prefix || strpos($value, $prefix) === 0) {
+            return $value;
+        }
+    }
+
+    return '';
+}
+
+function postLoginTarget() {
+    $target = safeRedirectTarget($_SESSION['redirect_after_login'] ?? '');
+    unset($_SESSION['redirect_after_login']);
+    return $target === '' ? '/user-portal/' : $target;
+}
+
+function findPortalDatabaseUser($identifier) {
+    $configPath = __DIR__ . '/../config/config.php';
+    if (!is_file($configPath)) {
+        return null;
+    }
+
+    require $configPath;
+    $host = $DB_HOST ?? 'localhost';
+    $port = $DB_PORT ?? '3306';
+    $dbname = $DB_NAME ?? 'flexpbxuser_flexpbx';
+    $dbuser = $DB_USER ?? 'flexpbxuser_flexpbxserver';
+    $dbpass = $DB_PASS ?? '';
+
+    try {
+        $pdo = new PDO(
+            "mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4",
+            $dbuser,
+            $dbpass,
+            [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]
+        );
+
+        $stmt = $pdo->prepare("
+            SELECT
+                u.username,
+                e.extension_number AS extension,
+                u.email,
+                u.full_name,
+                u.role,
+                COALESCE(e.password_hash, u.password_hash) AS password_hash,
+                u.is_active
+            FROM users u
+            LEFT JOIN extensions e ON e.user_id = u.id
+            WHERE u.username = ? OR u.email = ?
+            LIMIT 1
+        ");
+        $stmt->execute([$identifier, $identifier]);
+        $user = $stmt->fetch();
+        if ($user && (int)($user['is_active'] ?? 1) === 1) {
+            return normalizePortalUser($user);
+        }
+
+        $stmt = $pdo->prepare("
+            SELECT
+                COALESCE(u.username, e.extension_number) AS username,
+                e.extension_number AS extension,
+                COALESCE(u.email, e.email) AS email,
+                COALESCE(u.full_name, e.display_name) AS full_name,
+                COALESCE(u.role, 'user') AS role,
+                e.password_hash,
+                IFNULL(e.status, 'active') AS status
+            FROM extensions e
+            LEFT JOIN users u ON u.id = e.user_id
+            WHERE e.extension_number = ? OR u.username = ? OR u.email = ?
+            LIMIT 1
+        ");
+        $stmt->execute([$identifier, $identifier, $identifier]);
+        $extension = $stmt->fetch();
+        if ($extension && strtolower((string)($extension['status'] ?? 'active')) === 'active') {
+            return normalizePortalUser($extension);
+        }
+    } catch (Throwable $e) {
+        error_log('FlexPBX user portal database login lookup failed: ' . $e->getMessage());
+    }
+
+    return null;
+}
+
+function normalizePortalUser($user) {
+    $extension = (string)($user['extension'] ?? $user['extension_number'] ?? $user['username'] ?? '');
+    return [
+        'username' => (string)($user['username'] ?? $extension),
+        'extension' => $extension,
+        'email' => (string)($user['email'] ?? ''),
+        'full_name' => (string)($user['full_name'] ?? $user['display_name'] ?? ''),
+        'role' => (string)($user['role'] ?? 'user'),
+        'password' => (string)($user['password_hash'] ?? $user['password'] ?? '')
+    ];
+}
+
+function verifyPortalPassword($password, $user) {
+    foreach (['password', 'password_hash', 'sip_password', 'extension_password', 'secret'] as $key) {
+        $hash = (string)($user[$key] ?? '');
+        if ($hash === '') {
+            continue;
+        }
+
+        if (password_get_info($hash)['algo'] !== 0 && password_verify($password, $hash)) {
+            return true;
+        }
+
+        if (!str_starts_with($hash, '$') && hash_equals($hash, $password)) {
+            return true;
+        }
+    }
+
+    return false;
 }
 ?>
 <!DOCTYPE html>
@@ -433,6 +576,9 @@ if (isset($_GET['logout'])) {
         <?php endif; ?>
 
         <form method="POST">
+            <?php if (!empty($_SESSION['redirect_after_login'])): ?>
+            <input type="hidden" name="redirect" value="<?= htmlspecialchars((string)$_SESSION['redirect_after_login']) ?>">
+            <?php endif; ?>
             <div class="form-group">
                 <label for="extension">Extension / Username</label>
                 <input

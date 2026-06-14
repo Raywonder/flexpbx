@@ -64,7 +64,7 @@ switch ($action) {
  * Handle signup submission
  */
 function handleSubmit() {
-    global $db;
+    global $db, $provisioning;
 
     // Get POST data
     $data = json_decode(file_get_contents('php://input'), true);
@@ -128,16 +128,88 @@ function handleSubmit() {
 
         $request_id = $db->lastInsertId();
 
-        // TODO: Send email to admins about new signup request
+        $result = $provisioning->provisionNewUser(
+            $data['username'],
+            $data['email'],
+            $data['requested_extension'] ?? null,
+            null,
+            $data['full_name'],
+            'user',
+            ['send_email' => true]
+        );
+
+        if ($result['success']) {
+            $approval_notes = "Auto-provisioned: Extension {$result['extension']}";
+            $update = $db->prepare("
+                UPDATE user_signup_requests
+                SET status = 'approved',
+                    approved_by = ?,
+                    approved_at = NOW(),
+                    approval_notes = ?
+                WHERE id = ?
+            ");
+            $update->execute([null, $approval_notes, $request_id]);
+
+            flexpbxSignupAdminNotice(
+                "FlexPBX signup approved: {$data['full_name']} extension {$result['extension']}",
+                "FlexPBX automatically approved an API signup.\n\nName: {$data['full_name']}\nEmail: {$data['email']}\nExtension: {$result['extension']}\nUsername: {$data['username']}\n\nNo passwords or SIP secrets are included in this notice."
+            );
+
+            response([
+                'success' => true,
+                'message' => 'Signup approved and extension provisioned. A secure password setup email has been sent.',
+                'request_id' => $request_id,
+                'status' => 'approved',
+                'user_id' => $result['user_id'],
+                'extension' => $result['extension'],
+                'password_setup_url' => $result['credentials']['setup_link'] ?? null
+            ]);
+        }
+
+        $update = $db->prepare("
+            UPDATE user_signup_requests
+            SET approval_notes = ?
+            WHERE id = ?
+        ");
+        $update->execute(["Automatic provisioning failed: {$result['error']}", $request_id]);
+
+        flexpbxSignupAdminNotice(
+            "FlexPBX signup needs review: {$data['full_name']}",
+            "FlexPBX could not automatically approve an API signup.\n\nName: {$data['full_name']}\nEmail: {$data['email']}\nRequested extension: " . ($data['requested_extension'] ?? 'auto') . "\nReason: {$result['error']}\n\nNo passwords or SIP secrets are included in this notice."
+        );
 
         response([
             'success' => true,
-            'message' => 'Signup request submitted successfully',
-            'request_id' => $request_id
+            'message' => 'Signup request submitted and queued for administrator review',
+            'request_id' => $request_id,
+            'status' => 'pending',
+            'error' => $result['error']
         ]);
 
     } catch (Exception $e) {
         response(['error' => 'Failed to submit signup request: ' . $e->getMessage()], 500);
+    }
+}
+
+/**
+ * Send a no-secret signup notice to the service-owned support address.
+ */
+function flexpbxSignupAdminNotice($subject, $body) {
+    try {
+        $emailService = new EmailService();
+        $emailService->sendEmail(
+            'support@devine-creations.com',
+            $subject,
+            $body,
+            null,
+            [],
+            null,
+            false,
+            2,
+            'FlexPBX Support'
+        );
+    } catch (Throwable $e) {
+        error_log('FlexPBX signup admin notification failed: ' . $e->getMessage());
     }
 }
 
@@ -197,9 +269,10 @@ function handleApprove() {
 
         response([
             'success' => true,
-            'message' => 'User approved and provisioned successfully',
+            'message' => 'User approved and provisioned successfully. A secure password setup email has been sent.',
             'user_id' => $result['user_id'],
             'extension' => $result['extension'],
+            'password_setup_url' => $result['credentials']['setup_link'] ?? null,
             'credentials' => [
                 'username' => $result['credentials']['username'],
                 'extension' => $result['credentials']['extension'],

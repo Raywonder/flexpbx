@@ -79,16 +79,13 @@ function deviceAuthorization($action, $input) {
         respond(400, false, 'Enter a valid email address before linking Flex Phone.');
     }
 
-    $user = findUserByEmail($email);
-    $token = bin2hex(random_bytes(24));
-    $dir = getenv('FLEXPBX_DEVICE_AUTH_DIR') ?: '/home/flexpbxuser/device_authorizations';
-    if (!is_dir($dir)) {
-        @mkdir($dir, 0750, true);
+    if ($action === 'complete_device_authorization') {
+        completeDeviceAuthorization($email, $deviceId, $input);
     }
 
-    $host = $_SERVER['HTTP_X_FORWARDED_HOST'] ?? $_SERVER['HTTP_HOST'] ?? 'pbx.tappedin.fm';
-    $host = preg_replace('/[^A-Za-z0-9.\-:]/', '', (string)$host) ?: 'pbx.tappedin.fm';
-    $url = 'https://' . $host . '/flexphone/link?token=' . urlencode($token) . '&email=' . urlencode($email);
+    $user = findUserByEmail($email);
+    $token = bin2hex(random_bytes(24));
+    $url = publicBaseUrl() . '/flexphone/link?token=' . urlencode($token) . '&email=' . urlencode($email);
     $record = [
         'token_hash' => hash('sha256', $token),
         'email' => $email,
@@ -96,44 +93,99 @@ function deviceAuthorization($action, $input) {
         'extension' => (string)($user['extension'] ?? $user['extension_number'] ?? ''),
         'username' => (string)($user['username'] ?? ''),
         'device_id' => $deviceId,
-        'confirmed' => $action === 'complete_device_authorization',
+        'confirmed' => false,
         'created' => time(),
         'expires' => time() + 1800,
         'ip' => $_SERVER['REMOTE_ADDR'] ?? ''
     ];
-    @file_put_contents($dir . '/device_' . hash('sha256', $token) . '.json', json_encode($record, JSON_PRETTY_PRINT), LOCK_EX);
-    @chmod($dir . '/device_' . hash('sha256', $token) . '.json', 0640);
+    writeDeviceAuthorization($token, $record);
 
-    if ($action === 'request_extension') {
-        @mail(
-            $email,
-            'Confirm Flex Phone email link',
-            "Confirm this Flex Phone device link:\n\n" . $url . "\n\nIf you did not request this, ignore this message.",
-            'From: noreply@devine-creations.com'
-        );
-    }
+    @mail(
+        $email,
+        'Confirm your Flex Phone sign in',
+        buildDeviceAuthorizationEmail($url, $email, $user),
+        'From: Flex PBX <noreply@' . mailDomain() . ">\r\n" .
+        'Content-Type: text/plain; charset=UTF-8'
+    );
 
     $extra = [
         'email' => $email,
         'old_email' => (string)($user['email'] ?? ''),
         'token_url' => $url,
         'authorization_url' => $url,
+        'portal_url' => publicBaseUrl() . '/user-portal/',
+        'signup_url' => publicBaseUrl() . '/user-portal/signup.php?email=' . urlencode($email) . '&source=flexphone',
         'device_id' => $deviceId,
         'expires_at' => date('c', $record['expires'])
     ];
 
-    if ($action === 'complete_device_authorization' && is_array($user)) {
-        $extra['extension'] = (string)($user['extension'] ?? $user['extension_number'] ?? '');
-        $extra['username'] = (string)($user['username'] ?? $extra['extension']);
-        $extra['full_name'] = (string)($user['full_name'] ?? $user['display_name'] ?? '');
-        $extra['role'] = (string)($user['role'] ?? 'user');
-        $extra['sip_password'] = (string)($user['sip_password'] ?? $user['extension_password'] ?? $user['secret'] ?? '');
+    respond(200, true, 'Confirmation email sent. Open the email link to authorize this device, then return to Flex Phone and choose Finish sign in.', $extra);
+}
+
+function completeDeviceAuthorization($email, $deviceId, $input) {
+    $token = authorizationTokenFromInput($input);
+    if ($token === '') {
+        respond(400, false, 'Open the email confirmation link first, then choose Finish sign in from Flex Phone.');
     }
 
-    $message = $action === 'request_extension'
-        ? 'Confirmation sent. Check that email address to link Flex Phone.'
-        : 'Email confirmation recorded. If extension credentials are available, Flex Phone can sign in now.';
-    respond(200, true, $message, $extra);
+    $record = readDeviceAuthorization($token);
+    if (!is_array($record)) {
+        respond(404, false, 'That Flex Phone confirmation link is invalid or has expired. Request a new email link.');
+    }
+
+    if ((int)($record['expires'] ?? 0) < time()) {
+        deleteDeviceAuthorization($token);
+        respond(410, false, 'That Flex Phone confirmation link has expired. Request a new email link.');
+    }
+
+    if (!hash_equals(strtolower((string)($record['email'] ?? '')), $email)) {
+        respond(403, false, 'That confirmation link belongs to a different email address.');
+    }
+
+    if (!hash_equals((string)($record['device_id'] ?? ''), $deviceId)) {
+        respond(403, false, 'That confirmation link was created for a different device.');
+    }
+
+    if (empty($record['confirmed'])) {
+        respond(409, false, 'Check your email and open the Flex Phone confirmation link before finishing sign in.', [
+            'token_url' => publicBaseUrl() . '/flexphone/link?token=' . urlencode($token) . '&email=' . urlencode($email),
+            'authorization_url' => publicBaseUrl() . '/flexphone/link?token=' . urlencode($token) . '&email=' . urlencode($email)
+        ]);
+    }
+
+    $user = findUserByEmail($email);
+    if (!is_array($user)) {
+        respond(404, false, 'Your email is confirmed, but no extension account is assigned yet. Complete the user portal sign-up or ask an administrator to approve the extension.', [
+            'signup_url' => publicBaseUrl() . '/user-portal/signup.php?email=' . urlencode($email) . '&source=flexphone'
+        ]);
+    }
+
+    $extension = (string)($user['extension'] ?? $user['extension_number'] ?? '');
+    $username = (string)($user['username'] ?? $extension);
+    $role = (string)($user['role'] ?? 'user');
+    $sipPassword = (string)($user['sip_password'] ?? $user['extension_password'] ?? $user['secret'] ?? '');
+    if ($extension === '' || $sipPassword === '') {
+        respond(409, false, 'Your email is confirmed, but this extension is missing phone credentials. Open the user portal to finish password setup or contact an administrator.', [
+            'portal_url' => publicBaseUrl() . '/user-portal/',
+            'password_setup_url' => publicBaseUrl() . '/user-portal/forgot-password.php'
+        ]);
+    }
+
+    $record['completed'] = time();
+    writeDeviceAuthorization($token, $record);
+
+    respond(200, true, 'Email confirmed. Flex Phone can sign in now.', [
+        'email' => $email,
+        'old_email' => (string)($record['old_email'] ?? ''),
+        'extension' => $extension,
+        'username' => $username,
+        'full_name' => (string)($user['full_name'] ?? $user['display_name'] ?? ''),
+        'role' => $role,
+        'sip_password' => $sipPassword,
+        'session_token' => issueSessionToken($extension, $username, $role, 'Flex Phone'),
+        'portal_url' => publicBaseUrl() . '/user-portal/',
+        'sip_settings' => flexPhoneSipSettings()
+    ]);
 }
 
 function deviceStatus($extension, $session, $input) {
@@ -511,7 +563,255 @@ function findUserByEmail($email) {
             return $user;
         }
     }
-    return null;
+
+    return findUserByEmailFromDatabase($needle);
+}
+
+function findUserByEmailFromDatabase($email) {
+    $configPath = __DIR__ . '/../config/config.php';
+    if (!is_file($configPath)) {
+        return null;
+    }
+
+    require $configPath;
+    $host = $DB_HOST ?? 'localhost';
+    $port = $DB_PORT ?? '3306';
+    $dbname = $DB_NAME ?? 'flexpbxuser_flexpbx';
+    $dbuser = $DB_USER ?? 'flexpbxuser_flexpbxserver';
+    $dbpass = $DB_PASS ?? '';
+
+    try {
+        $pdo = new PDO(
+            "mysql:host=$host;port=$port;dbname=$dbname;charset=utf8mb4",
+            $dbuser,
+            $dbpass,
+            [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC]
+        );
+
+        $stmt = $pdo->prepare("
+            SELECT
+                COALESCE(u.username, e.extension_number) AS username,
+                e.extension_number AS extension,
+                COALESCE(u.email, e.email) AS email,
+                COALESCE(u.full_name, e.display_name) AS full_name,
+                COALESCE(u.role, 'user') AS role,
+                e.password_hash,
+                IFNULL(e.status, 'active') AS status
+            FROM extensions e
+            LEFT JOIN users u ON u.id = e.user_id
+            WHERE LOWER(COALESCE(u.email, e.email)) = ?
+            LIMIT 1
+        ");
+        $stmt->execute([$email]);
+        $user = $stmt->fetch();
+        if (!$user || strtolower((string)($user['status'] ?? 'active')) !== 'active') {
+            return null;
+        }
+
+        $extension = (string)($user['extension'] ?? '');
+        $sipPassword = findPjsipPassword($extension);
+
+        return [
+            'username' => (string)($user['username'] ?? $extension),
+            'extension' => $extension,
+            'extension_number' => $extension,
+            'email' => (string)($user['email'] ?? ''),
+            'full_name' => (string)($user['full_name'] ?? ''),
+            'role' => (string)($user['role'] ?? 'user'),
+            'sip_password' => $sipPassword,
+            'extension_password' => $sipPassword,
+            'password_hash' => (string)($user['password_hash'] ?? '')
+        ];
+    } catch (Throwable $e) {
+        error_log('Flex Phone email database lookup failed: ' . $e->getMessage());
+        return null;
+    }
+}
+
+function findPjsipPassword($extension) {
+    $extension = (string)$extension;
+    if ($extension === '') {
+        return '';
+    }
+
+    $file = getenv('FLEXPBX_PJSIP_CONFIG') ?: '/etc/asterisk/pjsip.conf';
+    if (!is_readable($file)) {
+        return '';
+    }
+
+    $content = (string)file_get_contents($file);
+    $pattern = '/\[' . preg_quote($extension, '/') . '\]\s*type=auth\b(?P<body>.*?)(?=\n\[[^\]]+\]|\z)/is';
+    if (preg_match($pattern, $content, $matches) && preg_match('/^\s*password\s*=\s*(.+?)\s*$/mi', $matches['body'], $password)) {
+        return trim($password[1]);
+    }
+
+    return '';
+}
+
+function deviceAuthorizationDir() {
+    return getenv('FLEXPBX_DEVICE_AUTH_DIR') ?: '/home/flexpbxuser/device_authorizations';
+}
+
+function authorizationTokenFromInput($input) {
+    $token = trim((string)($input['token'] ?? ''));
+    if ($token === '') {
+        $tokenUrl = trim((string)($input['token_url'] ?? $input['authorization_url'] ?? ''));
+        if ($tokenUrl !== '') {
+            $parts = parse_url($tokenUrl);
+            if (is_array($parts) && !empty($parts['query'])) {
+                parse_str((string)$parts['query'], $query);
+                $token = trim((string)($query['token'] ?? ''));
+            }
+        }
+    }
+
+    return preg_match('/^[A-Fa-f0-9]{48}$/', $token) ? $token : '';
+}
+
+function readDeviceAuthorization($token) {
+    $file = deviceAuthorizationFile($token);
+    if (!is_readable($file)) {
+        return null;
+    }
+
+    $data = json_decode((string)file_get_contents($file), true);
+    return is_array($data) ? $data : null;
+}
+
+function writeDeviceAuthorization($token, $record) {
+    $dir = deviceAuthorizationDir();
+    if (!is_dir($dir)) {
+        @mkdir($dir, 0750, true);
+    }
+
+    $file = deviceAuthorizationFile($token);
+    @file_put_contents($file, json_encode($record, JSON_PRETTY_PRINT), LOCK_EX);
+    @chmod($file, 0640);
+}
+
+function deleteDeviceAuthorization($token) {
+    @unlink(deviceAuthorizationFile($token));
+}
+
+function deviceAuthorizationFile($token) {
+    return deviceAuthorizationDir() . '/device_' . hash('sha256', $token) . '.json';
+}
+
+function publicBaseUrl() {
+    $host = $_SERVER['HTTP_X_FORWARDED_HOST'] ?? $_SERVER['HTTP_HOST'] ?? 'pbx.tappedin.fm';
+    $host = preg_replace('/[^A-Za-z0-9.\-:]/', '', (string)$host) ?: 'pbx.tappedin.fm';
+    return 'https://' . $host;
+}
+
+function mailDomain() {
+    $host = parse_url(publicBaseUrl(), PHP_URL_HOST) ?: 'pbx.tappedin.fm';
+    return preg_replace('/[^A-Za-z0-9.\-]/', '', (string)$host) ?: 'pbx.tappedin.fm';
+}
+
+function flexPhoneSipSettings() {
+    $publicHost = flexPhonePublicSipHost();
+    $routes = [
+        [
+            'label' => 'Public SIP',
+            'server' => $publicHost,
+            'host' => $publicHost,
+            'port' => 5060,
+            'transport' => 'UDP',
+            'route_type' => 'public',
+            'preferred' => true
+        ],
+        [
+            'label' => 'Secure Headscale server',
+            'server' => '100.64.0.2',
+            'host' => '100.64.0.2',
+            'port' => 5060,
+            'transport' => 'UDP',
+            'route_type' => 'headscale',
+            'preferred' => false
+        ],
+        [
+            'label' => 'Secure Headscale PBX node',
+            'server' => '100.64.0.3',
+            'host' => '100.64.0.3',
+            'port' => 5060,
+            'transport' => 'UDP',
+            'route_type' => 'headscale',
+            'preferred' => false
+        ]
+    ];
+
+    return [
+        'server' => $publicHost,
+        'host' => $publicHost,
+        'port' => 5060,
+        'transport' => 'UDP',
+        'routes' => $routes,
+        'fallbacks' => array_slice($routes, 1)
+    ];
+}
+
+function flexPhonePublicSipHost() {
+    $host = $_SERVER['HTTP_X_FORWARDED_HOST'] ?? $_SERVER['HTTP_HOST'] ?? 'pbx.tappedin.fm';
+    $host = strtolower(preg_replace('/[^A-Za-z0-9.\-:]/', '', (string)$host) ?: 'pbx.tappedin.fm');
+    $host = preg_replace('/:\d+$/', '', $host) ?: 'pbx.tappedin.fm';
+    $allowed = [
+        'pbx.devinecreations.net',
+        'pbx.tappedin.fm',
+        'flexpbx.devinecreations.net'
+    ];
+
+    return in_array($host, $allowed, true) ? $host : 'pbx.tappedin.fm';
+}
+
+function buildDeviceAuthorizationEmail($url, $email, $user) {
+    $lines = [
+        'Flex Phone sign-in confirmation',
+        '',
+        'Someone entered this email address in Flex Phone to link a Windows device.',
+        '',
+        'Open this secure link to confirm the device:',
+        $url,
+        ''
+    ];
+
+    if (is_array($user)) {
+        $extension = (string)($user['extension'] ?? $user['extension_number'] ?? '');
+        if ($extension !== '') {
+            $lines[] = 'This will link the device to extension ' . $extension . '.';
+            $lines[] = '';
+        }
+        $lines[] = 'After the page says the device is authorized, return to Flex Phone and choose Finish sign in.';
+    } else {
+        $lines[] = 'This email is confirmed, but no extension account is assigned yet.';
+        $lines[] = 'The confirmation page will offer the user portal sign-up path so an administrator can approve the extension.';
+    }
+
+    $lines[] = '';
+    $lines[] = 'If you did not request this, ignore this email.';
+    $lines[] = 'Email: ' . $email;
+    return implode("\n", $lines);
+}
+
+function issueSessionToken($extension, $username, $role, $client) {
+    $token = bin2hex(random_bytes(32));
+    $dir = getenv('FLEXPBX_SESSION_DIR') ?: '/home/flexpbxuser/sessions';
+    if (!is_dir($dir)) {
+        @mkdir($dir, 0750, true);
+    }
+
+    $record = [
+        'token_hash' => hash('sha256', $token),
+        'extension' => $extension,
+        'username' => $username,
+        'role' => $role,
+        'client' => $client,
+        'created' => time(),
+        'expires' => time() + 86400,
+        'ip' => $_SERVER['REMOTE_ADDR'] ?? ''
+    ];
+    @file_put_contents($dir . '/session_' . hash('sha256', $token) . '.json', json_encode($record, JSON_PRETTY_PRINT), LOCK_EX);
+    @chmod($dir . '/session_' . hash('sha256', $token) . '.json', 0640);
+    return $token;
 }
 
 function parseAsteriskMetadata($file) {

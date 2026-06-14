@@ -68,7 +68,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             chmod($token_file, 0640);
 
             // Generate reset link
-            $reset_link = 'https://' . $_SERVER['HTTP_HOST'] . '/admin/reset-password.php?token=' . $token;
+            $public_host = publicFlexPbxHost();
+            $reset_link = 'https://' . $public_host . '/admin/reset-password.php?token=' . $token;
 
             // Send email
             $to = $admin_data['email'];
@@ -83,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $message .= "If you did not request this reset, please ignore this email and contact support immediately.\n\n";
             $message .= "---\n";
             $message .= "FlexPBX Admin System\n";
-            $message .= "https://flexpbx.devinecreations.net/admin/\n";
+            $message .= "https://" . $public_host . "/admin/\n";
 
             $headers = "From: FlexPBX Admin <noreply@devinecreations.net>\r\n";
             $headers .= "Reply-To: support@devine-creations.com\r\n";
@@ -99,6 +100,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $success_message = 'If an account exists with that information, password reset instructions have been sent.';
         }
     }
+}
+
+function publicFlexPbxHost() {
+    $host = getenv('FLEXPBX_PUBLIC_HOST');
+    if (!$host && !empty($_SERVER['HTTP_X_FORWARDED_HOST'])) {
+        $host = $_SERVER['HTTP_X_FORWARDED_HOST'];
+    }
+    if (!$host && !empty($_SERVER['HTTP_HOST'])) {
+        $host = $_SERVER['HTTP_HOST'];
+    }
+
+    $host = strtolower(preg_replace('/[^A-Za-z0-9.\-:]/', '', (string)$host));
+    $host = preg_replace('/:\d+$/', '', $host);
+    $allowed = ['pbx.tappedin.fm', 'pbx.devinecreations.net'];
+
+    return in_array($host, $allowed, true) ? $host : 'pbx.tappedin.fm';
 }
 ?>
 <!DOCTYPE html>

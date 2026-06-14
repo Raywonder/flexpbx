@@ -75,9 +75,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $token_valid) {
                     [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
                 );
 
-                // Update password in users table (using SHA2 for compatibility with existing system)
-                $stmt = $pdo->prepare("UPDATE users SET password_hash = SHA2(?, 256), updated_at = NOW() WHERE extension = ? OR username = ?");
-                $stmt->execute([$new_password, $extension, $extension]);
+                $password_hash = password_hash($new_password, PASSWORD_DEFAULT);
+                try {
+                    $stmt = $pdo->prepare("
+                        UPDATE users u
+                        LEFT JOIN extensions e ON e.user_id = u.id
+                        SET u.password_hash = ?, u.updated_at = NOW()
+                        WHERE e.extension_number = ? OR u.username = ? OR u.email = ?
+                    ");
+                    $stmt->execute([$password_hash, $extension, $extension, $token_data['email']]);
+                } catch (Exception $inner) {
+                    $stmt = $pdo->prepare("
+                        UPDATE users u
+                        LEFT JOIN extensions e ON e.user_id = u.id
+                        SET u.password_hash = ?
+                        WHERE e.extension_number = ? OR u.username = ? OR u.email = ?
+                    ");
+                    $stmt->execute([$password_hash, $extension, $extension, $token_data['email']]);
+                }
             } catch (Exception $e) {
                 // Database update failed, but continue with file update
                 error_log("Database password update failed: " . $e->getMessage());
@@ -104,7 +119,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $token_valid) {
                 $message .= "Changed: " . date('Y-m-d H:i:s') . "\n\n";
                 $message .= "If you did not make this change, please contact support immediately.\n\n";
                 $message .= "You can now login with your new password at:\n";
-                $message .= "https://flexpbx.devinecreations.net/user-portal/\n\n";
+                $message .= "https://" . publicFlexPbxHost() . "/user-portal/\n\n";
                 $message .= "---\n";
                 $message .= "FlexPBX System\n";
 
@@ -159,6 +174,22 @@ function updatePjsipPassword($extension, $new_password) {
     }
 
     return false;
+}
+
+function publicFlexPbxHost() {
+    $host = getenv('FLEXPBX_PUBLIC_HOST');
+    if (!$host && !empty($_SERVER['HTTP_X_FORWARDED_HOST'])) {
+        $host = $_SERVER['HTTP_X_FORWARDED_HOST'];
+    }
+    if (!$host && !empty($_SERVER['HTTP_HOST'])) {
+        $host = $_SERVER['HTTP_HOST'];
+    }
+
+    $host = strtolower(preg_replace('/[^A-Za-z0-9.\-:]/', '', (string)$host));
+    $host = preg_replace('/:\d+$/', '', $host);
+    $allowed = ['pbx.tappedin.fm', 'pbx.devinecreations.net'];
+
+    return in_array($host, $allowed, true) ? $host : 'pbx.tappedin.fm';
 }
 ?>
 <!DOCTYPE html>

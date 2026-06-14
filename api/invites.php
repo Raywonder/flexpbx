@@ -77,7 +77,8 @@ if ($action === 'send_invite' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     file_put_contents($invite_file, json_encode($invitation, JSON_PRETTY_PRINT));
 
     // Send invitation email
-    $invite_url = 'https://' . $_SERVER['HTTP_HOST'] . '/invite.php?token=' . urlencode($invite_token) . '&id=' . urlencode($invite_id);
+    $public_host = publicFlexPbxHost();
+    $invite_url = 'https://' . $public_host . '/invite.php?token=' . urlencode($invite_token) . '&id=' . urlencode($invite_id);
 
     $email_subject = 'You\'re Invited to FlexPBX';
 
@@ -99,10 +100,10 @@ if ($action === 'send_invite' && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $email_body .= "If you did not expect this invitation, you can safely ignore this email.\n\n";
     $email_body .= "---\n";
     $email_body .= "FlexPBX - Flexible PBX System\n";
-    $email_body .= "https://" . $_SERVER['HTTP_HOST'];
+    $email_body .= "https://" . $public_host;
 
-    $headers = "From: noreply@" . $_SERVER['HTTP_HOST'] . "\r\n";
-    $headers .= "Reply-To: {$created_by}@" . $_SERVER['HTTP_HOST'] . "\r\n";
+    $headers = "From: noreply@" . $public_host . "\r\n";
+    $headers .= "Reply-To: {$created_by}@" . $public_host . "\r\n";
     $headers .= "X-Mailer: FlexPBX";
 
     $email_sent = mail($email, $email_subject, $email_body, $headers);
@@ -115,6 +116,22 @@ if ($action === 'send_invite' && $_SERVER['REQUEST_METHOD'] === 'POST') {
         'email_sent' => $email_sent
     ]);
     exit;
+}
+
+function publicFlexPbxHost() {
+    $host = getenv('FLEXPBX_PUBLIC_HOST');
+    if (!$host && !empty($_SERVER['HTTP_X_FORWARDED_HOST'])) {
+        $host = $_SERVER['HTTP_X_FORWARDED_HOST'];
+    }
+    if (!$host && !empty($_SERVER['HTTP_HOST'])) {
+        $host = $_SERVER['HTTP_HOST'];
+    }
+
+    $host = strtolower(preg_replace('/[^A-Za-z0-9.\-:]/', '', (string)$host));
+    $host = preg_replace('/:\d+$/', '', $host);
+    $allowed = ['pbx.tappedin.fm', 'pbx.devinecreations.net'];
+
+    return in_array($host, $allowed, true) ? $host : 'pbx.tappedin.fm';
 }
 
 /**
