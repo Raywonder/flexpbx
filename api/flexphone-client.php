@@ -53,6 +53,12 @@ switch ($action) {
     case 'presence_action':
         presenceAction($extension, $input);
         break;
+    case 'messages':
+        flexPhoneMessages($extension, $input);
+        break;
+    case 'send_message':
+        flexPhoneSendMessage($extension, $input);
+        break;
     case 'voicemail':
         voicemail($extension);
         break;
@@ -375,8 +381,11 @@ function presenceAction($extension, $input) {
             if ($message === '') {
                 respond(400, false, 'Enter a message first.');
             }
-            saveInternalMessage($extension, $target, $message, 'text');
-            respond(200, true, 'Message saved for that person.');
+            $saved = saveInternalMessage($extension, $target, $message, 'text');
+            respond(200, true, 'Message sent to extension ' . $target . '.', [
+                'message_id' => $saved['id'] ?? '',
+                'messages' => isset($saved['message']) ? [formatFlexPhoneMessage($saved['message'], $extension)] : []
+            ]);
             break;
         default:
             respond(400, false, 'Choose a valid action.');
@@ -451,6 +460,37 @@ function toggleRecording($extension) {
     respond(200, true, 'Server recording was requested for the active call.', ['details' => $result]);
 }
 
+function flexPhoneMessages($extension, $input) {
+    $target = trim((string)($input['to'] ?? $input['target'] ?? $input['recipient'] ?? ''));
+    $messages = $target !== ''
+        ? loadFlexPhoneThread($extension, $target)
+        : loadFlexPhoneMessages($extension);
+
+    $formatted = array_map(fn($message) => formatFlexPhoneMessage($message, $extension), $messages);
+    respond(200, true, count($formatted) ? 'Messages loaded.' : 'No messages.', [
+        'messages' => $formatted
+    ]);
+}
+
+function flexPhoneSendMessage($extension, $input) {
+    $target = trim((string)($input['to'] ?? $input['target'] ?? $input['recipient'] ?? ''));
+    $body = safeText((string)($input['body'] ?? $input['message'] ?? ''), 2000);
+
+    if (!isFlexPhoneExtension($target)) {
+        respond(400, false, 'Choose a valid extension to message.');
+    }
+
+    if ($body === '') {
+        respond(400, false, 'Enter a message before sending.');
+    }
+
+    $saved = saveInternalMessage($extension, $target, $body, 'text');
+    respond(200, true, 'Message sent to extension ' . $target . '.', [
+        'message_id' => $saved['id'] ?? '',
+        'messages' => isset($saved['message']) ? [formatFlexPhoneMessage($saved['message'], $extension)] : []
+    ]);
+}
+
 function loadDeviceRecords() {
     $dir = getenv('FLEXPBX_DEVICE_STATUS_DIR') ?: '/home/flexpbxuser/device_status';
     $records = [];
@@ -473,17 +513,210 @@ function saveInternalMessage($fromExtension, $targetExtension, $message, $kind) 
         @mkdir($dir, 0750, true);
     }
 
+    $messageId = uniqid('msg_', true);
+    $timestamp = time();
     $record = [
+        'id' => $messageId,
         'from_extension' => $fromExtension,
         'target_extension' => $targetExtension,
         'kind' => $kind,
         'message' => $message,
-        'created_at' => date('c'),
+        'created_at' => date('c', $timestamp),
         'delivered' => false
     ];
     $file = $dir . '/message_' . $targetExtension . '_' . date('Ymd_His') . '_' . bin2hex(random_bytes(4)) . '.json';
     @file_put_contents($file, json_encode($record, JSON_PRETTY_PRINT), LOCK_EX);
     @chmod($file, 0640);
+
+    $threadMessage = [
+        'id' => $messageId,
+        'sender' => $fromExtension,
+        'recipient' => $targetExtension,
+        'message' => $message,
+        'timestamp' => $timestamp,
+        'datetime' => date('Y-m-d H:i:s', $timestamp),
+        'type' => $kind === 'voicemail_note' ? 'voicemail_note' : 'internal',
+        'status' => 'sent',
+        'read' => false
+    ];
+
+    saveFlexPhoneThreadMessage($fromExtension, $targetExtension, $threadMessage, 'sent');
+    saveFlexPhoneThreadMessage($targetExtension, $fromExtension, $threadMessage, 'received');
+    updateFlexPhoneConversation($fromExtension, $targetExtension, $threadMessage, 'sent');
+    updateFlexPhoneConversation($targetExtension, $fromExtension, $threadMessage, 'received');
+    saveFlexPhoneNotification($targetExtension, $fromExtension, $message, $messageId);
+
+    return [
+        'id' => $messageId,
+        'message' => array_merge($threadMessage, ['direction' => 'sent'])
+    ];
+}
+
+function flexPhoneMessagesDir() {
+    $dir = getenv('FLEXPBX_MESSAGES_DIR') ?: '/home/flexpbxuser/messages';
+    if (!is_dir($dir)) {
+        @mkdir($dir, 0750, true);
+    }
+    return $dir;
+}
+
+function isFlexPhoneExtension($value) {
+    return preg_match('/^\d{3,6}$/', trim((string)$value)) === 1;
+}
+
+function flexPhoneMessageKey($value) {
+    return preg_replace('/[^A-Za-z0-9_.-]/', '_', trim((string)$value)) ?: 'unknown';
+}
+
+function flexPhoneThreadFile($extension, $otherParty) {
+    return flexPhoneMessagesDir() . '/thread_' . flexPhoneMessageKey($extension) . '_' . flexPhoneMessageKey($otherParty) . '.json';
+}
+
+function flexPhoneConversationsFile($extension) {
+    return flexPhoneMessagesDir() . '/conversations_' . flexPhoneMessageKey($extension) . '.json';
+}
+
+function saveFlexPhoneThreadMessage($extension, $otherParty, $message, $direction) {
+    $file = flexPhoneThreadFile($extension, $otherParty);
+    $thread = ['messages' => []];
+    if (is_readable($file)) {
+        $existing = json_decode((string)@file_get_contents($file), true);
+        if (is_array($existing)) {
+            $thread = $existing + ['messages' => []];
+        }
+    }
+
+    $entry = $message;
+    $entry['direction'] = $direction;
+    $thread['messages'][] = $entry;
+    @file_put_contents($file, json_encode($thread, JSON_PRETTY_PRINT), LOCK_EX);
+    @chmod($file, 0640);
+}
+
+function updateFlexPhoneConversation($extension, $otherParty, $message, $direction) {
+    $file = flexPhoneConversationsFile($extension);
+    $data = ['conversations' => []];
+    if (is_readable($file)) {
+        $existing = json_decode((string)@file_get_contents($file), true);
+        if (is_array($existing)) {
+            $data = $existing + ['conversations' => []];
+        }
+    }
+
+    $found = false;
+    foreach ($data['conversations'] as &$conversation) {
+        if ((string)($conversation['recipient'] ?? '') === (string)$otherParty) {
+            $conversation['recipient_name'] = flexPhoneDisplayName($otherParty);
+            $conversation['recipient_type'] = isFlexPhoneExtension($otherParty) ? 'extension' : 'phone';
+            $conversation['last_message'] = (string)($message['message'] ?? '');
+            $conversation['last_message_time'] = (int)($message['timestamp'] ?? time());
+            $conversation['unread_count'] = $direction === 'received'
+                ? ((int)($conversation['unread_count'] ?? 0) + 1)
+                : 0;
+            $found = true;
+            break;
+        }
+    }
+    unset($conversation);
+
+    if (!$found) {
+        $data['conversations'][] = [
+            'recipient' => $otherParty,
+            'recipient_name' => flexPhoneDisplayName($otherParty),
+            'recipient_type' => isFlexPhoneExtension($otherParty) ? 'extension' : 'phone',
+            'last_message' => (string)($message['message'] ?? ''),
+            'last_message_time' => (int)($message['timestamp'] ?? time()),
+            'unread_count' => $direction === 'received' ? 1 : 0
+        ];
+    }
+
+    @file_put_contents($file, json_encode($data, JSON_PRETTY_PRINT), LOCK_EX);
+    @chmod($file, 0640);
+}
+
+function saveFlexPhoneNotification($targetExtension, $fromExtension, $message, $messageId) {
+    $file = flexPhoneMessagesDir() . '/notifications_' . flexPhoneMessageKey($targetExtension) . '.json';
+    $notifications = ['pending' => []];
+    if (is_readable($file)) {
+        $existing = json_decode((string)@file_get_contents($file), true);
+        if (is_array($existing)) {
+            $notifications = $existing + ['pending' => []];
+        }
+    }
+
+    $notifications['pending'][] = [
+        'id' => $messageId,
+        'type' => 'new_message',
+        'sender' => $fromExtension,
+        'message' => $message,
+        'timestamp' => time()
+    ];
+    @file_put_contents($file, json_encode($notifications, JSON_PRETTY_PRINT), LOCK_EX);
+    @chmod($file, 0640);
+}
+
+function loadFlexPhoneThread($extension, $target) {
+    $file = flexPhoneThreadFile($extension, $target);
+    if (!is_readable($file)) {
+        return [];
+    }
+
+    $data = json_decode((string)@file_get_contents($file), true);
+    $messages = is_array($data) ? ($data['messages'] ?? []) : [];
+    return sortFlexPhoneMessages($messages);
+}
+
+function loadFlexPhoneMessages($extension) {
+    $messages = [];
+    foreach (glob(flexPhoneMessagesDir() . '/thread_' . flexPhoneMessageKey($extension) . '_*.json') ?: [] as $file) {
+        $data = json_decode((string)@file_get_contents($file), true);
+        if (!is_array($data)) {
+            continue;
+        }
+        foreach ($data['messages'] ?? [] as $message) {
+            if (is_array($message)) {
+                $messages[] = $message;
+            }
+        }
+    }
+    return array_slice(sortFlexPhoneMessages($messages), -100);
+}
+
+function sortFlexPhoneMessages($messages) {
+    $clean = array_values(array_filter($messages, 'is_array'));
+    usort($clean, fn($a, $b) => ((int)($a['timestamp'] ?? 0)) <=> ((int)($b['timestamp'] ?? 0)));
+    return $clean;
+}
+
+function formatFlexPhoneMessage($message, $currentExtension) {
+    $sender = (string)($message['sender'] ?? $message['from_extension'] ?? '');
+    $recipient = (string)($message['recipient'] ?? $message['target_extension'] ?? '');
+    $direction = (string)($message['direction'] ?? '');
+    if ($direction === '') {
+        $direction = $sender === $currentExtension ? 'sent' : 'received';
+    }
+
+    $party = $direction === 'sent' || $direction === 'out' ? $recipient : $sender;
+    return [
+        'from' => $sender,
+        'to' => $recipient,
+        'body' => (string)($message['message'] ?? $message['body'] ?? ''),
+        'direction' => $direction === 'sent' ? 'out' : ($direction === 'received' ? 'in' : $direction),
+        'date' => (string)($message['datetime'] ?? $message['created_at'] ?? ''),
+        'provider' => 'FlexPBX',
+        'status' => (string)($message['status'] ?? ''),
+        'display_name' => flexPhoneDisplayName($party)
+    ];
+}
+
+function flexPhoneDisplayName($extension) {
+    foreach (loadUsers() as $user) {
+        $userExtension = (string)($user['extension'] ?? $user['extension_number'] ?? $user['username'] ?? '');
+        if ($userExtension === (string)$extension) {
+            return (string)($user['full_name'] ?? $user['display_name'] ?? $user['username'] ?? $extension);
+        }
+    }
+    return (string)$extension;
 }
 
 function sanitizeLines($lines) {
