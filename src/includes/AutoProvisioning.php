@@ -350,7 +350,7 @@ class AutoProvisioning {
 
         $file = $dir . '/token_' . $token . '.json';
         @file_put_contents($file, json_encode($tokenData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES), LOCK_EX);
-        @chmod($file, 0640);
+        @chmod($file, 0600);
 
         return 'https://' . $this->publicHost() . '/user-portal/reset-password.php?token=' . urlencode($token);
     }
@@ -369,7 +369,7 @@ class AutoProvisioning {
 
         $host = strtolower(preg_replace('/[^A-Za-z0-9.\-:]/', '', (string)$host));
         $host = preg_replace('/:\d+$/', '', $host);
-        $allowed = ['pbx.tappedin.fm', 'pbx.devinecreations.net'];
+        $allowed = ['pbx.tappedin.fm', 'flexpbx.devinecreations.net'];
 
         return in_array($host, $allowed, true) ? $host : 'pbx.tappedin.fm';
     }

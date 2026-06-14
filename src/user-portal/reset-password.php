@@ -25,7 +25,7 @@ if (empty($token)) {
     $token_file = $reset_tokens_dir . '/token_' . $token . '.json';
 
     if (!file_exists($token_file)) {
-        $error_message = 'Invalid reset token. It may have already been used.';
+        $error_message = 'Invalid reset token. It may have already been used. If this link came from an older email, request a new setup link or use the newest link that opens on pbx.tappedin.fm.';
     } else {
         $token_data = json_decode(file_get_contents($token_file), true);
 
@@ -98,17 +98,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $token_valid) {
                 error_log("Database password update failed: " . $e->getMessage());
             }
 
-            // Update SIP password in pjsip.conf
-            $pjsip_updated = updatePjsipPassword($extension, $new_password);
-
             if (file_put_contents($user_file, json_encode($user_data, JSON_PRETTY_PRINT))) {
                 // Delete token so it can't be reused
                 unlink($token_file);
-
-                // Reload PJSIP if config was updated
-                if ($pjsip_updated) {
-                    exec('sudo -u asterisk /usr/sbin/asterisk -rx "pjsip reload" 2>&1', $reload_output);
-                }
 
                 // Send confirmation email
                 $to = $token_data['email'];
