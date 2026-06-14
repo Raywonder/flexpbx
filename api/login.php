@@ -2,7 +2,7 @@
 /**
  * Flex PBX modern login API.
  *
- * Accepts a username, extension number, or email address with the extension
+ * Accepts a username, extension number, or email address with the portal
  * password. Legacy plaintext admin-file passwords are intentionally not
  * accepted. Admin access is represented by normal user roles, not a separate
  * legacy admin account.
@@ -57,6 +57,9 @@ $username = (string)($user['username'] ?? $extension);
 $email = (string)($user['email'] ?? '');
 $fullName = (string)($user['full_name'] ?? $user['display_name'] ?? '');
 $sipPassword = (string)($user['sip_password'] ?? $user['extension_password'] ?? $user['secret'] ?? '');
+if ($sipPassword === '') {
+    $sipPassword = findPjsipPassword($extension);
+}
 $token = issueSessionToken($extension, $username, $role, $client);
 touchUserLogin($extension, $username);
 auditLogin($identifier, $accountType, true, $client);
@@ -200,8 +203,12 @@ function findDatabaseUser($identifier) {
 }
 
 function verifyModernPassword($password, $user) {
+    if (matchesPhoneRegistrationSecret($password, $user)) {
+        return false;
+    }
+
     $hashes = [];
-    foreach (['password_hash', 'password', 'sip_password', 'extension_password', 'secret'] as $key) {
+    foreach (['password_hash', 'password'] as $key) {
         if (!empty($user[$key]) && is_string($user[$key])) {
             $hashes[] = $user[$key];
         }
@@ -222,6 +229,39 @@ function verifyModernPassword($password, $user) {
     }
 
     return false;
+}
+
+function matchesPhoneRegistrationSecret($password, $user) {
+    foreach (['sip_password', 'extension_password', 'secret'] as $key) {
+        $secret = (string)($user[$key] ?? '');
+        if ($secret !== '' && hash_equals($secret, $password)) {
+            return true;
+        }
+    }
+
+    $extension = (string)($user['extension'] ?? $user['extension_number'] ?? '');
+    $pjsipPassword = findPjsipPassword($extension);
+    return $pjsipPassword !== '' && hash_equals($pjsipPassword, $password);
+}
+
+function findPjsipPassword($extension) {
+    $extension = (string)$extension;
+    if ($extension === '') {
+        return '';
+    }
+
+    $file = getenv('FLEXPBX_PJSIP_CONFIG') ?: '/etc/asterisk/pjsip.conf';
+    if (!is_readable($file)) {
+        return '';
+    }
+
+    $content = (string)file_get_contents($file);
+    $pattern = '/\[' . preg_quote($extension, '/') . '\]\s*type=auth\b(?P<body>.*?)(?=\n\[[^\]]+\]|\z)/is';
+    if (preg_match($pattern, $content, $matches) && preg_match('/^\s*password\s*=\s*(.+?)\s*$/mi', $matches['body'], $password)) {
+        return trim($password[1]);
+    }
+
+    return '';
 }
 
 function issueSessionToken($extension, $username, $role, $client) {
