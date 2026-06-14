@@ -530,7 +530,7 @@ $user_username = $_SESSION['user_username'] ?? 'User';
                 <div class="settings-card">
                     <h3>📬 Voicemail Configuration</h3>
                     <p>Configure voicemail PIN, greetings, and playback options.</p>
-                    <a href="/user-portal/voicemail-settings.php" class="btn btn-primary">Manage Voicemail</a>
+                    <a href="/user-portal/voicemail.php" class="btn btn-primary">Manage Voicemail</a>
                 </div>
 
                 <div class="settings-card">
