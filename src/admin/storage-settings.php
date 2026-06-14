@@ -342,7 +342,7 @@ $admin_role = $_SESSION['admin_role'] ?? 'admin';
 <body>
     <div class="container">
         <div class="header">
-            <h1>💾 Storage Settings</h1>
+            <h1> Storage Settings</h1>
             <p class="subtitle">
                 Admin: <?= htmlspecialchars($admin_username) ?>
                 <span class="admin-badge"><?= strtoupper(htmlspecialchars($admin_role)) ?></span>
@@ -353,7 +353,7 @@ $admin_role = $_SESSION['admin_role'] ?? 'admin';
 
         <!-- Available Drives -->
         <div class="card">
-            <h2>📊 Available Drives & Mount Points</h2>
+            <h2> Available Drives & Mount Points</h2>
             <div id="drives-list">
                 <p style="text-align: center; color: #999;">Loading drives...</p>
             </div>
@@ -361,10 +361,10 @@ $admin_role = $_SESSION['admin_role'] ?? 'admin';
 
         <!-- Storage Configuration -->
         <div class="card">
-            <h2>⚙️ Configure Storage Locations</h2>
+            <h2> Configure Storage Locations</h2>
 
             <div class="alert alert-info">
-                ℹ️ Configure where different types of data are stored. You can set primary and secondary (backup) locations for each type.
+                ℹ Configure where different types of data are stored. You can set primary and secondary (backup) locations for each type.
             </div>
 
             <form id="storage-form" onsubmit="saveConfiguration(event)">
@@ -375,7 +375,7 @@ $admin_role = $_SESSION['admin_role'] ?? 'admin';
                 <div class="actions">
                     <a href="/admin/dashboard.html" class="btn btn-secondary">Cancel</a>
                     <button type="submit" class="btn btn-primary" id="save-btn">
-                        💾 Save Configuration
+                         Save Configuration
                     </button>
                 </div>
             </form>
@@ -447,7 +447,7 @@ $admin_role = $_SESSION['admin_role'] ?? 'admin';
         // Use a drive (copy path to clipboard for easy pasting)
         function useDrive(path) {
             navigator.clipboard.writeText(path).then(() => {
-                showAlert(`✓ Path copied to clipboard: ${path}`, 'success');
+                showAlert(` Path copied to clipboard: ${path}`, 'success');
             });
         }
 
@@ -471,12 +471,12 @@ $admin_role = $_SESSION['admin_role'] ?? 'admin';
             const container = document.getElementById('storage-types-container');
 
             const types = {
-                'backups': { icon: '💾', title: 'Backups & Archives' },
-                'encryption': { icon: '🔐', title: 'Encryption Keys & Crypto Storage' },
-                'recordings': { icon: '🎙️', title: 'Call Recordings' },
-                'voicemail': { icon: '📧', title: 'Voicemail Files' },
-                'logs': { icon: '📜', title: 'System Logs' },
-                'temp': { icon: '⏱️', title: 'Temporary Files' }
+                'backups': { icon: '', title: 'Backups & Archives' },
+                'encryption': { icon: '', title: 'Encryption Keys & Crypto Storage' },
+                'recordings': { icon: '', title: 'Call Recordings' },
+                'voicemail': { icon: '', title: 'Voicemail Files' },
+                'logs': { icon: '', title: 'System Logs' },
+                'temp': { icon: '', title: 'Temporary Files' }
             };
 
             let html = '';
@@ -542,7 +542,7 @@ $admin_role = $_SESSION['admin_role'] ?? 'admin';
                                 `).join('')}
                             </div>
                             <button type="button" class="btn btn-secondary btn-sm" onclick="addSecondary('${type}')">
-                                ➕ Add Secondary Location
+                                 Add Secondary Location
                             </button>
                         </div>
                     </div>
@@ -582,9 +582,9 @@ $admin_role = $_SESSION['admin_role'] ?? 'admin';
 
                 if (data.success) {
                     if (data.writable || data.can_create) {
-                        showAlert(`✓ Path OK: ${path} (${data.disk_space.free} free)`, 'success');
+                        showAlert(` Path OK: ${path} (${data.disk_space.free} free)`, 'success');
                     } else {
-                        showAlert(`⚠️ Path not writable: ${path}`, 'error');
+                        showAlert(` Path not writable: ${path}`, 'error');
                     }
                 } else {
                     showAlert(`Error testing path: ${data.error}`, 'error');
@@ -668,7 +668,7 @@ $admin_role = $_SESSION['admin_role'] ?? 'admin';
                 const data = await response.json();
 
                 if (data.success) {
-                    showAlert('✓ Storage configuration saved successfully', 'success');
+                    showAlert(' Storage configuration saved successfully', 'success');
                     config = data.config;
                 } else {
                     showAlert('Failed to save: ' + (data.validation_errors || [data.error]).join(', '), 'error');
@@ -678,7 +678,7 @@ $admin_role = $_SESSION['admin_role'] ?? 'admin';
                 showAlert('Failed to save configuration', 'error');
             } finally {
                 saveBtn.disabled = false;
-                saveBtn.textContent = '💾 Save Configuration';
+                saveBtn.textContent = ' Save Configuration';
             }
         }
 

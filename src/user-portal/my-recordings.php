@@ -345,14 +345,14 @@ $recordings = getUserRecordings($extension);
         <div class="card">
             <div class="header">
                 <div>
-                    <h1>🎙️ My Recordings</h1>
+                    <h1> My Recordings</h1>
                     <span class="extension-badge">Extension <?php echo htmlspecialchars($extension); ?></span>
                 </div>
-                <a href="../user-portal/" class="back-btn">← Back to Portal</a>
+                <a href="../user-portal/" class="back-btn"><- Back to Portal</a>
             </div>
 
             <div class="info-box">
-                <h4>📱 How to Record Your Greeting</h4>
+                <h4> How to Record Your Greeting</h4>
                 <ul>
                     <li><strong>Dial *97:</strong> Access voicemail and follow prompts to record greetings</li>
                     <li><strong>Press 0:</strong> In voicemail menu for mailbox options, then follow prompts</li>
@@ -362,11 +362,11 @@ $recordings = getUserRecordings($extension);
             </div>
 
             <?php if ($upload_message): ?>
-                <div class="success">✅ <?php echo htmlspecialchars($upload_message); ?></div>
+                <div class="success"> <?php echo htmlspecialchars($upload_message); ?></div>
             <?php endif; ?>
 
             <?php if ($upload_error): ?>
-                <div class="error">❌ <?php echo htmlspecialchars($upload_error); ?></div>
+                <div class="error"> <?php echo htmlspecialchars($upload_error); ?></div>
             <?php endif; ?>
 
             <form method="POST" enctype="multipart/form-data">
@@ -394,16 +394,16 @@ $recordings = getUserRecordings($extension);
                     <p class="help-text">Removes source file after successful conversion to WAV</p>
                 </div>
 
-                <button type="submit">📤 Upload Greeting</button>
+                <button type="submit"> Upload Greeting</button>
             </form>
 
-            <h2 style="margin-top: 40px; margin-bottom: 20px; color: #333;">📂 Your Current Greetings</h2>
+            <h2 style="margin-top: 40px; margin-bottom: 20px; color: #333;"> Your Current Greetings</h2>
             <div class="recordings-grid">
                 <?php foreach ($greeting_types as $type => $description): ?>
                     <div class="recording-item">
                         <h4><?php echo ucfirst($type); ?></h4>
                         <?php if ($recordings[$type]['exists']): ?>
-                            <span class="status-badge status-active">✓ Active</span>
+                            <span class="status-badge status-active"> Active</span>
                             <div class="file-info">
                                 Size: <?php echo number_format($recordings[$type]['size'] / 1024, 1); ?> KB<br>
                                 Updated: <?php echo date('M j, Y', $recordings[$type]['modified']); ?>
@@ -417,7 +417,7 @@ $recordings = getUserRecordings($extension);
             </div>
 
             <div class="info-box" style="margin-top: 30px;">
-                <h4>💡 Tips for Great Greetings</h4>
+                <h4> Tips for Great Greetings</h4>
                 <ul>
                     <li>Speak clearly and at moderate pace</li>
                     <li>Record in a quiet environment</li>

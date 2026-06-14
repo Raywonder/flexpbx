@@ -1,5 +1,5 @@
 /**
- * 🔊 FlexPhone Audio Device Service
+ *  FlexPhone Audio Device Service
  * Manages audio input/output device enumeration and selection
  */
 
@@ -22,7 +22,7 @@ class AudioDeviceService extends EventEmitter {
 
     async init() {
         try {
-            console.log('🔊 Initializing Audio Device Service...');
+            console.log(' Initializing Audio Device Service...');
 
             // Check if mediaDevices API is available
             if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
@@ -39,19 +39,19 @@ class AudioDeviceService extends EventEmitter {
             this.setupDeviceChangeListener();
 
             this.isInitialized = true;
-            console.log('✅ Audio Device Service initialized');
+            console.log(' Audio Device Service initialized');
             this.emit('initialized');
 
             return true;
         } catch (error) {
-            console.error('❌ Failed to initialize Audio Device Service:', error);
+            console.error(' Failed to initialize Audio Device Service:', error);
             return false;
         }
     }
 
     async requestPermissions() {
         try {
-            console.log('🎤 Requesting audio permissions...');
+            console.log(' Requesting audio permissions...');
 
             // Request microphone access to enable device enumeration with labels
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -60,10 +60,10 @@ class AudioDeviceService extends EventEmitter {
             stream.getTracks().forEach(track => track.stop());
 
             this.permissionGranted = true;
-            console.log('✅ Audio permissions granted');
+            console.log(' Audio permissions granted');
 
         } catch (error) {
-            console.warn('⚠️ Audio permissions denied:', error);
+            console.warn(' Audio permissions denied:', error);
             this.permissionGranted = false;
             throw error;
         }
@@ -71,7 +71,7 @@ class AudioDeviceService extends EventEmitter {
 
     async enumerateDevices() {
         try {
-            console.log('🔍 Enumerating audio devices...');
+            console.log(' Enumerating audio devices...');
 
             const devices = await navigator.mediaDevices.enumerateDevices();
 
@@ -101,8 +101,8 @@ class AudioDeviceService extends EventEmitter {
                 this.selectedDevices.audioOutput = this.availableDevices.audioOutput[0];
             }
 
-            console.log(`🎤 Found ${this.availableDevices.audioInput.length} audio input devices`);
-            console.log(`🔊 Found ${this.availableDevices.audioOutput.length} audio output devices`);
+            console.log(` Found ${this.availableDevices.audioInput.length} audio input devices`);
+            console.log(` Found ${this.availableDevices.audioOutput.length} audio output devices`);
 
             // Emit devices updated event
             this.emit('devicesUpdated', this.availableDevices);
@@ -110,7 +110,7 @@ class AudioDeviceService extends EventEmitter {
             return this.availableDevices;
 
         } catch (error) {
-            console.error('❌ Failed to enumerate devices:', error);
+            console.error(' Failed to enumerate devices:', error);
             throw error;
         }
     }
@@ -118,7 +118,7 @@ class AudioDeviceService extends EventEmitter {
     setupDeviceChangeListener() {
         if (navigator.mediaDevices && navigator.mediaDevices.addEventListener) {
             navigator.mediaDevices.addEventListener('devicechange', () => {
-                console.log('🔄 Audio devices changed, re-enumerating...');
+                console.log(' Audio devices changed, re-enumerating...');
                 this.enumerateDevices();
             });
         }
@@ -148,13 +148,13 @@ class AudioDeviceService extends EventEmitter {
             stream.getTracks().forEach(track => track.stop());
 
             this.selectedDevices.audioInput = device;
-            console.log(`🎤 Selected input device: ${device.label}`);
+            console.log(` Selected input device: ${device.label}`);
 
             this.emit('inputDeviceChanged', device);
             return true;
 
         } catch (error) {
-            console.error('❌ Failed to set input device:', error);
+            console.error(' Failed to set input device:', error);
             return false;
         }
     }
@@ -167,13 +167,13 @@ class AudioDeviceService extends EventEmitter {
             }
 
             this.selectedDevices.audioOutput = device;
-            console.log(`🔊 Selected output device: ${device.label}`);
+            console.log(` Selected output device: ${device.label}`);
 
             this.emit('outputDeviceChanged', device);
             return true;
 
         } catch (error) {
-            console.error('❌ Failed to set output device:', error);
+            console.error(' Failed to set output device:', error);
             return false;
         }
     }
@@ -195,12 +195,12 @@ class AudioDeviceService extends EventEmitter {
             }
 
             const stream = await navigator.mediaDevices.getUserMedia(constraints);
-            console.log('🎤 Got media stream with selected device');
+            console.log(' Got media stream with selected device');
 
             return stream;
 
         } catch (error) {
-            console.error('❌ Failed to get user media with selected device:', error);
+            console.error(' Failed to get user media with selected device:', error);
             throw error;
         }
     }
@@ -256,7 +256,7 @@ class AudioDeviceService extends EventEmitter {
             }
 
         } catch (error) {
-            console.error('❌ Device test failed:', error);
+            console.error(' Device test failed:', error);
             return { working: false, level: 0, error: error.message };
         }
     }

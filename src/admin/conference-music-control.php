@@ -347,14 +347,14 @@
 </head>
 <body>
     <div class="container">
-        <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+        <a href="dashboard.html" class="back-link"><- Back to Dashboard</a>
 
         <div class="header">
-            <h1>🎵 Conference Music Control</h1>
+            <h1> Conference Music Control</h1>
             <p class="subtitle">A system you can help build to be the best it can be. Accessible by default.</p>
 
             <div class="support-callout">
-                <div style="font-weight: 600; color: #1976d2;">📞 Support Hotline</div>
+                <div style="font-weight: 600; color: #1976d2;"> Support Hotline</div>
                 <div class="phone">
                     <a href="tel:+13023139555" style="color: #1976d2; text-decoration: none;">(302) 313-9555</a>
                 </div>
@@ -366,7 +366,7 @@
             <!-- Sidebar - Room List -->
             <div class="sidebar">
                 <h2>Active Conference Rooms</h2>
-                <button class="btn btn-primary btn-block" onclick="refreshRooms()">🔄 Refresh Rooms</button>
+                <button class="btn btn-primary btn-block" onclick="refreshRooms()"> Refresh Rooms</button>
                 <div id="roomList" class="room-list">
                     <div class="loading">
                         <div class="spinner"></div>
@@ -379,7 +379,7 @@
             <div class="content">
                 <div id="noRoomSelected">
                     <h2 style="text-align: center; color: #999; padding: 60px;">
-                        ← Select a room from the sidebar to control music
+                        <- Select a room from the sidebar to control music
                     </h2>
                 </div>
 
@@ -427,10 +427,10 @@
 
                     <div style="display: flex; gap: 15px; margin-bottom: 30px;">
                         <button class="btn btn-success" style="flex: 1;" onclick="startMusic()">
-                            ▶️ Start Music
+                            ▶ Start Music
                         </button>
                         <button class="btn btn-danger" style="flex: 1;" onclick="stopMusic()">
-                            ⏹️ Stop Music
+                             Stop Music
                         </button>
                     </div>
 
@@ -514,7 +514,7 @@
             rooms.forEach(room => {
                 const isActive = (currentRoom === room.room);
                 const musicBadge = room.music_playing
-                    ? '<span class="music-badge music-playing">♪ Playing</span>'
+                    ? '<span class="music-badge music-playing"> Playing</span>'
                     : '<span class="music-badge music-stopped">Stopped</span>';
 
                 html += `
@@ -522,7 +522,7 @@
                         <div class="room-name">Room ${room.room} ${musicBadge}</div>
                         <div class="room-status">
                             ${room.users} participant${room.users !== 1 ? 's' : ''}
-                            ${room.locked ? ' • Locked' : ''}
+                            ${room.locked ? ' - Locked' : ''}
                         </div>
                     </div>
                 `;
@@ -623,7 +623,7 @@
                             <span style="font-size: 13px; color: #666;">${p.channel}</span>
                         </div>
                         <div>
-                            ${p.muted ? '<span style="color: #f44336;">🔇 Muted</span>' : '<span style="color: #4caf50;">🔊 Unmuted</span>'}
+                            ${p.muted ? '<span style="color: #f44336;"> Muted</span>' : '<span style="color: #4caf50;"> Unmuted</span>'}
                         </div>
                     </div>
                 `;

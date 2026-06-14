@@ -338,7 +338,7 @@ require_once __DIR__ . '/includes/admin_header.php';
 
     <div class="container">
         <div class="header">
-            <h1>📢 Notification Center</h1>
+            <h1> Notification Center</h1>
             <p class="subtitle">Manage and send notifications to users, roles, and groups</p>
         </div>
 
@@ -365,7 +365,7 @@ require_once __DIR__ . '/includes/admin_header.php';
         <div class="main-content">
             <!-- Send Notification Form -->
             <div class="card">
-                <h2>📤 Send Notification</h2>
+                <h2> Send Notification</h2>
 
                 <div id="alert-container"></div>
 
@@ -462,7 +462,7 @@ require_once __DIR__ . '/includes/admin_header.php';
 
             <!-- Scheduled Notifications -->
             <div class="card">
-                <h2>🕐 Scheduled</h2>
+                <h2> Scheduled</h2>
                 <div class="scheduled-list" id="scheduled-list">
                     <div class="loading">Loading scheduled notifications...</div>
                 </div>
@@ -471,7 +471,7 @@ require_once __DIR__ . '/includes/admin_header.php';
 
         <!-- Recent Activity -->
         <div class="card">
-            <h2>📊 Recent Activity</h2>
+            <h2> Recent Activity</h2>
 
             <div class="tabs">
                 <button class="tab active" data-tab="by-type">By Type</button>
@@ -549,12 +549,12 @@ require_once __DIR__ . '/includes/admin_header.php';
                         const container = document.getElementById('scheduled-list');
 
                         if (scheduled.length === 0) {
-                            container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📭</div><p>No scheduled notifications</p></div>';
+                            container.innerHTML = '<div class="empty-state"><div class="empty-state-icon"></div><p>No scheduled notifications</p></div>';
                         } else {
                             container.innerHTML = scheduled.map(item => `
                                 <div class="scheduled-item">
                                     <div class="notification-title">${item.title}</div>
-                                    <div class="scheduled-time">📅 ${new Date(item.scheduled_for).toLocaleString()}</div>
+                                    <div class="scheduled-time"> ${new Date(item.scheduled_for).toLocaleString()}</div>
                                 </div>
                             `).join('');
                         }

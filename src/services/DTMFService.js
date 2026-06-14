@@ -1,5 +1,5 @@
 /**
- * 🎵 FlexPhone DTMF Service
+ *  FlexPhone DTMF Service
  * Generates and plays DTMF (Dual-Tone Multi-Frequency) tones for dialer feedback
  */
 
@@ -19,7 +19,7 @@ class DTMFService {
         };
 
         this.initializeAudioContext();
-        console.log('🎵 FlexPhone DTMF Service initialized');
+        console.log(' FlexPhone DTMF Service initialized');
     }
 
     async initializeAudioContext() {
@@ -32,22 +32,22 @@ class DTMFService {
                 await this.audioContext.resume();
             }
 
-            console.log('🎵 DTMF AudioContext initialized');
+            console.log(' DTMF AudioContext initialized');
         } catch (error) {
-            console.error('❌ Failed to initialize DTMF AudioContext:', error);
+            console.error(' Failed to initialize DTMF AudioContext:', error);
             this.enabled = false;
         }
     }
 
     async playDTMFTone(digit) {
         if (!this.enabled || !this.audioContext) {
-            console.log('⚠️ DTMF not available');
+            console.log(' DTMF not available');
             return false;
         }
 
         const frequencies = this.dtmfFrequencies[digit.toString().toUpperCase()];
         if (!frequencies) {
-            console.log(`⚠️ Invalid DTMF digit: ${digit}`);
+            console.log(` Invalid DTMF digit: ${digit}`);
             return false;
         }
 
@@ -96,11 +96,11 @@ class DTMFService {
             oscillator1.stop(stopTime);
             oscillator2.stop(stopTime);
 
-            console.log(`🎵 DTMF tone played: ${digit} (${frequencies[0]}Hz + ${frequencies[1]}Hz)`);
+            console.log(` DTMF tone played: ${digit} (${frequencies[0]}Hz + ${frequencies[1]}Hz)`);
             return true;
 
         } catch (error) {
-            console.error(`❌ Failed to play DTMF tone for ${digit}:`, error);
+            console.error(` Failed to play DTMF tone for ${digit}:`, error);
             return false;
         }
     }
@@ -116,17 +116,17 @@ class DTMFService {
 
     setVolume(volume) {
         this.volume = Math.max(0, Math.min(1, volume));
-        console.log(`🎵 DTMF volume set to ${Math.round(this.volume * 100)}%`);
+        console.log(` DTMF volume set to ${Math.round(this.volume * 100)}%`);
     }
 
     setToneDuration(duration) {
         this.toneDuration = Math.max(50, Math.min(1000, duration));
-        console.log(`🎵 DTMF tone duration set to ${this.toneDuration}ms`);
+        console.log(` DTMF tone duration set to ${this.toneDuration}ms`);
     }
 
     setEnabled(enabled) {
         this.enabled = enabled;
-        console.log(`🎵 DTMF ${enabled ? 'enabled' : 'disabled'}`);
+        console.log(` DTMF ${enabled ? 'enabled' : 'disabled'}`);
     }
 
     getStatus() {
@@ -141,7 +141,7 @@ class DTMFService {
 
     // Test all DTMF tones
     async testAllTones() {
-        console.log('🎵 Testing all DTMF tones...');
+        console.log(' Testing all DTMF tones...');
         const digits = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '*', '0', '#'];
 
         for (const digit of digits) {
@@ -150,7 +150,7 @@ class DTMFService {
             await new Promise(resolve => setTimeout(resolve, 300));
         }
 
-        console.log('🎵 DTMF test completed');
+        console.log(' DTMF test completed');
     }
 }
 

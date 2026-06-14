@@ -413,7 +413,7 @@ $user_username = $_SESSION['user_username'] ?? 'User';
     <div class="container">
         <!-- Page Header -->
         <div class="page-header">
-            <h1>⚙️ Settings</h1>
+            <h1> Settings</h1>
             <p class="subtitle">
                 Extension <?= htmlspecialchars($user_extension) ?>
                 <span class="user-badge"><?= htmlspecialchars($user_username) ?></span>
@@ -422,25 +422,25 @@ $user_username = $_SESSION['user_username'] ?? 'User';
 
         <!-- Navigation Buttons (Top) -->
         <div class="nav-buttons">
-            <a href="/user-portal/" class="nav-button">🏠 Dashboard</a>
-            <a href="/user-portal/messages.php" class="nav-button">💬 Messages</a>
-            <a href="/user-portal/voicemail.php" class="nav-button">📬 Voicemail</a>
-            <a href="/user-portal/help.php" class="nav-button">❓ Help</a>
-            <a href="/user-portal/login.php?logout=1" class="nav-button">🚪 Logout</a>
+            <a href="/user-portal/" class="nav-button"> Dashboard</a>
+            <a href="/user-portal/messages.php" class="nav-button"> Messages</a>
+            <a href="/user-portal/voicemail.php" class="nav-button"> Voicemail</a>
+            <a href="/user-portal/help.php" class="nav-button"> Help</a>
+            <a href="/user-portal/login.php?logout=1" class="nav-button"> Logout</a>
         </div>
 
         <!-- Tabs Container -->
         <div class="tabs-container">
             <!-- Tab Navigation -->
             <div class="tabs">
-                <button class="tab active" data-tab="profile">👤 Profile</button>
-                <button class="tab" data-tab="notifications">🔔 Notifications</button>
-                <button class="tab" data-tab="devices">📱 Devices</button>
-                <button class="tab" data-tab="voicemail">📬 Voicemail</button>
-                <button class="tab" data-tab="forwarding">📞 Call Forwarding</button>
-                <button class="tab" data-tab="security">🔒 Security</button>
-                <button class="tab" data-tab="integrations">🔗 Integrations</button>
-                <button class="tab" data-tab="accessibility">♿ Accessibility</button>
+                <button class="tab active" data-tab="profile"> Profile</button>
+                <button class="tab" data-tab="notifications"> Notifications</button>
+                <button class="tab" data-tab="devices"> Devices</button>
+                <button class="tab" data-tab="voicemail"> Voicemail</button>
+                <button class="tab" data-tab="forwarding"> Call Forwarding</button>
+                <button class="tab" data-tab="security"> Security</button>
+                <button class="tab" data-tab="integrations"> Integrations</button>
+                <button class="tab" data-tab="accessibility"> Accessibility</button>
             </div>
 
             <!-- Profile Tab -->
@@ -448,25 +448,25 @@ $user_username = $_SESSION['user_username'] ?? 'User';
                 <h2 style="margin-bottom: 1.5rem; color: #2c3e50;">Profile Settings</h2>
 
                 <div class="settings-card">
-                    <h3>👤 Personal Information</h3>
+                    <h3> Personal Information</h3>
                     <p>Update your account information and contact details.</p>
                     <a href="/user-portal/profile-settings.php" class="btn btn-primary">Manage Profile</a>
                 </div>
 
                 <div class="settings-card">
-                    <h3>📧 Email Address</h3>
+                    <h3> Email Address</h3>
                     <p>Update your email address for notifications and account recovery.</p>
                     <a href="/user-portal/setup-email.php" class="btn btn-primary">Update Email</a>
                 </div>
 
                 <div class="settings-card">
-                    <h3>🔑 Change Password</h3>
+                    <h3> Change Password</h3>
                     <p>Update your account password to keep your extension secure.</p>
                     <a href="/user-portal/change-password.php" class="btn btn-primary">Change Password</a>
                 </div>
 
                 <div class="settings-card">
-                    <h3>📞 My DID Number</h3>
+                    <h3> My DID Number</h3>
                     <p>View and manage your Direct Inward Dial (DID) number settings.</p>
                     <a href="/user-portal/my-did.php" class="btn btn-primary">Manage DID</a>
                 </div>
@@ -477,19 +477,19 @@ $user_username = $_SESSION['user_username'] ?? 'User';
                 <h2 style="margin-bottom: 1.5rem; color: #2c3e50;">Notification Settings</h2>
 
                 <div class="settings-card">
-                    <h3>🔔 Push Notifications</h3>
+                    <h3> Push Notifications</h3>
                     <p>Configure browser and mobile push notifications for calls, messages, and voicemails.</p>
                     <a href="/user-portal/notification-settings.php" class="btn btn-primary">Manage Notifications</a>
                 </div>
 
                 <div class="settings-card">
-                    <h3>📧 Email Notifications</h3>
+                    <h3> Email Notifications</h3>
                     <p>Choose which events trigger email notifications (voicemail, missed calls, etc.).</p>
                     <a href="/user-portal/email-notification-preferences.php" class="btn btn-primary">Email Preferences</a>
                 </div>
 
                 <div class="settings-card">
-                    <h3>🎵 Sound Notifications</h3>
+                    <h3> Sound Notifications</h3>
                     <p>Configure audio alerts for incoming calls, messages, and system events.</p>
                     <a href="/user-portal/notification-settings.php" class="btn btn-primary">Sound Settings</a>
                 </div>
@@ -500,13 +500,13 @@ $user_username = $_SESSION['user_username'] ?? 'User';
                 <h2 style="margin-bottom: 1.5rem; color: #2c3e50;">Device Management</h2>
 
                 <div class="settings-card">
-                    <h3>📱 Registered Devices</h3>
+                    <h3> Registered Devices</h3>
                     <p>View and manage devices connected to your extension (desk phones, softphones, mobile apps).</p>
                     <a href="/user-portal/manage-devices.php" class="btn btn-primary">Manage Devices</a>
                 </div>
 
                 <div class="settings-card">
-                    <h3>🖥️ SIP Configuration</h3>
+                    <h3> SIP Configuration</h3>
                     <p>View SIP server settings and configuration for manual device setup.</p>
                     <div style="margin-top: 1rem; padding: 1rem; background: white; border-radius: 6px;">
                         <p><strong>Server:</strong> flexpbx.devinecreations.net</p>
@@ -517,7 +517,7 @@ $user_username = $_SESSION['user_username'] ?? 'User';
                 </div>
 
                 <div class="settings-card">
-                    <h3>📞 FlexPhone Web Client</h3>
+                    <h3> FlexPhone Web Client</h3>
                     <p>Make and receive calls directly from your browser without any software installation.</p>
                     <a href="/flexphone/" class="btn btn-primary">Launch FlexPhone</a>
                 </div>
@@ -528,19 +528,19 @@ $user_username = $_SESSION['user_username'] ?? 'User';
                 <h2 style="margin-bottom: 1.5rem; color: #2c3e50;">Voicemail Settings</h2>
 
                 <div class="settings-card">
-                    <h3>📬 Voicemail Configuration</h3>
+                    <h3> Voicemail Configuration</h3>
                     <p>Configure voicemail PIN, greetings, and playback options.</p>
                     <a href="/user-portal/voicemail-settings.php" class="btn btn-primary">Manage Voicemail</a>
                 </div>
 
                 <div class="settings-card">
-                    <h3>🎙️ Custom Greetings</h3>
+                    <h3> Custom Greetings</h3>
                     <p>Upload and manage custom voicemail greetings and recordings.</p>
                     <a href="/user-portal/my-recordings.php" class="btn btn-primary">Manage Recordings</a>
                 </div>
 
                 <div class="settings-card">
-                    <h3>📨 Voicemail Messages</h3>
+                    <h3> Voicemail Messages</h3>
                     <p>View, listen to, and manage your voicemail messages.</p>
                     <a href="/user-portal/voicemail.php" class="btn btn-primary">View Messages</a>
                 </div>
@@ -551,13 +551,13 @@ $user_username = $_SESSION['user_username'] ?? 'User';
                 <h2 style="margin-bottom: 1.5rem; color: #2c3e50;">Call Forwarding</h2>
 
                 <div class="settings-card">
-                    <h3>📞 Forwarded Numbers</h3>
+                    <h3> Forwarded Numbers</h3>
                     <p>Forward calls to external numbers when you're unavailable or prefer to use a different device.</p>
                     <a href="/user-portal/forwarded-numbers.php" class="btn btn-primary">Manage Forwarding</a>
                 </div>
 
                 <div class="settings-card">
-                    <h3>⏰ Call Routing Rules</h3>
+                    <h3> Call Routing Rules</h3>
                     <p>Set up time-based routing rules and conditional call forwarding.</p>
                     <button class="btn btn-primary" disabled>Coming Soon</button>
                 </div>
@@ -568,25 +568,25 @@ $user_username = $_SESSION['user_username'] ?? 'User';
                 <h2 style="margin-bottom: 1.5rem; color: #2c3e50;">Security & Privacy</h2>
 
                 <div class="settings-card">
-                    <h3>🔒 Password Security</h3>
+                    <h3> Password Security</h3>
                     <p>Change your password and enable additional security measures.</p>
                     <a href="/user-portal/change-password.php" class="btn btn-primary">Change Password</a>
                 </div>
 
                 <div class="settings-card">
-                    <h3>🔐 Two-Factor Authentication</h3>
+                    <h3> Two-Factor Authentication</h3>
                     <p>Add an extra layer of security to your account with 2FA.</p>
                     <button class="btn btn-primary" disabled>Coming Soon</button>
                 </div>
 
                 <div class="settings-card">
-                    <h3>📱 Active Sessions</h3>
+                    <h3> Active Sessions</h3>
                     <p>View and manage devices currently logged into your account.</p>
                     <a href="/user-portal/active-sessions.php" class="btn btn-primary">Manage Sessions</a>
                 </div>
 
                 <div class="settings-card">
-                    <h3>🔓 Reset Password</h3>
+                    <h3> Reset Password</h3>
                     <p>Lost your password? Request a password reset via email.</p>
                     <a href="/user-portal/forgot-password.php" class="btn btn-primary">Reset Password</a>
                 </div>
@@ -597,25 +597,25 @@ $user_username = $_SESSION['user_username'] ?? 'User';
                 <h2 style="margin-bottom: 1.5rem; color: #2c3e50;">Integrations</h2>
 
                 <div class="settings-card">
-                    <h3>🐘 Mastodon Integration</h3>
+                    <h3> Mastodon Integration</h3>
                     <p>Connect your Mastodon account to share call logs and receive notifications.</p>
                     <a href="/user-portal/mastodon-preferences.php" class="btn btn-primary">Manage Mastodon</a>
                 </div>
 
                 <div class="settings-card">
-                    <h3>💬 SMS Messaging</h3>
+                    <h3> SMS Messaging</h3>
                     <p>Send and receive SMS messages through your extension.</p>
                     <a href="/user-portal/sms-messaging.php" class="btn btn-primary">SMS Messages</a>
                 </div>
 
                 <div class="settings-card">
-                    <h3>📇 Contact Manager</h3>
+                    <h3> Contact Manager</h3>
                     <p>Manage your contacts and phonebook entries.</p>
                     <a href="/user-portal/contact-manager.php" class="btn btn-primary">Manage Contacts</a>
                 </div>
 
                 <div class="settings-card">
-                    <h3>☁️ Cloud Storage</h3>
+                    <h3> Cloud Storage</h3>
                     <p>Connect cloud storage for voicemail and recording backups.</p>
                     <button class="btn btn-primary" disabled>Coming Soon</button>
                 </div>
@@ -626,19 +626,19 @@ $user_username = $_SESSION['user_username'] ?? 'User';
                 <h2 style="margin-bottom: 1.5rem; color: #2c3e50;">Accessibility</h2>
 
                 <div class="settings-card">
-                    <h3>♿ Accessibility Features</h3>
+                    <h3> Accessibility Features</h3>
                     <p>Request special accessibility features such as screen reader optimizations, high contrast mode, or custom keyboard shortcuts.</p>
                     <a href="/user-portal/accessibility-request.php" class="btn btn-primary">Request Accessibility Features</a>
                 </div>
 
                 <div class="settings-card">
-                    <h3>🎨 Display Preferences</h3>
+                    <h3> Display Preferences</h3>
                     <p>Adjust font sizes, contrast, and color schemes for better readability.</p>
                     <button class="btn btn-primary" disabled>Coming Soon</button>
                 </div>
 
                 <div class="settings-card">
-                    <h3>⌨️ Keyboard Shortcuts</h3>
+                    <h3> Keyboard Shortcuts</h3>
                     <p>View and customize keyboard shortcuts for faster navigation.</p>
                     <button class="btn btn-primary" disabled>Coming Soon</button>
                 </div>
@@ -647,11 +647,11 @@ $user_username = $_SESSION['user_username'] ?? 'User';
 
         <!-- Navigation Buttons (Bottom) -->
         <div class="nav-buttons" style="margin-top: 2rem;">
-            <a href="/user-portal/" class="nav-button">🏠 Dashboard</a>
-            <a href="/user-portal/messages.php" class="nav-button">💬 Messages</a>
-            <a href="/user-portal/voicemail.php" class="nav-button">📬 Voicemail</a>
-            <a href="/user-portal/help.php" class="nav-button">❓ Help</a>
-            <a href="/user-portal/login.php?logout=1" class="nav-button">🚪 Logout</a>
+            <a href="/user-portal/" class="nav-button"> Dashboard</a>
+            <a href="/user-portal/messages.php" class="nav-button"> Messages</a>
+            <a href="/user-portal/voicemail.php" class="nav-button"> Voicemail</a>
+            <a href="/user-portal/help.php" class="nav-button"> Help</a>
+            <a href="/user-portal/login.php?logout=1" class="nav-button"> Logout</a>
         </div>
     </div>
 

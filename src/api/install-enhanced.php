@@ -82,14 +82,14 @@ class FlexPBXInstallerEnhanced {
         $this->renderHeader('FlexPBX Installation - Welcome');
         ?>
         <div class="welcome-section">
-            <h2>🚀 Welcome to FlexPBX Enhanced Installer v1.1</h2>
+            <h2> Welcome to FlexPBX Enhanced Installer v1.1</h2>
             <p>This installer will set up your complete FlexPBX server with Asterisk PBX, extensions, trunks, Google Voice integration, and multi-client management.</p>
 
             <div class="features-list">
-                <h3>✨ Features Being Installed:</h3>
+                <h3> Features Being Installed:</h3>
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
                     <div class="feature-card">
-                        <h4>📞 Asterisk PBX</h4>
+                        <h4> Asterisk PBX</h4>
                         <ul>
                             <li>Automatic detection & installation</li>
                             <li>PJSIP configuration</li>
@@ -97,7 +97,7 @@ class FlexPBXInstallerEnhanced {
                         </ul>
                     </div>
                     <div class="feature-card">
-                        <h4>👤 Extension Management</h4>
+                        <h4> Extension Management</h4>
                         <ul>
                             <li>Create SIP extensions (2000-2099)</li>
                             <li>Voicemail configuration</li>
@@ -105,7 +105,7 @@ class FlexPBXInstallerEnhanced {
                         </ul>
                     </div>
                     <div class="feature-card">
-                        <h4>🌐 SIP Trunks</h4>
+                        <h4> SIP Trunks</h4>
                         <ul>
                             <li>CallCentric trunk setup</li>
                             <li>Google Voice integration</li>
@@ -113,7 +113,7 @@ class FlexPBXInstallerEnhanced {
                         </ul>
                     </div>
                     <div class="feature-card">
-                        <h4>📱 Google Voice</h4>
+                        <h4> Google Voice</h4>
                         <ul>
                             <li>OAuth2 authentication</li>
                             <li>SMS & voice calling</li>
@@ -121,7 +121,7 @@ class FlexPBXInstallerEnhanced {
                         </ul>
                     </div>
                     <div class="feature-card">
-                        <h4>📍 Inbound Routing</h4>
+                        <h4> Inbound Routing</h4>
                         <ul>
                             <li>DID management</li>
                             <li>Destination configuration</li>
@@ -129,7 +129,7 @@ class FlexPBXInstallerEnhanced {
                         </ul>
                     </div>
                     <div class="feature-card">
-                        <h4>🔗 Client Management</h4>
+                        <h4> Client Management</h4>
                         <ul>
                             <li>Multi-client connections</li>
                             <li>Auto-link authorization</li>
@@ -140,21 +140,21 @@ class FlexPBXInstallerEnhanced {
             </div>
 
             <div class="install-info">
-                <h3>📋 Installation Steps:</h3>
+                <h3> Installation Steps:</h3>
                 <ol>
-                    <li>✅ System requirements check</li>
-                    <li>📞 Asterisk detection & setup</li>
-                    <li>🗄️ Database configuration</li>
-                    <li>👤 Extension creation (2000-2005)</li>
-                    <li>🌐 SIP trunk configuration</li>
-                    <li>📱 Google Voice integration (optional)</li>
-                    <li>📍 Inbound routing setup</li>
-                    <li>⚙️ Final installation & testing</li>
+                    <li> System requirements check</li>
+                    <li> Asterisk detection & setup</li>
+                    <li> Database configuration</li>
+                    <li> Extension creation (2000-2005)</li>
+                    <li> SIP trunk configuration</li>
+                    <li> Google Voice integration (optional)</li>
+                    <li> Inbound routing setup</li>
+                    <li> Final installation & testing</li>
                 </ol>
             </div>
 
             <div class="action-buttons">
-                <a href="?step=requirements" class="btn btn-primary">Start Installation →</a>
+                <a href="?step=requirements" class="btn btn-primary">Start Installation -></a>
             </div>
         </div>
         <?php
@@ -206,7 +206,7 @@ class FlexPBXInstallerEnhanced {
         $canContinue = true;
         ?>
         <div class="requirements-section">
-            <h2>🔍 System Requirements Check</h2>
+            <h2> System Requirements Check</h2>
 
             <table class="requirements-table">
                 <thead>
@@ -225,11 +225,11 @@ class FlexPBXInstallerEnhanced {
                         <td><?= $req['required'] ?></td>
                         <td>
                             <?php if ($req['check']): ?>
-                                <span class="status-icon">✅ Pass</span>
+                                <span class="status-icon"> Pass</span>
                             <?php elseif (!$req['critical']): ?>
-                                <span class="status-icon">⚠️ Warning</span>
+                                <span class="status-icon"> Warning</span>
                             <?php else: ?>
-                                <span class="status-icon">❌ Failed</span>
+                                <span class="status-icon"> Failed</span>
                                 <?php $canContinue = false; ?>
                             <?php endif; ?>
                         </td>
@@ -240,14 +240,14 @@ class FlexPBXInstallerEnhanced {
 
             <?php if (!$canContinue): ?>
                 <div class="error-message">
-                    ❌ Critical requirements not met. Please contact your hosting provider to install missing PHP extensions.
+                     Critical requirements not met. Please contact your hosting provider to install missing PHP extensions.
                 </div>
             <?php endif; ?>
 
             <div class="action-buttons">
-                <a href="?step=welcome" class="btn btn-secondary">← Back</a>
+                <a href="?step=welcome" class="btn btn-secondary"><- Back</a>
                 <?php if ($canContinue): ?>
-                    <a href="?step=asterisk" class="btn btn-primary">Continue to Asterisk Check →</a>
+                    <a href="?step=asterisk" class="btn btn-primary">Continue to Asterisk Check -></a>
                 <?php endif; ?>
             </div>
         </div>
@@ -280,23 +280,23 @@ class FlexPBXInstallerEnhanced {
 
         ?>
         <div class="asterisk-section">
-            <h2>📞 Asterisk PBX Detection</h2>
+            <h2> Asterisk PBX Detection</h2>
 
             <div class="status-box <?= $asteriskInstalled ? 'success' : 'warning' ?>">
                 <?php if ($asteriskInstalled): ?>
-                    <h3>✅ Asterisk Detected</h3>
+                    <h3> Asterisk Detected</h3>
                     <p><strong>Version:</strong> <?= htmlspecialchars($asteriskVersion) ?></p>
-                    <p><strong>Status:</strong> <?= $asteriskRunning ? '🟢 Running' : '🔴 Stopped' ?></p>
+                    <p><strong>Status:</strong> <?= $asteriskRunning ? ' Running' : ' Stopped' ?></p>
 
                     <?php if (!$asteriskRunning): ?>
                         <div class="warning-box">
-                            <p>⚠️ Asterisk is installed but not running. Would you like to start it?</p>
+                            <p> Asterisk is installed but not running. Would you like to start it?</p>
                             <button onclick="startAsterisk()" class="btn btn-warning">Start Asterisk</button>
                             <div id="asterisk-start-result"></div>
                         </div>
                     <?php endif; ?>
                 <?php else: ?>
-                    <h3>⚠️ Asterisk Not Found</h3>
+                    <h3> Asterisk Not Found</h3>
                     <p>Asterisk is not installed on this server. You have two options:</p>
 
                     <div class="install-options">
@@ -323,23 +323,23 @@ class FlexPBXInstallerEnhanced {
                                 <li>Start service: <code>systemctl start asterisk</code></li>
                                 <li>Reload this page</li>
                             </ol>
-                            <a href="?step=asterisk" class="btn btn-secondary">🔄 Reload Page</a>
+                            <a href="?step=asterisk" class="btn btn-secondary"> Reload Page</a>
                         </div>
                     </div>
                 <?php endif; ?>
             </div>
 
             <div class="action-buttons">
-                <a href="?step=requirements" class="btn btn-secondary">← Back to Requirements</a>
+                <a href="?step=requirements" class="btn btn-secondary"><- Back to Requirements</a>
                 <?php if ($asteriskInstalled): ?>
-                    <a href="?step=database" class="btn btn-primary">Continue to Database Setup →</a>
+                    <a href="?step=database" class="btn btn-primary">Continue to Database Setup -></a>
                 <?php endif; ?>
             </div>
         </div>
 
         <script>
         function startAsterisk() {
-            document.getElementById('asterisk-start-result').innerHTML = '<p>⏳ Starting Asterisk...</p>';
+            document.getElementById('asterisk-start-result').innerHTML = '<p> Starting Asterisk...</p>';
 
             fetch('?action=start_asterisk', {
                 method: 'POST'
@@ -347,10 +347,10 @@ class FlexPBXInstallerEnhanced {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    document.getElementById('asterisk-start-result').innerHTML = '<p class="success">✅ ' + data.message + '</p>';
+                    document.getElementById('asterisk-start-result').innerHTML = '<p class="success"> ' + data.message + '</p>';
                     setTimeout(() => location.reload(), 2000);
                 } else {
-                    document.getElementById('asterisk-start-result').innerHTML = '<p class="error">❌ ' + data.error + '</p>';
+                    document.getElementById('asterisk-start-result').innerHTML = '<p class="error"> ' + data.error + '</p>';
                 }
             });
         }
@@ -366,10 +366,10 @@ class FlexPBXInstallerEnhanced {
             .then(data => {
                 if (data.success) {
                     document.getElementById('install-progress').style.width = '100%';
-                    document.getElementById('install-status').innerHTML = '✅ ' + data.message;
+                    document.getElementById('install-status').innerHTML = ' ' + data.message;
                     setTimeout(() => location.reload(), 3000);
                 } else {
-                    document.getElementById('install-status').innerHTML = '❌ Installation failed: ' + data.error;
+                    document.getElementById('install-status').innerHTML = ' Installation failed: ' + data.error;
                 }
             });
         }
@@ -445,24 +445,24 @@ class FlexPBXInstallerEnhanced {
         $this->renderHeader('FlexPBX - Already Installed');
         ?>
         <div class="reinstall-section">
-            <h2>⚠️ FlexPBX Already Installed</h2>
+            <h2> FlexPBX Already Installed</h2>
             <p>FlexPBX appears to be already installed. What would you like to do?</p>
 
             <div style="margin-top: 30px; display: grid; gap: 20px;">
                 <div class="option-card">
-                    <h4>🔧 Repair Installation</h4>
+                    <h4> Repair Installation</h4>
                     <p>Fix database tables and restore configuration</p>
                     <a href="?step=repair" class="btn btn-warning">Repair</a>
                 </div>
 
                 <div class="option-card">
-                    <h4>🔄 Update Installation</h4>
+                    <h4> Update Installation</h4>
                     <p>Add missing tables and update existing configuration</p>
                     <a href="?step=reinstall&mode=update" class="btn btn-primary">Update</a>
                 </div>
 
                 <div class="option-card">
-                    <h4>🆕 Fresh Installation</h4>
+                    <h4> Fresh Installation</h4>
                     <p>Complete reinstallation (existing data will be preserved where possible)</p>
                     <a href="?step=reinstall&mode=fresh" class="btn btn-secondary">Reinstall</a>
                 </div>

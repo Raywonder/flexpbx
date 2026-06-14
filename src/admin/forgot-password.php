@@ -310,7 +310,7 @@ function publicFlexPbxHost() {
         <?php endif; ?>
 
         <div class="back-link">
-            <a href="index.html">← Back to Admin Login</a>
+            <a href="index.html"><- Back to Admin Login</a>
         </div>
     </div>
 </body>

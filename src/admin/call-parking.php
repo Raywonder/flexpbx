@@ -443,11 +443,11 @@
             <div class="breadcrumb">
                 <a href="/admin/dashboard.html">Dashboard</a> / Call Parking
             </div>
-            <h1>🅿️ Call Parking Management</h1>
+            <h1> Call Parking Management</h1>
             <div class="header-actions">
                 <button class="btn" onclick="openCreateModal()">+ Add Parking Lot</button>
                 <button class="btn btn-success" onclick="applyConfig()">Apply Changes</button>
-                <button class="btn btn-secondary" onclick="loadParkedCalls()">🔄 Refresh</button>
+                <button class="btn btn-secondary" onclick="loadParkedCalls()"> Refresh</button>
             </div>
         </div>
 
@@ -462,7 +462,7 @@
             <!-- Active Parked Calls Tab -->
             <div id="parked-calls-tab" class="tab-content active">
                 <div class="info-box">
-                    <h3>📞 Currently Parked Calls</h3>
+                    <h3> Currently Parked Calls</h3>
                     <p>View and manage all calls that are currently parked. You can retrieve any parked call by calling the parking space number (e.g., dial 700).</p>
                 </div>
 
@@ -477,7 +477,7 @@
             <!-- Parking Lots Tab -->
             <div id="parking-lots-tab" class="tab-content">
                 <div class="info-box">
-                    <h3>🅿️ Parking Lot Configuration</h3>
+                    <h3> Parking Lot Configuration</h3>
                     <p>Configure parking lots to define where calls can be parked and how they behave.</p>
                     <ul>
                         <li><strong>Park Extension:</strong> The code users dial to park a call (e.g., *70)</li>
@@ -515,7 +515,7 @@
             <!-- Help Tab -->
             <div id="help-tab" class="tab-content">
                 <div class="card">
-                    <h3>📚 How Call Parking Works</h3>
+                    <h3> How Call Parking Works</h3>
 
                     <h4 style="margin-top: 20px; margin-bottom: 10px;">What is Call Parking?</h4>
                     <p style="line-height: 1.6; margin-bottom: 15px;">
@@ -594,7 +594,7 @@
                 <div class="form-group">
                     <label>
                         Parking Lot Name
-                        <span class="tooltip">❔
+                        <span class="tooltip">
                             <span class="tooltiptext">A friendly name to identify this parking lot (e.g., "Main Office", "Sales Department")</span>
                         </span>
                     </label>
@@ -604,7 +604,7 @@
                 <div class="form-group">
                     <label>
                         Park Extension
-                        <span class="tooltip">❔
+                        <span class="tooltip">
                             <span class="tooltiptext">The code users dial to park a call. Common choices: *70, *71, etc. Must be unique.</span>
                         </span>
                     </label>
@@ -614,7 +614,7 @@
                 <div class="form-group">
                     <label>
                         Parking Space Range
-                        <span class="tooltip">❔
+                        <span class="tooltip">
                             <span class="tooltiptext">Range of parking spaces available (e.g., "700-720" gives 21 spaces). Users dial these numbers to retrieve parked calls.</span>
                         </span>
                     </label>
@@ -624,7 +624,7 @@
                 <div class="form-group">
                     <label>
                         Parking Timeout (seconds)
-                        <span class="tooltip">❔
+                        <span class="tooltip">
                             <span class="tooltiptext">How long a call can stay parked before it returns or disconnects. 300 seconds = 5 minutes.</span>
                         </span>
                     </label>
@@ -635,7 +635,7 @@
                 <div class="form-group">
                     <label>
                         Comeback Context
-                        <span class="tooltip">❔
+                        <span class="tooltip">
                             <span class="tooltiptext">The dialplan context to use when the call times out. Usually "from-internal".</span>
                         </span>
                     </label>
@@ -645,7 +645,7 @@
                 <div class="form-group">
                     <label>
                         Comeback Dial Time (seconds)
-                        <span class="tooltip">❔
+                        <span class="tooltip">
                             <span class="tooltiptext">How long to ring the parker's phone when returning a timed-out call.</span>
                         </span>
                     </label>
@@ -655,7 +655,7 @@
                 <div class="form-group">
                     <label>
                         Announce Parking Space To
-                        <span class="tooltip">❔
+                        <span class="tooltip">
                             <span class="tooltiptext">Who hears the parking space number announcement.</span>
                         </span>
                     </label>
@@ -670,7 +670,7 @@
                 <div class="form-group">
                     <label>
                         Music on Hold Class
-                        <span class="tooltip">❔
+                        <span class="tooltip">
                             <span class="tooltiptext">Which music on hold class to play to the parked caller while waiting.</span>
                         </span>
                     </label>
@@ -682,7 +682,7 @@
                     <input type="checkbox" id="comeback-origin" checked>
                     <label for="comeback-origin">
                         Return to origin on timeout
-                        <span class="tooltip">❔
+                        <span class="tooltip">
                             <span class="tooltiptext">If checked, timed-out calls return to the person who parked them. If unchecked, they follow the comeback context rules.</span>
                         </span>
                     </label>
@@ -814,7 +814,7 @@
                                             </div>
                                             <div class="detail-item">
                                                 <div class="detail-label">Status:</div>
-                                                ${lot.enabled ? '✅ Enabled' : '❌ Disabled'}
+                                                ${lot.enabled ? ' Enabled' : ' Disabled'}
                                             </div>
                                             <div class="detail-item">
                                                 <div class="detail-label">Return to Origin:</div>
@@ -971,9 +971,9 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('✅ Parking configuration applied successfully!');
+                    alert(' Parking configuration applied successfully!');
                 } else {
-                    alert('❌ Error applying configuration: ' + (data.message || 'Unknown error'));
+                    alert(' Error applying configuration: ' + (data.message || 'Unknown error'));
                 }
             })
             .catch(error => alert('Error: ' + error.message));
@@ -1010,11 +1010,11 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert(`✅ Parking lot ${isEdit ? 'updated' : 'created'} successfully!`);
+                    alert(` Parking lot ${isEdit ? 'updated' : 'created'} successfully!`);
                     closeModal();
                     loadParkingLots();
                 } else {
-                    alert('❌ Error: ' + (data.error || 'Unknown error'));
+                    alert(' Error: ' + (data.error || 'Unknown error'));
                 }
             })
             .catch(error => {

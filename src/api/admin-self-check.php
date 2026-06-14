@@ -24,7 +24,7 @@ class FlexPBXAdminSelfCheck {
      * Run complete self-check and auto-fix
      */
     public function runSelfCheck() {
-        $this->logResult("🔍 FlexPBX Admin Panel Self-Check Starting...", 'info');
+        $this->logResult(" FlexPBX Admin Panel Self-Check Starting...", 'info');
         $this->logResult("Base path: " . $this->base_path, 'info');
 
         // Check and fix file permissions
@@ -52,7 +52,7 @@ class FlexPBXAdminSelfCheck {
      * Check and fix file permissions automatically
      */
     private function checkAndFixPermissions() {
-        $this->logResult("🔧 Checking and fixing file permissions...", 'info');
+        $this->logResult(" Checking and fixing file permissions...", 'info');
 
         $script_files = [
             'flexpbx-test-suite.sh',
@@ -69,16 +69,16 @@ class FlexPBXAdminSelfCheck {
 
                 if ($current_perms !== '0755' && $current_perms !== '0775') {
                     if (chmod($file_path, 0755)) {
-                        $this->logResult("✅ Fixed permissions for $script (755)", 'success');
+                        $this->logResult(" Fixed permissions for $script (755)", 'success');
                         $this->fixes_applied++;
                     } else {
-                        $this->logResult("❌ Failed to fix permissions for $script", 'error');
+                        $this->logResult(" Failed to fix permissions for $script", 'error');
                     }
                 } else {
-                    $this->logResult("✅ Permissions OK for $script ($current_perms)", 'success');
+                    $this->logResult(" Permissions OK for $script ($current_perms)", 'success');
                 }
             } else {
-                $this->logResult("⚠️ Script not found: $script", 'warning');
+                $this->logResult(" Script not found: $script", 'warning');
             }
         }
 
@@ -98,7 +98,7 @@ class FlexPBXAdminSelfCheck {
      * Check directory structure
      */
     private function checkDirectoryStructure() {
-        $this->logResult("📁 Checking directory structure...", 'info');
+        $this->logResult(" Checking directory structure...", 'info');
 
         $required_dirs = [
             'api',
@@ -114,9 +114,9 @@ class FlexPBXAdminSelfCheck {
             $dir_path = $this->base_path . '/' . $dir;
             if (is_dir($dir_path)) {
                 $file_count = count(glob($dir_path . '/*'));
-                $this->logResult("✅ Directory $dir exists ($file_count files)", 'success');
+                $this->logResult(" Directory $dir exists ($file_count files)", 'success');
             } else {
-                $this->logResult("❌ Missing directory: $dir", 'error');
+                $this->logResult(" Missing directory: $dir", 'error');
             }
         }
     }
@@ -125,7 +125,7 @@ class FlexPBXAdminSelfCheck {
      * Check configuration files
      */
     private function checkConfigurationFiles() {
-        $this->logResult("⚙️ Checking configuration files...", 'info');
+        $this->logResult(" Checking configuration files...", 'info');
 
         $config_files = [
             'config/callcentric-trunk-config.json' => 'Callcentric SIP trunk',
@@ -143,20 +143,20 @@ class FlexPBXAdminSelfCheck {
                     // Validate JSON
                     $json_content = file_get_contents($file_path);
                     if (json_decode($json_content) !== null) {
-                        $this->logResult("✅ $description - Valid JSON ($file_size bytes)", 'success');
+                        $this->logResult(" $description - Valid JSON ($file_size bytes)", 'success');
 
                         // Check specific content
                         if (strpos($file, 'extensions-config') !== false) {
                             $this->checkExtensionConfig($json_content);
                         }
                     } else {
-                        $this->logResult("❌ $description - Invalid JSON format", 'error');
+                        $this->logResult(" $description - Invalid JSON format", 'error');
                     }
                 } else {
-                    $this->logResult("⚠️ $description - File too small ($file_size bytes)", 'warning');
+                    $this->logResult(" $description - File too small ($file_size bytes)", 'warning');
                 }
             } else {
-                $this->logResult("❌ Missing: $description", 'error');
+                $this->logResult(" Missing: $description", 'error');
             }
         }
     }
@@ -169,7 +169,7 @@ class FlexPBXAdminSelfCheck {
 
         if (isset($config['extensions'])) {
             $extension_count = count($config['extensions']);
-            $this->logResult("📞 Found $extension_count extensions configured", 'info');
+            $this->logResult(" Found $extension_count extensions configured", 'info');
 
             // Check for test extension 2001
             if (isset($config['extensions']['2001'])) {
@@ -177,10 +177,10 @@ class FlexPBXAdminSelfCheck {
                 if (isset($ext_2001['username']) && $ext_2001['username'] === 'techsupport1') {
                     $this->logResult("⭐ Test extension 2001 (techsupport1) ready for testing", 'success');
                 } else {
-                    $this->logResult("⚠️ Test extension 2001 configuration may be incorrect", 'warning');
+                    $this->logResult(" Test extension 2001 configuration may be incorrect", 'warning');
                 }
             } else {
-                $this->logResult("❌ Test extension 2001 not found in configuration", 'error');
+                $this->logResult(" Test extension 2001 not found in configuration", 'error');
             }
         }
     }
@@ -189,7 +189,7 @@ class FlexPBXAdminSelfCheck {
      * Check admin interfaces
      */
     private function checkAdminInterfaces() {
-        $this->logResult("🖥️ Checking admin interfaces...", 'info');
+        $this->logResult(" Checking admin interfaces...", 'info');
 
         $admin_files = [
             'admin/admin-trunks-management.html' => 'Trunk Management',
@@ -204,12 +204,12 @@ class FlexPBXAdminSelfCheck {
                 $file_size = filesize($file_path);
 
                 if ($file_size > 10000) {
-                    $this->logResult("✅ $description interface ready ($file_size bytes)", 'success');
+                    $this->logResult(" $description interface ready ($file_size bytes)", 'success');
                 } else {
-                    $this->logResult("⚠️ $description interface may be incomplete", 'warning');
+                    $this->logResult(" $description interface may be incomplete", 'warning');
                 }
             } else {
-                $this->logResult("❌ Missing admin interface: $description", 'error');
+                $this->logResult(" Missing admin interface: $description", 'error');
             }
         }
     }
@@ -218,7 +218,7 @@ class FlexPBXAdminSelfCheck {
      * Check test extension readiness
      */
     private function checkTestExtension() {
-        $this->logResult("📞 Verifying test extension readiness...", 'info');
+        $this->logResult(" Verifying test extension readiness...", 'info');
 
         $test_details = [
             'Extension' => '2001',
@@ -229,10 +229,10 @@ class FlexPBXAdminSelfCheck {
         ];
 
         foreach ($test_details as $key => $value) {
-            $this->logResult("📋 $key: $value", 'info');
+            $this->logResult(" $key: $value", 'info');
         }
 
-        $this->logResult("🎯 Extension 2001 ready for SIP client testing", 'success');
+        $this->logResult(" Extension 2001 ready for SIP client testing", 'success');
     }
 
     /**
@@ -256,16 +256,16 @@ class FlexPBXAdminSelfCheck {
         $warning_count = count(array_filter($this->results, function($r) { return $r['type'] === 'warning'; }));
 
         $this->logResult("", 'info');
-        $this->logResult("📊 SELF-CHECK SUMMARY:", 'info');
-        $this->logResult("✅ Successful checks: $success_count", 'success');
-        $this->logResult("⚠️ Warnings: $warning_count", $warning_count > 0 ? 'warning' : 'success');
-        $this->logResult("❌ Errors: $error_count", $error_count > 0 ? 'error' : 'success');
-        $this->logResult("🔧 Auto-fixes applied: $this->fixes_applied", 'info');
+        $this->logResult(" SELF-CHECK SUMMARY:", 'info');
+        $this->logResult(" Successful checks: $success_count", 'success');
+        $this->logResult(" Warnings: $warning_count", $warning_count > 0 ? 'warning' : 'success');
+        $this->logResult(" Errors: $error_count", $error_count > 0 ? 'error' : 'success');
+        $this->logResult(" Auto-fixes applied: $this->fixes_applied", 'info');
 
         if ($error_count === 0) {
-            $this->logResult("🎉 SYSTEM READY FOR EXTENSION TESTING!", 'success');
+            $this->logResult(" SYSTEM READY FOR EXTENSION TESTING!", 'success');
         } else {
-            $this->logResult("⚠️ Please fix errors before testing extensions", 'warning');
+            $this->logResult(" Please fix errors before testing extensions", 'warning');
         }
     }
 
@@ -306,7 +306,7 @@ h1 { color: #333; text-align: center; }
 </style>
 </head><body>
 <div class="container">
-<h1>🔍 FlexPBX Admin Self-Check Report</h1>
+<h1> FlexPBX Admin Self-Check Report</h1>
 <div class="summary">
 <strong>Generated:</strong> ' . date('Y-m-d H:i:s') . '<br>
 <strong>Auto-fixes Applied:</strong> ' . $this->fixes_applied . '
@@ -347,15 +347,15 @@ if (php_sapi_name() === 'cli') {
     // Output to console
     foreach ($results as $result) {
         $icon = [
-            'success' => '✅',
-            'error' => '❌',
-            'warning' => '⚠️',
-            'info' => 'ℹ️'
+            'success' => '',
+            'error' => '',
+            'warning' => '',
+            'info' => 'ℹ'
         ];
 
         echo $icon[$result['type']] . ' ' . $result['message'] . "\n";
     }
 
-    echo "\n🔧 Auto-fixes applied: " . $checker->fixes_applied . "\n";
+    echo "\n Auto-fixes applied: " . $checker->fixes_applied . "\n";
 }
 ?>

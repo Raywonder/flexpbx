@@ -149,26 +149,26 @@ function format_phone($number) {
 <body>
     <div class="container">
         <div class="header">
-            <h1>💬 SMS Inbox</h1>
+            <h1> SMS Inbox</h1>
             <p class="subtitle">Extension <?= htmlspecialchars($extension) ?> - Text Messages</p>
         </div>
 
         <div class="card">
             <?php if (!file_exists($sms_file) || empty($messages)): ?>
                 <div class="warning-box">
-                    <strong>⚙️ SMS Integration Setup Required</strong><br>
+                    <strong> SMS Integration Setup Required</strong><br>
                     To receive SMS messages here, you need to configure Twilio webhook.<br>
                     See setup instructions below.
                 </div>
 
                 <div class="empty-state">
-                    <div class="empty-state-icon">📭</div>
+                    <div class="empty-state-icon"></div>
                     <h2>No Messages Yet</h2>
                     <p>SMS messages received via Twilio will appear here.</p>
                 </div>
 
                 <div class="info-box">
-                    <h3 style="margin-bottom: 0.5rem;">📱 How to Enable SMS</h3>
+                    <h3 style="margin-bottom: 0.5rem;"> How to Enable SMS</h3>
                     <ol style="margin-left: 1.5rem; line-height: 1.8;">
                         <li>Sign up at <a href="https://www.twilio.com/try-twilio" target="_blank">twilio.com</a></li>
                         <li>Get a phone number or port your Google Voice number</li>
@@ -177,13 +177,13 @@ function format_phone($number) {
                     </ol>
                 </div>
             <?php else: ?>
-                <h2 style="margin-bottom: 1.5rem;">📥 Received Messages (<?= count($messages) ?>)</h2>
+                <h2 style="margin-bottom: 1.5rem;"> Received Messages (<?= count($messages) ?>)</h2>
 
                 <?php foreach ($messages as $msg): ?>
                 <div class="message-item">
                     <div class="message-header">
                         <div class="message-from">
-                            📱 <?= htmlspecialchars(format_phone($msg['from'])) ?>
+                             <?= htmlspecialchars(format_phone($msg['from'])) ?>
                         </div>
                         <div class="message-time">
                             <?= date('M j, Y g:i A', strtotime($msg['received_at'])) ?>

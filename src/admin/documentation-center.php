@@ -241,12 +241,12 @@ $docs = [
 <body>
     <div class="container">
         <div class="header">
-            <h1>📚 Documentation Center</h1>
+            <h1> Documentation Center</h1>
             <p>Complete FlexPBX documentation, guides, and references</p>
         </div>
 
         <div class="nav-links">
-            <a href="/admin/dashboard.php">← Back to Dashboard</a>
+            <a href="/admin/dashboard.php"><- Back to Dashboard</a>
             <a href="/admin/help-center.php">Help Center</a>
             <a href="../faq.php">FAQ</a>
         </div>
@@ -291,7 +291,7 @@ $docs = [
                                 <p><?php echo htmlspecialchars($doc['desc']); ?></p>
                                 <div class="doc-meta">
                                     <span class="doc-badge"><?php echo $lines; ?> lines</span>
-                                    <a href="view-documentation.php?file=<?php echo urlencode($doc['file']); ?>" class="doc-link" onclick="event.stopPropagation()">View →</a>
+                                    <a href="view-documentation.php?file=<?php echo urlencode($doc['file']); ?>" class="doc-link" onclick="event.stopPropagation()">View -></a>
                                 </div>
                             </div>
                         <?php endforeach; ?>

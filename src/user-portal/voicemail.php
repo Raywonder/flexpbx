@@ -332,7 +332,7 @@ require_once __DIR__ . '/user_auth_check.php';
 <body>
     <div class="container">
         <div class="header">
-            <h1>📞 Voicemail</h1>
+            <h1> Voicemail</h1>
             <div class="breadcrumb">
                 <a href="/user-portal/">Dashboard</a> / Voicemail
             </div>

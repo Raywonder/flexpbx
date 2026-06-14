@@ -512,7 +512,7 @@ $extensionInfo = ProvisioningSettings::getExtensionRangeInfo();
                             <label class="setting-label">
                                 <?php echo ucwords(str_replace('_', ' ', $key)); ?>
                                 <?php if ($setting['description']): ?>
-                                    <span class="tooltip">ℹ️
+                                    <span class="tooltip">ℹ
                                         <span class="tooltiptext"><?php echo htmlspecialchars($setting['description']); ?></span>
                                     </span>
                                 <?php endif; ?>
@@ -558,7 +558,7 @@ $extensionInfo = ProvisioningSettings::getExtensionRangeInfo();
                             <label class="setting-label">
                                 <?php echo ucwords(str_replace('_', ' ', $key)); ?>
                                 <?php if ($setting['description']): ?>
-                                    <span class="tooltip">ℹ️
+                                    <span class="tooltip">ℹ
                                         <span class="tooltiptext"><?php echo htmlspecialchars($setting['description']); ?></span>
                                     </span>
                                 <?php endif; ?>
@@ -607,7 +607,7 @@ $extensionInfo = ProvisioningSettings::getExtensionRangeInfo();
                                 <label class="setting-label">
                                     <?php echo ucwords(str_replace(['auto_', '_'], ['', ' '], $key)); ?>
                                     <?php if ($setting['description']): ?>
-                                        <span class="tooltip">ℹ️
+                                        <span class="tooltip">ℹ
                                             <span class="tooltiptext"><?php echo htmlspecialchars($setting['description']); ?></span>
                                         </span>
                                     <?php endif; ?>
@@ -638,7 +638,7 @@ $extensionInfo = ProvisioningSettings::getExtensionRangeInfo();
                             <label class="setting-label">
                                 <?php echo ucwords(str_replace('_', ' ', $key)); ?>
                                 <?php if ($setting['description']): ?>
-                                    <span class="tooltip">ℹ️
+                                    <span class="tooltip">ℹ
                                         <span class="tooltiptext"><?php echo htmlspecialchars($setting['description']); ?></span>
                                     </span>
                                 <?php endif; ?>
@@ -684,7 +684,7 @@ $extensionInfo = ProvisioningSettings::getExtensionRangeInfo();
                             <label class="setting-label">
                                 <?php echo ucwords(str_replace('_', ' ', $key)); ?>
                                 <?php if ($setting['description']): ?>
-                                    <span class="tooltip">ℹ️
+                                    <span class="tooltip">ℹ
                                         <span class="tooltiptext"><?php echo htmlspecialchars($setting['description']); ?></span>
                                     </span>
                                 <?php endif; ?>
@@ -725,7 +725,7 @@ $extensionInfo = ProvisioningSettings::getExtensionRangeInfo();
                                 <label class="setting-label">
                                     <?php echo ucwords(str_replace(['_default', '_'], ['', ' '], $key)); ?>
                                     <?php if ($setting['description']): ?>
-                                        <span class="tooltip">ℹ️
+                                        <span class="tooltip">ℹ
                                             <span class="tooltiptext"><?php echo htmlspecialchars($setting['description']); ?></span>
                                         </span>
                                     <?php endif; ?>
@@ -768,7 +768,7 @@ $extensionInfo = ProvisioningSettings::getExtensionRangeInfo();
                             <label class="setting-label">
                                 <?php echo ucwords(str_replace('_', ' ', $key)); ?>
                                 <?php if ($setting['description']): ?>
-                                    <span class="tooltip">ℹ️
+                                    <span class="tooltip">ℹ
                                         <span class="tooltiptext"><?php echo htmlspecialchars($setting['description']); ?></span>
                                     </span>
                                 <?php endif; ?>
@@ -808,7 +808,7 @@ $extensionInfo = ProvisioningSettings::getExtensionRangeInfo();
                             <label class="setting-label">
                                 <?php echo ucwords(str_replace('_', ' ', $key)); ?>
                                 <?php if ($setting['description']): ?>
-                                    <span class="tooltip">ℹ️
+                                    <span class="tooltip">ℹ
                                         <span class="tooltiptext"><?php echo htmlspecialchars($setting['description']); ?></span>
                                     </span>
                                 <?php endif; ?>
@@ -848,7 +848,7 @@ $extensionInfo = ProvisioningSettings::getExtensionRangeInfo();
                             <label class="setting-label">
                                 <?php echo ucwords(str_replace('_', ' ', $key)); ?>
                                 <?php if ($setting['description']): ?>
-                                    <span class="tooltip">ℹ️
+                                    <span class="tooltip">ℹ
                                         <span class="tooltiptext"><?php echo htmlspecialchars($setting['description']); ?></span>
                                     </span>
                                 <?php endif; ?>
@@ -887,7 +887,7 @@ $extensionInfo = ProvisioningSettings::getExtensionRangeInfo();
         </div>
 
         <div class="back-link">
-            <a href="dashboard-live.php">← Back to Admin Dashboard</a>
+            <a href="dashboard-live.php"><- Back to Admin Dashboard</a>
         </div>
     </div>
 

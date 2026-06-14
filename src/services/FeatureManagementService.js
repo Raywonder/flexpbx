@@ -1,5 +1,5 @@
 /**
- * 🎛️ FlexPhone Dynamic Feature Management Service
+ *  FlexPhone Dynamic Feature Management Service
  * Allows admin versions to push features and unlock capabilities dynamically
  */
 
@@ -59,7 +59,7 @@ class FeatureManagementService extends EventEmitter {
         };
 
         this.initializeFeatures();
-        console.log('🎛️ FeatureManagementService initialized');
+        console.log(' FeatureManagementService initialized');
     }
 
     async initialize() {
@@ -72,12 +72,12 @@ class FeatureManagementService extends EventEmitter {
             // Start auto-sync for dynamic features
             this.startAutoSync();
 
-            console.log(`✅ FeatureManagementService ready - License: ${this.licenseLevel}`);
+            console.log(` FeatureManagementService ready - License: ${this.licenseLevel}`);
             this.emit('initialized', { licenseLevel: this.licenseLevel });
 
             return true;
         } catch (error) {
-            console.error('❌ FeatureManagementService initialization failed:', error);
+            console.error(' FeatureManagementService initialization failed:', error);
             return false;
         }
     }
@@ -122,19 +122,19 @@ class FeatureManagementService extends EventEmitter {
         const feature = this.features.get(featureId);
 
         if (!feature) {
-            console.warn(`⚠️ Unknown feature: ${featureId}`);
+            console.warn(` Unknown feature: ${featureId}`);
             return false;
         }
 
         if (!adminOverride && !this.isFeatureAllowed(feature.level)) {
-            console.warn(`⚠️ Feature ${featureId} requires ${feature.level} license`);
+            console.warn(` Feature ${featureId} requires ${feature.level} license`);
             return false;
         }
 
         feature.enabled = true;
         this.features.set(featureId, feature);
 
-        console.log(`✅ Feature enabled: ${feature.name}`);
+        console.log(` Feature enabled: ${feature.name}`);
         this.emit('featureEnabled', { featureId, feature });
 
         return true;
@@ -147,14 +147,14 @@ class FeatureManagementService extends EventEmitter {
         const feature = this.features.get(featureId);
 
         if (!feature) {
-            console.warn(`⚠️ Unknown feature: ${featureId}`);
+            console.warn(` Unknown feature: ${featureId}`);
             return false;
         }
 
         feature.enabled = false;
         this.features.set(featureId, feature);
 
-        console.log(`❌ Feature disabled: ${feature.name}`);
+        console.log(` Feature disabled: ${feature.name}`);
         this.emit('featureDisabled', { featureId, feature });
 
         return true;
@@ -188,7 +188,7 @@ class FeatureManagementService extends EventEmitter {
         const validLevels = ['community', 'professional', 'enterprise', 'lifetime', 'admin'];
 
         if (!validLevels.includes(level)) {
-            console.error(`❌ Invalid license level: ${level}`);
+            console.error(` Invalid license level: ${level}`);
             return false;
         }
 
@@ -198,7 +198,7 @@ class FeatureManagementService extends EventEmitter {
         // Re-initialize features with new license level
         this.initializeFeatures();
 
-        console.log(`🎫 License updated: ${oldLevel} → ${level}`);
+        console.log(` License updated: ${oldLevel} -> ${level}`);
         this.emit('licenseChanged', { oldLevel, newLevel: level, licenseKey });
 
         // Save to disk
@@ -238,7 +238,7 @@ class FeatureManagementService extends EventEmitter {
                             const packageData = JSON.parse(fs.readFileSync(packagePath, 'utf8'));
                             appInfo.version = packageData.version || 'unknown';
                         } catch (error) {
-                            console.warn(`⚠️ Could not read package.json for ${appPath}`);
+                            console.warn(` Could not read package.json for ${appPath}`);
                         }
                     }
 
@@ -246,13 +246,13 @@ class FeatureManagementService extends EventEmitter {
                 }
             }
 
-            console.log(`🔍 Detected ${this.localDetectedInstances.length} local FlexPhone instances`);
+            console.log(` Detected ${this.localDetectedInstances.length} local FlexPhone instances`);
             this.emit('localInstancesDetected', { instances: this.localDetectedInstances });
 
             return this.localDetectedInstances;
 
         } catch (error) {
-            console.error('❌ Failed to detect local instances:', error);
+            console.error(' Failed to detect local instances:', error);
             return [];
         }
     }
@@ -296,13 +296,13 @@ class FeatureManagementService extends EventEmitter {
                 }
             }
 
-            console.log(`🌐 Detected ${this.networkDetectedInstances.length} network FlexPhone instances`);
+            console.log(` Detected ${this.networkDetectedInstances.length} network FlexPhone instances`);
             this.emit('networkInstancesDetected', { instances: this.networkDetectedInstances });
 
             return this.networkDetectedInstances;
 
         } catch (error) {
-            console.error('❌ Failed to detect network instances:', error);
+            console.error(' Failed to detect network instances:', error);
             return [];
         }
     }
@@ -312,7 +312,7 @@ class FeatureManagementService extends EventEmitter {
      */
     async pushFeaturesToInstances(targetInstances, features) {
         if (!this.isFeatureEnabled('admin.feature_push')) {
-            console.error('❌ Feature push requires admin privileges');
+            console.error(' Feature push requires admin privileges');
             return false;
         }
 
@@ -363,10 +363,10 @@ class FeatureManagementService extends EventEmitter {
                     });
                 }
 
-                console.log(`📡 Pushed features to ${instance.name}`);
+                console.log(` Pushed features to ${instance.name}`);
 
             } catch (error) {
-                console.error(`❌ Failed to push to ${instance.name}:`, error);
+                console.error(` Failed to push to ${instance.name}:`, error);
                 results.push({
                     instance: instance.name,
                     success: false,
@@ -384,7 +384,7 @@ class FeatureManagementService extends EventEmitter {
      */
     async receivePushedFeatures(pushedData) {
         try {
-            console.log('📥 Receiving pushed features from admin...');
+            console.log(' Receiving pushed features from admin...');
 
             for (const [featureId, config] of Object.entries(pushedData.features)) {
                 // Validate the feature before applying
@@ -395,7 +395,7 @@ class FeatureManagementService extends EventEmitter {
                         pushedAt: pushedData.timestamp
                     });
 
-                    console.log(`✅ Applied pushed feature: ${config.name}`);
+                    console.log(` Applied pushed feature: ${config.name}`);
                 }
             }
 
@@ -407,7 +407,7 @@ class FeatureManagementService extends EventEmitter {
             return true;
 
         } catch (error) {
-            console.error('❌ Failed to receive pushed features:', error);
+            console.error(' Failed to receive pushed features:', error);
             return false;
         }
     }
@@ -418,14 +418,14 @@ class FeatureManagementService extends EventEmitter {
     validatePushedFeature(featureId, config) {
         // Basic validation
         if (!featureId || !config || !config.name) {
-            console.warn(`⚠️ Invalid feature data: ${featureId}`);
+            console.warn(` Invalid feature data: ${featureId}`);
             return false;
         }
 
         // Security check - don't allow certain admin features to be pushed
         const restrictedFeatures = ['admin.license_management', 'admin.user_management'];
         if (restrictedFeatures.includes(featureId)) {
-            console.warn(`⚠️ Restricted feature cannot be pushed: ${featureId}`);
+            console.warn(` Restricted feature cannot be pushed: ${featureId}`);
             return false;
         }
 
@@ -445,7 +445,7 @@ class FeatureManagementService extends EventEmitter {
             await this.syncDynamicFeatures();
         }, 5 * 60 * 1000);
 
-        console.log('🔄 Auto-sync started for dynamic features');
+        console.log(' Auto-sync started for dynamic features');
     }
 
     /**
@@ -471,7 +471,7 @@ class FeatureManagementService extends EventEmitter {
             this.lastSync = new Date();
 
         } catch (error) {
-            console.error('❌ Auto-sync failed:', error);
+            console.error(' Auto-sync failed:', error);
         }
     }
 
@@ -495,10 +495,10 @@ class FeatureManagementService extends EventEmitter {
             };
 
             fs.writeFileSync(this.featureConfigPath, JSON.stringify(config, null, 2));
-            console.log('💾 Features configuration saved');
+            console.log(' Features configuration saved');
 
         } catch (error) {
-            console.error('❌ Failed to save features configuration:', error);
+            console.error(' Failed to save features configuration:', error);
         }
     }
 
@@ -522,10 +522,10 @@ class FeatureManagementService extends EventEmitter {
                 this.localDetectedInstances = config.localInstances || [];
                 this.networkDetectedInstances = config.networkInstances || [];
 
-                console.log('📁 Features configuration loaded from disk');
+                console.log(' Features configuration loaded from disk');
             }
         } catch (error) {
-            console.error('❌ Failed to load features configuration:', error);
+            console.error(' Failed to load features configuration:', error);
             // Fall back to defaults
             this.initializeFeatures();
         }
@@ -601,7 +601,7 @@ class FeatureManagementService extends EventEmitter {
         }
 
         this.saveFeaturesToDisk();
-        console.log('🎛️ FeatureManagementService shutdown');
+        console.log(' FeatureManagementService shutdown');
     }
 }
 

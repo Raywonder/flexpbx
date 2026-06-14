@@ -364,7 +364,7 @@ function publicFlexPbxHost() {
                 <?php echo htmlspecialchars($success_message); ?>
             </div>
             <div class="login-link">
-                <a href="index.php">→ Go to Login</a>
+                <a href="index.php">-> Go to Login</a>
             </div>
         <?php endif; ?>
 
@@ -425,7 +425,7 @@ function publicFlexPbxHost() {
             </form>
 
             <div class="login-link">
-                <a href="index.php">← Back to Login</a>
+                <a href="index.php"><- Back to Login</a>
             </div>
         <?php endif; ?>
     </div>

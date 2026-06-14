@@ -143,7 +143,7 @@ sudo ufw allow 10000:20000/udp
             'answer' => '<strong>Web-Based Installation (Recommended):</strong>
 <ol>
     <li>Log into your admin panel</li>
-    <li>Navigate to <strong>Admin → Module Manager</strong></li>
+    <li>Navigate to <strong>Admin -> Module Manager</strong></li>
     <li>Browse available modules from the master server</li>
     <li>Click <strong>Install</strong> on the module you want</li>
     <li>Wait for automatic download, extraction, and installation</li>
@@ -185,7 +185,7 @@ sudo ./install.sh
             'question' => 'How do I update modules?',
             'answer' => 'Module updates are displayed in the Module Manager:
 <ol>
-    <li>Go to <strong>Admin → Module Manager</strong></li>
+    <li>Go to <strong>Admin -> Module Manager</strong></li>
     <li>Modules with updates available will show an <span class="badge bg-warning text-dark">UPDATE AVAILABLE</span> badge</li>
     <li>Click <strong>Update</strong> to install the new version</li>
     <li>Or click <strong>Update All</strong> to update all modules at once</li>
@@ -206,7 +206,7 @@ sudo ./install.sh
             'answer' => '<strong>Creating Extensions:</strong>
 <ol>
     <li>Log into admin panel</li>
-    <li>Go to <strong>Extensions → Add New</strong></li>
+    <li>Go to <strong>Extensions -> Add New</strong></li>
     <li>Fill in:
         <ul>
             <li><strong>Extension Number:</strong> e.g., 2000, 2001</li>
@@ -224,7 +224,7 @@ sudo ./install.sh
             'question' => 'How do I add a SIP trunk?',
             'answer' => '<strong>Adding SIP Trunks:</strong>
 <ol>
-    <li>Go to <strong>Trunks → Add New</strong></li>
+    <li>Go to <strong>Trunks -> Add New</strong></li>
     <li>Select trunk type: <strong>SIP</strong></li>
     <li>Enter trunk details from your provider:
         <ul>
@@ -244,7 +244,7 @@ sudo ./install.sh
             'question' => 'How do I set up voicemail?',
             'answer' => 'Voicemail is enabled by default for all extensions. To configure:
 <ol>
-    <li>Go to <strong>Extensions → [Your Extension] → Voicemail</strong></li>
+    <li>Go to <strong>Extensions -> [Your Extension] -> Voicemail</strong></li>
     <li>Set:
         <ul>
             <li><strong>Voicemail PIN:</strong> Security PIN for accessing voicemail</li>
@@ -261,7 +261,7 @@ sudo ./install.sh
             'question' => 'How do I create a conference room?',
             'answer' => '<strong>Conference Room Setup:</strong>
 <ol>
-    <li>Go to <strong>Applications → Conferences</strong></li>
+    <li>Go to <strong>Applications -> Conferences</strong></li>
     <li>Click <strong>Add New Conference</strong></li>
     <li>Configure:
         <ul>
@@ -300,7 +300,7 @@ sudo ./install.sh
     </li>
     <li><strong>Review Logs:</strong>
         <ul>
-            <li>Admin → Logs → Asterisk Log</li>
+            <li>Admin -> Logs -> Asterisk Log</li>
             <li>Look for "Registration from" messages</li>
             <li>Check for "authentication failed" errors</li>
         </ul>
@@ -323,7 +323,7 @@ asterisk -rx "sip show registry"</code></pre>
     </li>
     <li><strong>Configure NAT Settings:</strong>
         <ul>
-            <li>Admin → Settings → SIP Settings</li>
+            <li>Admin -> Settings -> SIP Settings</li>
             <li>Set <strong>External IP</strong> to your public IP</li>
             <li>Set <strong>Local Network</strong> to your private subnet</li>
             <li>Enable <strong>NAT</strong> if behind router</li>
@@ -338,7 +338,7 @@ asterisk -rx "sip show registry"</code></pre>
     <li><strong>Check Codec Support:</strong>
         <ul>
             <li>Ensure both endpoints support same codec (ulaw, alaw, gsm)</li>
-            <li>Admin → Settings → Codecs</li>
+            <li>Admin -> Settings -> Codecs</li>
         </ul>
     </li>
 </ol>',
@@ -348,7 +348,7 @@ asterisk -rx "sip show registry"</code></pre>
             'question' => 'How do I view system logs?',
             'answer' => '<strong>Log Locations:</strong>
 <ul>
-    <li><strong>Web Interface:</strong> Admin → System → Logs</li>
+    <li><strong>Web Interface:</strong> Admin -> System -> Logs</li>
     <li><strong>Asterisk Full Log:</strong> <code>/var/log/asterisk/full</code></li>
     <li><strong>Apache Error Log:</strong> <code>/var/log/apache2/error.log</code></li>
     <li><strong>PHP Error Log:</strong> <code>/home/flexpbxuser/public_html/api/error_log</code></li>
@@ -490,7 +490,7 @@ exten => 999,1,Answer()
  same => n,Playback(hello-world)
  same => n,Hangup()
 
-; Or use Admin → Dialplan → Custom Context
+; Or use Admin -> Dialplan -> Custom Context
 </code></pre>
 <p><strong>Note:</strong> Changes in extensions_custom.conf survive system updates.</p>',
             'access' => 'private'

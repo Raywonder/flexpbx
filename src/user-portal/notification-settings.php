@@ -160,13 +160,13 @@ $extension = $_SESSION['user_extension'] ?? '';
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔔 Notification Settings</h1>
+            <h1> Notification Settings</h1>
             <p class="subtitle">Extension <?= htmlspecialchars($extension) ?></p>
         </div>
 
         <!-- SIP Status Card -->
         <div class="card">
-            <h2>📱 SIP Registration Status</h2>
+            <h2> SIP Registration Status</h2>
             <div class="status-box" id="sip-status-box" aria-live="polite" aria-atomic="true">
                 <div style="display: flex; align-items: center; justify-content: space-between;">
                     <div>
@@ -181,14 +181,14 @@ $extension = $_SESSION['user_extension'] ?? '';
 
         <!-- Push Notifications Card -->
         <div class="card">
-            <h2>📲 Push Notifications</h2>
+            <h2> Push Notifications</h2>
 
             <div id="push-not-supported" class="alert alert-warning" style="display: none;">
-                ⚠️ Push notifications are not supported on this device/browser.
+                 Push notifications are not supported on this device/browser.
             </div>
 
             <div id="push-permission-denied" class="alert alert-warning" style="display: none;">
-                ⚠️ Notification permission denied. Please enable notifications in your browser settings.
+                 Notification permission denied. Please enable notifications in your browser settings.
             </div>
 
             <div class="setting-group">
@@ -207,7 +207,7 @@ $extension = $_SESSION['user_extension'] ?? '';
 
         <!-- Email Notifications Card -->
         <div class="card">
-            <h2>📧 Email Notifications</h2>
+            <h2> Email Notifications</h2>
 
             <div class="setting-group">
                 <div class="setting-header">
@@ -349,7 +349,7 @@ $extension = $_SESSION['user_extension'] ?? '';
             // Check push notification support
             if (!pushSupported) {
                 const warningDiv = document.getElementById('push-not-supported');
-                warningDiv.innerHTML = '⚠️ Push notifications are not supported on this device/browser.';
+                warningDiv.innerHTML = ' Push notifications are not supported on this device/browser.';
                 warningDiv.style.display = 'block';
                 document.getElementById('push-enabled').disabled = true;
             }
@@ -426,7 +426,7 @@ $extension = $_SESSION['user_extension'] ?? '';
                 } catch (error) {
                     console.error('Permission request failed:', error);
                     document.getElementById('push-enabled').checked = false;
-                    alert('⚠️ Failed to request notification permission. Please check your browser settings and ensure notifications are allowed.');
+                    alert(' Failed to request notification permission. Please check your browser settings and ensure notifications are allowed.');
                     return;
                 }
 
@@ -462,7 +462,7 @@ $extension = $_SESSION['user_extension'] ?? '';
 
                     const result = await response.json();
                     if (result.success) {
-                        alert('✓ Push notifications enabled!');
+                        alert(' Push notifications enabled!');
                     } else {
                         throw new Error(result.error || 'Server error');
                     }
@@ -498,7 +498,7 @@ $extension = $_SESSION['user_extension'] ?? '';
                         })
                     });
 
-                    alert('✓ Push notifications disabled');
+                    alert(' Push notifications disabled');
                 } catch (error) {
                     console.error('Failed to disable push notifications:', error);
                 }

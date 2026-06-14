@@ -292,28 +292,28 @@ $vm_settings = [
 </head>
 <body>
     <div class="container">
-        <a href="/user-portal/" class="back-link">← Back to Portal</a>
+        <a href="/user-portal/" class="back-link"><- Back to Portal</a>
 
         <div class="header">
-            <h1>📬 Voicemail Settings</h1>
+            <h1> Voicemail Settings</h1>
             <p style="color: #666; margin-top: 5px;">Extension <?= htmlspecialchars($current_extension) ?></p>
         </div>
 
         <?php if ($success_message): ?>
         <div class="alert alert-success">
-            ✓ <?= htmlspecialchars($success_message) ?>
+             <?= htmlspecialchars($success_message) ?>
         </div>
         <?php endif; ?>
 
         <?php if ($error_message): ?>
         <div class="alert alert-error">
-            ⚠️ <?= htmlspecialchars($error_message) ?>
+             <?= htmlspecialchars($error_message) ?>
         </div>
         <?php endif; ?>
 
         <!-- Voicemail Status -->
         <div class="card">
-            <h2>📊 Voicemail Status</h2>
+            <h2> Voicemail Status</h2>
             <div class="stats-grid">
                 <div class="stat-box">
                     <div class="number"><?= $vm_settings['new_messages'] ?></div>
@@ -325,14 +325,14 @@ $vm_settings = [
                 </div>
                 <div class="stat-box">
                     <div class="number" style="color: <?= $vm_settings['enabled'] ? '#28a745' : '#dc3545' ?>;">
-                        <?= $vm_settings['enabled'] ? '✓' : '✗' ?>
+                        <?= $vm_settings['enabled'] ? '' : '' ?>
                     </div>
                     <div class="label">Voicemail Status</div>
                 </div>
             </div>
 
             <div class="info-box">
-                <h4>📞 Quick Access</h4>
+                <h4> Quick Access</h4>
                 <ul>
                     <li>Access voicemail: Dial <strong>*97</strong> from your extension</li>
                     <li>Check voicemail remotely: Dial <strong>*97</strong> and enter your extension when prompted</li>
@@ -343,7 +343,7 @@ $vm_settings = [
 
         <!-- Change Password -->
         <div class="card">
-            <h2>🔒 Change Voicemail Password</h2>
+            <h2> Change Voicemail Password</h2>
             <form method="POST">
                 <input type="hidden" name="action" value="change_password">
                 <div class="form-group">
@@ -365,7 +365,7 @@ $vm_settings = [
 
         <!-- Email Notifications -->
         <div class="card">
-            <h2>📧 Email Notifications</h2>
+            <h2> Email Notifications</h2>
             <form method="POST">
                 <input type="hidden" name="action" value="update_email">
                 <div class="form-group">
@@ -402,7 +402,7 @@ $vm_settings = [
 
         <!-- Voicemail Features -->
         <div class="card">
-            <h2>⚙️ Voicemail Features</h2>
+            <h2> Voicemail Features</h2>
             <p style="color: #666; margin-bottom: 20px;">Enable or disable voicemail features to customize your experience</p>
 
             <form method="POST">
@@ -491,11 +491,11 @@ $vm_settings = [
 
         <!-- Voicemail Messages -->
         <div class="card">
-            <h2>💬 Voicemail Messages</h2>
+            <h2> Voicemail Messages</h2>
             <p style="color: #666; margin-bottom: 20px;">Manage your voicemail messages</p>
 
             <div class="info-box">
-                <h4>ℹ️ How to Access Messages</h4>
+                <h4>ℹ How to Access Messages</h4>
                 <ul>
                     <li>Dial <strong>*97</strong> from your extension</li>
                     <li>Follow the voice prompts to listen to, delete, or save messages</li>
@@ -507,17 +507,17 @@ $vm_settings = [
 
             <div class="action-buttons">
                 <button class="btn" onclick="alert('Call *97 from your phone to access voicemail')" aria-label="Show how to access voicemail by phone">Access Voicemail</button>
-                <a href="/user-portal/voicemail.php" class="btn btn-secondary" aria-label="Play and manage voicemail messages">📬 Play Messages</a>
+                <a href="/user-portal/voicemail.php" class="btn btn-secondary" aria-label="Play and manage voicemail messages"> Play Messages</a>
             </div>
         </div>
 
         <!-- Greetings -->
         <div class="card">
-            <h2>🎙️ Voicemail Greetings</h2>
+            <h2> Voicemail Greetings</h2>
             <p style="color: #666; margin-bottom: 20px;">Manage your voicemail greetings</p>
 
             <div class="info-box">
-                <h4>📝 Recording Greetings</h4>
+                <h4> Recording Greetings</h4>
                 <ul>
                     <li>Dial <strong>*97</strong> and enter your mailbox</li>
                     <li>Press <strong>0</strong> for mailbox options</li>
@@ -536,7 +536,7 @@ $vm_settings = [
 
         <!-- Help -->
         <div class="card">
-            <h2>❓ Need Help?</h2>
+            <h2> Need Help?</h2>
             <div class="info-box">
                 <h4>Common Questions</h4>
                 <ul>

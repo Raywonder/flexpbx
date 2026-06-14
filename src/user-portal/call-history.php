@@ -275,13 +275,13 @@ $username = $_SESSION['user_username'] ?? $extension;
 <body>
     <div class="container">
         <div class="header">
-            <h1>📞 Call History</h1>
+            <h1> Call History</h1>
             <p>Extension <?= htmlspecialchars($extension) ?> - <?= htmlspecialchars($username) ?></p>
         </div>
 
         <div class="nav-buttons">
-            <a href="/user-portal/" class="btn">← Back to Dashboard</a>
-            <a href="/user-portal/my-recordings.php" class="btn">🎙️ Recordings</a>
+            <a href="/user-portal/" class="btn"><- Back to Dashboard</a>
+            <a href="/user-portal/my-recordings.php" class="btn"> Recordings</a>
         </div>
 
         <!-- Statistics -->
@@ -362,9 +362,9 @@ $username = $_SESSION['user_username'] ?? $extension;
 
             <!-- Pagination -->
             <div class="pagination" id="pagination">
-                <button id="prev-page" onclick="prevPage()" disabled>← Previous</button>
+                <button id="prev-page" onclick="prevPage()" disabled><- Previous</button>
                 <span id="page-info">Page 1</span>
-                <button id="next-page" onclick="nextPage()">Next →</button>
+                <button id="next-page" onclick="nextPage()">Next -></button>
             </div>
         </div>
     </div>
@@ -389,13 +389,13 @@ $username = $_SESSION['user_username'] ?? $extension;
                     loadStats();
                 } else {
                     document.getElementById('calls-tbody').innerHTML = `
-                        <tr><td colspan="7" class="no-data">❌ ${data.error}</td></tr>
+                        <tr><td colspan="7" class="no-data"> ${data.error}</td></tr>
                     `;
                 }
             } catch (error) {
                 console.error('Failed to load call history:', error);
                 document.getElementById('calls-tbody').innerHTML = `
-                    <tr><td colspan="7" class="no-data">❌ Failed to load call history</td></tr>
+                    <tr><td colspan="7" class="no-data"> Failed to load call history</td></tr>
                 `;
             }
         }

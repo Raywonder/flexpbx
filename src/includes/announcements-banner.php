@@ -536,7 +536,7 @@ $current_role = isset($_SESSION['admin_logged_in']) ? ($_SESSION['admin_role'] ?
 
         widget.innerHTML = `
             <div class="announcements-widget-header">
-                <h3 class="announcements-widget-title">📢 Announcements (${announcements.length})</h3>
+                <h3 class="announcements-widget-title"> Announcements (${announcements.length})</h3>
                 <button class="announcements-widget-close" onclick="announcementActions.closeWidget()">&times;</button>
             </div>
             <div class="announcements-widget-body">
@@ -579,7 +579,7 @@ $current_role = isset($_SESSION['admin_logged_in']) ? ($_SESSION['admin_role'] ?
                 <div class="announcement-popup-header ${announcement.priority}">
                     <h2 class="announcement-popup-title">${escapeHtml(announcement.title)}</h2>
                     <div class="announcement-popup-meta">
-                        ${announcement.announcement_type} • ${announcement.priority} priority
+                        ${announcement.announcement_type} - ${announcement.priority} priority
                     </div>
                 </div>
                 <div class="announcement-popup-body">
@@ -688,13 +688,13 @@ $current_role = isset($_SESSION['admin_logged_in']) ? ($_SESSION['admin_role'] ?
 
     function getIcon(type) {
         const icons = {
-            system: '⚙️',
-            maintenance: '🔧',
-            feature: '✨',
-            alert: '⚠️',
-            news: '📰'
+            system: '',
+            maintenance: '',
+            feature: '',
+            alert: '',
+            news: ''
         };
-        return icons[type] || '📢';
+        return icons[type] || '';
     }
 
     // Load announcements on page load

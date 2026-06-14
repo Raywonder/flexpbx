@@ -349,10 +349,10 @@ $enabled_modules = count(array_filter($modules, fn($m) => ($m['is_installed'] ??
 </head>
 <body>
     <div class="container">
-        <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+        <a href="dashboard.html" class="back-link"><- Back to Dashboard</a>
 
         <div class="header">
-            <h1>📦 Module Manager</h1>
+            <h1> Module Manager</h1>
             <p style="color: #666; margin-top: 5px;">Browse, install, and manage FlexPBX modules</p>
 
             <div class="stats-grid">
@@ -377,30 +377,30 @@ $enabled_modules = count(array_filter($modules, fn($m) => ($m['is_installed'] ??
 
         <?php if ($success_message): ?>
         <div class="alert alert-success">
-            ✓ <?= htmlspecialchars($success_message) ?>
+             <?= htmlspecialchars($success_message) ?>
         </div>
         <?php endif; ?>
 
         <?php if ($error_message): ?>
         <div class="alert alert-error">
-            ⚠️ <?= htmlspecialchars($error_message) ?>
+             <?= htmlspecialchars($error_message) ?>
         </div>
         <?php endif; ?>
 
         <?php if (!$api_key): ?>
         <div class="alert alert-error">
-            ⚠️ No API key found in session. Some features may be limited. <a href="#" style="color: #721c24; text-decoration: underline;">Register your installation</a>
+             No API key found in session. Some features may be limited. <a href="#" style="color: #721c24; text-decoration: underline;">Register your installation</a>
         </div>
         <?php endif; ?>
 
         <div class="card">
-            <input type="text" class="search-box" id="searchBox" placeholder="🔍 Search modules by name, description, or category..." onkeyup="filterModules()">
+            <input type="text" class="search-box" id="searchBox" placeholder=" Search modules by name, description, or category..." onkeyup="filterModules()">
         </div>
 
         <!-- Core Modules -->
         <?php if (!empty($grouped_modules['core'])): ?>
         <div class="category-section">
-            <h2 class="category-title"><span class="category-icon">🔧</span>Core Modules (Required)</h2>
+            <h2 class="category-title"><span class="category-icon"></span>Core Modules (Required)</h2>
             <div class="module-grid" id="core-modules">
                 <?php foreach ($grouped_modules['core'] as $module): ?>
                 <div class="module-card required" data-module-name="<?= strtolower($module['module_name']) ?>" data-module-key="<?= $module['module_key'] ?>">
@@ -509,7 +509,7 @@ $enabled_modules = count(array_filter($modules, fn($m) => ($m['is_installed'] ??
         <!-- Integration Modules -->
         <?php if (!empty($grouped_modules['integration'])): ?>
         <div class="category-section">
-            <h2 class="category-title"><span class="category-icon">🔌</span>Integration Modules</h2>
+            <h2 class="category-title"><span class="category-icon"></span>Integration Modules</h2>
             <div class="module-grid" id="integration-modules">
                 <?php foreach ($grouped_modules['integration'] as $module): ?>
                 <div class="module-card <?= $module['is_installed'] ? 'installed' : '' ?>" data-module-name="<?= strtolower($module['module_name']) ?>" data-module-key="<?= $module['module_key'] ?>">
@@ -572,7 +572,7 @@ $enabled_modules = count(array_filter($modules, fn($m) => ($m['is_installed'] ??
         <!-- Addon Modules -->
         <?php if (!empty($grouped_modules['addon'])): ?>
         <div class="category-section">
-            <h2 class="category-title"><span class="category-icon">🎁</span>Addon Modules</h2>
+            <h2 class="category-title"><span class="category-icon"></span>Addon Modules</h2>
             <div class="module-grid" id="addon-modules">
                 <?php foreach ($grouped_modules['addon'] as $module): ?>
                 <div class="module-card <?= $module['is_installed'] ? 'installed' : '' ?>" data-module-name="<?= strtolower($module['module_name']) ?>" data-module-key="<?= $module['module_key'] ?>">
@@ -635,7 +635,7 @@ $enabled_modules = count(array_filter($modules, fn($m) => ($m['is_installed'] ??
         <?php if (empty($modules)): ?>
         <div class="card">
             <div class="empty-state">
-                <div class="empty-state-icon">📦</div>
+                <div class="empty-state-icon"></div>
                 <h3>No modules available</h3>
                 <p style="margin-top: 10px;">Unable to fetch modules from the API. Please check your connection.</p>
             </div>

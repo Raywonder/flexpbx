@@ -236,25 +236,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <div class="container">
         <div class="header">
-            <h1>⚙️ Profile Settings</h1>
+            <h1> Profile Settings</h1>
             <p>Extension <?= htmlspecialchars($extension) ?> - <?= htmlspecialchars($username) ?></p>
         </div>
 
         <?php if ($success_message): ?>
         <div class="alert alert-success">
-            ✓ <?= $success_message ?>
+             <?= $success_message ?>
         </div>
         <?php endif; ?>
 
         <?php if ($error_message): ?>
         <div class="alert alert-error">
-            ⚠️ <?= $error_message ?>
+             <?= $error_message ?>
         </div>
         <?php endif; ?>
 
         <!-- Profile Settings -->
         <div class="settings-box">
-            <h2>📱 Profile Settings</h2>
+            <h2> Profile Settings</h2>
 
             <div class="info-box">
                 <strong>Current Display Name:</strong>
@@ -309,7 +309,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <!-- Assigned DIDs or No DID Message -->
         <div class="settings-box">
-            <h2>📞 Your Assigned Phone Numbers</h2>
+            <h2> Your Assigned Phone Numbers</h2>
 
             <?php if (!empty($assigned_dids)): ?>
                 <?php foreach ($assigned_dids as $did):
@@ -322,7 +322,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="info-box" style="background: #d4edda; border-left-color: #28a745;">
                     <div style="display: flex; justify-content: space-between; align-items: start;">
                         <div style="flex: 1;">
-                            <strong>✓ Active DID:</strong>
+                            <strong> Active DID:</strong>
                             <div class="current-value" style="font-size: 1.2rem; color: #155724; margin: 0.3rem 0;">
                                 <?= htmlspecialchars($did) ?>
                             </div>
@@ -336,7 +336,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div style="margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid #c3e6cb;">
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; font-size: 0.9rem;">
                             <div>
-                                <strong>Type:</strong> <?= $type === 'forwarded' ? '📞 Forwarded' : '📱 Direct' ?>
+                                <strong>Type:</strong> <?= $type === 'forwarded' ? ' Forwarded' : ' Direct' ?>
                             </div>
                             <div>
                                 <strong>Assigned to:</strong> Extension <?= htmlspecialchars($extension) ?>
@@ -357,7 +357,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <?php endforeach; ?>
             <?php else: ?>
                 <div class="info-box" style="background: #f8f9fa; border-left-color: #6c757d;">
-                    <strong>ℹ️ No phone numbers assigned</strong>
+                    <strong>ℹ No phone numbers assigned</strong>
                     <p style="margin: 0.5rem 0 0 0; color: #666;">
                         Your account does not have any dedicated phone numbers (DIDs) assigned yet.
                         You can request one using the form below.
@@ -368,7 +368,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <!-- DID Request -->
         <div class="settings-box">
-            <h2>📞 Request Direct Inward Dial (DID) Number</h2>
+            <h2> Request Direct Inward Dial (DID) Number</h2>
 
             <div class="info-box">
                 <strong>What is a DID?</strong><br>
@@ -376,11 +376,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
 
             <div class="info-box" style="background: #fff3cd; border-left-color: #ffc107;">
-                <strong>⚠️ Important Pricing Information:</strong><br>
-                • DID numbers typically have monthly fees (usually $1-5/month)<br>
-                • Porting existing numbers may have one-time setup fees<br>
-                • Some promotional or free DIDs may be available - contact admin<br>
-                • Final pricing will be confirmed before activation
+                <strong> Important Pricing Information:</strong><br>
+                - DID numbers typically have monthly fees (usually $1-5/month)<br>
+                - Porting existing numbers may have one-time setup fees<br>
+                - Some promotional or free DIDs may be available - contact admin<br>
+                - Final pricing will be confirmed before activation
             </div>
 
             <form method="POST">
@@ -413,7 +413,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <div class="back-link">
-            <a href="dashboard.php">← Back to Dashboard</a>
+            <a href="dashboard.php"><- Back to Dashboard</a>
         </div>
     </div>
 

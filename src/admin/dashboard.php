@@ -239,27 +239,27 @@ function flexphone_dashboard_devices() {
         </div>
 
         <div class="header">
-            <h1>🔧 FlexPBX Admin Dashboard</h1>
+            <h1> FlexPBX Admin Dashboard</h1>
             <p class="subtitle">A system you can help build to be the best it can be. Accessible by default.</p>
             <!-- Main Company Number -->
             <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; margin-top: 20px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);">
-                <div style="font-weight: 600; color: white; font-size: 16px; margin-bottom: 8px;">📞 Main Company Number</div>
+                <div style="font-weight: 600; color: white; font-size: 16px; margin-bottom: 8px;"> Main Company Number</div>
                 <div style="font-size: 32px; font-weight: bold; color: white; margin: 10px 0; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">
                     <a href="tel:+13023139555" style="color: white; text-decoration: none;">(302) 313-9555</a>
                 </div>
                 <div style="background: rgba(255,255,255,0.2); padding: 12px; border-radius: 6px; margin-top: 12px;">
                     <div style="font-size: 14px; color: white; margin-bottom: 8px;">
-                        <strong>👨‍💼 For Admins:</strong> Share this number with clients and external callers
+                        <strong> For Admins:</strong> Share this number with clients and external callers
                     </div>
                     <div style="font-size: 14px; color: white;">
-                        <strong>👤 For Users:</strong> Users without their own DID can provide this number to outside callers and direct them to dial their extension
+                        <strong> For Users:</strong> Users without their own DID can provide this number to outside callers and direct them to dial their extension
                     </div>
                 </div>
             </div>
 
             <!-- Support Hotline -->
             <div style="background: #e3f2fd; border-left: 4px solid #2196f3; padding: 15px; margin-top: 15px; border-radius: 6px;">
-                <div style="font-weight: 600; color: #1976d2;">🆘 Technical Support</div>
+                <div style="font-weight: 600; color: #1976d2;"> Technical Support</div>
                 <div style="font-size: 20px; font-weight: bold; color: #1976d2; margin: 8px 0;">
                     <a href="tel:+13023139555" style="color: #1976d2; text-decoration: none;">(302) 313-9555</a>
                 </div>
@@ -272,59 +272,59 @@ function flexphone_dashboard_devices() {
             <div style="margin-bottom: 20px; position: relative;">
                 <input type="text" id="dashboardSearch" placeholder="Search admin features... (Press '/' to focus)"
                     style="width: 100%; padding: 15px 50px 15px 20px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 16px; transition: all 0.3s ease;">
-                <span style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); font-size: 20px; color: #999;">🔍</span>
+                <span style="position: absolute; right: 20px; top: 50%; transform: translateY(-50%); font-size: 20px; color: #999;"></span>
             </div>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <a href="/admin/admin-extensions-management.php" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px 18px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 600;">👥 Extensions</a>
-                <a href="/admin/call-logs.php" style="background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%); color: white; padding: 10px 18px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 600;">📞 Call Logs</a>
-                <a href="/admin/backup-restore.php" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 10px 18px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 600;">💾 Backup</a>
-                <a href="/admin/admin-self-check.php" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px 18px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 600;">🔍 System Check</a>
+                <a href="/admin/admin-extensions-management.php" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px 18px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 600;"> Extensions</a>
+                <a href="/admin/call-logs.php" style="background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%); color: white; padding: 10px 18px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 600;"> Call Logs</a>
+                <a href="/admin/backup-restore.php" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; padding: 10px 18px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 600;"> Backup</a>
+                <a href="/admin/admin-self-check.php" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px 18px; border-radius: 6px; text-decoration: none; font-size: 14px; font-weight: 600;"> System Check</a>
             </div>
         </div>
 
-        <h3 class="section-title">📁 Media & Audio Management</h3>
+        <h3 class="section-title"> Media & Audio Management</h3>
         <div class="grid">
             <div class="card">
-                <div class="card-icon">🎙️</div>
+                <div class="card-icon"></div>
                 <h2>Audio Upload Manager <span class="badge new">NEW</span></h2>
                 <p>Upload and manage IVR audio files, voicemail greetings, and custom recordings</p>
                 <a href="audio-upload.php" class="btn">Manage Audio Files</a>
             </div>
 
             <div class="card">
-                <div class="card-icon">📂</div>
+                <div class="card-icon"></div>
                 <h2>Media Manager</h2>
                 <p>Browse and organize all media files including music on hold</p>
                 <a href="media-manager.html" class="btn">Open Media Manager</a>
             </div>
 
             <div class="card">
-                <div class="card-icon">🎵</div>
+                <div class="card-icon"></div>
                 <h2>Music on Hold Manager <span class="badge new">NEW</span></h2>
                 <p>Configure streaming MOH from Icecast/Shoutcast, manage volumes, and monitor audio</p>
                 <a href="admin-moh.php" class="btn">Manage MOH</a>
             </div>
 
             <div class="card">
-                <div class="card-icon">🎬</div>
+                <div class="card-icon"></div>
                 <h2>Jellyfin MOH Streaming <span class="badge new">NEW</span></h2>
 
             <div class="card">
-                <div class="card-icon">📻</div>
+                <div class="card-icon"></div>
                 <h2>AzuraCast Radio Manager <span class="badge new">NEW</span></h2>
                 <p>Professional radio streaming platform - 4 stations with AutoDJ, playlist management</p>
                 <a href="https://azuracast.tappedin.fm" class="btn" target="_blank">Open AzuraCast Admin</a>
             </div>
 
             <div class="card">
-                <div class="card-icon">🎧</div>
+                <div class="card-icon"></div>
                 <h2>Radio Players <span class="badge new">NEW</span></h2>
                 <p>Listen to TappedIn Radio Network stations - 4 live streaming channels</p>
                 <a href="/radio-players.php" class="btn">Open Players</a>
             </div>
 
             <div class="card">
-                <div class="card-icon">📡</div>
+                <div class="card-icon"></div>
                 <h2>Media Stream Control <span class="badge new">NEW</span></h2>
                 <p>Real-time control of media streams - monitor active streams, control playback</p>
                 <a href="media-stream-control.php" class="btn">Control Streams</a>
@@ -333,173 +333,173 @@ function flexphone_dashboard_devices() {
                 <a href="jellyfin-moh-manager.html" class="btn">Configure Jellyfin MOH</a>
             </div>
             <div class="card">
-                <div class="card-icon">🎵</div>
+                <div class="card-icon"></div>
                 <h2>Conference Music Control <span class="badge new">NEW</span></h2>
                 <p>Control music playback in conference rooms - start, stop, auto-play when alone</p>
                 <a href="conference-music-control.html" class="btn">Control Music</a>
             </div>
 
             <div class="card">
-                <div class="card-icon">🟢</div>
+                <div class="card-icon"></div>
                 <h2>User Presence & Status <span class="badge new">NEW</span></h2>
                 <p>Track user online/offline status, manage devices, custom login/logout voice prompts</p>
                 <a href="presence-status-manager.html" class="btn">Manage Presence</a>
             </div>
 
             <div class="card">
-                <div class="card-icon">☎️</div>
+                <div class="card-icon"></div>
                 <h2>Main IVR Menu <span class="badge new">NEW</span></h2>
                 <p>Professional auto-attendant on (302) 313-9555 with 4 menu options and extension dialing</p>
                 <a href="https://flexpbx.devinecreations.net/documentation/MAIN_IVR_MENU.md" class="btn" target="_blank">View Documentation</a>
             </div>
         </div>
 
-        <h3 class="section-title">📞 PBX Configuration</h3>
+        <h3 class="section-title"> PBX Configuration</h3>
         <div class="grid">
             <div class="card">
-                <div class="card-icon">👥</div>
+                <div class="card-icon"></div>
                 <h2>Extensions Management</h2>
                 <p>Add, edit, and manage SIP extensions and user accounts</p>
                 <a href="admin-extensions-management.html" class="btn">Manage Extensions</a>
             </div>
 
             <div class="card">
-                <div class="card-icon">🌐</div>
+                <div class="card-icon"></div>
                 <h2>Trunks Management</h2>
                 <p>Configure SIP trunks and external connectivity</p>
                 <a href="admin-trunks-management.html" class="btn">Manage Trunks</a>
             </div>
 
             <div class="card">
-                <div class="card-icon">📱</div>
+                <div class="card-icon"></div>
                 <h2>Trunks & DIDs Manager</h2>
                 <p>Advanced trunk configuration and DID routing</p>
                 <a href="trunks-dids-manager.html" class="btn">Configure DIDs</a>
             </div>
 
             <div class="card">
-                <div class="card-icon">📥</div>
+                <div class="card-icon"></div>
                 <h2>Inbound Routing</h2>
                 <p>Configure how incoming calls are routed</p>
                 <a href="inbound-routing.html" class="btn">Setup Routing</a>
             </div>
 
             <div class="card">
-                <div class="card-icon">☁️</div>
+                <div class="card-icon"></div>
                 <h2>Google Voice Integration</h2>
                 <p>Connect Google Voice accounts and configure settings</p>
                 <a href="admin-google-voice.html" class="btn">Google Voice Setup</a>
             </div>
 
             <div class="card">
-                <div class="card-icon">🔌</div>
+                <div class="card-icon"></div>
                 <h2>External Integrations <span class="badge new">NEW</span></h2>
                 <p>Configure Twilio, Google Voice, manage phone numbers, SMS, calls, and webhooks</p>
                 <a href="twilio-settings.php" class="btn">Manage Integrations</a>
             </div>
 
             <div class="card">
-                <div class="card-icon">📞</div>
+                <div class="card-icon"></div>
                 <h2>Feature Codes Manager <span class="badge new">NEW</span></h2>
                 <p>Enable, disable, and manage PBX feature codes (*43, *45, *97, etc.)</p>
                 <a href="feature-codes-manager.html" class="btn">Manage Feature Codes</a>
             </div>
 
             <div class="card">
-                <div class="card-icon">📬</div>
+                <div class="card-icon"></div>
                 <h2>Voicemail Manager <span class="badge new">NEW</span></h2>
                 <p>Manage mailboxes, configure features, and control voicemail system settings</p>
                 <a href="voicemail-manager.html" class="btn">Manage Voicemail</a>
             </div>
 
             <div class="card">
-                <div class="card-icon">🅿️</div>
+                <div class="card-icon"></div>
                 <h2>Call Parking <span class="badge new">NEW</span></h2>
                 <p>Manage parking lots, view parked calls in real-time, and configure call parking features</p>
                 <a href="call-parking.html" class="btn">Manage Parking</a>
             </div>
 
             <div class="card">
-                <div class="card-icon">📞</div>
+                <div class="card-icon"></div>
                 <h2>Call Queues <span class="badge new">NEW</span></h2>
                 <p>Manage call queues (ACD), assign agents, monitor real-time queue status, and view statistics</p>
                 <a href="call-queues.html" class="btn">Manage Queues</a>
             </div>
 
             <div class="card">
-                <div class="card-icon">🔄</div>
+                <div class="card-icon"></div>
                 <h2>Ring Groups <span class="badge new">NEW</span></h2>
                 <p>Configure hunt groups to ring multiple extensions simultaneously or sequentially</p>
                 <a href="ring-groups.html" class="btn">Manage Ring Groups</a>
             </div>
 
             <div class="card">
-                <div class="card-icon">📱</div>
+                <div class="card-icon"></div>
                 <h2>IVR Builder <span class="badge new">NEW</span></h2>
                 <p>Create professional phone menus with custom routing, templates, and audio prompts</p>
                 <a href="ivr-builder.html" class="btn">Build IVR Menus</a>
             </div>
         </div>
 
-        <h3 class="section-title">📊 Monitoring & Reports</h3>
+        <h3 class="section-title"> Monitoring & Reports</h3>
         <div class="grid">
             <div class="card">
-                <div class="card-icon">📞</div>
+                <div class="card-icon"></div>
                 <h2>Call Logs <span class="badge new">NEW</span></h2>
                 <p>View call history, search records, export CDRs, and analyze statistics</p>
                 <a href="call-logs.html" class="btn">View Call Logs</a>
             </div>
 
             <div class="card">
-                <div class="card-icon">📊</div>
+                <div class="card-icon"></div>
                 <h2>Live Dashboard <span class="badge new">NEW</span></h2>
                 <p>Real-time system monitoring with live call data, extensions status, and API key tracking</p>
                 <a href="dashboard-live.php" class="btn">Open Live Dashboard</a>
             </div>
 
             <div class="card">
-                <div class="card-icon">🔍</div>
+                <div class="card-icon"></div>
                 <h2>System Self-Check</h2>
                 <p>Run diagnostics and check system health</p>
                 <a href="admin-self-check.php" class="btn">Run Diagnostics</a>
             </div>
         </div>
 
-        <h3 class="section-title">🔒 Security</h3>
+        <h3 class="section-title"> Security</h3>
         <div class="grid">
             <div class="card">
-                <div class="card-icon">🛡️</div>
+                <div class="card-icon"></div>
                 <h2>Security & IP Management</h2>
                 <p>Manage firewall rules, banned IPs, whitelist, and fail2ban settings</p>
                 <a href="admin-security.html" class="btn">Security Dashboard</a>
             </div>
         </div>
 
-        <h3 class="section-title">⚙️ System Tools</h3>
+        <h3 class="section-title"> System Tools</h3>
         <div class="grid">
             <div class="card">
-                <div class="card-icon">📢</div>
+                <div class="card-icon"></div>
                 <h2>Announcements <span class="badge new">NEW</span></h2>
                 <p>Create and manage system-wide announcements, notifications, and alerts for users</p>
                 <a href="announcements.php" class="btn">Manage Announcements</a>
             </div>
 
             <div class="card">
-                <div class="card-icon">📦</div>
+                <div class="card-icon"></div>
                 <h2>Modules Manager <span class="badge new">NEW</span></h2>
                 <p>Install, update, and manage FlexPBX modules and push updates to remote servers</p>
                 <a href="modules-manager.html" class="btn">Manage Modules</a>
             </div>
 
             <div class="card">
-                <div class="card-icon">💾</div>
+                <div class="card-icon"></div>
                 <h2>Backup & Restore <span class="badge new">NEW</span></h2>
                 <p>Create backups, restore configurations, and manage system snapshots</p>
                 <a href="backup-restore.html" class="btn">Manage Backups</a>
             </div>
 
             <div class="card">
-                <div class="card-icon">👤</div>
+                <div class="card-icon"></div>
                 <h2>Account Settings <span class="badge new">NEW</span></h2>
                 <p>Change password, update email, link extension, and manage your account</p>
                 <div style="display: flex; flex-direction: column; gap: 0.5rem;">
@@ -510,118 +510,118 @@ function flexphone_dashboard_devices() {
             </div>
 
             <div class="card">
-                <div class="card-icon">🔔</div>
+                <div class="card-icon"></div>
                 <h2>Notification Settings <span class="badge new">NEW</span></h2>
                 <p>Manage push notifications, email alerts, and notification preferences</p>
                 <a href="notification-settings.php" class="btn">Configure Notifications</a>
             </div>
 
             <div class="card">
-                <div class="card-icon">🐛</div>
+                <div class="card-icon"></div>
                 <h2>Bug Tracker <span class="badge new">NEW</span></h2>
                 <p>Track bugs, issues, and feature requests from testing</p>
                 <a href="bug-tracker.php" class="btn">Open Bug Tracker</a>
             </div>
 
             <div class="card">
-                <div class="card-icon">💳</div>
+                <div class="card-icon"></div>
                 <h2>Payment Management <span class="badge new">NEW</span></h2>
                 <p>Process payments, manage licenses, view transactions, and configure gateways (PayPal, Stripe, Crypto)</p>
                 <a href="payment-management.html" class="btn">Manage Payments</a>
             </div>
 
             <div class="card">
-                <div class="card-icon">💻</div>
+                <div class="card-icon"></div>
                 <h2>Admin Client</h2>
                 <p>Advanced admin client for remote management</p>
                 <a href="index.html" class="btn">Open Client</a>
             </div>
 
             <div class="card">
-                <div class="card-icon">⚙️</div>
+                <div class="card-icon"></div>
                 <h2>System Settings <span class="badge new">NEW</span></h2>
                 <p>Configure Asterisk integration mode (Secure vs Power User)</p>
                 <a href="system-settings.php" class="btn">Configure Settings</a>
             </div>
 
             <div class="card">
-                <div class="card-icon">📝</div>
+                <div class="card-icon"></div>
                 <h2>Configuration Editor <span class="badge new">NEW</span></h2>
                 <p>Edit all system config files (payment, licensing, extensions, trunks) in secure interface</p>
                 <a href="config-editor.html" class="btn">Edit Configurations</a>
             </div>
         </div>
 
-        <h3 class="section-title">👥 User & Department Management</h3>
+        <h3 class="section-title"> User & Department Management</h3>
         <div class="grid">
             <div class="card">
-                <div class="card-icon">✉️</div>
+                <div class="card-icon"></div>
                 <h2>Invite Users <span class="badge new">NEW</span></h2>
                 <p>Send invitations to new users and assign them extensions</p>
                 <a href="send-invite.php" class="btn">Send Invitation</a>
             </div>
 
             <div class="card">
-                <div class="card-icon">🏢</div>
+                <div class="card-icon"></div>
                 <h2>Department Management <span class="badge new">NEW</span></h2>
                 <p>Create and manage departments, assign extensions to teams</p>
                 <a href="department-management.php" class="btn">Manage Departments</a>
             </div>
 
             <div class="card">
-                <div class="card-icon">👥</div>
+                <div class="card-icon"></div>
                 <h2>Extensions Management</h2>
                 <p>View and manage all user extensions and settings</p>
                 <a href="admin-extensions-management.php" class="btn">Manage Extensions</a>
             </div>
 
             <div class="card">
-                <div class="card-icon">🔄</div>
+                <div class="card-icon"></div>
                 <h2>User Migration <span class="badge new">NEW</span></h2>
                 <p>Move users between extensions and departments, update queues automatically</p>
                 <a href="user-migration.php" class="btn">Migrate Users</a>
             </div>
         </div>
 
-        <h3 class="section-title">📚 Documentation</h3>
+        <h3 class="section-title"> Documentation</h3>
         <div class="grid">
             <div class="card">
-                <div class="card-icon">📚</div>
+                <div class="card-icon"></div>
                 <h2>Documentation Center <span class="badge new">NEW</span></h2>
                 <p>Complete guides, references, and troubleshooting for all FlexPBX features</p>
                 <a href="documentation-center.php" class="btn">Open Documentation</a>
             </div>
 
             <div class="card">
-                <div class="card-icon">📞</div>
+                <div class="card-icon"></div>
                 <h2>Feature Codes Reference</h2>
                 <p>Quick reference for all feature codes (*43, *45, *97, etc.)</p>
                 <a href="../docs/FEATURE_CODES.html" class="btn">View Codes</a>
             </div>
 
             <div class="card">
-                <div class="card-icon">📬</div>
+                <div class="card-icon"></div>
                 <h2>Voicemail & Transfers Guide</h2>
                 <p>Complete setup guide for voicemail system and call transfers</p>
                 <a href="../docs/VOICEMAIL_AND_TRANSFERS_COMPLETE.html" class="btn">View Guide</a>
             </div>
 
             <div class="card">
-                <div class="card-icon">🔧</div>
+                <div class="card-icon"></div>
                 <h2>Audio Troubleshooting</h2>
                 <p>Diagnose and fix audio issues with comprehensive guide</p>
                 <a href="../docs/AUDIO_TROUBLESHOOTING.html" class="btn">View Guide</a>
             </div>
 
             <div class="card">
-                <div class="card-icon">🌐</div>
+                <div class="card-icon"></div>
                 <h2>Network Configuration</h2>
                 <p>Ports, STUN servers, and firewall setup</p>
                 <a href="../docs/NETWORK_PORTS_AND_STUN.html" class="btn">View Config</a>
             </div>
 
             <div class="card">
-                <div class="card-icon">👤</div>
+                <div class="card-icon"></div>
                 <h2>User Portal</h2>
                 <p>Access the user-facing portal</p>
                 <a href="../user-portal/" class="btn">Go to User Portal</a>
@@ -675,9 +675,9 @@ function flexphone_dashboard_devices() {
 
         <div style="text-align: center; margin-top: 40px; padding: 20px;">
             <p style="color: white; opacity: 0.9; margin-bottom: 15px;">
-                <a href="/admin/bug-tracker.php" style="color: white; text-decoration: underline; margin: 0 10px;">🐛 Report a Bug</a> |
-                <a href="mailto:support@devine-creations.com" style="color: white; text-decoration: underline; margin: 0 10px;">📧 Support</a> |
-                <a href="/" style="color: white; text-decoration: underline; margin: 0 10px;">🏠 Back to Main</a>
+                <a href="/admin/bug-tracker.php" style="color: white; text-decoration: underline; margin: 0 10px;"> Report a Bug</a> |
+                <a href="mailto:support@devine-creations.com" style="color: white; text-decoration: underline; margin: 0 10px;"> Support</a> |
+                <a href="/" style="color: white; text-decoration: underline; margin: 0 10px;"> Back to Main</a>
             </p>
             <p style="color: white; opacity: 0.7; font-size: 0.9em;">
                 FlexPBX Admin Dashboard v1.0

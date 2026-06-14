@@ -663,12 +663,12 @@ function handlePushNotification($data) {
         ];
 
         $priorityIcons = [
-            'normal' => '📢',
-            'high' => '⚠️',
-            'urgent' => '🚨'
+            'normal' => '',
+            'high' => '',
+            'urgent' => ''
         ];
 
-        $icon = $priorityIcons[$priority] ?? '📢';
+        $icon = $priorityIcons[$priority] ?? '';
         $color = $priorityColors[$priority] ?? 0x3b82f6;
 
         $embed = [

@@ -48,11 +48,11 @@ echo "<h2>Step 1: Installing Core Tables</h2>\n";
 try {
     include __DIR__ . '/setup_tables.php';
     $results['steps']['core_tables'] = 'Success';
-    echo "<p style='color: green;'>✅ Core tables installed successfully</p>\n";
+    echo "<p style='color: green;'> Core tables installed successfully</p>\n";
 } catch (Exception $e) {
     $results['status'] = 'error';
     $results['errors'][] = "Core tables: " . $e->getMessage();
-    echo "<p style='color: red;'>❌ Error installing core tables: " . htmlspecialchars($e->getMessage()) . "</p>\n";
+    echo "<p style='color: red;'> Error installing core tables: " . htmlspecialchars($e->getMessage()) . "</p>\n";
 }
 flush();
 
@@ -63,10 +63,10 @@ echo "<h2>Step 2: Installing SMS Provider Tables</h2>\n";
 try {
     include __DIR__ . '/install_sms_schema.php';
     $results['steps']['sms_providers'] = 'Success';
-    echo "<p style='color: green;'>✅ SMS provider tables installed successfully</p>\n";
+    echo "<p style='color: green;'> SMS provider tables installed successfully</p>\n";
 } catch (Exception $e) {
     $results['warnings'][] = "SMS providers: " . $e->getMessage();
-    echo "<p style='color: orange;'>⚠️ Warning: SMS provider tables: " . htmlspecialchars($e->getMessage()) . "</p>\n";
+    echo "<p style='color: orange;'> Warning: SMS provider tables: " . htmlspecialchars($e->getMessage()) . "</p>\n";
 }
 flush();
 
@@ -80,14 +80,14 @@ try {
         $sql = file_get_contents($sql_file);
         $pdo->exec($sql);
         $results['steps']['mattermost'] = 'Success';
-        echo "<p style='color: green;'>✅ Mattermost tables installed successfully (6 tables)</p>\n";
+        echo "<p style='color: green;'> Mattermost tables installed successfully (6 tables)</p>\n";
     } else {
         $results['warnings'][] = "Mattermost: Schema file not found";
-        echo "<p style='color: orange;'>⚠️ Warning: Mattermost schema file not found</p>\n";
+        echo "<p style='color: orange;'> Warning: Mattermost schema file not found</p>\n";
     }
 } catch (Exception $e) {
     $results['warnings'][] = "Mattermost: " . $e->getMessage();
-    echo "<p style='color: orange;'>⚠️ Warning: Mattermost tables: " . htmlspecialchars($e->getMessage()) . "</p>\n";
+    echo "<p style='color: orange;'> Warning: Mattermost tables: " . htmlspecialchars($e->getMessage()) . "</p>\n";
 }
 flush();
 
@@ -98,10 +98,10 @@ echo "<h2>Step 4: Installing Notifications System</h2>\n";
 try {
     include __DIR__ . '/setup_notifications.php';
     $results['steps']['notifications'] = 'Success';
-    echo "<p style='color: green;'>✅ Notifications system installed successfully (5 tables + 6 templates)</p>\n";
+    echo "<p style='color: green;'> Notifications system installed successfully (5 tables + 6 templates)</p>\n";
 } catch (Exception $e) {
     $results['warnings'][] = "Notifications: " . $e->getMessage();
-    echo "<p style='color: orange;'>⚠️ Warning: Notifications system: " . htmlspecialchars($e->getMessage()) . "</p>\n";
+    echo "<p style='color: orange;'> Warning: Notifications system: " . htmlspecialchars($e->getMessage()) . "</p>\n";
 }
 flush();
 
@@ -189,10 +189,10 @@ try {
     }
 
     $results['steps']['announcements'] = 'Success';
-    echo "<p style='color: green;'>✅ Announcements system installed successfully (3 tables + 10 templates)</p>\n";
+    echo "<p style='color: green;'> Announcements system installed successfully (3 tables + 10 templates)</p>\n";
 } catch (Exception $e) {
     $results['warnings'][] = "Announcements: " . $e->getMessage();
-    echo "<p style='color: orange;'>⚠️ Warning: Announcements system: " . htmlspecialchars($e->getMessage()) . "</p>\n";
+    echo "<p style='color: orange;'> Warning: Announcements system: " . htmlspecialchars($e->getMessage()) . "</p>\n";
 }
 flush();
 
@@ -263,10 +263,10 @@ try {
     }
 
     $results['steps']['help_system'] = 'Success';
-    echo "<p style='color: green;'>✅ Help system installed successfully (2 tables + 10 articles)</p>\n";
+    echo "<p style='color: green;'> Help system installed successfully (2 tables + 10 articles)</p>\n";
 } catch (Exception $e) {
     $results['warnings'][] = "Help system: " . $e->getMessage();
-    echo "<p style='color: orange;'>⚠️ Warning: Help system: " . htmlspecialchars($e->getMessage()) . "</p>\n";
+    echo "<p style='color: orange;'> Warning: Help system: " . htmlspecialchars($e->getMessage()) . "</p>\n";
 }
 flush();
 
@@ -332,10 +332,10 @@ try {
     }
 
     $results['steps']['legal_pages'] = 'Success';
-    echo "<p style='color: green;'>✅ Legal pages system installed successfully (1 table + 3 documents)</p>\n";
+    echo "<p style='color: green;'> Legal pages system installed successfully (1 table + 3 documents)</p>\n";
 } catch (Exception $e) {
     $results['warnings'][] = "Legal pages: " . $e->getMessage();
-    echo "<p style='color: orange;'>⚠️ Warning: Legal pages system: " . htmlspecialchars($e->getMessage()) . "</p>\n";
+    echo "<p style='color: orange;'> Warning: Legal pages system: " . htmlspecialchars($e->getMessage()) . "</p>\n";
 }
 flush();
 
@@ -346,21 +346,21 @@ echo "<hr>\n";
 echo "<h2>Installation Summary</h2>\n";
 
 if ($results['status'] === 'success') {
-    echo "<p style='color: green; font-size: 18px; font-weight: bold;'>✅ All systems installed successfully!</p>\n";
+    echo "<p style='color: green; font-size: 18px; font-weight: bold;'> All systems installed successfully!</p>\n";
 } else {
-    echo "<p style='color: orange; font-size: 18px; font-weight: bold;'>⚠️ Installation completed with warnings</p>\n";
+    echo "<p style='color: orange; font-size: 18px; font-weight: bold;'> Installation completed with warnings</p>\n";
 }
 
 echo "<h3>Completed Steps:</h3>\n<ul>\n";
 foreach ($results['steps'] as $step => $status) {
-    echo "<li>✅ " . htmlspecialchars(ucwords(str_replace('_', ' ', $step))) . ": $status</li>\n";
+    echo "<li> " . htmlspecialchars(ucwords(str_replace('_', ' ', $step))) . ": $status</li>\n";
 }
 echo "</ul>\n";
 
 if (!empty($results['warnings'])) {
     echo "<h3>Warnings:</h3>\n<ul>\n";
     foreach ($results['warnings'] as $warning) {
-        echo "<li>⚠️ " . htmlspecialchars($warning) . "</li>\n";
+        echo "<li> " . htmlspecialchars($warning) . "</li>\n";
     }
     echo "</ul>\n";
 }
@@ -368,7 +368,7 @@ if (!empty($results['warnings'])) {
 if (!empty($results['errors'])) {
     echo "<h3>Errors:</h3>\n<ul style='color: red;'>\n";
     foreach ($results['errors'] as $error) {
-        echo "<li>❌ " . htmlspecialchars($error) . "</li>\n";
+        echo "<li> " . htmlspecialchars($error) . "</li>\n";
     }
     echo "</ul>\n";
 }

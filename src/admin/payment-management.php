@@ -347,11 +347,11 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>💳 Payment Management</h1>
+            <h1> Payment Management</h1>
             <p class="tagline">A system you can help build to be the best it can be. Accessible by default.</p>
 
             <div class="support-callout">
-                <div style="font-weight: 600; color: #1976d2;">📞 Support Hotline</div>
+                <div style="font-weight: 600; color: #1976d2;"> Support Hotline</div>
                 <div class="phone">
                     <a href="tel:+13023139555">(302) 313-9555</a>
                 </div>

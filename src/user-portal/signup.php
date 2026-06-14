@@ -253,7 +253,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <div class="container">
         <div class="header">
-            <h1>📱 Sign Up for FlexPBX</h1>
+            <h1> Sign Up for FlexPBX</h1>
             <p>Request a user extension account</p>
         </div>
 
@@ -267,13 +267,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <?php if ($success_message): ?>
             <div class="alert alert-success">
-                ✓ <?= $success_message ?>
+                 <?= $success_message ?>
             </div>
             <?php endif; ?>
 
             <?php if ($error_message): ?>
             <div class="alert alert-error">
-                ⚠️ <?= $error_message ?>
+                 <?= $error_message ?>
             </div>
             <?php endif; ?>
 
@@ -300,7 +300,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <label for="extension">Requested Extension *</label>
                     <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
                         <button type="button" onclick="suggestExtension('sequential')" class="btn" style="width: auto; padding: 0.5rem 1rem; font-size: 0.9rem;">Next Available</button>
-                        <button type="button" onclick="suggestExtension('random')" class="btn" style="width: auto; padding: 0.5rem 1rem; font-size: 0.9rem; background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);">🎲 Random</button>
+                        <button type="button" onclick="suggestExtension('random')" class="btn" style="width: auto; padding: 0.5rem 1rem; font-size: 0.9rem; background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);"> Random</button>
                         <span id="availability-status" style="padding: 0.5rem; flex: 1; text-align: center; border-radius: 4px; font-weight: 600;"></span>
                     </div>
                     <input type="text" id="extension" name="extension" pattern="[0-9]{3,4}" maxlength="4" value="<?= htmlspecialchars($extension_requested ?? '') ?>" placeholder="e.g., 100, 2000" required aria-required="true" onblur="checkAvailability()">
@@ -339,14 +339,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <small>Optional: Get a dedicated phone number for your extension</small>
 
                     <div id="did-help" style="margin-top: 1rem; padding: 1rem; background: #f8f9fa; border-left: 4px solid #667eea; border-radius: 4px; display: none;">
-                        <h4 style="margin: 0 0 0.5rem 0; color: #667eea; font-size: 1rem;">📞 What is a DID?</h4>
+                        <h4 style="margin: 0 0 0.5rem 0; color: #667eea; font-size: 1rem;"> What is a DID?</h4>
                         <p style="margin: 0 0 0.8rem 0; font-size: 0.95rem; line-height: 1.5;">
                             A <strong>Direct Inward Dial (DID)</strong> is a dedicated phone number that rings directly to your extension,
                             allowing people outside the PBX system to call you.
                         </p>
 
                         <div style="margin-bottom: 0.8rem;">
-                            <strong style="color: #28a745;">✓ You NEED a DID if you want to:</strong>
+                            <strong style="color: #28a745;"> You NEED a DID if you want to:</strong>
                             <ul style="margin: 0.3rem 0 0 1.2rem; font-size: 0.9rem;">
                                 <li>Receive calls from external phone numbers (mobile, landline)</li>
                                 <li>Give clients/customers a direct number to reach you</li>
@@ -356,7 +356,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
 
                         <div>
-                            <strong style="color: #666;">✗ You DON'T need a DID if you only:</strong>
+                            <strong style="color: #666;"> You DON'T need a DID if you only:</strong>
                             <ul style="margin: 0.3rem 0 0 1.2rem; font-size: 0.9rem;">
                                 <li>Call other extensions internally (office to office)</li>
                                 <li>Make outbound calls (your extension can still dial out)</li>
@@ -382,7 +382,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </form>
 
             <div class="back-link">
-                <a href="index.php" aria-label="Return to login page">← Back to Login</a>
+                <a href="index.php" aria-label="Return to login page"><- Back to Login</a>
             </div>
         </div>
     </div>
@@ -424,18 +424,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 if (data.available && data.suggested) {
                     extInput.value = data.suggested;
-                    statusEl.textContent = '✓ ' + data.message;
+                    statusEl.textContent = ' ' + data.message;
                     statusEl.style.background = '#d4edda';
                     statusEl.style.color = '#155724';
                     extensionAvailable = true;
                 } else {
-                    statusEl.textContent = '⚠️ ' + data.message;
+                    statusEl.textContent = ' ' + data.message;
                     statusEl.style.background = '#fff3cd';
                     statusEl.style.color = '#856404';
                     extensionAvailable = false;
                 }
             } catch (error) {
-                statusEl.textContent = '⚠️ Error checking availability';
+                statusEl.textContent = ' Error checking availability';
                 statusEl.style.background = '#f8d7da';
                 statusEl.style.color = '#721c24';
                 extensionAvailable = false;
@@ -448,7 +448,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             const extension = extInput.value.trim();
 
             if (extension.length !== 4 || !/^\d{4}$/.test(extension)) {
-                statusEl.textContent = '⚠️ Extension must be 4 digits';
+                statusEl.textContent = ' Extension must be 4 digits';
                 statusEl.style.background = '#fff3cd';
                 statusEl.style.color = '#856404';
                 extensionAvailable = false;
@@ -460,18 +460,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 const data = await response.json();
 
                 if (data.available) {
-                    statusEl.textContent = '✓ Extension available';
+                    statusEl.textContent = ' Extension available';
                     statusEl.style.background = '#d4edda';
                     statusEl.style.color = '#155724';
                     extensionAvailable = true;
                 } else {
-                    statusEl.textContent = '✗ ' + data.message;
+                    statusEl.textContent = ' ' + data.message;
                     statusEl.style.background = '#f8d7da';
                     statusEl.style.color = '#721c24';
                     extensionAvailable = false;
                 }
             } catch (error) {
-                statusEl.textContent = '⚠️ Error checking availability';
+                statusEl.textContent = ' Error checking availability';
                 statusEl.style.background = '#f8d7da';
                 statusEl.style.color = '#721c24';
                 extensionAvailable = false;
@@ -499,9 +499,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <!-- Footer with Support Links -->
     <div style="text-align: center; margin-top: 40px; padding: 20px;">
         <p style="color: white; opacity: 0.9; margin-bottom: 15px;">
-            <a href="/admin/bug-tracker.php" style="color: white; text-decoration: underline; margin: 0 10px;">🐛 Report a Bug</a> |
-            <a href="mailto:support@devine-creations.com" style="color: white; text-decoration: underline; margin: 0 10px;">📧 Support</a> |
-            <a href="login.php" style="color: white; text-decoration: underline; margin: 0 10px;">← Back to Login</a>
+            <a href="/admin/bug-tracker.php" style="color: white; text-decoration: underline; margin: 0 10px;"> Report a Bug</a> |
+            <a href="mailto:support@devine-creations.com" style="color: white; text-decoration: underline; margin: 0 10px;"> Support</a> |
+            <a href="login.php" style="color: white; text-decoration: underline; margin: 0 10px;"><- Back to Login</a>
         </p>
         <p style="color: white; opacity: 0.7; font-size: 0.9em;">
             Powered by <a href="https://devine-creations.com" target="_blank" style="color: white; text-decoration: underline;">Devine Creations</a> |

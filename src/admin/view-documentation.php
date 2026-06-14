@@ -163,10 +163,10 @@ $htmlContent = markdownToHtml($content);
 <body>
     <div class="container">
         <div class="nav">
-            <a href="/admin/documentation-center.php">← Back to Documentation Center</a>
+            <a href="/admin/documentation-center.php"><- Back to Documentation Center</a>
             <a href="/admin/dashboard.php">Dashboard</a>
-            <button class="print-btn" onclick="window.print()">🖨️ Print</button>
-            <button class="print-btn" onclick="downloadMarkdown()">💾 Download</button>
+            <button class="print-btn" onclick="window.print()"> Print</button>
+            <button class="print-btn" onclick="downloadMarkdown()"> Download</button>
         </div>
         
         <div class="content">

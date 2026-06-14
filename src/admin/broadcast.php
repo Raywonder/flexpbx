@@ -307,7 +307,7 @@ $admin_role = $_SESSION['admin_role'] ?? 'admin';
 <body>
     <div class="container">
         <div class="header">
-            <h1>📢 Broadcast Message</h1>
+            <h1> Broadcast Message</h1>
             <p class="subtitle">
                 Admin: <?= htmlspecialchars($admin_username) ?>
                 <span class="admin-badge"><?= strtoupper(htmlspecialchars($admin_role)) ?></span>
@@ -342,7 +342,7 @@ $admin_role = $_SESSION['admin_role'] ?? 'admin';
                         <div class="recipient-option selected" onclick="selectRecipientType('all')">
                             <input type="radio" name="recipients" value="all" checked id="recipients-all">
                             <div class="recipient-label">
-                                <div class="recipient-label-title">👥 All Users</div>
+                                <div class="recipient-label-title"> All Users</div>
                                 <div class="recipient-label-desc">Send to everyone on the system</div>
                             </div>
                         </div>
@@ -350,7 +350,7 @@ $admin_role = $_SESSION['admin_role'] ?? 'admin';
                         <div class="recipient-option" onclick="selectRecipientType('custom')">
                             <input type="radio" name="recipients" value="custom" id="recipients-custom">
                             <div class="recipient-label">
-                                <div class="recipient-label-title">🎯 Specific Users</div>
+                                <div class="recipient-label-title"> Specific Users</div>
                                 <div class="recipient-label-desc">Choose individual recipients</div>
                             </div>
                         </div>
@@ -387,7 +387,7 @@ $admin_role = $_SESSION['admin_role'] ?? 'admin';
                 <div class="actions">
                     <a href="/admin/dashboard.html" class="btn btn-secondary">Cancel</a>
                     <button type="submit" class="btn btn-primary" id="send-btn">
-                        📤 Send Broadcast
+                         Send Broadcast
                     </button>
                 </div>
             </form>
@@ -535,7 +535,7 @@ $admin_role = $_SESSION['admin_role'] ?? 'admin';
                 const data = await response.json();
 
                 if (data.success) {
-                    showAlert(`✓ Broadcast sent successfully to ${data.sent_to} user(s)`, 'success');
+                    showAlert(` Broadcast sent successfully to ${data.sent_to} user(s)`, 'success');
 
                     // Reset form
                     document.getElementById('broadcast-form').reset();
@@ -554,7 +554,7 @@ $admin_role = $_SESSION['admin_role'] ?? 'admin';
                 showAlert('Failed to send broadcast. Please try again.', 'error');
             } finally {
                 sendBtn.disabled = false;
-                sendBtn.textContent = '📤 Send Broadcast';
+                sendBtn.textContent = ' Send Broadcast';
             }
         }
 

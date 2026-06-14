@@ -239,16 +239,16 @@ $masterServer = 'https://flexpbx.devinecreations.net';
                 const data = await response.json();
 
                 if (data.success) {
-                    logMessage(`✓ ${moduleKey} installed successfully`);
+                    logMessage(` ${moduleKey} installed successfully`);
                     setTimeout(() => {
                         hideProgress();
                         loadModules();
                     }, 2000);
                 } else {
-                    logMessage(`✗ Failed to install ${moduleKey}: ${data.message}`, true);
+                    logMessage(` Failed to install ${moduleKey}: ${data.message}`, true);
                 }
             } catch (error) {
-                logMessage(`✗ Error: ${error.message}`, true);
+                logMessage(` Error: ${error.message}`, true);
             }
         }
 
@@ -270,12 +270,12 @@ $masterServer = 'https://flexpbx.devinecreations.net';
                     const data = await response.json();
 
                     if (data.success) {
-                        logMessage(`✓ ${moduleKey} installed successfully`);
+                        logMessage(` ${moduleKey} installed successfully`);
                     } else {
-                        logMessage(`✗ Failed: ${data.message}`, true);
+                        logMessage(` Failed: ${data.message}`, true);
                     }
                 } catch (error) {
-                    logMessage(`✗ Error installing ${moduleKey}: ${error.message}`, true);
+                    logMessage(` Error installing ${moduleKey}: ${error.message}`, true);
                 }
 
                 completed++;

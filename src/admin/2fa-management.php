@@ -217,10 +217,10 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔐 2FA Voice Authentication Management</h1>
+            <h1> 2FA Voice Authentication Management</h1>
             <p class="subtitle">Configure two-factor authentication via voice call verification</p>
             <div class="nav-links">
-                <a href="dashboard.html">← Back to Dashboard</a>
+                <a href="dashboard.html"><- Back to Dashboard</a>
             </div>
         </div>
 
@@ -229,7 +229,7 @@
         <div class="grid">
             <!-- Configuration Settings -->
             <div class="card">
-                <h2>⚙️ Configuration</h2>
+                <h2> Configuration</h2>
                 <div id="config-loading">Loading configuration...</div>
                 <div id="config-form" style="display: none;">
                     <div class="form-group">
@@ -265,7 +265,7 @@
 
             <!-- Voice Prompts -->
             <div class="card">
-                <h2>🎙️ Voice Prompts</h2>
+                <h2> Voice Prompts</h2>
                 <p style="margin-bottom: 15px; color: #666; font-size: 14px;">
                     Record or upload custom voice prompts for the 2FA system.
                 </p>
@@ -310,7 +310,7 @@
 
             <!-- Test 2FA -->
             <div class="card">
-                <h2>🧪 Test 2FA System</h2>
+                <h2> Test 2FA System</h2>
                 <p style="margin-bottom: 15px; color: #666; font-size: 14px;">
                     Test the 2FA voice call system with a test extension.
                 </p>
@@ -341,7 +341,7 @@
 
             <!-- Active Codes -->
             <div class="card">
-                <h2>📊 System Status</h2>
+                <h2> System Status</h2>
                 <table class="settings-table" id="status-table">
                     <tr>
                         <td>System Status</td>
@@ -366,7 +366,7 @@
 
         <!-- Installation Instructions -->
         <div class="card">
-            <h2>📋 Installation Instructions</h2>
+            <h2> Installation Instructions</h2>
             <p style="margin-bottom: 15px; color: #666;">
                 To enable the 2FA voice authentication system, add the following dialplan to Asterisk:
             </p>
@@ -484,7 +484,7 @@ sudo asterisk -rx "dialplan reload"</pre>
                 mediaRecorder.stream.getTracks().forEach(track => track.stop());
                 document.getElementById('record-btn').disabled = false;
                 document.getElementById('stop-btn').disabled = true;
-                document.getElementById('recording-status').textContent = '✓ Recording complete';
+                document.getElementById('recording-status').textContent = ' Recording complete';
             }
         }
 
@@ -668,9 +668,9 @@ sudo asterisk -rx "dialplan reload"</pre>
     <!-- Footer -->
     <div style="text-align: center; margin-top: 40px; padding: 20px;">
         <p style="color: white; opacity: 0.9; margin-bottom: 15px;">
-            <a href="/admin/bug-tracker.php" style="color: white; text-decoration: underline; margin: 0 10px;">🐛 Report a Bug</a> |
-            <a href="mailto:support@devine-creations.com" style="color: white; text-decoration: underline; margin: 0 10px;">📧 Support</a> |
-            <a href="dashboard.html" style="color: white; text-decoration: underline; margin: 0 10px;">← Back to Dashboard</a>
+            <a href="/admin/bug-tracker.php" style="color: white; text-decoration: underline; margin: 0 10px;"> Report a Bug</a> |
+            <a href="mailto:support@devine-creations.com" style="color: white; text-decoration: underline; margin: 0 10px;"> Support</a> |
+            <a href="dashboard.html" style="color: white; text-decoration: underline; margin: 0 10px;"><- Back to Dashboard</a>
         </p>
         <p style="color: white; opacity: 0.7; font-size: 0.9em;">
             Powered by <a href="https://devine-creations.com" target="_blank" style="color: white; text-decoration: underline;">Devine Creations</a> |

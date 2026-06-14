@@ -1,5 +1,5 @@
 /**
- * 📞 FlexPhone SIP Service
+ *  FlexPhone SIP Service
  * Lightweight SIP client for universal provider support
  */
 
@@ -69,7 +69,7 @@ class SIPService extends EventEmitter {
         this.localStream = null;
         this.remoteStream = null;
 
-        console.log('📞 FlexPhone SIP Service initialized');
+        console.log(' FlexPhone SIP Service initialized');
     }
 
     async initialize() {
@@ -79,18 +79,18 @@ class SIPService extends EventEmitter {
                 this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
             }
 
-            console.log('✅ SIP Service ready');
+            console.log(' SIP Service ready');
             return true;
 
         } catch (error) {
-            console.error('❌ SIP Service initialization failed:', error);
+            console.error(' SIP Service initialization failed:', error);
             return false;
         }
     }
 
     async connect(config) {
         try {
-            console.log(`📞 Connecting to ${config.provider} SIP server...`);
+            console.log(` Connecting to ${config.provider} SIP server...`);
 
             // Validate configuration
             const validationResult = this.validateConfig(config);
@@ -121,7 +121,7 @@ class SIPService extends EventEmitter {
             this.isConnected = true;
             this.registrationState = 'registered';
 
-            console.log(`✅ Connected to ${provider.name}`);
+            console.log(` Connected to ${provider.name}`);
             console.log(`   Server: ${sipConfig.server}:${sipConfig.port}`);
             console.log(`   Username: ${sipConfig.username}`);
             console.log(`   Transport: ${sipConfig.transport}`);
@@ -140,7 +140,7 @@ class SIPService extends EventEmitter {
             };
 
         } catch (error) {
-            console.error('❌ SIP connection failed:', error);
+            console.error(' SIP connection failed:', error);
             this.isConnected = false;
             this.registrationState = 'failed';
 
@@ -159,7 +159,7 @@ class SIPService extends EventEmitter {
                 return { success: true, message: 'Not connected' };
             }
 
-            console.log('📞 Disconnecting from SIP server...');
+            console.log(' Disconnecting from SIP server...');
 
             // End all active calls
             for (const [callId, call] of this.activeCalls) {
@@ -171,7 +171,7 @@ class SIPService extends EventEmitter {
             this.registrationState = 'unregistered';
             this.currentConfig = null;
 
-            console.log('✅ Disconnected from SIP server');
+            console.log(' Disconnected from SIP server');
 
             this.emit('disconnected', {
                 timestamp: new Date().toISOString()
@@ -183,7 +183,7 @@ class SIPService extends EventEmitter {
             };
 
         } catch (error) {
-            console.error('❌ SIP disconnect failed:', error);
+            console.error(' SIP disconnect failed:', error);
             return {
                 success: false,
                 error: error.message
@@ -214,7 +214,7 @@ class SIPService extends EventEmitter {
 
             this.activeCalls.set(callId, call);
 
-            console.log(`📞 Making call: ${this.currentConfig.username} → ${number}`);
+            console.log(` Making call: ${this.currentConfig.username} -> ${number}`);
 
             // Simulate call connection process
             await this.simulateCallConnection(call);
@@ -228,7 +228,7 @@ class SIPService extends EventEmitter {
             };
 
         } catch (error) {
-            console.error('❌ Call failed:', error);
+            console.error(' Call failed:', error);
             return {
                 success: false,
                 error: error.message
@@ -247,7 +247,7 @@ class SIPService extends EventEmitter {
                 throw new Error(`Cannot answer call in state: ${call.status}`);
             }
 
-            console.log(`📞 Answering call: ${callId}`);
+            console.log(` Answering call: ${callId}`);
 
             call.status = 'connected';
             call.connectTime = new Date();
@@ -255,7 +255,7 @@ class SIPService extends EventEmitter {
             // Initialize audio for the call
             await this.initializeCallAudio(call);
 
-            console.log(`✅ Call answered: ${call.remoteNumber}`);
+            console.log(` Call answered: ${call.remoteNumber}`);
 
             this.emit('call-answered', call);
 
@@ -266,7 +266,7 @@ class SIPService extends EventEmitter {
             };
 
         } catch (error) {
-            console.error('❌ Answer call failed:', error);
+            console.error(' Answer call failed:', error);
             return {
                 success: false,
                 error: error.message
@@ -281,7 +281,7 @@ class SIPService extends EventEmitter {
                 throw new Error('Call not found');
             }
 
-            console.log(`📞 Hanging up call: ${callId}`);
+            console.log(` Hanging up call: ${callId}`);
 
             call.status = 'ended';
             call.endTime = new Date();
@@ -297,7 +297,7 @@ class SIPService extends EventEmitter {
             this.callHistory.push({ ...call });
             this.activeCalls.delete(callId);
 
-            console.log(`✅ Call ended: ${call.remoteNumber} (Duration: ${Math.round(call.duration / 1000)}s)`);
+            console.log(` Call ended: ${call.remoteNumber} (Duration: ${Math.round(call.duration / 1000)}s)`);
 
             this.emit('call-ended', call);
 
@@ -308,7 +308,7 @@ class SIPService extends EventEmitter {
             };
 
         } catch (error) {
-            console.error('❌ Hangup failed:', error);
+            console.error(' Hangup failed:', error);
             return {
                 success: false,
                 error: error.message
@@ -323,7 +323,7 @@ class SIPService extends EventEmitter {
             }
 
             const activeCall = Array.from(this.activeCalls.values())[0];
-            console.log(`🔢 Sending DTMF: ${digits}`);
+            console.log(` Sending DTMF: ${digits}`);
 
             // Simulate DTMF sending
             for (const digit of digits) {
@@ -342,7 +342,7 @@ class SIPService extends EventEmitter {
             };
 
         } catch (error) {
-            console.error('❌ DTMF send failed:', error);
+            console.error(' DTMF send failed:', error);
             return {
                 success: false,
                 error: error.message
@@ -351,31 +351,31 @@ class SIPService extends EventEmitter {
     }
 
     async simulateSIPRegistration(config) {
-        console.log('🔐 Registering with SIP server...');
+        console.log(' Registering with SIP server...');
 
         // Simulate network delay
         await new Promise(resolve => setTimeout(resolve, 1000));
 
         // Simulate authentication
-        console.log('🔑 Authenticating credentials...');
+        console.log(' Authenticating credentials...');
         await new Promise(resolve => setTimeout(resolve, 500));
 
         // Success
-        console.log('✅ SIP registration successful');
+        console.log(' SIP registration successful');
     }
 
     async simulateCallConnection(call) {
         // Update call status through connection phases
         setTimeout(() => {
             call.status = 'ringing';
-            console.log(`📞 Call ${call.id}: Ringing`);
+            console.log(` Call ${call.id}: Ringing`);
             this.emit('call-ringing', call);
         }, 1000);
 
         setTimeout(() => {
             call.status = 'connected';
             call.connectTime = new Date();
-            console.log(`📞 Call ${call.id}: Connected`);
+            console.log(` Call ${call.id}: Connected`);
             this.emit('call-connected', call);
         }, 3000);
 
@@ -400,7 +400,7 @@ class SIPService extends EventEmitter {
 
         this.activeCalls.set(callId, call);
 
-        console.log(`📞 Incoming call from: ${fromName || fromNumber}`);
+        console.log(` Incoming call from: ${fromName || fromNumber}`);
 
         this.emit('incoming-call', call);
 
@@ -426,10 +426,10 @@ class SIPService extends EventEmitter {
                     }
                 });
 
-                console.log('🎤 Audio initialized for call');
+                console.log(' Audio initialized for call');
             }
         } catch (error) {
-            console.warn('⚠️ Audio initialization failed:', error);
+            console.warn(' Audio initialization failed:', error);
         }
     }
 
@@ -440,14 +440,14 @@ class SIPService extends EventEmitter {
                 this.localStream = null;
             }
 
-            console.log('🔇 Audio cleaned up for call');
+            console.log(' Audio cleaned up for call');
         } catch (error) {
-            console.warn('⚠️ Audio cleanup failed:', error);
+            console.warn(' Audio cleanup failed:', error);
         }
     }
 
     async simulateDTMFTone(digit) {
-        console.log(`🔢 Playing DTMF tone: ${digit}`);
+        console.log(` Playing DTMF tone: ${digit}`);
 
         // DTMF frequencies
         const dtmfFreqs = {

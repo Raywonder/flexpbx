@@ -349,7 +349,7 @@ $callStats = $stmt->fetch(PDO::FETCH_ASSOC);
 </head>
 <body>
     <div class="container">
-        <a href="/admin/" class="back-link">← Back to Admin Dashboard</a>
+        <a href="/admin/" class="back-link"><- Back to Admin Dashboard</a>
 
         <h1>TextNow Permissions Management</h1>
         <p class="subtitle">Manage which extensions can make calls through TextNow trunk</p>

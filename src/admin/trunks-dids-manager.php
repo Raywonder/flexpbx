@@ -138,15 +138,15 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>📡 Trunks & DIDs Manager</h1>
+            <h1> Trunks & DIDs Manager</h1>
             <p>Manage SIP trunks, credentials, DIDs, and channel limits</p>
         </div>
 
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('trunks')">🔌 Trunks</button>
-            <button class="tab" onclick="switchTab('dids')">📞 DIDs</button>
-            <button class="tab" onclick="switchTab('channels')">📊 Channels</button>
-            <button class="tab" onclick="switchTab('registration')">🔐 Registration Status</button>
+            <button class="tab active" onclick="switchTab('trunks')"> Trunks</button>
+            <button class="tab" onclick="switchTab('dids')"> DIDs</button>
+            <button class="tab" onclick="switchTab('channels')"> Channels</button>
+            <button class="tab" onclick="switchTab('registration')"> Registration Status</button>
         </div>
 
         <!-- Trunks Tab -->
@@ -154,14 +154,14 @@
             <div class="section">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <h2>Configured Trunks</h2>
-                    <button onclick="addNewTrunk()">➕ Add New Trunk</button>
+                    <button onclick="addNewTrunk()"> Add New Trunk</button>
                 </div>
 
                 <!-- Callcentric Trunk -->
                 <div class="trunk-card active" id="trunk-callcentric">
                     <div style="display: flex; justify-content: space-between; align-items: start;">
                         <div>
-                            <h3>🟢 CallCentric Primary</h3>
+                            <h3> CallCentric Primary</h3>
                             <p class="info">Provider: Callcentric | Type: SIP</p>
                         </div>
                         <div>
@@ -208,11 +208,11 @@
                     </div>
 
                     <div>
-                        <button onclick="editTrunk('callcentric')">✏️ Edit Trunk</button>
-                        <button onclick="saveTrunk('callcentric')" id="cc-save-btn" style="display:none;" class="success">💾 Save Changes</button>
-                        <button onclick="cancelEdit('callcentric')" id="cc-cancel-btn" style="display:none;">❌ Cancel</button>
-                        <button onclick="testTrunk('callcentric')">🧪 Test Registration</button>
-                        <button onclick="viewTrunkLogs('callcentric')">📋 View Logs</button>
+                        <button onclick="editTrunk('callcentric')"> Edit Trunk</button>
+                        <button onclick="saveTrunk('callcentric')" id="cc-save-btn" style="display:none;" class="success"> Save Changes</button>
+                        <button onclick="cancelEdit('callcentric')" id="cc-cancel-btn" style="display:none;"> Cancel</button>
+                        <button onclick="testTrunk('callcentric')"> Test Registration</button>
+                        <button onclick="viewTrunkLogs('callcentric')"> View Logs</button>
                     </div>
                 </div>
 
@@ -220,7 +220,7 @@
                 <div class="trunk-card active" id="trunk-googlevoice">
                     <div style="display: flex; justify-content: space-between; align-items: start;">
                         <div>
-                            <h3>🟢 Google Voice API</h3>
+                            <h3> Google Voice API</h3>
                             <p class="info">Provider: Google Voice | Type: API</p>
                         </div>
                         <div>
@@ -241,8 +241,8 @@
                     </div>
 
                     <div>
-                        <button onclick="editTrunk('googlevoice')">⚙️ Configure</button>
-                        <button onclick="testTrunk('googlevoice')">🧪 Test API</button>
+                        <button onclick="editTrunk('googlevoice')"> Configure</button>
+                        <button onclick="testTrunk('googlevoice')"> Test API</button>
                     </div>
                 </div>
             </div>
@@ -253,7 +253,7 @@
             <div class="section">
                 <div style="display: flex; justify-content: space-between; align-items: center;">
                     <h2>Direct Inward Dial (DID) Numbers</h2>
-                    <button onclick="addNewDID()">➕ Add New DID</button>
+                    <button onclick="addNewDID()"> Add New DID</button>
                 </div>
 
                 <table>
@@ -277,8 +277,8 @@
                             <td>2 / 2</td>
                             <td><span class="badge badge-success">ACTIVE</span></td>
                             <td>
-                                <button onclick="editDID('3123139555')">✏️ Edit</button>
-                                <button onclick="routeDID('3123139555')">🎯 Route</button>
+                                <button onclick="editDID('3123139555')"> Edit</button>
+                                <button onclick="routeDID('3123139555')"> Route</button>
                             </td>
                         </tr>
                         <tr>
@@ -286,11 +286,11 @@
                             <td>Google Voice - Primary</td>
                             <td>Google Voice API</td>
                             <td>IVR Menu (101)</td>
-                            <td>∞</td>
+                            <td>unlimited</td>
                             <td><span class="badge badge-success">ACTIVE</span></td>
                             <td>
-                                <button onclick="editDID('12813015784')">✏️ Edit</button>
-                                <button onclick="routeDID('12813015784')">🎯 Route</button>
+                                <button onclick="editDID('12813015784')"> Edit</button>
+                                <button onclick="routeDID('12813015784')"> Route</button>
                             </td>
                         </tr>
                     </tbody>
@@ -334,7 +334,7 @@
                         </div>
                     </div>
 
-                    <button class="success" onclick="saveChannelSettings('callcentric')">💾 Save Channel Settings</button>
+                    <button class="success" onclick="saveChannelSettings('callcentric')"> Save Channel Settings</button>
                 </div>
 
                 <div class="trunk-card">
@@ -364,7 +364,7 @@
                     <table>
                         <tr>
                             <td><strong>Registration Status:</strong></td>
-                            <td><span class="success">✅ Registered</span></td>
+                            <td><span class="success"> Registered</span></td>
                         </tr>
                         <tr>
                             <td><strong>SIP Server:</strong></td>
@@ -387,7 +387,7 @@
                             <td>3600 seconds (1 hour)</td>
                         </tr>
                     </table>
-                    <button onclick="forceReregister('callcentric')">🔄 Force Re-register</button>
+                    <button onclick="forceReregister('callcentric')"> Force Re-register</button>
                 </div>
 
                 <div class="trunk-card active">
@@ -395,7 +395,7 @@
                     <table>
                         <tr>
                             <td><strong>API Status:</strong></td>
-                            <td><span class="success">✅ Connected</span></td>
+                            <td><span class="success"> Connected</span></td>
                         </tr>
                         <tr>
                             <td><strong>Authentication:</strong></td>
@@ -406,7 +406,7 @@
                             <td id="gv-last-call">2025-10-13 12:45:00</td>
                         </tr>
                     </table>
-                    <button onclick="refreshGVAuth()">🔄 Refresh OAuth Token</button>
+                    <button onclick="refreshGVAuth()"> Refresh OAuth Token</button>
                 </div>
             </div>
         </div>
@@ -414,11 +414,11 @@
         <!-- Quick Actions -->
         <div class="section">
             <h3>Quick Actions</h3>
-            <button onclick="testAllTrunks()">🧪 Test All Trunks</button>
-            <button onclick="viewCallHistory()">📊 View Call History</button>
-            <button onclick="exportTrunkConfig()">💾 Export Configuration</button>
-            <button onclick="importTrunkConfig()">📥 Import Configuration</button>
-            <button onclick="window.location.href='dashboard.html'">← Back to Admin</button>
+            <button onclick="testAllTrunks()"> Test All Trunks</button>
+            <button onclick="viewCallHistory()"> View Call History</button>
+            <button onclick="exportTrunkConfig()"> Export Configuration</button>
+            <button onclick="importTrunkConfig()"> Import Configuration</button>
+            <button onclick="window.location.href='dashboard.html'"><- Back to Admin</button>
         </div>
     </div>
 
@@ -465,14 +465,14 @@
 
                 const result = await response.json();
                 if (result.success) {
-                    alert('✅ Trunk updated successfully!');
+                    alert(' Trunk updated successfully!');
                     cancelEdit(trunk);
                     location.reload();
                 } else {
-                    alert('❌ Error: ' + result.message);
+                    alert(' Error: ' + result.message);
                 }
             } catch (error) {
-                alert('❌ Error saving trunk: ' + error.message);
+                alert(' Error saving trunk: ' + error.message);
             }
         }
 
@@ -488,12 +488,12 @@
                 const result = await response.json();
 
                 if (result.success) {
-                    alert('✅ Trunk test successful!\n\n' + JSON.stringify(result.data, null, 2));
+                    alert(' Trunk test successful!\n\n' + JSON.stringify(result.data, null, 2));
                 } else {
-                    alert('❌ Trunk test failed:\n' + result.message);
+                    alert(' Trunk test failed:\n' + result.message);
                 }
             } catch (error) {
-                alert('❌ Error testing trunk: ' + error.message);
+                alert(' Error testing trunk: ' + error.message);
             }
         }
 
@@ -534,12 +534,12 @@
 
                 const result = await response.json();
                 if (result.success) {
-                    alert('✅ Channel settings saved!');
+                    alert(' Channel settings saved!');
                 } else {
-                    alert('❌ Error: ' + result.message);
+                    alert(' Error: ' + result.message);
                 }
             } catch (error) {
-                alert('❌ Error: ' + error.message);
+                alert(' Error: ' + error.message);
             }
         }
 

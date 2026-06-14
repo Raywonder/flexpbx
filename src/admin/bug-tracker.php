@@ -394,10 +394,10 @@ $resolved_bugs = count(array_filter($all_bugs, fn($b) => $b['status'] === 'resol
 </head>
 <body>
     <div class="container">
-        <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+        <a href="dashboard.html" class="back-link"><- Back to Dashboard</a>
 
         <div class="header">
-            <h1>🐛 Bug Tracker</h1>
+            <h1> Bug Tracker</h1>
             <p style="color: #666; margin-top: 5px;">Track and manage bugs, issues, and feature requests</p>
             <p style="color: #764ba2; font-weight: 600; margin-top: 10px; font-style: italic;">
                 A system you can help build to be the best it can be. Accessible by default.
@@ -423,7 +423,7 @@ $resolved_bugs = count(array_filter($all_bugs, fn($b) => $b['status'] === 'resol
             </div>
 
             <div class="support-callout">
-                <div style="font-weight: 600; color: #1976d2;">📞 Need immediate help?</div>
+                <div style="font-weight: 600; color: #1976d2;"> Need immediate help?</div>
                 <div class="phone">Call Support: <a href="tel:+13023139555">(302) 313-9555</a></div>
                 <div style="font-size: 14px; color: #666;">Our support team is available to help with urgent issues</div>
             </div>
@@ -431,13 +431,13 @@ $resolved_bugs = count(array_filter($all_bugs, fn($b) => $b['status'] === 'resol
 
         <?php if ($success_message): ?>
         <div class="alert alert-success">
-            ✓ <?= htmlspecialchars($success_message) ?>
+             <?= htmlspecialchars($success_message) ?>
         </div>
         <?php endif; ?>
 
         <?php if ($error_message): ?>
         <div class="alert alert-error">
-            ⚠️ <?= htmlspecialchars($error_message) ?>
+             <?= htmlspecialchars($error_message) ?>
         </div>
         <?php endif; ?>
 

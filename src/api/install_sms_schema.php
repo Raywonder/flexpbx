@@ -44,19 +44,19 @@ try {
 
             // Extract table name for reporting
             if (preg_match('/CREATE TABLE.*?`?(\w+)`?/i', $statement, $matches)) {
-                echo "✓ Created table: {$matches[1]}\n";
+                echo " Created table: {$matches[1]}\n";
             } elseif (preg_match('/INSERT INTO.*?`?(\w+)`?/i', $statement, $matches)) {
-                echo "✓ Inserted data into: {$matches[1]}\n";
+                echo " Inserted data into: {$matches[1]}\n";
             }
         } catch (PDOException $e) {
             $errors++;
             // Only show error if it's not "table already exists"
             if (strpos($e->getMessage(), 'already exists') === false) {
-                echo "✗ Error: " . $e->getMessage() . "\n";
+                echo " Error: " . $e->getMessage() . "\n";
             } else {
                 $success++;
                 if (preg_match('/Table.*?\'(\w+)\'/', $e->getMessage(), $matches)) {
-                    echo "✓ Table already exists: {$matches[1]}\n";
+                    echo " Table already exists: {$matches[1]}\n";
                 }
             }
         }
@@ -83,9 +83,9 @@ try {
     foreach ($tables as $table) {
         $stmt = $pdo->query("SHOW TABLES LIKE '$table'");
         if ($stmt->rowCount() > 0) {
-            echo "✓ $table exists\n";
+            echo " $table exists\n";
         } else {
-            echo "✗ $table NOT FOUND\n";
+            echo " $table NOT FOUND\n";
         }
     }
 

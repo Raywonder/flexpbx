@@ -164,7 +164,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔧 Admin Sign-Up - FlexPBX</h1>
+            <h1> Admin Sign-Up - FlexPBX</h1>
             <p>Request administrator access</p>
         </div>
 
@@ -172,18 +172,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <h2 style="margin-bottom: 1rem; color: #2c3e50;">Request Admin Access</h2>
 
             <div class="warning">
-                <strong>⚠️ Administrator Role:</strong> This is for PBX administrators only. If you need a user account, please <a href="../user-portal/signup.php">sign up as a user</a> instead.
+                <strong> Administrator Role:</strong> This is for PBX administrators only. If you need a user account, please <a href="../user-portal/signup.php">sign up as a user</a> instead.
             </div>
 
             <?php if ($success_message): ?>
             <div class="alert alert-success">
-                ✓ <?= $success_message ?>
+                 <?= $success_message ?>
             </div>
             <?php endif; ?>
 
             <?php if ($error_message): ?>
             <div class="alert alert-error">
-                ⚠️ <?= $error_message ?>
+                 <?= $error_message ?>
             </div>
             <?php endif; ?>
 
@@ -222,7 +222,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </form>
 
             <div class="back-link">
-                <a href="dashboard.html">← Back to Dashboard</a> |
+                <a href="dashboard.html"><- Back to Dashboard</a> |
                 <a href="../user-portal/signup.php">User Sign-Up</a>
             </div>
         </div>

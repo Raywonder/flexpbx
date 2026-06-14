@@ -158,10 +158,10 @@ if (!isset($_SESSION['admin_authenticated']) || $_SESSION['admin_authenticated']
 </head>
 <body>
     <div class="container">
-        <a href="dashboard.php" class="back-link">← Back to Admin Dashboard</a>
+        <a href="dashboard.php" class="back-link"><- Back to Admin Dashboard</a>
 
         <div class="card">
-            <h1>🎵 Extension Music On Hold Settings</h1>
+            <h1> Extension Music On Hold Settings</h1>
             <p class="subtitle">Manage hold music preferences for all extensions</p>
 
             <div id="alert" class="alert"></div>

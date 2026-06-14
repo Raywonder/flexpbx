@@ -300,7 +300,7 @@ function publicFlexPbxHost() {
         <?php endif; ?>
 
         <div class="back-link">
-            <a href="index.php" aria-label="Return to login page">← Back to Login</a>
+            <a href="index.php" aria-label="Return to login page"><- Back to Login</a>
         </div>
     </div>
 </body>

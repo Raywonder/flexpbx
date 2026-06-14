@@ -436,15 +436,15 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔄 Ring Groups</h1>
+            <h1> Ring Groups</h1>
             <p class="subtitle">Manage ring groups (hunt groups) for distributing calls to multiple extensions</p>
             <div class="nav-links">
-                <a href="call-queues.html" class="nav-link">📞 Call Queues</a>
-                <a href="call-parking.html" class="nav-link">🅿️ Call Parking</a>
-                <a href="callcenter-dashboard.php" class="nav-link">📊 Call Center Dashboard</a>
+                <a href="call-queues.html" class="nav-link"> Call Queues</a>
+                <a href="call-parking.html" class="nav-link"> Call Parking</a>
+                <a href="callcenter-dashboard.php" class="nav-link"> Call Center Dashboard</a>
             </div>
             <div style="margin-top: 10px;">
-                <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+                <a href="dashboard.html" class="back-link"><- Back to Dashboard</a>
             </div>
         </div>
 
@@ -462,7 +462,7 @@
             <div id="overview-tab" class="tab-content active">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h2>Ring Groups</h2>
-                    <button class="btn" onclick="refreshGroups()">🔄 Refresh</button>
+                    <button class="btn" onclick="refreshGroups()"> Refresh</button>
                 </div>
 
                 <div id="groups-list">
@@ -474,7 +474,7 @@
             <div id="manage-tab" class="tab-content">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h2>Ring Group Configuration</h2>
-                    <button class="btn" onclick="showCreateGroupModal()">➕ Create New Ring Group</button>
+                    <button class="btn" onclick="showCreateGroupModal()"> Create New Ring Group</button>
                 </div>
 
                 <div id="manage-groups-list">
@@ -495,7 +495,7 @@
                 </div>
 
                 <div id="group-members-content" style="display: none;">
-                    <button class="btn btn-success" style="margin-bottom: 20px;" onclick="showAddMemberModal()">➕ Add Member</button>
+                    <button class="btn btn-success" style="margin-bottom: 20px;" onclick="showAddMemberModal()"> Add Member</button>
 
                     <div id="members-list">
                         <div class="loading">Loading members</div>
@@ -505,7 +505,7 @@
 
             <!-- Help Tab -->
             <div id="help-tab" class="tab-content">
-                <h2>📚 Ring Groups Guide</h2>
+                <h2> Ring Groups Guide</h2>
 
                 <div class="help-section">
                     <h3>What are Ring Groups?</h3>
@@ -649,7 +649,7 @@
                     <p>Members can park calls using *70 and others can pick up from any device.</p>
 
                     <h4>With IVR Menus</h4>
-                    <p>IVR options can route to ring groups: "Press 1 for Sales" → Ring Group 6000</p>
+                    <p>IVR options can route to ring groups: "Press 1 for Sales" -> Ring Group 6000</p>
 
                     <h4>With Time Conditions</h4>
                     <p>Route to different ring groups based on business hours vs. after hours.</p>
@@ -721,7 +721,7 @@
                 </div>
 
                 <div class="alert alert-info" style="margin-top: 30px;">
-                    <strong>💡 Pro Tip:</strong> Use ring groups for simple team coverage and call queues for formal call center operations. Combine them for powerful routing: Ring group tries immediate team → overflow to queue with all agents → final voicemail.
+                    <strong> Pro Tip:</strong> Use ring groups for simple team coverage and call queues for formal call center operations. Combine them for powerful routing: Ring group tries immediate team -> overflow to queue with all agents -> final voicemail.
                 </div>
             </div>
         </div>
@@ -739,7 +739,7 @@
                     <div class="form-group">
                         <label>
                             Group Number *
-                            <span class="tooltip">❔
+                            <span class="tooltip">
                                 <span class="tooltiptext">Extension number for this ring group. Typically 6000-6999. Must be unique and not conflict with other extensions.</span>
                             </span>
                         </label>
@@ -749,7 +749,7 @@
                     <div class="form-group">
                         <label>
                             Group Name *
-                            <span class="tooltip">❔
+                            <span class="tooltip">
                                 <span class="tooltiptext">Descriptive name for this ring group. E.g., "Sales Team", "Reception", "Technical Support"</span>
                             </span>
                         </label>
@@ -761,7 +761,7 @@
                     <div class="form-group">
                         <label>
                             Ring Strategy *
-                            <span class="tooltip">❔
+                            <span class="tooltip">
                                 <span class="tooltiptext">
                                     <strong>ringall:</strong> All ring simultaneously<br>
                                     <strong>hunt:</strong> Sequential, one at a time<br>
@@ -781,7 +781,7 @@
                     <div class="form-group">
                         <label>
                             Ring Time (seconds) *
-                            <span class="tooltip">❔
+                            <span class="tooltip">
                                 <span class="tooltiptext">How long to ring before moving to next member or no-answer destination. 20-30 seconds is typical.</span>
                             </span>
                         </label>
@@ -795,7 +795,7 @@
                             <input type="checkbox" id="group-skip-busy" name="skip_busy" checked style="width: auto;">
                             <span>
                                 Skip Busy Members
-                                <span class="tooltip">❔
+                                <span class="tooltip">
                                     <span class="tooltiptext">Don't ring members who are already on a call. Recommended: ON.</span>
                                 </span>
                             </span>
@@ -807,7 +807,7 @@
                             <input type="checkbox" id="group-confirm" name="confirm_calls" style="width: auto;">
                             <span>
                                 Confirm Calls (Press 1)
-                                <span class="tooltip">❔
+                                <span class="tooltip">
                                     <span class="tooltiptext">Member must press 1 to accept call. Use when ringing mobile phones to prevent voicemail from answering.</span>
                                 </span>
                             </span>
@@ -818,7 +818,7 @@
                 <div class="form-group">
                     <label>
                         Announcement
-                        <span class="tooltip">❔
+                        <span class="tooltip">
                             <span class="tooltiptext">Optional audio file to play to caller before ringing starts. E.g., "custom/please-hold". Leave blank for no announcement.</span>
                         </span>
                     </label>
@@ -829,7 +829,7 @@
                     <div class="form-group">
                         <label>
                             No Answer Destination Type
-                            <span class="tooltip">❔
+                            <span class="tooltip">
                                 <span class="tooltiptext">Where to send the call if no one answers in the ring group.</span>
                             </span>
                         </label>
@@ -845,7 +845,7 @@
                     <div class="form-group">
                         <label>
                             Destination Value
-                            <span class="tooltip">❔
+                            <span class="tooltip">
                                 <span class="tooltiptext">
                                     Voicemail: Extension number (e.g., 6000)<br>
                                     Extension: Extension number (e.g., 2000)<br>
@@ -864,7 +864,7 @@
                         <input type="checkbox" id="group-enabled" name="enabled" checked style="width: auto;">
                         <span>
                             Ring Group Enabled
-                            <span class="tooltip">❔
+                            <span class="tooltip">
                                 <span class="tooltiptext">Enable or disable this ring group. Disabled groups won't accept calls but configuration is preserved.</span>
                             </span>
                         </span>
@@ -872,7 +872,7 @@
                 </div>
 
                 <div style="display: flex; gap: 10px; margin-top: 30px;">
-                    <button type="submit" class="btn btn-success">💾 Save Ring Group</button>
+                    <button type="submit" class="btn btn-success"> Save Ring Group</button>
                     <button type="button" class="btn btn-secondary" onclick="closeGroupModal()">Cancel</button>
                 </div>
             </form>
@@ -890,7 +890,7 @@
                 <div class="form-group">
                     <label>
                         Member Type *
-                        <span class="tooltip">❔
+                        <span class="tooltip">
                             <span class="tooltiptext">
                                 <strong>Extension:</strong> Internal SIP extension<br>
                                 <strong>External:</strong> External phone number (mobile, PSTN)
@@ -906,7 +906,7 @@
                 <div class="form-group">
                     <label>
                         Extension / Phone Number *
-                        <span class="tooltip">❔
+                        <span class="tooltip">
                             <span class="tooltiptext">For extension: enter extension number (e.g., 2000). For external: enter full phone number with country code (e.g., 12813015784).</span>
                         </span>
                     </label>
@@ -916,7 +916,7 @@
                 <div class="form-group">
                     <label>
                         Order (for hunt strategy)
-                        <span class="tooltip">❔
+                        <span class="tooltip">
                             <span class="tooltiptext">Priority order for hunt/sequential strategies. Lower numbers ring first. 0 = highest priority. Ignored for ringall strategy.</span>
                         </span>
                     </label>
@@ -924,7 +924,7 @@
                 </div>
 
                 <div style="display: flex; gap: 10px; margin-top: 30px;">
-                    <button type="submit" class="btn btn-success">➕ Add Member</button>
+                    <button type="submit" class="btn btn-success"> Add Member</button>
                     <button type="button" class="btn btn-secondary" onclick="closeMemberModal()">Cancel</button>
                 </div>
             </form>
@@ -1094,14 +1094,14 @@
                     </td>
                     <td>${statusBadge}</td>
                     <td>
-                        <button class="btn btn-small btn-secondary" onclick='editGroup(${JSON.stringify(group)})'>✏️ Edit</button>
-                        <button class="btn btn-small btn-danger" onclick="deleteGroup(${group.id}, '${group.group_name}')">🗑️ Delete</button>
+                        <button class="btn btn-small btn-secondary" onclick='editGroup(${JSON.stringify(group)})'> Edit</button>
+                        <button class="btn btn-small btn-danger" onclick="deleteGroup(${group.id}, '${group.group_name}')"> Delete</button>
                     </td>
                 </tr>`;
             });
 
             html += '</tbody></table>';
-            html += '<div style="margin-top: 20px;"><button class="btn btn-success" onclick="applyConfiguration()">✅ Apply Configuration to Asterisk</button></div>';
+            html += '<div style="margin-top: 20px;"><button class="btn btn-success" onclick="applyConfiguration()"> Apply Configuration to Asterisk</button></div>';
             container.innerHTML = html;
         }
 
@@ -1296,12 +1296,12 @@
                     : '<span class="badge badge-danger">Disabled</span>';
 
                 html += `<tr>
-                    <td>${member.member_type === 'extension' ? '📞 Extension' : '📱 External'}</td>
+                    <td>${member.member_type === 'extension' ? ' Extension' : ' External'}</td>
                     <td><strong>${member.member_value}</strong></td>
                     <td>${member.member_order}</td>
                     <td>${statusBadge}</td>
                     <td>
-                        <button class="btn btn-small btn-danger" onclick="removeMember(${member.id}, ${groupId}, '${member.member_value}')">🗑️ Remove</button>
+                        <button class="btn btn-small btn-danger" onclick="removeMember(${member.id}, ${groupId}, '${member.member_value}')"> Remove</button>
                     </td>
                 </tr>`;
             });

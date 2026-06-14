@@ -444,24 +444,24 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>📱 IVR Builder (Auto Attendant)</h1>
+            <h1> IVR Builder (Auto Attendant)</h1>
             <p class="subtitle">Create professional phone menus with custom routing and audio prompts</p>
             <div class="nav-links">
-                <a href="dashboard.html" class="nav-link">🏠 Dashboard</a>
-                <a href="call-queues.html" class="nav-link">📞 Call Queues</a>
-                <a href="call-parking.html" class="nav-link">🅿️ Call Parking</a>
-                <a href="ring-groups.html" class="nav-link">🔄 Ring Groups</a>
-                <a href="callcenter-dashboard.php" class="nav-link">📊 Call Center</a>
+                <a href="dashboard.html" class="nav-link"> Dashboard</a>
+                <a href="call-queues.html" class="nav-link"> Call Queues</a>
+                <a href="call-parking.html" class="nav-link"> Call Parking</a>
+                <a href="ring-groups.html" class="nav-link"> Ring Groups</a>
+                <a href="callcenter-dashboard.php" class="nav-link"> Call Center</a>
             </div>
         </div>
 
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('overview')">📋 Overview</button>
-            <button class="tab" onclick="switchTab('manage')">🛠️ Manage IVRs</button>
-            <button class="tab" onclick="switchTab('templates')">📄 Templates</button>
-            <button class="tab" onclick="switchTab('audio')">🎙️ Audio Files</button>
-            <button class="tab" onclick="switchTab('statistics')">📊 Statistics</button>
-            <button class="tab" onclick="switchTab('help')">❓ How to Use</button>
+            <button class="tab active" onclick="switchTab('overview')"> Overview</button>
+            <button class="tab" onclick="switchTab('manage')"> Manage IVRs</button>
+            <button class="tab" onclick="switchTab('templates')"> Templates</button>
+            <button class="tab" onclick="switchTab('audio')"> Audio Files</button>
+            <button class="tab" onclick="switchTab('statistics')"> Statistics</button>
+            <button class="tab" onclick="switchTab('help')"> How to Use</button>
         </div>
 
         <!-- Overview Tab -->
@@ -486,8 +486,8 @@
             <div id="ivr-list"></div>
 
             <div style="margin-top: 20px;">
-                <button class="btn" onclick="showCreateIVRModal()">➕ Create New IVR Menu</button>
-                <button class="btn btn-secondary" onclick="switchTab('templates')">📄 Use Template</button>
+                <button class="btn" onclick="showCreateIVRModal()"> Create New IVR Menu</button>
+                <button class="btn btn-secondary" onclick="switchTab('templates')"> Use Template</button>
             </div>
         </div>
 
@@ -498,8 +498,8 @@
             <div id="manage-ivr-list"></div>
 
             <div style="margin-top: 30px;">
-                <button class="btn" onclick="showCreateIVRModal()">➕ Create New IVR</button>
-                <button class="btn btn-success" onclick="applyIVRConfig()">✅ Apply Configuration to Asterisk</button>
+                <button class="btn" onclick="showCreateIVRModal()"> Create New IVR</button>
+                <button class="btn btn-success" onclick="applyIVRConfig()"> Apply Configuration to Asterisk</button>
             </div>
         </div>
 
@@ -509,9 +509,9 @@
             <p style="margin-bottom: 20px;">Choose from pre-built templates or create your own custom templates</p>
 
             <div style="margin-bottom: 30px;">
-                <button class="btn" onclick="showCreateTemplateModal()">➕ Create Custom Template</button>
-                <button class="btn btn-secondary" onclick="loadMyTemplates()">📁 My Templates</button>
-                <button class="btn btn-secondary" onclick="loadSystemTemplates()">📚 System Templates</button>
+                <button class="btn" onclick="showCreateTemplateModal()"> Create Custom Template</button>
+                <button class="btn btn-secondary" onclick="loadMyTemplates()"> My Templates</button>
+                <button class="btn btn-secondary" onclick="loadSystemTemplates()"> System Templates</button>
             </div>
 
             <div id="template-filter" style="margin-bottom: 20px;">
@@ -536,7 +536,7 @@
             <h2 style="margin-bottom: 20px;">Audio File Management</h2>
 
             <div class="audio-upload-area" onclick="document.getElementById('audio-file-input').click()">
-                <h3>🎙️ Upload Audio File</h3>
+                <h3> Upload Audio File</h3>
                 <p>Click here or drag and drop WAV/MP3 files</p>
                 <p style="font-size: 12px; color: #999;">Recommended: WAV 16-bit 8kHz mono</p>
                 <input type="file" id="audio-file-input" accept=".wav,.mp3" style="display: none;" onchange="uploadAudioFile(this)">
@@ -637,7 +637,7 @@
                 <li>Use clear, professional audio recordings</li>
                 <li>Test your IVR after making changes</li>
                 <li>Set appropriate timeouts (8-10 seconds recommended)</li>
-                <li>Use nested IVRs for complex routing (main menu → department submenu)</li>
+                <li>Use nested IVRs for complex routing (main menu -> department submenu)</li>
                 <li>Include a "repeat menu" option (usually *)</li>
             </ul>
 
@@ -682,7 +682,7 @@ To speak with an operator, press 0."
 
             <div class="card" style="margin-bottom: 15px;">
                 <h4>Multi-Level Menu</h4>
-                <p>Main menu routes to department-specific sub-menus. For example, "Press 1 for Sales" → Sales submenu with product categories.</p>
+                <p>Main menu routes to department-specific sub-menus. For example, "Press 1 for Sales" -> Sales submenu with product categories.</p>
             </div>
 
             <div class="card" style="margin-bottom: 15px;">
@@ -692,7 +692,7 @@ To speak with an operator, press 0."
 
             <div class="card" style="margin-bottom: 15px;">
                 <h4>International Menu</h4>
-                <p>Language selection: "For English, press 1. Para Español, oprima 2" → Route to language-specific IVRs.</p>
+                <p>Language selection: "For English, press 1. Para Español, oprima 2" -> Route to language-specific IVRs.</p>
             </div>
         </div>
     </div>
@@ -753,7 +753,7 @@ To speak with an operator, press 0."
                 <div class="two-col">
                     <div class="form-group">
                         <label>Timeout (seconds)
-                            <span class="tooltip">ℹ️
+                            <span class="tooltip">ℹ
                                 <span class="tooltiptext">How long to wait for caller input before timeout</span>
                             </span>
                         </label>
@@ -762,7 +762,7 @@ To speak with an operator, press 0."
 
                     <div class="form-group">
                         <label>Invalid Retries
-                            <span class="tooltip">ℹ️
+                            <span class="tooltip">ℹ
                                 <span class="tooltiptext">How many times to allow invalid input before routing to destination</span>
                             </span>
                         </label>
@@ -773,7 +773,7 @@ To speak with an operator, press 0."
                 <div class="form-group">
                     <label>
                         <input type="checkbox" id="ivr-direct-dial"> Enable Direct Dial
-                        <span class="tooltip">ℹ️
+                        <span class="tooltip">ℹ
                             <span class="tooltiptext">Allow callers to dial extension numbers directly (2XXX-9XXX)</span>
                         </span>
                     </label>
@@ -824,7 +824,7 @@ To speak with an operator, press 0."
                 </div>
 
                 <div style="margin-top: 30px; display: flex; gap: 10px;">
-                    <button class="btn" onclick="saveIVR()">💾 Save IVR</button>
+                    <button class="btn" onclick="saveIVR()"> Save IVR</button>
                     <button class="btn btn-secondary" onclick="closeIVRModal()">Cancel</button>
                 </div>
             </div>
@@ -843,7 +843,7 @@ To speak with an operator, press 0."
                 <strong>IVR:</strong> <span id="current-ivr-name"></span> (<span id="current-ivr-number"></span>)
             </div>
 
-            <button class="btn" onclick="showAddOptionForm()" style="margin-bottom: 20px;">➕ Add Menu Option</button>
+            <button class="btn" onclick="showAddOptionForm()" style="margin-bottom: 20px;"> Add Menu Option</button>
 
             <div id="add-option-form" style="display: none; background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px;">
                 <h3>Add New Option</h3>
@@ -897,7 +897,7 @@ To speak with an operator, press 0."
                 </div>
 
                 <div style="display: flex; gap: 10px;">
-                    <button class="btn" onclick="addMenuOption()">➕ Add Option</button>
+                    <button class="btn" onclick="addMenuOption()"> Add Option</button>
                     <button class="btn btn-secondary" onclick="hideAddOptionForm()">Cancel</button>
                 </div>
             </div>
@@ -944,7 +944,7 @@ To speak with an operator, press 0."
             </div>
 
             <div style="margin-top: 30px; display: flex; gap: 10px;">
-                <button class="btn" onclick="saveCustomTemplate()">💾 Save Template</button>
+                <button class="btn" onclick="saveCustomTemplate()"> Save Template</button>
                 <button class="btn btn-secondary" onclick="closeCreateTemplateModal()">Cancel</button>
             </div>
         </div>
@@ -1065,9 +1065,9 @@ To speak with an operator, press 0."
                             </p>
                         </div>
                         <div style="display: flex; flex-direction: column; gap: 8px;">
-                            <button class="btn" onclick="editIVR(${ivr.id})" style="padding: 8px 16px; font-size: 13px;">✏️ Edit</button>
-                            <button class="btn btn-success" onclick="configureOptions(${ivr.id})" style="padding: 8px 16px; font-size: 13px;">⚙️ Options</button>
-                            <button class="btn btn-danger" onclick="deleteIVR(${ivr.id})" style="padding: 8px 16px; font-size: 13px;">🗑️ Delete</button>
+                            <button class="btn" onclick="editIVR(${ivr.id})" style="padding: 8px 16px; font-size: 13px;"> Edit</button>
+                            <button class="btn btn-success" onclick="configureOptions(${ivr.id})" style="padding: 8px 16px; font-size: 13px;"> Options</button>
+                            <button class="btn btn-danger" onclick="deleteIVR(${ivr.id})" style="padding: 8px 16px; font-size: 13px;"> Delete</button>
                         </div>
                     </div>
                 </div>
@@ -1239,12 +1239,12 @@ To speak with an operator, press 0."
                         <strong>Digit ${opt.digit}:</strong> ${opt.option_description || 'No description'}
                         <br>
                         <span style="font-size: 13px; color: #666;">
-                            Routes to: ${opt.destination_type} → ${opt.destination_value}
+                            Routes to: ${opt.destination_type} -> ${opt.destination_value}
                             ${opt.enabled == 1 ? '<span class="badge badge-success">Active</span>' : '<span class="badge badge-danger">Disabled</span>'}
                         </span>
                     </div>
                     <div class="option-actions">
-                        <button class="btn btn-danger" onclick="deleteOption(${opt.id})" style="padding: 6px 12px; font-size: 12px;">🗑️ Remove</button>
+                        <button class="btn btn-danger" onclick="deleteOption(${opt.id})" style="padding: 6px 12px; font-size: 12px;"> Remove</button>
                     </div>
                 </div>
             `).join('') : '<p style="color: #666;">No menu options configured. Add options to route callers.</p>';

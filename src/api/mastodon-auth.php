@@ -149,13 +149,13 @@ function handleCallback() {
             </style>
         </head>
         <body>
-            <h1 class="success">✓ Login Successful!</h1>
+            <h1 class="success"> Login Successful!</h1>
             <p class="info">Welcome, <?= htmlspecialchars($profile['display_name']) ?>!</p>
             <p>You are now logged in via Mastodon.</p>
             <?php if (isset($authResult['extension'])): ?>
                 <p><strong>Your Extension:</strong> <?= htmlspecialchars($authResult['extension']) ?>@flexpbx.devinecreations.net</p>
             <?php endif; ?>
-            <p><a href="/user-portal/">Continue to User Portal →</a></p>
+            <p><a href="/user-portal/">Continue to User Portal -></a></p>
         </body>
         </html>
         <?php

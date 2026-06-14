@@ -257,7 +257,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>📞 Call Recordings</h1>
+            <h1> Call Recordings</h1>
             <p>Manage and review call recordings with flexible configuration</p>
         </div>
 
@@ -288,8 +288,8 @@
                     <option value="2006">2006 - Walter Harper</option>
                 </select>
 
-                <button class="btn btn-primary" onclick="loadRecordings()">🔄 Refresh</button>
-                <button class="btn btn-secondary" onclick="toggleSettings()">⚙️ Settings</button>
+                <button class="btn btn-primary" onclick="loadRecordings()"> Refresh</button>
+                <button class="btn btn-secondary" onclick="toggleSettings()"> Settings</button>
             </div>
         </div>
 
@@ -407,9 +407,9 @@
                             <td>${rec.size_formatted}</td>
                             <td>
                                 <div class="action-buttons">
-                                    <button class="action-btn play-btn" onclick="playRecording('${rec.filename}')">▶️ Play</button>
-                                    <button class="action-btn download-btn" onclick="downloadRecording('${rec.filename}')">⬇️</button>
-                                    <button class="action-btn delete-btn" onclick="deleteRecording('${rec.filename}')">🗑️</button>
+                                    <button class="action-btn play-btn" onclick="playRecording('${rec.filename}')">▶ Play</button>
+                                    <button class="action-btn download-btn" onclick="downloadRecording('${rec.filename}')">⬇</button>
+                                    <button class="action-btn delete-btn" onclick="deleteRecording('${rec.filename}')"></button>
                                 </div>
                             </td>
                         </tr>
@@ -418,7 +418,7 @@
                     tbody.innerHTML = `
                         <tr>
                             <td colspan="7" class="empty-state">
-                                <div>📭 No recordings found</div>
+                                <div> No recordings found</div>
                             </td>
                         </tr>
                     `;
@@ -503,13 +503,13 @@
 
                 const data = await response.json();
                 if (data.success) {
-                    alert('✅ Global settings saved successfully');
+                    alert(' Global settings saved successfully');
                 } else {
-                    alert('❌ Error saving settings: ' + data.message);
+                    alert(' Error saving settings: ' + data.message);
                 }
             } catch (error) {
                 console.error('Error saving settings:', error);
-                alert('❌ Error saving settings');
+                alert(' Error saving settings');
             }
         }
 
@@ -531,13 +531,13 @@
 
                 const data = await response.json();
                 if (data.success) {
-                    alert(`✅ Settings saved for extension ${extension}`);
+                    alert(` Settings saved for extension ${extension}`);
                 } else {
-                    alert('❌ Error saving settings: ' + data.message);
+                    alert(' Error saving settings: ' + data.message);
                 }
             } catch (error) {
                 console.error('Error saving settings:', error);
-                alert('❌ Error saving settings');
+                alert(' Error saving settings');
             }
         }
 

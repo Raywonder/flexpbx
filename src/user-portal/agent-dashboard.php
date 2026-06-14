@@ -297,7 +297,7 @@ $username = $_SESSION['username'] ?? 'Agent';
                 <div class="card status-control">
                     <h3>Your Status</h3>
                     <div class="status-indicator" id="status-indicator">
-                        <span id="status-icon">⏸</span>
+                        <span id="status-icon"></span>
                     </div>
                     <h2 id="status-text">Offline</h2>
                     <div class="timer" id="status-timer">00:00:00</div>
@@ -475,14 +475,14 @@ $username = $_SESSION['username'] ?? 'Agent';
                 case 'ready':
                     indicator.classList.add('status-available');
                     text.textContent = 'Available';
-                    icon.textContent = '✓';
+                    icon.textContent = '';
                     break;
                 case 'break':
                 case 'lunch':
                 case 'meeting':
                     indicator.classList.add('status-break');
                     text.textContent = status.charAt(0).toUpperCase() + status.slice(1);
-                    icon.textContent = '⏸';
+                    icon.textContent = '';
                     break;
                 default:
                     indicator.classList.add('status-offline');

@@ -33,7 +33,7 @@ $pdo->exec("CREATE TABLE IF NOT EXISTS sms_providers (
     INDEX idx_provider_type (provider_type),
     INDEX idx_enabled (enabled)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
-echo "✓ sms_providers\n";
+echo " sms_providers\n";
 
 // Table 2: call_logs
 $pdo->exec("CREATE TABLE IF NOT EXISTS call_logs (
@@ -60,7 +60,7 @@ $pdo->exec("CREATE TABLE IF NOT EXISTS call_logs (
     INDEX idx_provider_id (provider_id),
     INDEX idx_call_sid (call_sid)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
-echo "✓ call_logs\n";
+echo " call_logs\n";
 
 // Table 3: provider_phone_numbers
 $pdo->exec("CREATE TABLE IF NOT EXISTS provider_phone_numbers (
@@ -83,7 +83,7 @@ $pdo->exec("CREATE TABLE IF NOT EXISTS provider_phone_numbers (
     INDEX idx_provider_id (provider_id),
     INDEX idx_phone_number (phone_number)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
-echo "✓ provider_phone_numbers\n";
+echo " provider_phone_numbers\n";
 
 // Table 4: sms_provider_config
 $pdo->exec("CREATE TABLE IF NOT EXISTS sms_provider_config (
@@ -104,7 +104,7 @@ $pdo->exec("CREATE TABLE IF NOT EXISTS sms_provider_config (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
-echo "✓ sms_provider_config\n";
+echo " sms_provider_config\n";
 
 // Table 5: sms_usage_statistics
 $pdo->exec("CREATE TABLE IF NOT EXISTS sms_usage_statistics (
@@ -125,7 +125,7 @@ $pdo->exec("CREATE TABLE IF NOT EXISTS sms_usage_statistics (
     UNIQUE KEY unique_provider_date (provider_id, stat_date),
     INDEX idx_stat_date (stat_date)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
-echo "✓ sms_usage_statistics\n";
+echo " sms_usage_statistics\n";
 
 // Table 6: webhook_logs
 $pdo->exec("CREATE TABLE IF NOT EXISTS webhook_logs (
@@ -147,13 +147,13 @@ $pdo->exec("CREATE TABLE IF NOT EXISTS webhook_logs (
     INDEX idx_webhook_type (webhook_type),
     INDEX idx_created_at (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
-echo "✓ webhook_logs\n";
+echo " webhook_logs\n";
 
 // Insert default providers
 $pdo->exec("INSERT IGNORE INTO sms_providers (provider_name, provider_type, enabled, priority) VALUES
     ('TextNow', 'textnow', 0, 3),
     ('Google Voice', 'google_voice', 0, 2),
     ('Twilio', 'twilio', 0, 1)");
-echo "✓ Default providers inserted\n";
+echo " Default providers inserted\n";
 
 echo "\nAll tables created successfully!\n";

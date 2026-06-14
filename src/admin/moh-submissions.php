@@ -252,10 +252,10 @@ if (!isset($_SESSION['admin_authenticated']) || $_SESSION['admin_authenticated']
 </head>
 <body>
     <div class="container">
-        <a href="dashboard.php" class="back-link">← Back to Admin Dashboard</a>
+        <a href="dashboard.php" class="back-link"><- Back to Admin Dashboard</a>
 
         <div class="card">
-            <h1>📋 MOH Community Submissions</h1>
+            <h1> MOH Community Submissions</h1>
             <p class="subtitle">Review and manage stream and provider submissions</p>
 
             <div class="stats">
@@ -368,7 +368,7 @@ if (!isset($_SESSION['admin_authenticated']) || $_SESSION['admin_authenticated']
                         <div class="submission-header">
                             <div>
                                 <div class="submission-title">
-                                    ${isStream ? '🎵' : '🌐'} ${info.display_name || info.name}
+                                    ${isStream ? '' : ''} ${info.display_name || info.name}
                                 </div>
                                 <div style="color: #666; font-size: 0.9rem;">
                                     ${isStream ? 'Stream Submission' : 'Provider Registration'} |
@@ -415,7 +415,7 @@ if (!isset($_SESSION['admin_authenticated']) || $_SESSION['admin_authenticated']
                                 </div>
                                 <div class="detail-row">
                                     <span class="detail-label">HTTPS:</span>
-                                    ${item.capabilities.https_streaming ? '✓ Yes' : '✗ No'}
+                                    ${item.capabilities.https_streaming ? ' Yes' : ' No'}
                                 </div>
                             `}
 
@@ -436,13 +436,13 @@ if (!isset($_SESSION['admin_authenticated']) || $_SESSION['admin_authenticated']
                         ${item.status === 'pending' ? `
                             <div style="margin-top: 1rem;">
                                 <button class="btn btn-success" onclick="approveSubmission('${item.id}')">
-                                    ✓ Approve
+                                     Approve
                                 </button>
                                 <button class="btn btn-danger" onclick="rejectSubmission('${item.id}')">
-                                    ✗ Reject
+                                     Reject
                                 </button>
                                 <button class="btn btn-info" onclick="testSubmission('${item.id}')">
-                                    🧪 Test Stream
+                                     Test Stream
                                 </button>
                             </div>
                         ` : ''}

@@ -1,5 +1,5 @@
 /**
- * 📱 FlexPhone - Lightweight SIP Client
+ *  FlexPhone - Lightweight SIP Client
  * Main electron process for FlexPhone SIP client
  */
 
@@ -21,8 +21,8 @@ app.commandLine.appendSwitch('disable-backgrounding-occluded-windows');
 app.commandLine.appendSwitch('force-renderer-accessibility');
 app.commandLine.appendSwitch('enable-accessibility-object-model');
 app.commandLine.appendSwitch('disable-web-security'); // For aria-live regions
-console.log('🔊 Audio engine flags enabled for FlexPhone');
-console.log('♿ Accessibility features enabled for VoiceOver');
+console.log(' Audio engine flags enabled for FlexPhone');
+console.log(' Accessibility features enabled for VoiceOver');
 
 // Simple single instance handling (prevents multiple windows)
 
@@ -53,7 +53,7 @@ class FlexPhoneMain {
         this.audioDeviceService = new AudioDeviceService();
         this.vlcAudioService = new VLCAudioService();
 
-        console.log('📱 FlexPhone v1.0.0 - Lightweight SIP Client');
+        console.log(' FlexPhone v1.0.0 - Lightweight SIP Client');
     }
 
     async initialize() {
@@ -69,9 +69,9 @@ class FlexPhoneMain {
             // Initialize VLC audio service for reliable audio playback
             const vlcInitialized = await this.vlcAudioService.init();
             if (vlcInitialized) {
-                console.log('🎵 VLC audio backend enabled');
+                console.log(' VLC audio backend enabled');
             } else {
-                console.log('⚠️ VLC audio backend unavailable, falling back to WebAudio');
+                console.log(' VLC audio backend unavailable, falling back to WebAudio');
             }
 
             // Initialize audio device service (requires renderer process)
@@ -80,24 +80,24 @@ class FlexPhoneMain {
             // Setup IPC handlers
             this.setupIPCHandlers();
 
-            console.log('✅ FlexPhone services initialized');
+            console.log(' FlexPhone services initialized');
             this.isReady = true;
 
         } catch (error) {
-            console.error('❌ FlexPhone initialization failed:', error);
+            console.error(' FlexPhone initialization failed:', error);
         }
     }
 
     createMainWindow() {
         // Prevent creating multiple windows
         if (this.mainWindow && !this.mainWindow.isDestroyed()) {
-            console.log('📱 FlexPhone: Main window already exists, showing it');
+            console.log(' FlexPhone: Main window already exists, showing it');
             this.mainWindow.show();
             this.mainWindow.focus();
             return this.mainWindow;
         }
 
-        console.log('📱 FlexPhone: Creating new main window');
+        console.log(' FlexPhone: Creating new main window');
         this.mainWindow = new BrowserWindow({
             width: 400,
             height: 700,
@@ -138,7 +138,7 @@ class FlexPhoneMain {
         if (process.env.NODE_ENV === 'development') {
             const htmlPath = path.join(__dirname, '../public/index.html');
             if (!fs.existsSync(htmlPath)) {
-                console.error('❌ HTML file not found:', htmlPath);
+                console.error(' HTML file not found:', htmlPath);
                 // Fallback to a simple HTML string
                 this.mainWindow.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(`
                     <!DOCTYPE html>
@@ -153,7 +153,7 @@ class FlexPhoneMain {
                     </head>
                     <body>
                         <div style="text-align: center;">
-                            <h1>📱 FlexPhone</h1>
+                            <h1> FlexPhone</h1>
                             <p>Loading interface...</p>
                         </div>
                     </body>
@@ -168,7 +168,7 @@ class FlexPhoneMain {
         } else {
             const htmlPath = path.join(__dirname, '../public/index.html');
             if (!fs.existsSync(htmlPath)) {
-                console.error('❌ HTML file not found:', htmlPath);
+                console.error(' HTML file not found:', htmlPath);
                 // Fallback to a simple HTML string
                 this.mainWindow.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(`
                     <!DOCTYPE html>
@@ -183,7 +183,7 @@ class FlexPhoneMain {
                     </head>
                     <body>
                         <div style="text-align: center;">
-                            <h1>📱 FlexPhone</h1>
+                            <h1> FlexPhone</h1>
                             <p>Loading interface...</p>
                         </div>
                     </body>
@@ -198,7 +198,7 @@ class FlexPhoneMain {
 
         // Show window when ready
         this.mainWindow.once('ready-to-show', () => {
-            console.log('📱 FlexPhone: Main window ready, showing...');
+            console.log(' FlexPhone: Main window ready, showing...');
             if (this.mainWindow && !this.mainWindow.isDestroyed()) {
                 this.mainWindow.show();
                 this.mainWindow.focus();
@@ -214,14 +214,14 @@ class FlexPhoneMain {
 
         // Additional debugging for content loading
         this.mainWindow.webContents.once('dom-ready', () => {
-            console.log('📱 FlexPhone: DOM ready');
+            console.log(' FlexPhone: DOM ready');
         });
 
         this.mainWindow.webContents.once('did-finish-load', () => {
-            console.log('📱 FlexPhone: Content finished loading');
+            console.log(' FlexPhone: Content finished loading');
             // Ensure window is shown after content loads
             if (this.mainWindow && !this.mainWindow.isDestroyed() && !this.mainWindow.isVisible()) {
-                console.log('📱 FlexPhone: Showing window after content load');
+                console.log(' FlexPhone: Showing window after content load');
                 this.mainWindow.show();
                 this.mainWindow.focus();
             }
@@ -229,7 +229,7 @@ class FlexPhoneMain {
 
         // Add error handling for load failures
         this.mainWindow.webContents.on('did-fail-load', (event, errorCode, errorDescription) => {
-            console.error('📱 FlexPhone: Failed to load window:', errorCode, errorDescription);
+            console.error(' FlexPhone: Failed to load window:', errorCode, errorDescription);
             // Show window anyway with fallback content
             if (this.mainWindow && !this.mainWindow.isDestroyed()) {
                 this.mainWindow.show();
@@ -239,7 +239,7 @@ class FlexPhoneMain {
         // Force show after timeout as fallback
         setTimeout(() => {
             if (this.mainWindow && !this.mainWindow.isDestroyed() && !this.mainWindow.isVisible()) {
-                console.log('📱 FlexPhone: Force showing window after timeout');
+                console.log(' FlexPhone: Force showing window after timeout');
                 this.mainWindow.show();
                 this.mainWindow.focus();
                 this.mainWindow.moveTop();
@@ -257,7 +257,7 @@ class FlexPhoneMain {
 
         // Handle window minimize (keep SIP connection alive)
         this.mainWindow.on('minimize', () => {
-            console.log('📱 FlexPhone minimized - SIP connection maintained');
+            console.log(' FlexPhone minimized - SIP connection maintained');
         });
 
         return this.mainWindow;
@@ -430,7 +430,7 @@ class FlexPhoneMain {
                 const password = await keytar.getPassword(service, account);
                 return { success: true, password };
             } catch (error) {
-                console.error('❌ Keychain get password failed:', error);
+                console.error(' Keychain get password failed:', error);
                 return { success: false, error: error.message };
             }
         });
@@ -438,10 +438,10 @@ class FlexPhoneMain {
         ipcMain.handle('keychain-set-password', async (event, service, account, password) => {
             try {
                 await keytar.setPassword(service, account, password);
-                console.log(`🔐 Password saved to keychain for ${service}:${account}`);
+                console.log(` Password saved to keychain for ${service}:${account}`);
                 return { success: true };
             } catch (error) {
-                console.error('❌ Keychain set password failed:', error);
+                console.error(' Keychain set password failed:', error);
                 return { success: false, error: error.message };
             }
         });
@@ -450,13 +450,13 @@ class FlexPhoneMain {
             try {
                 const deleted = await keytar.deletePassword(service, account);
                 if (deleted) {
-                    console.log(`🗑️ Password deleted from keychain for ${service}:${account}`);
+                    console.log(` Password deleted from keychain for ${service}:${account}`);
                     return { success: true };
                 } else {
                     return { success: false, error: 'Password not found' };
                 }
             } catch (error) {
-                console.error('❌ Keychain delete password failed:', error);
+                console.error(' Keychain delete password failed:', error);
                 return { success: false, error: error.message };
             }
         });
@@ -466,7 +466,7 @@ class FlexPhoneMain {
                 const credentials = await keytar.findCredentials(service);
                 return { success: true, credentials };
             } catch (error) {
-                console.error('❌ Keychain find credentials failed:', error);
+                console.error(' Keychain find credentials failed:', error);
                 return { success: false, error: error.message };
             }
         });
@@ -482,7 +482,7 @@ class FlexPhoneMain {
                     return { success: true, available: false, methods: ['credit-card', 'paypal'] };
                 }
             } catch (error) {
-                console.error('❌ Payment check failed:', error);
+                console.error(' Payment check failed:', error);
                 return { success: false, error: error.message };
             }
         });
@@ -490,12 +490,12 @@ class FlexPhoneMain {
         ipcMain.handle('payment-process-purchase', async (event, purchaseData) => {
             try {
                 const { productId, paymentMethod, amount } = purchaseData;
-                console.log(`💳 Processing purchase: ${productId} via ${paymentMethod} for $${amount}`);
+                console.log(` Processing purchase: ${productId} via ${paymentMethod} for $${amount}`);
 
                 // Simulate payment processing (replace with actual payment gateway)
                 if (paymentMethod === 'apple-pay' && process.platform === 'darwin') {
                     // Apple Pay processing
-                    console.log('🍎 Processing Apple Pay payment...');
+                    console.log(' Processing Apple Pay payment...');
 
                     // In production, integrate with Apple's StoreKit
                     return {
@@ -506,7 +506,7 @@ class FlexPhoneMain {
                     };
                 } else {
                     // Credit card or other payment methods
-                    console.log(`💳 Processing ${paymentMethod} payment...`);
+                    console.log(` Processing ${paymentMethod} payment...`);
 
                     return {
                         success: true,
@@ -516,14 +516,14 @@ class FlexPhoneMain {
                     };
                 }
             } catch (error) {
-                console.error('❌ Payment processing failed:', error);
+                console.error(' Payment processing failed:', error);
                 return { success: false, error: error.message };
             }
         });
 
         ipcMain.handle('payment-verify-receipt', async (event, receiptData) => {
             try {
-                console.log('🧾 Verifying payment receipt...');
+                console.log(' Verifying payment receipt...');
 
                 // In production, verify receipt with payment provider
                 // For Apple Pay, use Apple's receipt validation
@@ -536,7 +536,7 @@ class FlexPhoneMain {
                     expirationDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000) // 1 year
                 };
             } catch (error) {
-                console.error('❌ Receipt verification failed:', error);
+                console.error(' Receipt verification failed:', error);
                 return { success: false, error: error.message };
             }
         });
@@ -575,7 +575,7 @@ class FlexPhoneMain {
 
                 return { success: true, products };
             } catch (error) {
-                console.error('❌ Failed to get products:', error);
+                console.error(' Failed to get products:', error);
                 return { success: false, error: error.message };
             }
         });
@@ -591,7 +591,7 @@ class FlexPhoneMain {
                     features: ['touchid', 'faceid', 'yubikey', 'fingerprint']
                 };
             } catch (error) {
-                console.error('❌ Passkey support check failed:', error);
+                console.error(' Passkey support check failed:', error);
                 return { success: false, error: error.message };
             }
         });
@@ -599,7 +599,7 @@ class FlexPhoneMain {
         ipcMain.handle('passkey-register', async (event, options) => {
             try {
                 const { username, displayName, service } = options;
-                console.log(`🔐 Registering passkey for ${username} on ${service}`);
+                console.log(` Registering passkey for ${username} on ${service}`);
 
                 // In production, this would integrate with WebAuthn API
                 // For now, simulate passkey registration
@@ -617,10 +617,10 @@ class FlexPhoneMain {
                 // Store in keychain as passkey data
                 await keytar.setPassword(`FlexPhone-Passkey-${service}`, username, JSON.stringify(passkey));
 
-                console.log(`✅ Passkey registered for ${username}`);
+                console.log(` Passkey registered for ${username}`);
                 return { success: true, passkeyId: passkey.id, credentialId: passkey.credentialId };
             } catch (error) {
-                console.error('❌ Passkey registration failed:', error);
+                console.error(' Passkey registration failed:', error);
                 return { success: false, error: error.message };
             }
         });
@@ -628,7 +628,7 @@ class FlexPhoneMain {
         ipcMain.handle('passkey-authenticate', async (event, options) => {
             try {
                 const { service, username, challenge } = options;
-                console.log(`🔐 Authenticating with passkey for ${username} on ${service}`);
+                console.log(` Authenticating with passkey for ${username} on ${service}`);
 
                 // Retrieve passkey from keychain
                 const passkeyData = await keytar.getPassword(`FlexPhone-Passkey-${service}`, username);
@@ -648,17 +648,17 @@ class FlexPhoneMain {
                     userHandle: btoa(username)
                 };
 
-                console.log(`✅ Passkey authentication successful for ${username}`);
+                console.log(` Passkey authentication successful for ${username}`);
                 return { success: true, authResult, userInfo: { username, displayName: passkey.displayName } };
             } catch (error) {
-                console.error('❌ Passkey authentication failed:', error);
+                console.error(' Passkey authentication failed:', error);
                 return { success: false, error: error.message };
             }
         });
 
         ipcMain.handle('passkey-list', async (event, service) => {
             try {
-                console.log(`🔍 Listing passkeys for service: ${service}`);
+                console.log(` Listing passkeys for service: ${service}`);
 
                 // Find all passkeys for the service
                 const credentials = await keytar.findCredentials(`FlexPhone-Passkey-${service}`);
@@ -681,25 +681,25 @@ class FlexPhoneMain {
 
                 return { success: true, passkeys };
             } catch (error) {
-                console.error('❌ Failed to list passkeys:', error);
+                console.error(' Failed to list passkeys:', error);
                 return { success: false, error: error.message };
             }
         });
 
         ipcMain.handle('passkey-delete', async (event, service, username) => {
             try {
-                console.log(`🗑️ Deleting passkey for ${username} on ${service}`);
+                console.log(` Deleting passkey for ${username} on ${service}`);
 
                 const deleted = await keytar.deletePassword(`FlexPhone-Passkey-${service}`, username);
 
                 if (deleted) {
-                    console.log(`✅ Passkey deleted for ${username}`);
+                    console.log(` Passkey deleted for ${username}`);
                     return { success: true };
                 } else {
                     return { success: false, error: 'Passkey not found' };
                 }
             } catch (error) {
-                console.error('❌ Passkey deletion failed:', error);
+                console.error(' Passkey deletion failed:', error);
                 return { success: false, error: error.message };
             }
         });
@@ -730,7 +730,7 @@ class FlexPhoneMain {
             return this.vlcAudioService.isInitialized;
         });
 
-        console.log('📡 IPC handlers registered (including keychain, payment, passkey, and VLC audio support)');
+        console.log(' IPC handlers registered (including keychain, payment, passkey, and VLC audio support)');
     }
 
     createMenu() {
@@ -745,7 +745,7 @@ class FlexPhoneMain {
                                 type: 'info',
                                 title: 'About FlexPhone',
                                 message: 'FlexPhone v1.0.0',
-                                detail: 'Lightweight SIP Client for iOS and Desktop\nBuilt with Electron and React\n\n© 2024 FlexPBX Team'
+                                detail: 'Lightweight SIP Client for iOS and Desktop\nBuilt with Electron and React\n\n 2024 FlexPBX Team'
                             });
                         }
                     },
@@ -941,7 +941,7 @@ class FlexPhoneMain {
             this.mainWindow?.webContents.send('sms-sent', data);
         });
 
-        console.log('📡 Service event forwarding setup');
+        console.log(' Service event forwarding setup');
     }
 
     // Recording methods
@@ -973,17 +973,17 @@ class FlexPhoneMain {
                 isPaused: false
             };
 
-            console.log(`🎙️ Started recording: ${filePath}`);
+            console.log(` Started recording: ${filePath}`);
 
             // If remote recording is enabled, notify FlexPBX
             if (config.mode === 'remote' || config.mode === 'both') {
                 // TODO: Implement remote recording via FlexPBX API
-                console.log('📡 Remote recording mode enabled');
+                console.log(' Remote recording mode enabled');
             }
 
             return { success: true, filePath, recording: this.currentRecording };
         } catch (error) {
-            console.error('❌ Recording start failed:', error);
+            console.error(' Recording start failed:', error);
             return { success: false, error: error.message };
         }
     }
@@ -999,14 +999,14 @@ class FlexPhoneMain {
             this.currentRecording.endTime = new Date();
             this.currentRecording.duration = Math.floor(duration / 1000); // seconds
 
-            console.log(`🎙️ Stopped recording: ${this.currentRecording.filePath}`);
+            console.log(` Stopped recording: ${this.currentRecording.filePath}`);
 
             const recording = { ...this.currentRecording };
             this.currentRecording = null;
 
             return { success: true, recording };
         } catch (error) {
-            console.error('❌ Recording stop failed:', error);
+            console.error(' Recording stop failed:', error);
             return { success: false, error: error.message };
         }
     }
@@ -1018,11 +1018,11 @@ class FlexPhoneMain {
             }
 
             this.currentRecording.isPaused = true;
-            console.log('⏸️ Recording paused');
+            console.log(' Recording paused');
 
             return { success: true, recording: this.currentRecording };
         } catch (error) {
-            console.error('❌ Recording pause failed:', error);
+            console.error(' Recording pause failed:', error);
             return { success: false, error: error.message };
         }
     }
@@ -1034,11 +1034,11 @@ class FlexPhoneMain {
             }
 
             this.currentRecording.isPaused = false;
-            console.log('▶️ Recording resumed');
+            console.log('▶ Recording resumed');
 
             return { success: true, recording: this.currentRecording };
         } catch (error) {
-            console.error('❌ Recording resume failed:', error);
+            console.error(' Recording resume failed:', error);
             return { success: false, error: error.message };
         }
     }
@@ -1081,7 +1081,7 @@ class FlexPhoneMain {
 
             return { success: true, recordings: files };
         } catch (error) {
-            console.error('❌ Get recordings list failed:', error);
+            console.error(' Get recordings list failed:', error);
             return { success: false, error: error.message };
         }
     }
@@ -1091,7 +1091,7 @@ class FlexPhoneMain {
             shell.openExternal(filePath);
             return { success: true };
         } catch (error) {
-            console.error('❌ Play recording failed:', error);
+            console.error(' Play recording failed:', error);
             return { success: false, error: error.message };
         }
     }
@@ -1100,13 +1100,13 @@ class FlexPhoneMain {
         try {
             if (fs.existsSync(filePath)) {
                 fs.unlinkSync(filePath);
-                console.log(`🗑️ Deleted recording: ${filePath}`);
+                console.log(` Deleted recording: ${filePath}`);
                 return { success: true };
             } else {
                 return { success: false, error: 'File not found' };
             }
         } catch (error) {
-            console.error('❌ Delete recording failed:', error);
+            console.error(' Delete recording failed:', error);
             return { success: false, error: error.message };
         }
     }
@@ -1128,12 +1128,12 @@ app.on('second-instance', () => {
 });
 
 app.whenReady().then(async () => {
-    console.log('📱 FlexPhone: App ready, initializing...');
+    console.log(' FlexPhone: App ready, initializing...');
 
     // Simple single instance check after app is ready
     const gotTheLock = app.requestSingleInstanceLock();
     if (!gotTheLock) {
-        console.log('📱 FlexPhone: Another instance is already running');
+        console.log(' FlexPhone: Another instance is already running');
         app.quit();
         return;
     }
@@ -1143,7 +1143,7 @@ app.whenReady().then(async () => {
     flexPhone.createMenu();
     flexPhone.setupServiceEventForwarding();
 
-    console.log('📱 FlexPhone ready');
+    console.log(' FlexPhone ready');
 });
 
 app.on('window-all-closed', () => {
@@ -1155,12 +1155,12 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
     // Only create window if none exist AND app is initialized
     if (BrowserWindow.getAllWindows().length === 0 && flexPhone.isReady) {
-        console.log('📱 FlexPhone: Creating window on activate');
+        console.log(' FlexPhone: Creating window on activate');
         flexPhone.createMainWindow();
     } else if (flexPhone.mainWindow) {
         // If window exists but is hidden, show it
         if (!flexPhone.mainWindow.isVisible()) {
-            console.log('📱 FlexPhone: Showing existing window on activate');
+            console.log(' FlexPhone: Showing existing window on activate');
             flexPhone.mainWindow.show();
             flexPhone.mainWindow.focus();
         }
@@ -1168,7 +1168,7 @@ app.on('activate', () => {
 });
 
 app.on('before-quit', async () => {
-    console.log('📱 FlexPhone shutting down...');
+    console.log(' FlexPhone shutting down...');
 
     // Cleanup services
     if (flexPhone.sipService) {

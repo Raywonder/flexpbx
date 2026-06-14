@@ -406,7 +406,7 @@ if (isset($_GET['logout'])) {
 </head>
 <body>
     <div class="login-container">
-        <div class="icon">🔐</div>
+        <div class="icon"></div>
 
         <div class="header">
             <h1>FlexPBX Admin Login</h1>
@@ -415,7 +415,7 @@ if (isset($_GET['logout'])) {
         </div>
 
         <div class="default-creds" id="temp-password-box" style="display: none;">
-            <strong>🔒 Auto-Generated Temporary Password:</strong><br>
+            <strong> Auto-Generated Temporary Password:</strong><br>
             Username: <code>admin</code><br>
             Password: <code id="temp-password-display">Loading...</code>
             <button type="button" onclick="copyPassword()" style="margin-left: 10px; padding: 4px 8px; font-size: 0.8rem; cursor: pointer;">Copy</button>
@@ -426,35 +426,35 @@ if (isset($_GET['logout'])) {
         </div>
 
         <div class="loading-creds" id="loading-box">
-            <strong>🔐 Generating secure temporary password...</strong><br>
+            <strong> Generating secure temporary password...</strong><br>
             <small>Please wait...</small>
         </div>
 
         <div class="security-note">
-            🔒 This is a secure admin area. All login attempts are logged and monitored.
+             This is a secure admin area. All login attempts are logged and monitored.
         </div>
 
         <?php if ($logout_message): ?>
         <div class="alert" role="alert" style="background: #d4edda; color: #155724; border: 1px solid #4ade80;">
-            ✓ <?= htmlspecialchars($logout_message) ?>
+             <?= htmlspecialchars($logout_message) ?>
         </div>
         <?php endif; ?>
 
         <?php if ($security_message): ?>
         <div class="alert" role="alert" style="background: #fff3cd; color: #856404; border: 1px solid #ffc107;">
-            🔒 <?= htmlspecialchars($security_message) ?>
+             <?= htmlspecialchars($security_message) ?>
         </div>
         <?php endif; ?>
 
         <?php if ($timeout_message): ?>
         <div class="alert" role="alert" style="background: #fff3cd; color: #856404; border: 1px solid #ffc107;">
-            ⏱️ <?= htmlspecialchars($timeout_message) ?>
+             <?= htmlspecialchars($timeout_message) ?>
         </div>
         <?php endif; ?>
 
         <?php if ($login_error): ?>
         <div class="alert" role="alert">
-            ⚠️ <?= htmlspecialchars($login_error) ?>
+             <?= htmlspecialchars($login_error) ?>
         </div>
         <?php endif; ?>
 
@@ -493,7 +493,7 @@ if (isset($_GET['logout'])) {
                         aria-label="Toggle password visibility"
                         tabindex="-1"
                     >
-                        <span id="toggleIcon">👁️</span>
+                        <span id="toggleIcon"></span>
                     </button>
                 </div>
             </div>
@@ -551,11 +551,11 @@ if (isset($_GET['logout'])) {
 
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
-                toggleIcon.textContent = '🙈';
+                toggleIcon.textContent = '';
                 passwordInput.setAttribute('aria-label', 'Password visible');
             } else {
                 passwordInput.type = 'password';
-                toggleIcon.textContent = '👁️';
+                toggleIcon.textContent = '';
                 passwordInput.setAttribute('aria-label', 'Password hidden');
             }
         }
@@ -593,7 +593,7 @@ if (isset($_GET['logout'])) {
                 }
             } catch (error) {
                 console.error('Failed to fetch temp password:', error);
-                document.getElementById('loading-box').innerHTML = '<strong>⚠️ Failed to generate password</strong><br><small>Please contact administrator</small>';
+                document.getElementById('loading-box').innerHTML = '<strong> Failed to generate password</strong><br><small>Please contact administrator</small>';
             }
         }
 
@@ -607,7 +607,7 @@ if (isset($_GET['logout'])) {
 
                 if (remaining <= 0) {
                     clearInterval(countdownInterval);
-                    timerElement.textContent = '⚠️ Password expired! Refresh page for new password.';
+                    timerElement.textContent = ' Password expired! Refresh page for new password.';
                     timerElement.style.color = '#c33';
 
                     // Disable form
@@ -617,7 +617,7 @@ if (isset($_GET['logout'])) {
                 } else {
                     const minutes = Math.floor(remaining / 60);
                     const seconds = remaining % 60;
-                    timerElement.textContent = `⏱️ Expires in: ${minutes}m ${seconds}s`;
+                    timerElement.textContent = ` Expires in: ${minutes}m ${seconds}s`;
 
                     // Warning when under 2 minutes
                     if (remaining < 120) {
@@ -633,7 +633,7 @@ if (isset($_GET['logout'])) {
             navigator.clipboard.writeText(password).then(() => {
                 const btn = event.target;
                 const originalText = btn.textContent;
-                btn.textContent = '✓ Copied!';
+                btn.textContent = ' Copied!';
                 setTimeout(() => {
                     btn.textContent = originalText;
                 }, 2000);

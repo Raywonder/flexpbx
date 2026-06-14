@@ -289,7 +289,7 @@ require_once __DIR__ . '/user_header.php';
 
 <div class="container">
     <div class="header">
-        <h1>🔔 My Notifications</h1>
+        <h1> My Notifications</h1>
         <p class="subtitle">Stay updated with your notifications</p>
     </div>
 
@@ -333,7 +333,7 @@ require_once __DIR__ . '/user_header.php';
         </select>
 
         <button class="btn btn-primary" onclick="markAllRead()">Mark All Read</button>
-        <button class="btn btn-secondary" onclick="refreshNotifications()">🔄 Refresh</button>
+        <button class="btn btn-secondary" onclick="refreshNotifications()"> Refresh</button>
     </div>
 
     <!-- Notifications List -->
@@ -344,9 +344,9 @@ require_once __DIR__ . '/user_header.php';
 
         <!-- Pagination -->
         <div class="pagination" id="pagination" style="display: none;">
-            <button id="prev-btn" onclick="previousPage()">← Previous</button>
+            <button id="prev-btn" onclick="previousPage()"><- Previous</button>
             <span id="page-info">Page 1</span>
-            <button id="next-btn" onclick="nextPage()">Next →</button>
+            <button id="next-btn" onclick="nextPage()">Next -></button>
         </div>
     </div>
 </div>
@@ -379,13 +379,13 @@ require_once __DIR__ . '/user_header.php';
                     updateStats();
                 } else {
                     document.getElementById('notifications-list').innerHTML =
-                        '<div class="empty-state"><div class="empty-state-icon">⚠️</div><p>Error loading notifications</p></div>';
+                        '<div class="empty-state"><div class="empty-state-icon"></div><p>Error loading notifications</p></div>';
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
                 document.getElementById('notifications-list').innerHTML =
-                    '<div class="empty-state"><div class="empty-state-icon">⚠️</div><p>Error loading notifications</p></div>';
+                    '<div class="empty-state"><div class="empty-state-icon"></div><p>Error loading notifications</p></div>';
             });
     }
 
@@ -396,7 +396,7 @@ require_once __DIR__ . '/user_header.php';
         if (notifications.length === 0) {
             container.innerHTML = `
                 <div class="empty-state">
-                    <div class="empty-state-icon">📭</div>
+                    <div class="empty-state-icon"></div>
                     <p>No notifications found</p>
                 </div>
             `;
@@ -418,17 +418,17 @@ require_once __DIR__ . '/user_header.php';
                         <div class="notification-title">${notif.title}</div>
                         ${notif.message ? `<div class="notification-message">${notif.message}</div>` : ''}
                         <div class="notification-meta">
-                            <span>⏰ ${timeAgo}</span>
+                            <span> ${timeAgo}</span>
                             ${priorityBadge}
-                            ${notif.link_url ? `<a href="${notif.link_url}" style="color: #667eea;">View Details →</a>` : ''}
+                            ${notif.link_url ? `<a href="${notif.link_url}" style="color: #667eea;">View Details -></a>` : ''}
                         </div>
                     </div>
                     <div class="notification-actions">
                         ${isUnread ?
-                            `<button class="action-btn" onclick="markAsRead(${notif.delivery_id})" title="Mark as read">✓</button>` :
+                            `<button class="action-btn" onclick="markAsRead(${notif.delivery_id})" title="Mark as read"></button>` :
                             `<button class="action-btn" onclick="markAsUnread(${notif.delivery_id})" title="Mark as unread">↩</button>`
                         }
-                        <button class="action-btn" onclick="dismissNotification(${notif.delivery_id})" title="Dismiss">🗑️</button>
+                        <button class="action-btn" onclick="dismissNotification(${notif.delivery_id})" title="Dismiss"></button>
                     </div>
                 </div>
             `;
@@ -438,16 +438,16 @@ require_once __DIR__ . '/user_header.php';
     // Get icon for notification type
     function getIconForType(type) {
         const icons = {
-            'system': '⚙️',
-            'call': '📞',
-            'voicemail': '📧',
-            'sms': '💬',
-            'alert': '⚠️',
-            'message': '💌',
-            'task': '📋',
-            'announcement': '📢'
+            'system': '',
+            'call': '',
+            'voicemail': '',
+            'sms': '',
+            'alert': '',
+            'message': '',
+            'task': '',
+            'announcement': ''
         };
-        return icons[type] || '🔔';
+        return icons[type] || '';
     }
 
     // Format time ago

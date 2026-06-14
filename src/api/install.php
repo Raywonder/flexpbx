@@ -95,29 +95,29 @@ class FlexPBXInstaller {
         $this->renderHeader('FlexPBX Installation - Welcome');
         ?>
         <div class="welcome-section">
-            <h2>🚀 Welcome to FlexPBX Quick Installer</h2>
+            <h2> Welcome to FlexPBX Quick Installer</h2>
             <p>This installer will set up your FlexPBX server with multi-client connection management, auto-link authorization, and update capabilities.</p>
 
             <!-- v1.1 Feature: Hero image will be added here using FLUX.1/Stable Diffusion -->
             <!-- <div class="hero-image-placeholder" style="text-align: center; margin: 20px 0; padding: 40px; background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border-radius: 12px; border: 2px dashed #2196f3;">
-                <p style="color: #1976d2; font-size: 18px; margin: 0;">📸 Hero Image Coming in v1.1</p>
+                <p style="color: #1976d2; font-size: 18px; margin: 0;"> Hero Image Coming in v1.1</p>
                 <p style="color: #424242; font-size: 14px; margin: 5px 0 0;">Professional FlexPBX network topology with connected devices</p>
             </div> -->
 
             <div class="features-list">
-                <h3>✨ Features Being Installed:</h3>
+                <h3> Features Being Installed:</h3>
                 <ul>
-                    <li>🔗 Multi-server client connection management</li>
-                    <li>🔐 Auto-link authorization system</li>
-                    <li>📱 Desktop and admin client support</li>
-                    <li>🔄 Automatic update distribution</li>
-                    <li>⚡ Module reload capabilities</li>
-                    <li>🛡️ Security and rate limiting</li>
+                    <li> Multi-server client connection management</li>
+                    <li> Auto-link authorization system</li>
+                    <li> Desktop and admin client support</li>
+                    <li> Automatic update distribution</li>
+                    <li> Module reload capabilities</li>
+                    <li> Security and rate limiting</li>
                 </ul>
             </div>
 
             <div class="install-info">
-                <h3>📋 Installation Process:</h3>
+                <h3> Installation Process:</h3>
                 <ol>
                     <li>System requirements check</li>
                     <li>Database configuration</li>
@@ -127,7 +127,7 @@ class FlexPBXInstaller {
             </div>
 
             <div class="action-buttons">
-                <a href="?step=requirements" class="btn btn-primary">Start Installation →</a>
+                <a href="?step=requirements" class="btn btn-primary">Start Installation -></a>
             </div>
         </div>
         <?php
@@ -179,7 +179,7 @@ class FlexPBXInstaller {
         $canContinue = true;
         ?>
         <div class="requirements-section">
-            <h2>🔍 System Requirements Check</h2>
+            <h2> System Requirements Check</h2>
 
             <table class="requirements-table">
                 <thead>
@@ -198,12 +198,12 @@ class FlexPBXInstaller {
                         <td><?= $req['required'] ?></td>
                         <td>
                             <?php if ($req['check']): ?>
-                                ✅ OK
+                                 OK
                             <?php elseif ($req['critical']): ?>
-                                ❌ FAILED
+                                 FAILED
                                 <?php $canContinue = false; ?>
                             <?php else: ?>
-                                ⚠️ WARNING
+                                 WARNING
                             <?php endif; ?>
                         </td>
                     </tr>
@@ -213,14 +213,14 @@ class FlexPBXInstaller {
 
             <?php if (!$canContinue): ?>
                 <div class="alert alert-error">
-                    ❌ Critical requirements not met. Please contact your hosting provider to install missing PHP extensions.
+                     Critical requirements not met. Please contact your hosting provider to install missing PHP extensions.
                 </div>
             <?php endif; ?>
 
             <div class="action-buttons">
-                <a href="?step=welcome" class="btn btn-secondary">← Back</a>
+                <a href="?step=welcome" class="btn btn-secondary"><- Back</a>
                 <?php if ($canContinue): ?>
-                    <a href="?step=database" class="btn btn-primary">Continue →</a>
+                    <a href="?step=database" class="btn btn-primary">Continue -></a>
                 <?php endif; ?>
             </div>
         </div>
@@ -236,48 +236,48 @@ class FlexPBXInstaller {
         $this->renderHeader('FlexPBX Installation - Database Configuration');
         ?>
         <div class="database-section">
-            <h2>🗄️ Database Configuration</h2>
+            <h2> Database Configuration</h2>
             <p>Configure your MySQL database connection. You can create a new database or use an existing one.</p>
 
             <div class="what-will-be-added">
-                <h3>📦 What Will Be Installed:</h3>
+                <h3> What Will Be Installed:</h3>
                 <div class="installation-preview">
-                    <h4>🗄️ Database Tables (6 tables):</h4>
+                    <h4> Database Tables (6 tables):</h4>
                     <div class="table-status">
-                        <div class="new-items">➕ <span class="table-name">desktop_clients</span> - Registered desktop clients and their connection info</div>
-                        <div class="new-items">➕ <span class="table-name">active_connections</span> - Real-time client connection tracking</div>
-                        <div class="new-items">➕ <span class="table-name">connection_limits</span> - Per-client connection limits and quotas</div>
-                        <div class="new-items">➕ <span class="table-name">auto_link_requests</span> - Pending authorization requests</div>
-                        <div class="new-items">➕ <span class="table-name">authorized_links</span> - Approved client authorizations</div>
-                        <div class="new-items">➕ <span class="table-name">fallback_hierarchy</span> - Client fallback connection priorities</div>
+                        <div class="new-items"> <span class="table-name">desktop_clients</span> - Registered desktop clients and their connection info</div>
+                        <div class="new-items"> <span class="table-name">active_connections</span> - Real-time client connection tracking</div>
+                        <div class="new-items"> <span class="table-name">connection_limits</span> - Per-client connection limits and quotas</div>
+                        <div class="new-items"> <span class="table-name">auto_link_requests</span> - Pending authorization requests</div>
+                        <div class="new-items"> <span class="table-name">authorized_links</span> - Approved client authorizations</div>
+                        <div class="new-items"> <span class="table-name">fallback_hierarchy</span> - Client fallback connection priorities</div>
                     </div>
 
-                    <h4 style="margin-top: 15px;">📄 API Files (4 files):</h4>
+                    <h4 style="margin-top: 15px;"> API Files (4 files):</h4>
                     <div class="table-status">
-                        <div class="new-items">➕ <span class="table-name">connection-manager.php</span> - Multi-client connection management (15KB)</div>
-                        <div class="new-items">➕ <span class="table-name">auto-link-manager.php</span> - Auto-link authorization system (12KB)</div>
-                        <div class="new-items">➕ <span class="table-name">update-manager.php</span> - Update distribution and management (8KB)</div>
-                        <div class="new-items">➕ <span class="table-name">.htaccess</span> - URL routing and security headers (3KB)</div>
+                        <div class="new-items"> <span class="table-name">connection-manager.php</span> - Multi-client connection management (15KB)</div>
+                        <div class="new-items"> <span class="table-name">auto-link-manager.php</span> - Auto-link authorization system (12KB)</div>
+                        <div class="new-items"> <span class="table-name">update-manager.php</span> - Update distribution and management (8KB)</div>
+                        <div class="new-items"> <span class="table-name">.htaccess</span> - URL routing and security headers (3KB)</div>
                     </div>
 
-                    <h4 style="margin-top: 15px;">⚡ Features Being Added:</h4>
+                    <h4 style="margin-top: 15px;"> Features Being Added:</h4>
                     <div class="table-status">
-                        <div class="new-items">➕ Tailscale-like client hierarchy management</div>
-                        <div class="new-items">➕ Admin client → Desktop client fallback connections</div>
-                        <div class="new-items">➕ Auto-link authorization with approval workflows</div>
-                        <div class="new-items">➕ Real-time connection monitoring and limits</div>
-                        <div class="new-items">➕ Update distribution and auto-restart capabilities</div>
-                        <div class="new-items">➕ Module reload vs full server restart options</div>
+                        <div class="new-items"> Tailscale-like client hierarchy management</div>
+                        <div class="new-items"> Admin client -> Desktop client fallback connections</div>
+                        <div class="new-items"> Auto-link authorization with approval workflows</div>
+                        <div class="new-items"> Real-time connection monitoring and limits</div>
+                        <div class="new-items"> Update distribution and auto-restart capabilities</div>
+                        <div class="new-items"> Module reload vs full server restart options</div>
                     </div>
 
-                    <h4 style="margin-top: 20px;">🖥️ Supported Client Versions & Platforms:</h4>
+                    <h4 style="margin-top: 20px;"> Supported Client Versions & Platforms:</h4>
                     <div class="client-versions" style="padding: 20px;">
                         <div class="sr-only">This section describes the different FlexPBX client versions that can connect to this server installation.</div>
 
                         <div class="client-grid">
                             <div class="client-item" role="listitem">
                                 <h5 style="margin: 0 0 10px; color: #007bff; display: flex; align-items: center;">
-                                    <span aria-hidden="true">👨‍💼</span>
+                                    <span aria-hidden="true"></span>
                                     <span style="margin-left: 8px;">FlexPBX Admin Client</span>
                                     <span class="version-badge" style="margin-left: 10px;" aria-label="Version 2.0">v2.0+</span>
                                 </h5>
@@ -285,7 +285,7 @@ class FlexPBXInstaller {
                                     <strong>Primary management client</strong> - Connects directly to remote server, manages other desktop clients, provides admin controls and fallback server capabilities.
                                 </p>
                                 <div style="margin-top: 10px;">
-                                    <strong style="color: #28a745;">✅ Supported Platforms:</strong>
+                                    <strong style="color: #28a745;"> Supported Platforms:</strong>
                                     <div style="margin: 5px 0;">
                                         <span class="version-badge">macOS Intel/ARM64</span>
                                         <span class="version-badge">Windows 10/11</span>
@@ -296,7 +296,7 @@ class FlexPBXInstaller {
 
                             <div class="client-item" role="listitem">
                                 <h5 style="margin: 0 0 10px; color: #007bff; display: flex; align-items: center;">
-                                    <span aria-hidden="true">🖥️</span>
+                                    <span aria-hidden="true"></span>
                                     <span style="margin-left: 8px;">FlexPBX Desktop Client</span>
                                     <span class="version-badge" style="margin-left: 10px;" aria-label="Version 1.0">v1.0+</span>
                                 </h5>
@@ -304,16 +304,16 @@ class FlexPBXInstaller {
                                     <strong>Standard desktop client</strong> - Connects to admin clients as fallback when remote server unavailable. Auto-link authorization for easy setup.
                                 </p>
                                 <div style="margin-top: 10px;">
-                                    <strong style="color: #28a745;">✅ Connection Hierarchy:</strong>
+                                    <strong style="color: #28a745;"> Connection Hierarchy:</strong>
                                     <div style="margin: 5px 0; font-size: 13px;">
-                                        Remote Server → Admin Client → Desktop Client
+                                        Remote Server -> Admin Client -> Desktop Client
                                     </div>
                                 </div>
                             </div>
 
                             <div class="client-item" role="listitem">
                                 <h5 style="margin: 0 0 10px; color: #007bff; display: flex; align-items: center;">
-                                    <span aria-hidden="true">📱</span>
+                                    <span aria-hidden="true"></span>
                                     <span style="margin-left: 8px;">FlexPhone Mobile</span>
                                     <span class="version-badge" style="margin-left: 10px;" aria-label="Version 1.0">v1.0+</span>
                                 </h5>
@@ -321,7 +321,7 @@ class FlexPBXInstaller {
                                     <strong>Mobile companion app</strong> - iOS and Android apps with full VoiceOver/TalkBack support, connects through admin client for call management.
                                 </p>
                                 <div style="margin-top: 10px;">
-                                    <strong style="color: #28a745;">♿ Accessibility:</strong>
+                                    <strong style="color: #28a745;"> Accessibility:</strong>
                                     <div style="margin: 5px 0;">
                                         <span class="version-badge">iOS VoiceOver</span>
                                         <span class="version-badge">Android TalkBack</span>
@@ -331,7 +331,7 @@ class FlexPBXInstaller {
 
                             <div class="client-item" role="listitem">
                                 <h5 style="margin: 0 0 10px; color: #007bff; display: flex; align-items: center;">
-                                    <span aria-hidden="true">🌐</span>
+                                    <span aria-hidden="true"></span>
                                     <span style="margin-left: 8px;">Web Interface</span>
                                     <span class="version-badge" style="margin-left: 10px;" aria-label="Browser based">Browser</span>
                                 </h5>
@@ -339,7 +339,7 @@ class FlexPBXInstaller {
                                     <strong>Browser-based access</strong> - No installation required, works with any modern browser, full screen reader compatibility for accessibility.
                                 </p>
                                 <div style="margin-top: 10px;">
-                                    <strong style="color: #28a745;">🔧 Compatible Browsers:</strong>
+                                    <strong style="color: #28a745;"> Compatible Browsers:</strong>
                                     <div style="margin: 5px 0;">
                                         <span class="version-badge">Chrome 90+</span>
                                         <span class="version-badge">Firefox 88+</span>
@@ -351,7 +351,7 @@ class FlexPBXInstaller {
 
                             <div class="client-item" role="listitem">
                                 <h5 style="margin: 0 0 10px; color: #007bff; display: flex; align-items: center;">
-                                    <span aria-hidden="true">🔗</span>
+                                    <span aria-hidden="true"></span>
                                     <span style="margin-left: 8px;">Legacy Clients</span>
                                     <span class="version-badge" style="margin-left: 10px; background: #fff3cd; color: #856404;" aria-label="Legacy support">Legacy</span>
                                 </h5>
@@ -359,7 +359,7 @@ class FlexPBXInstaller {
                                     <strong>Backward compatibility</strong> - Older FlexPBX versions (pre-2.0) can connect with limited features. Auto-update available for full functionality.
                                 </p>
                                 <div style="margin-top: 10px;">
-                                    <strong style="color: #ffc107;">⚠️ Limited Features:</strong>
+                                    <strong style="color: #ffc107;"> Limited Features:</strong>
                                     <div style="margin: 5px 0; font-size: 13px;">
                                         Basic calling only, no admin features
                                     </div>
@@ -368,7 +368,7 @@ class FlexPBXInstaller {
 
                             <div class="client-item" role="listitem" style="border-left-color: #28a745;">
                                 <h5 style="margin: 0 0 10px; color: #28a745; display: flex; align-items: center;">
-                                    <span aria-hidden="true">🔄</span>
+                                    <span aria-hidden="true"></span>
                                     <span style="margin-left: 8px;">Auto-Update System</span>
                                     <span class="version-badge" style="margin-left: 10px; background: #d4edda; color: #155724;" aria-label="Automatic">Auto</span>
                                 </h5>
@@ -376,7 +376,7 @@ class FlexPBXInstaller {
                                     <strong>Seamless updates</strong> - All clients can receive automatic updates through this server, with configurable auto-restart and rollback capabilities.
                                 </p>
                                 <div style="margin-top: 10px;">
-                                    <strong style="color: #28a745;">📦 Update Features:</strong>
+                                    <strong style="color: #28a745;"> Update Features:</strong>
                                     <div style="margin: 5px 0; font-size: 13px;">
                                         Checksums, rollback, scheduled updates
                                     </div>
@@ -386,7 +386,7 @@ class FlexPBXInstaller {
 
                         <div style="margin-top: 20px; padding: 15px; background: #e3f2fd; border-radius: 6px; border-left: 4px solid #2196f3;">
                             <h6 style="margin: 0 0 10px; color: #1976d2;">
-                                <span aria-hidden="true">💡</span> Installation Modes Available:
+                                <span aria-hidden="true"></span> Installation Modes Available:
                             </h6>
                             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
                                 <div><strong>Fresh Install:</strong> Complete new setup</div>
@@ -412,7 +412,7 @@ class FlexPBXInstaller {
                     <label>Database Port:</label>
                     <div class="port-detection">
                         <input type="number" name="db_port" id="db_port_input" value="<?= $_POST['db_port'] ?? '3306' ?>" onchange="clearDetectedDatabases()">
-                        <button type="button" onclick="autoDetectPort()" class="btn btn-sm btn-secondary">🔍 Auto-Detect</button>
+                        <button type="button" onclick="autoDetectPort()" class="btn btn-sm btn-secondary"> Auto-Detect</button>
                     </div>
                     <small>Standard MySQL port is 3306. Click auto-detect to scan for active MySQL ports</small>
                     <div id="port-detection-results" style="display: none;"></div>
@@ -429,12 +429,12 @@ class FlexPBXInstaller {
                 </div>
 
                 <div class="form-group">
-                    <button type="button" onclick="autoDetectDatabases()" class="btn btn-secondary">🔍 Auto-Detect Databases</button>
+                    <button type="button" onclick="autoDetectDatabases()" class="btn btn-secondary"> Auto-Detect Databases</button>
                     <small>Scan for available databases with current credentials</small>
                 </div>
 
                 <div id="detected-databases" style="display: none;" class="detected-db-section">
-                    <h4>📊 Detected Databases:</h4>
+                    <h4> Detected Databases:</h4>
                     <div id="database-list"></div>
                 </div>
 
@@ -448,7 +448,7 @@ class FlexPBXInstaller {
                     <label>API Key:</label>
                     <div class="api-key-container" style="display: flex; gap: 10px;">
                         <input type="text" name="api_key" id="api_key_input" value="<?= $_POST['api_key'] ?? 'flexpbx_api_' . bin2hex(random_bytes(16)) ?>" required style="flex: 1;">
-                        <button type="button" onclick="generateNewApiKey()" class="btn btn-sm btn-secondary">🔄 Generate New</button>
+                        <button type="button" onclick="generateNewApiKey()" class="btn btn-sm btn-secondary"> Generate New</button>
                     </div>
                     <small>Secure API key for client authentication (auto-generated with cryptographic strength)</small>
                 </div>
@@ -458,17 +458,17 @@ class FlexPBXInstaller {
                     <div class="installation-modes">
                         <label class="mode-option">
                             <input type="radio" name="install_mode" value="add_tables" <?= ($_POST['install_mode'] ?? 'add_tables') === 'add_tables' ? 'checked' : '' ?>>
-                            ➕ Add New Tables Only
+                             Add New Tables Only
                             <small>Add only missing FlexPBX tables - safe for existing databases</small>
                         </label>
                         <label class="mode-option">
                             <input type="radio" name="install_mode" value="update_existing" <?= ($_POST['install_mode'] ?? '') === 'update_existing' ? 'checked' : '' ?>>
-                            🔄 Update Existing Installation
+                             Update Existing Installation
                             <small>Update/repair existing FlexPBX tables and data</small>
                         </label>
                         <label class="mode-option">
                             <input type="radio" name="install_mode" value="fresh" <?= ($_POST['install_mode'] ?? '') === 'fresh' ? 'checked' : '' ?>>
-                            🆕 Fresh Installation
+                             Fresh Installation
                             <small>Complete new installation (existing data preserved where possible)</small>
                         </label>
                     </div>
@@ -479,21 +479,21 @@ class FlexPBXInstaller {
                     <div class="database-options">
                         <label class="db-option">
                             <input type="checkbox" name="create_db" <?= ($_POST['create_db'] ?? '') ? 'checked' : '' ?>>
-                            🗄️ Create database if it doesn't exist
+                             Create database if it doesn't exist
                             <small>Attempt to create the database automatically</small>
                         </label>
                         <label class="db-option">
                             <input type="checkbox" name="show_creation_help" <?= ($_POST['show_creation_help'] ?? '') ? 'checked' : '' ?>>
-                            💡 Show database creation assistance
+                             Show database creation assistance
                             <small>Display SQL commands and phpMyAdmin instructions</small>
                         </label>
                     </div>
                 </div>
 
                 <div class="action-buttons">
-                    <a href="?step=requirements" class="btn btn-secondary">← Back to Requirements</a>
-                    <button type="submit" class="btn btn-primary">✅ Validate & Continue</button>
-                    <button type="button" onclick="skipToInstall()" class="btn btn-warning" style="margin-left: 10px;">⚡ Skip Test & Install</button>
+                    <a href="?step=requirements" class="btn btn-secondary"><- Back to Requirements</a>
+                    <button type="submit" class="btn btn-primary"> Validate & Continue</button>
+                    <button type="button" onclick="skipToInstall()" class="btn btn-warning" style="margin-left: 10px;"> Skip Test & Install</button>
                 </div>
             </form>
 
@@ -503,7 +503,7 @@ class FlexPBXInstaller {
                     <div class="sr-only" aria-live="assertive">Alert: Database connection failed. Please review the error details and try again.</div>
 
                     <div style="display: flex; align-items: center; margin-bottom: 20px; padding: 20px; background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%); border-radius: 8px;">
-                        <div style="font-size: 64px; margin-right: 30px; animation: pulse 2s infinite;" aria-hidden="true" role="img" aria-label="Error icon">🚫</div>
+                        <div style="font-size: 64px; margin-right: 30px; animation: pulse 2s infinite;" aria-hidden="true" role="img" aria-label="Error icon"></div>
                         <div>
                             <h3 style="margin: 0; color: #721c24; font-size: 24px;" id="error-heading">Database Connection Failed</h3>
                             <p style="margin: 8px 0 0 0; color: #856404; font-size: 16px;" aria-describedby="error-heading">Please review the details below and try again</p>
@@ -511,14 +511,14 @@ class FlexPBXInstaller {
                     </div>
 
                     <div class="error-details" style="background: linear-gradient(to right, #f1f2f6, #e9ecef); padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #dc3545;" role="region" aria-labelledby="error-details-heading">
-                        <h4 style="color: #721c24; margin-bottom: 15px;" id="error-details-heading"><span aria-hidden="true">📋</span> Error Details:</h4>
+                        <h4 style="color: #721c24; margin-bottom: 15px;" id="error-details-heading"><span aria-hidden="true"></span> Error Details:</h4>
                         <div class="sr-only">The following section contains detailed error information about the database connection failure:</div>
                         <?php foreach ($this->errors as $error): ?>
                             <?php if (strpos($error, '<div class="error-actions">') !== false): ?>
                                 <?= $error ?>
                             <?php else: ?>
                                 <div style="display: flex; align-items: flex-start; margin-bottom: 12px; padding: 10px; background: white; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);" role="listitem">
-                                    <span style="color: #dc3545; margin-right: 12px; font-size: 18px; min-width: 20px;" aria-hidden="true" role="img" aria-label="Error indicator">❌</span>
+                                    <span style="color: #dc3545; margin-right: 12px; font-size: 18px; min-width: 20px;" aria-hidden="true" role="img" aria-label="Error indicator"></span>
                                     <span style="color: #495057; line-height: 1.4;" aria-label="Error message: <?= strip_tags($error) ?>"><?= $error ?></span>
                                 </div>
                             <?php endif; ?>
@@ -526,34 +526,34 @@ class FlexPBXInstaller {
                     </div>
 
                     <div class="error-actions" style="background: #fff3cd; padding: 20px; border-radius: 8px; border-left: 4px solid #ffc107;" role="region" aria-labelledby="troubleshooting-heading">
-                        <h4 style="color: #856404; margin-bottom: 15px;" id="troubleshooting-heading"><span aria-hidden="true">💡</span> What to do next:</h4>
+                        <h4 style="color: #856404; margin-bottom: 15px;" id="troubleshooting-heading"><span aria-hidden="true"></span> What to do next:</h4>
                         <div class="sr-only">The following section provides troubleshooting steps to resolve the database connection issue:</div>
                         <div class="action-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 20px;" role="list" aria-label="Troubleshooting steps">
                             <div style="padding: 15px; background: white; border-radius: 6px; border: 1px solid #ffeaa7;" role="listitem">
-                                <strong style="color: #856404;" aria-label="Step 1: Check database credentials"><span aria-hidden="true">🔑</span> Check Credentials</strong>
+                                <strong style="color: #856404;" aria-label="Step 1: Check database credentials"><span aria-hidden="true"></span> Check Credentials</strong>
                                 <p style="margin: 5px 0 0; color: #6c757d; font-size: 14px;">Verify username and password are correct</p>
                             </div>
                             <div style="padding: 15px; background: white; border-radius: 6px; border: 1px solid #ffeaa7;" role="listitem">
-                                <strong style="color: #856404;" aria-label="Step 2: Verify database exists"><span aria-hidden="true">🗄️</span> Verify Database</strong>
+                                <strong style="color: #856404;" aria-label="Step 2: Verify database exists"><span aria-hidden="true"></span> Verify Database</strong>
                                 <p style="margin: 5px 0 0; color: #6c757d; font-size: 14px;">Use auto-detect or create manually</p>
                             </div>
                             <div style="padding: 15px; background: white; border-radius: 6px; border: 1px solid #ffeaa7;" role="listitem">
-                                <strong style="color: #856404;" aria-label="Step 3: Test database port"><span aria-hidden="true">🔌</span> Test Port</strong>
+                                <strong style="color: #856404;" aria-label="Step 3: Test database port"><span aria-hidden="true"></span> Test Port</strong>
                                 <p style="margin: 5px 0 0; color: #6c757d; font-size: 14px;">Try auto-detecting the correct port</p>
                             </div>
                             <div style="padding: 15px; background: white; border-radius: 6px; border: 1px solid #ffeaa7;" role="listitem">
-                                <strong style="color: #856404;" aria-label="Step 4: Check host settings"><span aria-hidden="true">🌐</span> Check Host</strong>
+                                <strong style="color: #856404;" aria-label="Step 4: Check host settings"><span aria-hidden="true"></span> Check Host</strong>
                                 <p style="margin: 5px 0 0; color: #6c757d; font-size: 14px;">Confirm host address (usually 'localhost')</p>
                             </div>
                         </div>
 
                         <div class="retry-section" style="text-align: center; padding: 20px; background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); border-radius: 8px;" role="region" aria-labelledby="retry-heading">
-                            <h4 style="color: #1976d2; margin-bottom: 15px;" id="retry-heading"><span aria-hidden="true">🔄</span> Ready to try again?</h4>
+                            <h4 style="color: #1976d2; margin-bottom: 15px;" id="retry-heading"><span aria-hidden="true"></span> Ready to try again?</h4>
                             <p style="color: #424242; margin-bottom: 20px;">Please correct the details above and test again</p>
                             <div class="sr-only">The following buttons will help you resolve the database connection issue:</div>
-                            <button onclick="scrollToForm()" class="btn btn-primary" style="margin: 5px 10px; padding: 12px 24px; font-size: 16px;" aria-label="Update database details - goes back to the database configuration form"><span aria-hidden="true">📝</span> Update Database Details</button>
-                            <button onclick="autoDetectPort()" class="btn btn-secondary" style="margin: 5px 10px; padding: 12px 24px; font-size: 16px;" aria-label="Auto-detect port - automatically scan for working MySQL ports"><span aria-hidden="true">🔍</span> Auto-Detect Port</button>
-                            <button onclick="showConnectionHelp()" class="btn btn-secondary" style="margin: 5px 10px; padding: 12px 24px; font-size: 16px;" aria-label="Connection help - show detailed troubleshooting information"><span aria-hidden="true">❓</span> Connection Help</button>
+                            <button onclick="scrollToForm()" class="btn btn-primary" style="margin: 5px 10px; padding: 12px 24px; font-size: 16px;" aria-label="Update database details - goes back to the database configuration form"><span aria-hidden="true"></span> Update Database Details</button>
+                            <button onclick="autoDetectPort()" class="btn btn-secondary" style="margin: 5px 10px; padding: 12px 24px; font-size: 16px;" aria-label="Auto-detect port - automatically scan for working MySQL ports"><span aria-hidden="true"></span> Auto-Detect Port</button>
+                            <button onclick="showConnectionHelp()" class="btn btn-secondary" style="margin: 5px 10px; padding: 12px 24px; font-size: 16px;" aria-label="Connection help - show detailed troubleshooting information"><span aria-hidden="true"></span> Connection Help</button>
                         </div>
                     </div>
                 </div>
@@ -581,7 +581,7 @@ class FlexPBXInstaller {
                     <div class="sr-only" aria-live="assertive">Success: Database connection established successfully. All tests passed and the system is ready to install FlexPBX.</div>
 
                     <div style="display: flex; align-items: center; margin-bottom: 25px; padding: 25px; background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%); border-radius: 12px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
-                        <div style="font-size: 72px; margin-right: 30px; animation: bounce 2s infinite;" aria-hidden="true" role="img" aria-label="Celebration icon">🎉</div>
+                        <div style="font-size: 72px; margin-right: 30px; animation: bounce 2s infinite;" aria-hidden="true" role="img" aria-label="Celebration icon"></div>
                         <div>
                             <h3 style="margin: 0; color: #155724; font-size: 28px;" id="success-heading">Database Connection Successful!</h3>
                             <p style="margin: 8px 0 0 0; color: #155724; font-size: 18px;" aria-describedby="success-heading">All tests passed - ready to install FlexPBX</p>
@@ -590,7 +590,7 @@ class FlexPBXInstaller {
 
                     <div class="success-details" style="background: linear-gradient(to right, #f8f9fa, #e9ecef); padding: 25px; border-radius: 12px; margin: 25px 0; border-left: 6px solid #28a745;" role="region" aria-labelledby="validation-results-heading">
                         <h4 style="color: #155724; margin-bottom: 20px; display: flex; align-items: center;" id="validation-results-heading">
-                            <span style="margin-right: 10px;" aria-hidden="true" role="img" aria-label="Success checkmark">✅</span> Validation Results:
+                            <span style="margin-right: 10px;" aria-hidden="true" role="img" aria-label="Success checkmark"></span> Validation Results:
                         </h4>
                         <div class="sr-only">The following section shows all successful database validation tests:</div>
                         <div class="success-grid" style="display: grid; gap: 15px;" role="list" aria-label="Database validation success results">
@@ -599,7 +599,7 @@ class FlexPBXInstaller {
                                     <?= $msg ?>
                                 <?php else: ?>
                                     <div style="display: flex; align-items: center; padding: 15px; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-left: 4px solid #28a745;" role="listitem">
-                                        <span style="color: #28a745; margin-right: 15px; font-size: 20px;" aria-hidden="true" role="img" aria-label="Success indicator">✅</span>
+                                        <span style="color: #28a745; margin-right: 15px; font-size: 20px;" aria-hidden="true" role="img" aria-label="Success indicator"></span>
                                         <span style="color: #495057; line-height: 1.5; font-size: 16px;" aria-label="Success message: <?= strip_tags($msg) ?>"><?= $msg ?></span>
                                     </div>
                                 <?php endif; ?>
@@ -609,7 +609,7 @@ class FlexPBXInstaller {
 
                     <div class="auto-continue-section" style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); padding: 30px; border-radius: 12px; text-align: center; margin: 25px 0; border: 2px solid #2196f3;" role="region" aria-labelledby="installation-ready-heading">
                         <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 20px;">
-                            <span style="font-size: 48px; margin-right: 20px; animation: pulse 1.5s infinite;" aria-hidden="true" role="img" aria-label="Rocket launch icon">🚀</span>
+                            <span style="font-size: 48px; margin-right: 20px; animation: pulse 1.5s infinite;" aria-hidden="true" role="img" aria-label="Rocket launch icon"></span>
                             <div>
                                 <h3 style="margin: 0; color: #1976d2; font-size: 24px;" id="installation-ready-heading">Ready to Install FlexPBX!</h3>
                                 <p style="margin: 5px 0 0; color: #424242; font-size: 16px;" aria-describedby="installation-ready-heading">Your database is configured and ready</p>
@@ -619,14 +619,14 @@ class FlexPBXInstaller {
                         <div id="countdown-container" style="background: rgba(255,255,255,0.8); padding: 20px; border-radius: 8px; margin: 20px 0;" role="timer" aria-live="polite" aria-label="Auto-installation countdown">
                             <div class="sr-only" id="countdown-announcement" aria-live="polite">Auto-installation will begin in 10 seconds. You can cancel this by clicking the cancel button.</div>
                             <p style="margin: 0 0 15px; color: #1976d2; font-size: 18px; font-weight: bold;" aria-describedby="countdown-announcement">
-                                <span aria-hidden="true">⏱️</span> Auto-continuing in <span id="countdown" style="color: #f44336; font-size: 24px; font-weight: bold;" aria-label="countdown timer">10</span> seconds...
+                                <span aria-hidden="true"></span> Auto-continuing in <span id="countdown" style="color: #f44336; font-size: 24px; font-weight: bold;" aria-label="countdown timer">10</span> seconds...
                             </p>
-                            <button onclick="cancelAutoInstall()" class="btn btn-secondary" style="padding: 10px 20px;" aria-label="Cancel automatic installation and stop the countdown"><span aria-hidden="true">⏸️</span> Cancel Auto-Install</button>
+                            <button onclick="cancelAutoInstall()" class="btn btn-secondary" style="padding: 10px 20px;" aria-label="Cancel automatic installation and stop the countdown"><span aria-hidden="true"></span> Cancel Auto-Install</button>
                         </div>
 
                         <div style="display: flex; justify-content: center; gap: 20px; margin-top: 25px;" role="group" aria-label="Installation actions">
-                            <a href="?step=requirements" class="btn btn-secondary" style="padding: 15px 30px; font-size: 16px;" aria-label="Go back to requirements check page"><span aria-hidden="true">←</span> Back to Requirements</a>
-                            <a href="?step=install&<?= http_build_query($_POST) ?>" class="btn btn-primary" id="install-btn" style="padding: 15px 40px; font-size: 18px; background: linear-gradient(135deg, #4caf50 0%, #45a049 100%); border: none;" aria-label="Start FlexPBX installation process now"><span aria-hidden="true">🚀</span> Install FlexPBX Now <span aria-hidden="true">→</span></a>
+                            <a href="?step=requirements" class="btn btn-secondary" style="padding: 15px 30px; font-size: 16px;" aria-label="Go back to requirements check page"><span aria-hidden="true"><-</span> Back to Requirements</a>
+                            <a href="?step=install&<?= http_build_query($_POST) ?>" class="btn btn-primary" id="install-btn" style="padding: 15px 40px; font-size: 18px; background: linear-gradient(135deg, #4caf50 0%, #45a049 100%); border: none;" aria-label="Start FlexPBX installation process now"><span aria-hidden="true"></span> Install FlexPBX Now <span aria-hidden="true">-></span></a>
                         </div>
                     </div>
                 </div>
@@ -649,7 +649,7 @@ class FlexPBXInstaller {
 
                 function cancelAutoInstall() {
                     clearInterval(countdownInterval);
-                    document.getElementById('countdown-container').innerHTML = '<p>✋ Auto-install cancelled - click "Install FlexPBX Now" to proceed manually</p>';
+                    document.getElementById('countdown-container').innerHTML = '<p> Auto-install cancelled - click "Install FlexPBX Now" to proceed manually</p>';
                 }
 
                 // Start countdown when page loads
@@ -669,7 +669,7 @@ class FlexPBXInstaller {
 
                     const button = event.target;
                     button.disabled = true;
-                    button.textContent = '🔍 Scanning...';
+                    button.textContent = ' Scanning...';
 
                     fetch('?action=detect_databases', {
                         method: 'POST',
@@ -679,7 +679,7 @@ class FlexPBXInstaller {
                     .then(response => response.json())
                     .then(data => {
                         button.disabled = false;
-                        button.textContent = '🔍 Auto-Detect Databases';
+                        button.textContent = ' Auto-Detect Databases';
 
                         if (data.success) {
                             showDetectedDatabases(data.databases);
@@ -689,7 +689,7 @@ class FlexPBXInstaller {
                     })
                     .catch(error => {
                         button.disabled = false;
-                        button.textContent = '🔍 Auto-Detect Databases';
+                        button.textContent = ' Auto-Detect Databases';
                         alert('Error detecting databases: ' + error.message);
                     });
                 }
@@ -702,13 +702,13 @@ class FlexPBXInstaller {
                         listContainer.innerHTML = '<p>No databases found or insufficient permissions</p>';
                     } else {
                         let html = '<div class="database-selection-container">';
-                        html += '<p style="margin-bottom: 15px; color: #28a745;"><strong>📊 ' + databases.length + ' database(s) found:</strong></p>';
+                        html += '<p style="margin-bottom: 15px; color: #28a745;"><strong> ' + databases.length + ' database(s) found:</strong></p>';
 
                         // Add radio button interface
                         html += '<div class="database-radio-list" style="max-height: 300px; overflow-y: auto;">';
                         databases.forEach((db, index) => {
                             const hasFlexPBX = db.hasFlexPBXTables;
-                            const flexpbxText = hasFlexPBX ? ' <span style="color: #28a745;">✅ FlexPBX detected</span>' : '';
+                            const flexpbxText = hasFlexPBX ? ' <span style="color: #28a745;"> FlexPBX detected</span>' : '';
                             const recommendedBadge = hasFlexPBX ? ' <span class="badge-recommended" style="background: #28a745; color: white; padding: 2px 6px; border-radius: 3px; font-size: 11px; margin-left: 5px;">Recommended</span>' : '';
                             const isSystemDb = ['information_schema', 'mysql', 'performance_schema', 'sys'].includes(db.name.toLowerCase());
 
@@ -717,7 +717,7 @@ class FlexPBXInstaller {
                                     <label class="database-radio-item ${hasFlexPBX ? 'recommended' : ''}" style="display: block; padding: 12px; margin: 8px 0; border: 2px solid ${hasFlexPBX ? '#28a745' : '#dee2e6'}; border-radius: 8px; cursor: pointer; background: ${hasFlexPBX ? '#f8fff8' : '#ffffff'}; transition: all 0.2s;">
                                         <input type="radio" name="detected_database" value="${db.name}" style="margin-right: 10px;" onchange="selectDetectedDatabase('${db.name}')">
                                         <strong style="color: ${hasFlexPBX ? '#155724' : '#495057'};">${db.name}</strong>${recommendedBadge}${flexpbxText}
-                                        <br><small style="color: #6c757d; margin-left: 24px;">📋 ${db.tableCount} tables • ${db.sizeInfo || 'Unknown size'}</small>
+                                        <br><small style="color: #6c757d; margin-left: 24px;"> ${db.tableCount} tables - ${db.sizeInfo || 'Unknown size'}</small>
                                     </label>
                                 `;
                             }
@@ -727,14 +727,14 @@ class FlexPBXInstaller {
                         html += `
                             <label class="database-radio-item" style="display: block; padding: 12px; margin: 8px 0; border: 2px dashed #007bff; border-radius: 8px; cursor: pointer; background: #f8f9ff; transition: all 0.2s;">
                                 <input type="radio" name="detected_database" value="_create_new_" style="margin-right: 10px;" onchange="selectDetectedDatabase('_create_new_')">
-                                <strong style="color: #007bff;">➕ Create New Database</strong>
+                                <strong style="color: #007bff;"> Create New Database</strong>
                                 <br><small style="color: #6c757d; margin-left: 24px;">Enter a new database name below</small>
                             </label>
                         `;
 
                         html += '</div>';
                         html += '<div style="margin-top: 15px; padding: 10px; background: #e3f2fd; border-radius: 6px; border-left: 4px solid #2196f3;">';
-                        html += '<p style="margin: 0; font-size: 14px;"><strong>💡 Selection Guide:</strong></p>';
+                        html += '<p style="margin: 0; font-size: 14px;"><strong> Selection Guide:</strong></p>';
                         html += '<ul style="margin: 5px 0 0 20px; font-size: 13px;">';
                         html += '<li><strong>Recommended:</strong> Databases with existing FlexPBX installation (will be updated)</li>';
                         html += '<li><strong>Safe:</strong> Empty or non-FlexPBX databases (FlexPBX tables will be added)</li>';
@@ -785,7 +785,7 @@ class FlexPBXInstaller {
                     const input = document.getElementById('api_key_input');
                     const button = event.target;
                     button.disabled = true;
-                    button.textContent = '🔄 Generating...';
+                    button.textContent = ' Generating...';
 
                     // Generate secure API key using Web Crypto API
                     if (window.crypto && window.crypto.getRandomValues) {
@@ -801,7 +801,7 @@ class FlexPBXInstaller {
                     }
 
                     button.disabled = false;
-                    button.textContent = '🔄 Generate New';
+                    button.textContent = ' Generate New';
 
                     // Visual feedback
                     input.style.background = '#e8f5e8';
@@ -812,7 +812,7 @@ class FlexPBXInstaller {
 
                 // Skip to install function
                 function skipToInstall() {
-                    if (confirm('⚠️ Skip database test and proceed directly to installation?\n\nThis will attempt installation with current settings. If database connection fails, you can return to this step.')) {
+                    if (confirm(' Skip database test and proceed directly to installation?\n\nThis will attempt installation with current settings. If database connection fails, you can return to this step.')) {
                         const form = document.querySelector('.db-config-form');
                         const formData = new FormData(form);
                         const params = new URLSearchParams();
@@ -836,10 +836,10 @@ class FlexPBXInstaller {
 
                     const button = event.target;
                     button.disabled = true;
-                    button.textContent = '🔍 Scanning...';
+                    button.textContent = ' Scanning...';
 
                     const resultsDiv = document.getElementById('port-detection-results');
-                    resultsDiv.innerHTML = '<p>🔍 Scanning common MySQL ports...</p>';
+                    resultsDiv.innerHTML = '<p> Scanning common MySQL ports...</p>';
                     resultsDiv.style.display = 'block';
 
                     fetch('?action=detect_port', {
@@ -850,24 +850,24 @@ class FlexPBXInstaller {
                     .then(response => response.json())
                     .then(data => {
                         button.disabled = false;
-                        button.textContent = '🔍 Auto-Detect';
+                        button.textContent = ' Auto-Detect';
 
                         if (data.success && data.workingPorts.length > 0) {
                             showPortResults(data.workingPorts);
                         } else {
-                            resultsDiv.innerHTML = '<p>⚠️ No working MySQL ports found. Using default 3306.</p>';
+                            resultsDiv.innerHTML = '<p> No working MySQL ports found. Using default 3306.</p>';
                         }
                     })
                     .catch(error => {
                         button.disabled = false;
-                        button.textContent = '🔍 Auto-Detect';
-                        resultsDiv.innerHTML = '<p>❌ Port detection failed. Using default 3306.</p>';
+                        button.textContent = ' Auto-Detect';
+                        resultsDiv.innerHTML = '<p> Port detection failed. Using default 3306.</p>';
                     });
                 }
 
                 function showPortResults(ports) {
                     const resultsDiv = document.getElementById('port-detection-results');
-                    let html = '<div class="port-results"><h5>🎯 Found working MySQL ports:</h5>';
+                    let html = '<div class="port-results"><h5> Found working MySQL ports:</h5>';
 
                     ports.forEach(portInfo => {
                         const isDefault = portInfo.port === 3306;
@@ -875,15 +875,15 @@ class FlexPBXInstaller {
                         if (isDefault) className += ' default';
                         if (portInfo.tested === 'authenticated') className += ' working';
 
-                        let statusIcon = '🔌';
-                        if (portInfo.tested === 'authenticated') statusIcon = '✅';
-                        else if (portInfo.status.includes('Access Denied')) statusIcon = '🔐';
+                        let statusIcon = '';
+                        if (portInfo.tested === 'authenticated') statusIcon = '';
+                        else if (portInfo.status.includes('Access Denied')) statusIcon = '';
 
                         html += `
                             <div class="${className}" onclick="selectPort(${portInfo.port})">
                                 <strong>${statusIcon} Port ${portInfo.port}</strong> ${isDefault ? '(Default)' : ''}
                                 <br><small>${portInfo.status}</small>
-                                ${portInfo.tested === 'port_only' ? '<br><small style="color: #ff9800;">⚠️ Credentials needed for full test</small>' : ''}
+                                ${portInfo.tested === 'port_only' ? '<br><small style="color: #ff9800;"> Credentials needed for full test</small>' : ''}
                             </div>
                         `;
                     });
@@ -909,7 +909,7 @@ class FlexPBXInstaller {
                     const helpDiv = document.createElement('div');
                     helpDiv.className = 'alert alert-info';
                     helpDiv.innerHTML = `
-                        <h4>🔧 Database Connection Help</h4>
+                        <h4> Database Connection Help</h4>
                         <div style="text-align: left;">
                             <h5>Common Issues & Solutions:</h5>
                             <ul>
@@ -920,7 +920,7 @@ class FlexPBXInstaller {
                             </ul>
                             <h5>Shared Hosting Tips:</h5>
                             <ul>
-                                <li>Use cPanel → MySQL Databases to create database and user</li>
+                                <li>Use cPanel -> MySQL Databases to create database and user</li>
                                 <li>Database names usually include your username prefix (e.g., 'username_dbname')</li>
                                 <li>Host is typically 'localhost' unless specified otherwise</li>
                                 <li>Port is usually 3306 unless your host uses a custom configuration</li>
@@ -958,50 +958,50 @@ class FlexPBXInstaller {
             // Normalize hostname for local connections
             if (in_array(strtolower($host), ['localhost', '127.0.0.1', '::1', 'local'])) {
                 $host = 'localhost';
-                $this->success[] = '🏠 Local database connection detected';
+                $this->success[] = ' Local database connection detected';
             }
 
             // Progressive validation with detailed progress
             $this->success[] = '<div class="validation-progress">';
-            $this->success[] = '<h4>🔍 Database Validation Progress:</h4>';
+            $this->success[] = '<h4> Database Validation Progress:</h4>';
             $this->success[] = '<div class="progress-steps">';
 
             // Step 1: Test basic connectivity
-            $this->success[] = '<div class="progress-step"><span class="step-icon">🔌</span> <strong>Step 1:</strong> Testing database server connectivity...';
+            $this->success[] = '<div class="progress-step"><span class="step-icon"></span> <strong>Step 1:</strong> Testing database server connectivity...';
             $dsn = "mysql:host={$host};port={$port}";
             $tempPdo = new PDO($dsn, $username, $password, [
                 PDO::ATTR_TIMEOUT => 5,
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
             ]);
-            $this->success[] = ' <span style="color: #28a745;">✅ Success - Server reachable</span></div>';
+            $this->success[] = ' <span style="color: #28a745;"> Success - Server reachable</span></div>';
 
             // Step 2: Test database access
-            $this->success[] = '<div class="progress-step"><span class="step-icon">🗄️</span> <strong>Step 2:</strong> Testing database access...';
+            $this->success[] = '<div class="progress-step"><span class="step-icon"></span> <strong>Step 2:</strong> Testing database access...';
             $dsn = "mysql:host={$host};port={$port};dbname={$dbname}";
             $pdo = new PDO($dsn, $username, $password, [
                 PDO::ATTR_TIMEOUT => 5,
                 PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
             ]);
-            $this->success[] = ' <span style="color: #28a745;">✅ Success - Database accessible</span></div>';
+            $this->success[] = ' <span style="color: #28a745;"> Success - Database accessible</span></div>';
 
             // Step 3: Test permissions
-            $this->success[] = '<div class="progress-step"><span class="step-icon">🔐</span> <strong>Step 3:</strong> Verifying permissions...';
+            $this->success[] = '<div class="progress-step"><span class="step-icon"></span> <strong>Step 3:</strong> Verifying permissions...';
             // Test SELECT permission
             $pdo->query("SELECT 1");
             // Test CREATE TABLE permission
             $testTableName = 'flexpbx_install_test_' . uniqid();
             $pdo->exec("CREATE TEMPORARY TABLE `{$testTableName}` (id INT PRIMARY KEY)");
-            $this->success[] = ' <span style="color: #28a745;">✅ Success - Full permissions verified</span></div>';
+            $this->success[] = ' <span style="color: #28a745;"> Success - Full permissions verified</span></div>';
 
             // Step 4: Check existing FlexPBX installation
-            $this->success[] = '<div class="progress-step"><span class="step-icon">📋</span> <strong>Step 4:</strong> Checking existing FlexPBX tables...';
+            $this->success[] = '<div class="progress-step"><span class="step-icon"></span> <strong>Step 4:</strong> Checking existing FlexPBX tables...';
             $stmt = $pdo->prepare("SHOW TABLES LIKE 'desktop_clients'");
             $stmt->execute();
             $hasExistingTables = $stmt->fetch() !== false;
             if ($hasExistingTables) {
-                $this->success[] = ' <span style="color: #ffc107;">⚠️ Existing FlexPBX installation found - will update</span></div>';
+                $this->success[] = ' <span style="color: #ffc107;"> Existing FlexPBX installation found - will update</span></div>';
             } else {
-                $this->success[] = ' <span style="color: #28a745;">✅ Clean database - ready for fresh installation</span></div>';
+                $this->success[] = ' <span style="color: #28a745;"> Clean database - ready for fresh installation</span></div>';
             }
 
             $this->success[] = '</div>'; // Close progress-steps
@@ -1030,13 +1030,13 @@ class FlexPBXInstaller {
             ]);
 
             $this->success[] = '<div class="auto-continue-section" style="background: #d4edda; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: center;">';
-            $this->success[] = '<h4 style="color: #155724; margin-bottom: 15px;">⏭️ Ready to Continue</h4>';
-            $this->success[] = '<p style="color: #155724; margin-bottom: 20px;">🎉 Database validation completed successfully!</p>';
-            $this->success[] = '<a href="?step=install&' . htmlspecialchars($installParams) . '" class="btn btn-primary btn-lg" style="padding: 12px 30px; font-size: 16px;">🚀 Start Installation →</a>';
+            $this->success[] = '<h4 style="color: #155724; margin-bottom: 15px;"> Ready to Continue</h4>';
+            $this->success[] = '<p style="color: #155724; margin-bottom: 20px;"> Database validation completed successfully!</p>';
+            $this->success[] = '<a href="?step=install&' . htmlspecialchars($installParams) . '" class="btn btn-primary btn-lg" style="padding: 12px 30px; font-size: 16px;"> Start Installation -></a>';
             $this->success[] = '</div>';
             $this->success[] = '<script>';
             $this->success[] = 'setTimeout(() => {';
-            $this->success[] = '    if(confirm("🎉 Database validation successful!\\n\\nContinue with FlexPBX installation?")) {';
+            $this->success[] = '    if(confirm(" Database validation successful!\\n\\nContinue with FlexPBX installation?")) {';
             $this->success[] = '        window.location.href="?step=install&' . htmlspecialchars($installParams) . '";';
             $this->success[] = '    }';
             $this->success[] = '}, 2000);';
@@ -1049,8 +1049,8 @@ class FlexPBXInstaller {
             $pdo = new PDO($dsn, $username, $password);
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-            $this->success[] = "✅ Database server connection established successfully";
-            $this->success[] = "🔍 Server version: " . $pdo->getAttribute(PDO::ATTR_SERVER_VERSION);
+            $this->success[] = " Database server connection established successfully";
+            $this->success[] = " Server version: " . $pdo->getAttribute(PDO::ATTR_SERVER_VERSION);
 
             // Check if database exists
             $stmt = $pdo->prepare("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?");
@@ -1059,9 +1059,9 @@ class FlexPBXInstaller {
 
             if (!$dbExists && $createDb) {
                 $pdo->exec("CREATE DATABASE `{$dbname}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci");
-                $this->success[] = "🗄️ Database '{$dbname}' created successfully with UTF8MB4 encoding";
+                $this->success[] = " Database '{$dbname}' created successfully with UTF8MB4 encoding";
             } elseif ($dbExists) {
-                $this->success[] = "🗄️ Database '{$dbname}' exists and is accessible";
+                $this->success[] = " Database '{$dbname}' exists and is accessible";
 
                 // Check if tables already exist
                 $dsn = "mysql:host={$host};port={$port};dbname={$dbname}";
@@ -1071,9 +1071,9 @@ class FlexPBXInstaller {
                 $stmt = $testPdo->prepare("SHOW TABLES LIKE 'desktop_clients'");
                 $stmt->execute();
                 if ($stmt->fetch()) {
-                    $this->success[] = "⚠️ FlexPBX tables already exist - installation will update/merge existing data";
+                    $this->success[] = " FlexPBX tables already exist - installation will update/merge existing data";
                 } else {
-                    $this->success[] = "📋 Database is empty and ready for FlexPBX tables";
+                    $this->success[] = " Database is empty and ready for FlexPBX tables";
                 }
             } elseif (!$dbExists) {
                 if ($showCreationHelp) {
@@ -1094,8 +1094,8 @@ class FlexPBXInstaller {
             $pdo->exec("INSERT INTO {$testTable} VALUES (1)");
             $pdo->exec("DROP TEMPORARY TABLE {$testTable}");
 
-            $this->success[] = "✅ Database write permissions confirmed";
-            $this->success[] = "🚀 All database checks passed - ready to install FlexPBX!";
+            $this->success[] = " Database write permissions confirmed";
+            $this->success[] = " All database checks passed - ready to install FlexPBX!";
 
             // Store database config in session for auto-continue
             $_SESSION['db_config'] = [
@@ -1119,41 +1119,41 @@ class FlexPBXInstaller {
                 'install_mode' => $_POST['install_mode']
             ]);
             $this->success[] = '<div class="auto-continue-section">';
-            $this->success[] = '<h4>⏭️ Ready to Continue</h4>';
+            $this->success[] = '<h4> Ready to Continue</h4>';
             $this->success[] = '<p>Database connection successful! Click below to proceed with installation.</p>';
-            $this->success[] = '<a href="?step=install&' . htmlspecialchars($installParams) . '" class="btn btn-primary">🚀 Start Installation →</a>';
+            $this->success[] = '<a href="?step=install&' . htmlspecialchars($installParams) . '" class="btn btn-primary"> Start Installation -></a>';
             $this->success[] = '<script>setTimeout(() => { if(confirm("Database test successful! Continue with installation?")) { window.location.href="?step=install&' . htmlspecialchars($installParams) . '"; } }, 3000);</script>';
             $this->success[] = '</div>';
 
         } catch (PDOException $e) {
-            $this->errors[] = "❌ Database connection failed: " . $e->getMessage();
+            $this->errors[] = " Database connection failed: " . $e->getMessage();
             if (strpos($e->getMessage(), 'Access denied') !== false) {
-                $this->errors[] = "💡 Tip: Check your database username and password";
+                $this->errors[] = " Tip: Check your database username and password";
             } elseif (strpos($e->getMessage(), 'Unknown database') !== false) {
-                $this->errors[] = "💡 Tip: Enable 'Create database' option or create the database manually";
+                $this->errors[] = " Tip: Enable 'Create database' option or create the database manually";
             } elseif (strpos($e->getMessage(), "Can't connect") !== false) {
-                $this->errors[] = "💡 Tip: Check your database host and port settings";
+                $this->errors[] = " Tip: Check your database host and port settings";
             }
 
             // Add retry actions for failed connections
             $this->errors[] = '<div class="error-actions">';
-            $this->errors[] = '<h4>🔧 What would you like to do?</h4>';
-            $this->errors[] = '<button onclick="scrollToForm()" class="btn btn-primary">📝 Update Database Details</button>';
-            $this->errors[] = '<button onclick="autoDetectPort()" class="btn btn-secondary">🔍 Auto-Detect Port</button>';
-            $this->errors[] = '<button onclick="showConnectionHelp()" class="btn btn-secondary">❓ Connection Help</button>';
+            $this->errors[] = '<h4> What would you like to do?</h4>';
+            $this->errors[] = '<button onclick="scrollToForm()" class="btn btn-primary"> Update Database Details</button>';
+            $this->errors[] = '<button onclick="autoDetectPort()" class="btn btn-secondary"> Auto-Detect Port</button>';
+            $this->errors[] = '<button onclick="showConnectionHelp()" class="btn btn-secondary"> Connection Help</button>';
             $this->errors[] = '</div>';
         }
     }
 
     private function showDatabaseCreationHelp($dbname, $username) {
         echo '<div class="alert alert-info database-creation-help">';
-        echo '<h4>💡 Database Creation Assistance</h4>';
+        echo '<h4> Database Creation Assistance</h4>';
         echo '<p>Since the database doesn\'t exist, here are several ways to create it:</p>';
 
         echo '<div class="creation-methods">';
 
         echo '<div class="method-section">';
-        echo '<h5>📊 Method 1: phpMyAdmin (Recommended)</h5>';
+        echo '<h5> Method 1: phpMyAdmin (Recommended)</h5>';
         echo '<ol>';
         echo '<li>Login to your hosting control panel (cPanel/Plesk)</li>';
         echo '<li>Open phpMyAdmin</li>';
@@ -1165,16 +1165,16 @@ class FlexPBXInstaller {
         echo '</div>';
 
         echo '<div class="method-section">';
-        echo '<h5>💻 Method 2: SQL Command</h5>';
+        echo '<h5> Method 2: SQL Command</h5>';
         echo '<p>Run this SQL command in phpMyAdmin or MySQL terminal:</p>';
         echo '<div class="sql-command">';
         echo '<code>CREATE DATABASE `' . htmlspecialchars($dbname) . '` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;</code>';
-        echo '<button onclick="copySqlCommand()" class="btn btn-sm btn-secondary">📋 Copy</button>';
+        echo '<button onclick="copySqlCommand()" class="btn btn-sm btn-secondary"> Copy</button>';
         echo '</div>';
         echo '</div>';
 
         echo '<div class="method-section">';
-        echo '<h5>🔧 Method 3: cPanel Database Wizard</h5>';
+        echo '<h5> Method 3: cPanel Database Wizard</h5>';
         echo '<ol>';
         echo '<li>Login to cPanel</li>';
         echo '<li>Find "MySQL Databases" or "Database Wizard"</li>';
@@ -1184,7 +1184,7 @@ class FlexPBXInstaller {
         echo '</div>';
 
         echo '<div class="method-section">';
-        echo '<h5>⚡ Method 4: Auto-Create (Try Again)</h5>';
+        echo '<h5> Method 4: Auto-Create (Try Again)</h5>';
         echo '<p>Enable "Create database if it doesn\'t exist" option above and test connection again.</p>';
         echo '</div>';
 
@@ -1207,7 +1207,7 @@ class FlexPBXInstaller {
         $this->renderHeader('FlexPBX Installation - Installing...');
 
         echo '<div class="installation-section">';
-        echo '<h2>⚙️ Installing FlexPBX Multi-Server System...</h2>';
+        echo '<h2> Installing FlexPBX Multi-Server System...</h2>';
         echo '<div class="progress-container">';
 
         try {
@@ -1221,65 +1221,65 @@ class FlexPBXInstaller {
                 'api_key' => $_GET['api_key'] ?? 'flexpbx_api_' . uniqid()
             ];
 
-            $this->logProgress("🚀 Starting FlexPBX Multi-Server Installation...");
-            $this->logProgress("📊 Target Database: {$dbConfig['name']} on {$dbConfig['host']}");
+            $this->logProgress(" Starting FlexPBX Multi-Server Installation...");
+            $this->logProgress(" Target Database: {$dbConfig['name']} on {$dbConfig['host']}");
 
             // Step 1: Pre-installation checks
-            $this->logProgress("🔍 Step 1/7: Pre-installation system checks...");
+            $this->logProgress(" Step 1/7: Pre-installation system checks...");
             $this->preInstallationChecks();
 
             // Step 2: Fix permissions first
-            $this->logProgress("🔒 Step 2/7: Setting file permissions and security...");
+            $this->logProgress(" Step 2/7: Setting file permissions and security...");
             $this->setPermissions();
 
             // Step 3: Create config.php
-            $this->logProgress("⚙️ Step 3/7: Creating configuration file...");
+            $this->logProgress(" Step 3/7: Creating configuration file...");
             $this->createConfigFile($dbConfig);
 
             // Step 4: Connect to database
-            $this->logProgress("🗄️ Step 4/7: Establishing database connection...");
+            $this->logProgress(" Step 4/7: Establishing database connection...");
             $pdo = $this->connectDatabase($dbConfig);
 
             // Step 5: Create tables
-            $this->logProgress("📋 Step 5/7: Creating database schema...");
+            $this->logProgress(" Step 5/7: Creating database schema...");
             $this->createDatabaseTables($pdo);
 
             // Step 6: Insert default data
-            $this->logProgress("📝 Step 6/7: Inserting default configuration data...");
+            $this->logProgress(" Step 6/7: Inserting default configuration data...");
             $this->insertDefaultData($pdo);
 
             // Step 7: Configure web server
-            $this->logProgress("🌐 Step 7/8: Configuring web server routing...");
+            $this->logProgress(" Step 7/8: Configuring web server routing...");
             $this->createHtaccess();
 
             // Step 8: Create directory structure and initialize services
-            $this->logProgress("📁 Step 8/8: Setting up directory structure and services...");
+            $this->logProgress(" Step 8/8: Setting up directory structure and services...");
             $this->createDirectoryStructure();
             $this->initializeServices($dbConfig);
 
-            $this->logProgress("🎉 Installation completed successfully!");
-            $this->logProgress("✅ FlexPBX Multi-Server System is now ready!");
+            $this->logProgress(" Installation completed successfully!");
+            $this->logProgress(" FlexPBX Multi-Server System is now ready!");
 
             echo '</div>';
             echo '<div class="completion-summary">';
-            echo '<h3>📊 Installation Summary:</h3>';
+            echo '<h3> Installation Summary:</h3>';
             echo '<ul>';
-            echo '<li>✅ Database: ' . htmlspecialchars($dbConfig['name']) . ' (6 tables created)</li>';
-            echo '<li>✅ API Endpoints: 8 endpoints configured</li>';
-            echo '<li>✅ Security: File permissions and CORS configured</li>';
-            echo '<li>✅ Routing: URL rewriting enabled</li>';
+            echo '<li> Database: ' . htmlspecialchars($dbConfig['name']) . ' (6 tables created)</li>';
+            echo '<li> API Endpoints: 8 endpoints configured</li>';
+            echo '<li> Security: File permissions and CORS configured</li>';
+            echo '<li> Routing: URL rewriting enabled</li>';
             echo '</ul>';
             echo '</div>';
             echo '<div class="action-buttons">';
-            echo '<a href="?step=complete" class="btn btn-primary">View Installation Complete →</a>';
+            echo '<a href="?step=complete" class="btn btn-primary">View Installation Complete -></a>';
             echo '</div>';
 
         } catch (Exception $e) {
-            $this->logProgress("❌ Installation failed at: " . $e->getMessage());
+            $this->logProgress(" Installation failed at: " . $e->getMessage());
             echo '<div class="alert alert-error">';
             echo '<h4>Installation Error:</h4>';
             echo '<p>' . htmlspecialchars($e->getMessage()) . '</p>';
-            echo '<p><strong>💡 Troubleshooting:</strong></p>';
+            echo '<p><strong> Troubleshooting:</strong></p>';
             echo '<ul>';
             echo '<li>Check file permissions (should be 644 for PHP files)</li>';
             echo '<li>Verify database credentials and connection</li>';
@@ -1288,8 +1288,8 @@ class FlexPBXInstaller {
             echo '</ul>';
             echo '</div>';
             echo '<div class="action-buttons">';
-            echo '<a href="?step=database" class="btn btn-secondary">← Retry Database Setup</a>';
-            echo '<a href="?step=requirements" class="btn btn-secondary">← Check Requirements</a>';
+            echo '<a href="?step=database" class="btn btn-secondary"><- Retry Database Setup</a>';
+            echo '<a href="?step=requirements" class="btn btn-secondary"><- Check Requirements</a>';
             echo '</div>';
         }
 
@@ -1305,26 +1305,26 @@ class FlexPBXInstaller {
         ?>
         <div class="complete-section">
             <div class="success-celebration" style="text-align: center; padding: 40px 20px; background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%); border-radius: 15px; margin-bottom: 30px;">
-                <div style="font-size: 80px; margin-bottom: 20px; animation: bounce 2s infinite;">🎉</div>
+                <div style="font-size: 80px; margin-bottom: 20px; animation: bounce 2s infinite;"></div>
                 <h2 style="color: #155724; margin: 0 0 10px;">FlexPBX Installation Complete!</h2>
                 <p style="color: #155724; font-size: 18px; margin: 0;">Your multi-server communication system is ready to use</p>
             </div>
 
             <div class="next-steps-container">
-                <h3 style="color: #2c3e50; text-align: center; margin-bottom: 30px;">🚀 Choose Your Next Step</h3>
+                <h3 style="color: #2c3e50; text-align: center; margin-bottom: 30px;"> Choose Your Next Step</h3>
 
                 <div class="setup-options" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 25px; margin-bottom: 30px;">
 
                     <!-- Web Dashboard Setup Option -->
                     <div class="setup-option" style="border: 2px solid #007bff; border-radius: 12px; padding: 25px; background: linear-gradient(135deg, #f8f9ff 0%, #e3f2fd 100%); transition: all 0.3s ease;">
                         <h4 style="color: #007bff; margin: 0 0 15px; display: flex; align-items: center;">
-                            <span style="font-size: 32px; margin-right: 12px;">🖥️</span>
+                            <span style="font-size: 32px; margin-right: 12px;"></span>
                             Web Dashboard Setup (Recommended)
                         </h4>
                         <p style="color: #495057; margin-bottom: 20px;">Set up the web-based admin dashboard first. Create user accounts, configure settings, and then generate remote keys for desktop clients.</p>
 
                         <div class="dashboard-benefits" style="background: rgba(255,255,255,0.7); padding: 15px; border-radius: 8px; margin: 15px 0;">
-                            <strong style="color: #007bff;">✨ Dashboard Features:</strong>
+                            <strong style="color: #007bff;"> Dashboard Features:</strong>
                             <ul style="margin: 8px 0 0 20px; color: #495057;">
                                 <li>User account management</li>
                                 <li>Remote device key generation</li>
@@ -1335,35 +1335,35 @@ class FlexPBXInstaller {
                         </div>
 
                         <button onclick="setupWebDashboard()" class="btn btn-primary" style="width: 100%; padding: 12px; font-size: 16px; background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);">
-                            🖥️ Setup Web Dashboard
+                             Setup Web Dashboard
                         </button>
                     </div>
 
                     <!-- Direct Device Linking Option -->
                     <div class="setup-option" style="border: 2px solid #28a745; border-radius: 12px; padding: 25px; background: linear-gradient(135deg, #f8fff8 0%, #e8f5e8 100%); transition: all 0.3s ease;">
                         <h4 style="color: #28a745; margin: 0 0 15px; display: flex; align-items: center;">
-                            <span style="font-size: 32px; margin-right: 12px;">📱</span>
+                            <span style="font-size: 32px; margin-right: 12px;"></span>
                             Direct Device Linking
                         </h4>
                         <p style="color: #495057; margin-bottom: 20px;">Skip web setup and directly link your desktop or mobile clients using the generated API key. Perfect for quick testing or single-device setups.</p>
 
                         <div class="api-key-display" style="background: rgba(255,255,255,0.8); padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #28a745;">
-                            <strong style="color: #28a745;">🔑 Your API Key:</strong>
+                            <strong style="color: #28a745;"> Your API Key:</strong>
                             <div style="display: flex; align-items: center; margin-top: 8px; gap: 10px;">
                                 <code id="main-api-key" style="flex: 1; background: #f8f9fa; padding: 8px 12px; border-radius: 4px; font-family: monospace; word-break: break-all;"><?= htmlspecialchars($apiKey) ?></code>
-                                <button onclick="copyApiKey('main-api-key')" class="btn btn-sm btn-secondary">📋 Copy</button>
+                                <button onclick="copyApiKey('main-api-key')" class="btn btn-sm btn-secondary"> Copy</button>
                             </div>
                         </div>
 
                         <button onclick="showDeviceLinking()" class="btn btn-success" style="width: 100%; padding: 12px; font-size: 16px; background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);">
-                            📱 Show Device Linking Instructions
+                             Show Device Linking Instructions
                         </button>
                     </div>
                 </div>
 
                 <!-- Web Dashboard Setup Form (Hidden by default) -->
                 <div id="dashboard-setup" style="display: none; background: #f8f9fa; padding: 25px; border-radius: 12px; border: 2px solid #007bff; margin: 20px 0;">
-                    <h4 style="color: #007bff; margin-bottom: 20px;">🖥️ Web Dashboard Configuration</h4>
+                    <h4 style="color: #007bff; margin-bottom: 20px;"> Web Dashboard Configuration</h4>
 
                     <form id="dashboard-form" onsubmit="createDashboardUser(event)">
                         <div class="form-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
@@ -1393,31 +1393,31 @@ class FlexPBXInstaller {
                         </div>
 
                         <div class="form-actions" style="margin-top: 20px; text-align: center;">
-                            <button type="button" onclick="hideDashboardSetup()" class="btn btn-secondary" style="margin-right: 10px;">← Back to Options</button>
-                            <button type="submit" class="btn btn-primary">🖥️ Create Dashboard User</button>
+                            <button type="button" onclick="hideDashboardSetup()" class="btn btn-secondary" style="margin-right: 10px;"><- Back to Options</button>
+                            <button type="submit" class="btn btn-primary"> Create Dashboard User</button>
                         </div>
                     </form>
                 </div>
 
                 <!-- Device Linking Instructions (Hidden by default) -->
                 <div id="device-linking" style="display: none; background: #f8fff8; padding: 25px; border-radius: 12px; border: 2px solid #28a745; margin: 20px 0;">
-                    <h4 style="color: #28a745; margin-bottom: 20px;">📱 Device Linking Instructions</h4>
+                    <h4 style="color: #28a745; margin-bottom: 20px;"> Device Linking Instructions</h4>
 
                     <div class="client-instructions" style="display: grid; gap: 20px;">
                         <div class="instruction-section">
-                            <h5 style="color: #007bff; margin-bottom: 10px;">🖥️ Desktop Clients (Windows/Mac/Linux):</h5>
+                            <h5 style="color: #007bff; margin-bottom: 10px;"> Desktop Clients (Windows/Mac/Linux):</h5>
                             <ol style="color: #495057; margin-left: 20px;">
                                 <li>Download FlexPBX Desktop Client from <strong>your downloads section</strong></li>
                                 <li>Install and launch the application</li>
                                 <li>Click "Connect to Server" or "Add Server"</li>
                                 <li>Enter Server URL: <code id="server-url" style="background: #f8f9fa; padding: 2px 6px; border-radius: 3px;"><?= (isset($_SERVER['HTTPS']) ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . dirname($_SERVER['REQUEST_URI']) ?></code></li>
-                                <li>Enter API Key: <code id="desktop-api-key" style="background: #f8f9fa; padding: 2px 6px; border-radius: 3px;"><?= htmlspecialchars($apiKey) ?></code> <button onclick="copyApiKey('desktop-api-key')" class="btn btn-sm btn-secondary">📋</button></li>
+                                <li>Enter API Key: <code id="desktop-api-key" style="background: #f8f9fa; padding: 2px 6px; border-radius: 3px;"><?= htmlspecialchars($apiKey) ?></code> <button onclick="copyApiKey('desktop-api-key')" class="btn btn-sm btn-secondary"></button></li>
                                 <li>Click "Connect" - the client will auto-register</li>
                             </ol>
                         </div>
 
                         <div class="instruction-section">
-                            <h5 style="color: #007bff; margin-bottom: 10px;">📱 Mobile Apps (iOS/Android):</h5>
+                            <h5 style="color: #007bff; margin-bottom: 10px;"> Mobile Apps (iOS/Android):</h5>
                             <ol style="color: #495057; margin-left: 20px;">
                                 <li>Download FlexPBX Mobile from App Store/Play Store</li>
                                 <li>Open app and tap "Add Server"</li>
@@ -1436,15 +1436,15 @@ class FlexPBXInstaller {
                     </div>
 
                     <div class="form-actions" style="margin-top: 20px; text-align: center;">
-                        <button type="button" onclick="hideDeviceLinking()" class="btn btn-secondary" style="margin-right: 10px;">← Back to Options</button>
-                        <button type="button" onclick="generateNewRemoteKey()" class="btn btn-warning" style="margin-right: 10px;">🔄 Generate New Key</button>
-                        <button type="button" onclick="downloadConnectionFile()" class="btn btn-success">💾 Download Connection File</button>
+                        <button type="button" onclick="hideDeviceLinking()" class="btn btn-secondary" style="margin-right: 10px;"><- Back to Options</button>
+                        <button type="button" onclick="generateNewRemoteKey()" class="btn btn-warning" style="margin-right: 10px;"> Generate New Key</button>
+                        <button type="button" onclick="downloadConnectionFile()" class="btn btn-success"> Download Connection File</button>
                     </div>
                 </div>
 
                 <!-- System Information -->
                 <div class="system-info" style="background: #e3f2fd; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #2196f3;">
-                    <h4 style="color: #1976d2; margin-bottom: 15px;">📊 System Information</h4>
+                    <h4 style="color: #1976d2; margin-bottom: 15px;"> System Information</h4>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
                         <div><strong>API Key:</strong> <code><?= htmlspecialchars(substr($apiKey, 0, 20)) ?>...</code></div>
                         <div><strong>Server URL:</strong> <code><?= (isset($_SERVER['HTTPS']) ? 'https://' : 'http://') . $_SERVER['HTTP_HOST'] . dirname($_SERVER['REQUEST_URI']) ?></code></div>
@@ -1454,7 +1454,7 @@ class FlexPBXInstaller {
                 </div>
 
                 <div class="next-steps">
-                    <h3>🔗 Available API Endpoints:</h3>
+                    <h3> Available API Endpoints:</h3>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 10px; font-family: monospace; font-size: 13px;">
                         <div><strong>Client Registration:</strong> <code>/api/register</code></div>
                         <div><strong>Authorization:</strong> <code>/api/authorize</code></div>
@@ -1464,7 +1464,7 @@ class FlexPBXInstaller {
                         <div><strong>Module Reload:</strong> <code>/api/module-reload</code></div>
                 </ul>
 
-                <h3>🔒 Security Notes:</h3>
+                <h3> Security Notes:</h3>
                 <ul>
                     <li>Your API key: <code><?= htmlspecialchars($_GET['api_key'] ?? 'Check config.php') ?></code></li>
                     <li>Change default passwords in production</li>
@@ -1476,10 +1476,10 @@ class FlexPBXInstaller {
 
                 <!-- Security and Maintenance -->
                 <div class="security-section" style="background: #fff3cd; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #ffc107;">
-                    <h4 style="color: #856404; margin-bottom: 15px;">🔒 Security & Maintenance</h4>
+                    <h4 style="color: #856404; margin-bottom: 15px;"> Security & Maintenance</h4>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
                         <div>
-                            <strong>🔐 Security Checklist:</strong>
+                            <strong> Security Checklist:</strong>
                             <ul style="margin: 5px 0 0 20px; color: #495057; font-size: 14px;">
                                 <li>Change default passwords</li>
                                 <li>Enable HTTPS if possible</li>
@@ -1488,7 +1488,7 @@ class FlexPBXInstaller {
                             </ul>
                         </div>
                         <div>
-                            <strong>🔧 Maintenance Tasks:</strong>
+                            <strong> Maintenance Tasks:</strong>
                             <ul style="margin: 5px 0 0 20px; color: #495057; font-size: 14px;">
                                 <li>Monitor connection logs</li>
                                 <li>Set up backup procedures</li>
@@ -1501,29 +1501,29 @@ class FlexPBXInstaller {
             </div>
 
             <div class="post-install-actions">
-                <h3>🔧 Post-Installation Actions:</h3>
+                <h3> Post-Installation Actions:</h3>
                 <div class="action-grid">
                     <div class="action-item">
-                        <h4>🌐 Test Installation</h4>
+                        <h4> Test Installation</h4>
                         <p>Verify your API endpoints are working</p>
                         <a href="../" class="btn btn-primary">Go to API Dashboard</a>
                     </div>
 
                     <div class="action-item">
-                        <h4>🗃️ Manage Installer Files</h4>
+                        <h4> Manage Installer Files</h4>
                         <p>Secure or remove installation files</p>
                         <button onclick="moveInstaller()" class="btn btn-secondary">Move to Backup</button>
                         <button onclick="deleteInstaller()" class="btn btn-danger">Delete Installer</button>
                     </div>
 
                     <div class="action-item">
-                        <h4>📱 Connect Clients</h4>
+                        <h4> Connect Clients</h4>
                         <p>Configure your desktop clients to connect</p>
                         <button onclick="showConnectionInfo()" class="btn btn-primary">Connection Details</button>
                     </div>
 
                     <div class="action-item">
-                        <h4>📋 Download Config</h4>
+                        <h4> Download Config</h4>
                         <p>Save installation details for your records</p>
                         <button onclick="downloadConfig()" class="btn btn-secondary">Download Config</button>
                     </div>
@@ -1532,7 +1532,7 @@ class FlexPBXInstaller {
         </div>
 
         <div id="connection-info" style="display: none;" class="alert alert-info">
-            <h4>📱 Client Connection Information:</h4>
+            <h4> Client Connection Information:</h4>
             <ul>
                 <li><strong>Server URL:</strong> <code><?= htmlspecialchars($_SERVER['HTTP_HOST'] . dirname($_SERVER['REQUEST_URI'])) ?></code></li>
                 <li><strong>API Key:</strong> <code><?= htmlspecialchars($_GET['api_key'] ?? 'Check config.php') ?></code></li>
@@ -1548,38 +1548,38 @@ class FlexPBXInstaller {
         });
 
         function startBackgroundServices() {
-            console.log('🚀 Starting FlexPBX background services...');
+            console.log(' Starting FlexPBX background services...');
 
             // Start core services in background
             fetch('?action=start_services', {method: 'POST'})
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        console.log('✅ Background services started:', data.services);
+                        console.log(' Background services started:', data.services);
                         showServiceStatus(data.services);
                     } else {
-                        console.warn('⚠️ Some services failed to start:', data.errors);
+                        console.warn(' Some services failed to start:', data.errors);
                     }
                 })
                 .catch(error => {
-                    console.error('❌ Error starting services:', error);
+                    console.error(' Error starting services:', error);
                 });
         }
 
         function setupCronJobs() {
-            console.log('⏰ Setting up built-in cron system...');
+            console.log(' Setting up built-in cron system...');
 
             fetch('?action=setup_cron', {method: 'POST'})
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        console.log('✅ Cron system initialized:', data.jobs);
+                        console.log(' Cron system initialized:', data.jobs);
                     } else {
-                        console.warn('⚠️ Cron setup issues:', data.errors);
+                        console.warn(' Cron setup issues:', data.errors);
                     }
                 })
                 .catch(error => {
-                    console.error('❌ Error setting up cron:', error);
+                    console.error(' Error setting up cron:', error);
                 });
         }
 
@@ -1587,7 +1587,7 @@ class FlexPBXInstaller {
             const statusDiv = document.createElement('div');
             statusDiv.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #d4edda; border: 1px solid #28a745; border-radius: 8px; padding: 15px; z-index: 1000; max-width: 300px;';
             statusDiv.innerHTML = `
-                <h5 style="margin: 0 0 10px; color: #155724;">🟢 Services Started</h5>
+                <h5 style="margin: 0 0 10px; color: #155724;"> Services Started</h5>
                 <ul style="margin: 0; padding-left: 20px; color: #155724; font-size: 13px;">
                     ${services.map(service => `<li>${service}</li>`).join('')}
                 </ul>
@@ -1626,7 +1626,7 @@ class FlexPBXInstaller {
             const button = event.target.querySelector('button[type="submit"]');
 
             button.disabled = true;
-            button.textContent = '🔄 Creating User...';
+            button.textContent = ' Creating User...';
 
             fetch('?action=create_dashboard_user', {
                 method: 'POST',
@@ -1635,19 +1635,19 @@ class FlexPBXInstaller {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    alert('✅ Dashboard user created successfully!\n\n' + data.message);
+                    alert(' Dashboard user created successfully!\n\n' + data.message);
                     // Redirect to dashboard
                     window.location.href = data.dashboard_url || '../dashboard/';
                 } else {
-                    alert('❌ Error creating user: ' + data.error);
+                    alert(' Error creating user: ' + data.error);
                 }
             })
             .catch(error => {
-                alert('❌ Network error: ' + error.message);
+                alert(' Network error: ' + error.message);
             })
             .finally(() => {
                 button.disabled = false;
-                button.textContent = '🖥️ Create Dashboard User';
+                button.textContent = ' Create Dashboard User';
             });
         }
 
@@ -1701,7 +1701,7 @@ class FlexPBXInstaller {
                 // Visual feedback
                 const button = event.target;
                 const originalText = button.textContent;
-                button.textContent = '✅ Copied!';
+                button.textContent = ' Copied!';
                 button.style.background = '#28a745';
 
                 setTimeout(() => {
@@ -1725,13 +1725,13 @@ class FlexPBXInstaller {
                         // Update all API key displays
                         document.getElementById('main-api-key').textContent = data.new_key;
                         document.getElementById('desktop-api-key').textContent = data.new_key;
-                        alert('✅ New API key generated successfully!\n\nKey: ' + data.new_key + '\n\nPlease update all your connected devices.');
+                        alert(' New API key generated successfully!\n\nKey: ' + data.new_key + '\n\nPlease update all your connected devices.');
                     } else {
-                        alert('❌ Error generating new key: ' + data.error);
+                        alert(' Error generating new key: ' + data.error);
                     }
                 })
                 .catch(error => {
-                    alert('❌ Network error: ' + error.message);
+                    alert(' Network error: ' + error.message);
                 });
             }
         }
@@ -1782,24 +1782,24 @@ class FlexPBXInstaller {
                     .then(response => response.text())
                     .then(result => {
                         if (result === 'OK') {
-                            alert('✅ Installer moved to backup directory successfully!');
+                            alert(' Installer moved to backup directory successfully!');
                             document.querySelector('[onclick="moveInstaller()"]').disabled = true;
                             document.querySelector('[onclick="moveInstaller()"]').textContent = 'Moved to Backup';
                         } else {
-                            alert('⚠️ Could not move installer - please move manually to ../backup/ directory');
+                            alert(' Could not move installer - please move manually to ../backup/ directory');
                         }
                     })
-                    .catch(() => alert('⚠️ Error moving installer - please move manually'));
+                    .catch(() => alert(' Error moving installer - please move manually'));
             }
         }
 
         function deleteInstaller() {
-            if (confirm('⚠️ Are you sure you want to DELETE the installer file?\n\nThis cannot be undone. You will need to re-upload if you want to run the installer again.')) {
+            if (confirm(' Are you sure you want to DELETE the installer file?\n\nThis cannot be undone. You will need to re-upload if you want to run the installer again.')) {
                 fetch('?action=delete_installer', {method: 'POST'})
                     .then(response => response.text())
                     .then(result => {
                         if (result === 'OK') {
-                            alert('✅ Installer deleted successfully!');
+                            alert(' Installer deleted successfully!');
                             setTimeout(() => {
                                 // Try to redirect to admin portal first, then fall back to main index
                                 const adminUrl = '../admin/';
@@ -1818,10 +1818,10 @@ class FlexPBXInstaller {
                                     });
                             }, 2000);
                         } else {
-                            alert('⚠️ Could not delete installer - please remove manually');
+                            alert(' Could not delete installer - please remove manually');
                         }
                     })
-                    .catch(() => alert('⚠️ Error deleting installer - please remove manually'));
+                    .catch(() => alert(' Error deleting installer - please remove manually'));
             }
         }
 
@@ -1888,17 +1888,17 @@ class FlexPBXInstaller {
         $this->renderHeader('FlexPBX - Already Installed');
         ?>
         <div class="reinstall-section">
-            <h2>🎯 FlexPBX is Already Installed!</h2>
+            <h2> FlexPBX is Already Installed!</h2>
             <p>The installer detected that FlexPBX has already been set up on this server.</p>
 
             <div class="status-check">
-                <h3>📊 Current Installation Status:</h3>
+                <h3> Current Installation Status:</h3>
                 <?php
                 $config = include 'config.php';
                 echo "<ul>";
-                echo "<li>✅ Configuration file: <code>config.php</code> exists</li>";
-                echo "<li>✅ Database: <code>{$config['db_name']}</code> on <code>{$config['db_host']}</code></li>";
-                echo "<li>✅ API Key: Configured</li>";
+                echo "<li> Configuration file: <code>config.php</code> exists</li>";
+                echo "<li> Database: <code>{$config['db_name']}</code> on <code>{$config['db_host']}</code></li>";
+                echo "<li> API Key: Configured</li>";
 
                 try {
                     $dsn = "mysql:host={$config['db_host']};dbname={$config['db_name']}";
@@ -1915,18 +1915,18 @@ class FlexPBXInstaller {
                         }
                     }
 
-                    echo "<li>✅ Database Tables: {$existingTables}/" . count($tables) . " tables found</li>";
+                    echo "<li> Database Tables: {$existingTables}/" . count($tables) . " tables found</li>";
 
                     if ($existingTables === count($tables)) {
-                        echo "<li>🎉 Installation appears to be complete and healthy!</li>";
+                        echo "<li> Installation appears to be complete and healthy!</li>";
                     } else {
-                        echo "<li>⚠️ Some tables may be missing - repair recommended</li>";
+                        echo "<li> Some tables may be missing - repair recommended</li>";
                     }
 
                     // Show detailed analysis of what's installed vs what could be added
                     echo "</ul>";
                     echo "<div class='what-will-be-added'>";
-                    echo "<h4>🔍 Detailed Analysis - What's Installed vs Available:</h4>";
+                    echo "<h4> Detailed Analysis - What's Installed vs Available:</h4>";
                     echo "<div class='table-status'>";
 
                     foreach ($tables as $table) {
@@ -1940,9 +1940,9 @@ class FlexPBXInstaller {
                             $rowStmt->execute();
                             $rowCount = $rowStmt->fetch()['count'];
 
-                            echo "<div class='existing-items'>✅ <span class='table-name'>{$table}</span> - {$rowCount} records</div>";
+                            echo "<div class='existing-items'> <span class='table-name'>{$table}</span> - {$rowCount} records</div>";
                         } else {
-                            echo "<div class='new-items'>➕ <span class='table-name'>{$table}</span> - Will be created</div>";
+                            echo "<div class='new-items'> <span class='table-name'>{$table}</span> - Will be created</div>";
                         }
                     }
 
@@ -1954,68 +1954,68 @@ class FlexPBXInstaller {
                         '.htaccess' => 'URL routing and security headers'
                     ];
 
-                    echo "<h5 style='margin-top: 20px;'>📄 API Files:</h5>";
+                    echo "<h5 style='margin-top: 20px;'> API Files:</h5>";
                     foreach ($apiFiles as $file => $description) {
                         if (file_exists($file)) {
                             $fileSize = round(filesize($file) / 1024, 1);
-                            echo "<div class='existing-items'>✅ <span class='table-name'>{$file}</span> - {$description} ({$fileSize}KB)</div>";
+                            echo "<div class='existing-items'> <span class='table-name'>{$file}</span> - {$description} ({$fileSize}KB)</div>";
                         } else {
-                            echo "<div class='new-items'>➕ <span class='table-name'>{$file}</span> - {$description}</div>";
+                            echo "<div class='new-items'> <span class='table-name'>{$file}</span> - {$description}</div>";
                         }
                     }
 
                     echo "</div></div>";
                     echo "<ul style='display: none;'>";
                 } catch (Exception $e) {
-                    echo "<li>❌ Database connection issue: " . htmlspecialchars($e->getMessage()) . "</li>";
+                    echo "<li> Database connection issue: " . htmlspecialchars($e->getMessage()) . "</li>";
                 }
                 echo "</ul>";
                 ?>
             </div>
 
             <div class="reinstall-options">
-                <h3>🔧 What would you like to do?</h3>
+                <h3> What would you like to do?</h3>
                 <div class="action-grid">
                     <div class="action-item">
-                        <h4>🔧 Repair Tables</h4>
+                        <h4> Repair Tables</h4>
                         <p>Fix any missing or corrupted database tables without affecting existing data</p>
-                        <a href="?step=repair" class="btn btn-primary">Repair Database →</a>
+                        <a href="?step=repair" class="btn btn-primary">Repair Database -></a>
                     </div>
 
                     <div class="action-item">
-                        <h4>🔄 Reinstall Completely</h4>
+                        <h4> Reinstall Completely</h4>
                         <p>Start fresh installation (existing data will be preserved where possible)</p>
-                        <a href="?step=reinstall" class="btn btn-secondary">Reinstall →</a>
+                        <a href="?step=reinstall" class="btn btn-secondary">Reinstall -></a>
                     </div>
 
                     <div class="action-item">
-                        <h4>🗑️ Remove Installer</h4>
+                        <h4> Remove Installer</h4>
                         <p>Installation is complete - remove installer for security</p>
                         <button onclick="deleteInstaller()" class="btn btn-danger">Delete Installer</button>
                     </div>
 
                     <div class="action-item">
-                        <h4>📱 Go to API</h4>
+                        <h4> Go to API</h4>
                         <p>Everything looks good - use your FlexPBX API</p>
-                        <a href="../" class="btn btn-primary">Go to API Dashboard →</a>
+                        <a href="../" class="btn btn-primary">Go to API Dashboard -></a>
                     </div>
                 </div>
             </div>
 
             <div class="alert alert-info">
-                <h4>💡 Recommendation:</h4>
+                <h4> Recommendation:</h4>
                 <p>If your installation is working properly, you should <strong>delete this installer</strong> for security reasons. The installer should only be accessible during initial setup.</p>
             </div>
         </div>
 
         <script>
         function deleteInstaller() {
-            if (confirm('⚠️ Are you sure you want to DELETE the installer file?\n\nThis cannot be undone. You will need to re-upload if you want to run the installer again.')) {
+            if (confirm(' Are you sure you want to DELETE the installer file?\n\nThis cannot be undone. You will need to re-upload if you want to run the installer again.')) {
                 fetch('?action=delete_installer', {method: 'POST'})
                     .then(response => response.text())
                     .then(result => {
                         if (result === 'OK') {
-                            alert('✅ Installer deleted successfully!');
+                            alert(' Installer deleted successfully!');
                             setTimeout(() => {
                                 // Try to redirect to admin portal first, then fall back to main index
                                 const adminUrl = '../admin/';
@@ -2034,10 +2034,10 @@ class FlexPBXInstaller {
                                     });
                             }, 2000);
                         } else {
-                            alert('⚠️ Could not delete installer - please remove manually');
+                            alert(' Could not delete installer - please remove manually');
                         }
                     })
-                    .catch(() => alert('⚠️ Error deleting installer - please remove manually'));
+                    .catch(() => alert(' Error deleting installer - please remove manually'));
             }
         }
         </script>
@@ -2049,36 +2049,36 @@ class FlexPBXInstaller {
         $this->renderHeader('FlexPBX - Repairing Database');
 
         echo '<div class="repair-section">';
-        echo '<h2>🔧 Repairing FlexPBX Database...</h2>';
+        echo '<h2> Repairing FlexPBX Database...</h2>';
         echo '<div class="progress-container">';
 
         try {
-            $this->logProgress("🔍 Starting database repair process...");
+            $this->logProgress(" Starting database repair process...");
 
             $config = include 'config.php';
             $dsn = "mysql:host={$config['db_host']};dbname={$config['db_name']}";
             $pdo = new PDO($dsn, $config['db_user'], $config['db_password']);
             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-            $this->logProgress("✅ Database connection established");
+            $this->logProgress(" Database connection established");
 
             // Check and repair tables
             $this->createDatabaseTables($pdo);
             $this->insertDefaultData($pdo);
 
-            $this->logProgress("🎉 Database repair completed successfully!");
+            $this->logProgress(" Database repair completed successfully!");
 
             echo '</div>';
             echo '<div class="action-buttons">';
-            echo '<a href="?step=welcome" class="btn btn-primary">← Back to Options</a>';
-            echo '<a href="../" class="btn btn-primary">Go to API Dashboard →</a>';
+            echo '<a href="?step=welcome" class="btn btn-primary"><- Back to Options</a>';
+            echo '<a href="../" class="btn btn-primary">Go to API Dashboard -></a>';
             echo '</div>';
 
         } catch (Exception $e) {
-            $this->logProgress("❌ Repair failed: " . $e->getMessage());
+            $this->logProgress(" Repair failed: " . $e->getMessage());
             echo '<div class="alert alert-error">Repair failed. Please check the error above.</div>';
             echo '<div class="action-buttons">';
-            echo '<a href="?step=welcome" class="btn btn-secondary">← Back to Options</a>';
+            echo '<a href="?step=welcome" class="btn btn-secondary"><- Back to Options</a>';
             echo '</div>';
         }
 
@@ -2090,7 +2090,7 @@ class FlexPBXInstaller {
         $this->renderHeader('FlexPBX - Reinstalling');
 
         echo '<div class="reinstall-section">';
-        echo '<h2>🔄 Reinstalling FlexPBX...</h2>';
+        echo '<h2> Reinstalling FlexPBX...</h2>';
         echo '<p>Proceeding with fresh installation (existing data will be preserved where possible)</p>';
         echo '</div>';
 
@@ -2291,11 +2291,11 @@ return [
             throw new Exception("Current directory is not writable");
         }
 
-        $this->logProgress("✅ All required files present and directory is writable");
+        $this->logProgress(" All required files present and directory is writable");
     }
 
     private function setPermissions() {
-        $this->logProgress("🔒 Setting file permissions for security...");
+        $this->logProgress(" Setting file permissions for security...");
 
         $files = [
             'config.php' => 0644,
@@ -2309,9 +2309,9 @@ return [
         foreach ($files as $file => $perm) {
             if (file_exists($file)) {
                 if (@chmod($file, $perm)) {
-                    $this->logProgress("✅ Set permissions for {$file} (" . decoct($perm) . ")");
+                    $this->logProgress(" Set permissions for {$file} (" . decoct($perm) . ")");
                 } else {
-                    $this->logProgress("⚠️ Could not set permissions for {$file} - continuing anyway");
+                    $this->logProgress(" Could not set permissions for {$file} - continuing anyway");
                 }
             }
         }
@@ -2326,13 +2326,13 @@ return [
         foreach ($directories as $dir => $perm) {
             if (!is_dir($dir)) {
                 if (@mkdir($dir, $perm, true)) {
-                    $this->logProgress("✅ Created directory: {$dir}");
+                    $this->logProgress(" Created directory: {$dir}");
                 } else {
-                    $this->logProgress("⚠️ Could not create directory: {$dir}");
+                    $this->logProgress(" Could not create directory: {$dir}");
                 }
             } else {
                 @chmod($dir, $perm);
-                $this->logProgress("✅ Verified directory: {$dir}");
+                $this->logProgress(" Verified directory: {$dir}");
             }
         }
 
@@ -2341,10 +2341,10 @@ return [
         if (!file_exists($logsHtaccess)) {
             file_put_contents($logsHtaccess, "Deny from all\n");
             @chmod($logsHtaccess, 0644);
-            $this->logProgress("✅ Secured logs directory with .htaccess");
+            $this->logProgress(" Secured logs directory with .htaccess");
         }
 
-        $this->logProgress("✅ File permissions and directory security configured");
+        $this->logProgress(" File permissions and directory security configured");
     }
 
     private function createHtaccess() {
@@ -2386,7 +2386,7 @@ return [
         foreach ($directories as $dir => $perms) {
             if (!is_dir($dir)) {
                 if (@mkdir($dir, $perms, true)) {
-                    $this->logProgress("📁 Created directory: " . basename($dir));
+                    $this->logProgress(" Created directory: " . basename($dir));
                     chmod($dir, $perms);
                 }
             } else {
@@ -2398,7 +2398,7 @@ return [
         foreach ($userDirectories as $dir => $perms) {
             if (!is_dir($dir)) {
                 if (@mkdir($dir, $perms, true)) {
-                    $this->logProgress("📁 Created directory: " . basename($dir));
+                    $this->logProgress(" Created directory: " . basename($dir));
                     chmod($dir, $perms);
                     if (function_exists('chown')) {
                         @chown($dir, 'flexpbxuser');
@@ -2414,7 +2414,7 @@ return [
         foreach ($systemDirectories as $dir => $perms) {
             if (!is_dir($dir)) {
                 if (@mkdir($dir, $perms, true)) {
-                    $this->logProgress("📁 Created system directory: " . basename($dir));
+                    $this->logProgress(" Created system directory: " . basename($dir));
                     chmod($dir, $perms);
                     if (function_exists('chown')) {
                         @chown($dir, 'flexpbxuser');
@@ -2437,7 +2437,7 @@ return [
             }
         }
 
-        $this->logProgress("✅ Directory structure complete");
+        $this->logProgress(" Directory structure complete");
     }
 
     private function initializeServices($dbConfig) {
@@ -2486,7 +2486,7 @@ $FEATURES = [
 ?>';
 
             file_put_contents('../config/config.php', $configContent);
-            $this->logProgress("⚙️ Created configuration file");
+            $this->logProgress(" Created configuration file");
 
             // Create service status file
             $serviceStatus = [
@@ -2508,49 +2508,49 @@ $FEATURES = [
             ];
 
             file_put_contents('../config/service_status.json', json_encode($serviceStatus, JSON_PRETTY_PRINT));
-            $this->logProgress("📊 Initialized service status tracking");
+            $this->logProgress(" Initialized service status tracking");
 
             // Create startup script
             $startupScript = '#!/bin/bash
 # FlexPBX Service Startup Script
 # This script is triggered when a remote desktop client successfully connects
 
-echo "🚀 Starting FlexPBX services..."
+echo " Starting FlexPBX services..."
 
 # Set working directory
 cd "$(dirname "$0")/.."
 
 # Start background services
 if [ -f "config/config.php" ]; then
-    echo "✅ Configuration found - starting services"
+    echo " Configuration found - starting services"
 
     # Start PHP built-in cron system
     if [ ! -f "temp/cron.pid" ]; then
         nohup php cron/runner.php > logs/cron.log 2>&1 &
         echo $! > temp/cron.pid
-        echo "⏰ Cron system started (PID: $(cat temp/cron.pid))"
+        echo " Cron system started (PID: $(cat temp/cron.pid))"
     fi
 
     # Start main server process
     if [ ! -f "temp/server.pid" ]; then
         nohup php -S 0.0.0.0:8080 -t . > logs/server.log 2>&1 &
         echo $! > temp/server.pid
-        echo "🌐 Server started (PID: $(cat temp/server.pid))"
+        echo " Server started (PID: $(cat temp/server.pid))"
     fi
 
-    echo "🎉 All services started successfully"
+    echo " All services started successfully"
 else
-    echo "❌ Configuration not found - please run installer first"
+    echo " Configuration not found - please run installer first"
     exit 1
 fi
 ';
 
             file_put_contents('../startup.sh', $startupScript);
             chmod('../startup.sh', 0755);
-            $this->logProgress("🚀 Created service startup script");
+            $this->logProgress(" Created service startup script");
 
         } catch (Exception $e) {
-            $this->logProgress("⚠️ Service initialization warning: " . $e->getMessage());
+            $this->logProgress(" Service initialization warning: " . $e->getMessage());
         }
     }
 

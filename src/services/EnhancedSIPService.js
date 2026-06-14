@@ -1,5 +1,5 @@
 /**
- * 📞 Enhanced FlexPhone SIP Service
+ *  Enhanced FlexPhone SIP Service
  * Real SIP implementation using SIP.js with Opus codec support
  * Based on open-source best practices from JsSIP, SaraPhone, and WebRTC standards
  */
@@ -61,7 +61,7 @@ class EnhancedSIPService extends EventEmitter {
             }
         };
 
-        console.log('📞 Enhanced SIP Service initialized with Opus codec support');
+        console.log(' Enhanced SIP Service initialized with Opus codec support');
     }
 
     async initialize() {
@@ -75,26 +75,26 @@ class EnhancedSIPService extends EventEmitter {
 
                 // Handle autoplay policies
                 if (this.audioContext.state === 'suspended') {
-                    console.log('🔊 Audio context suspended, waiting for user interaction');
+                    console.log(' Audio context suspended, waiting for user interaction');
                     document.addEventListener('click', () => {
                         this.audioContext.resume();
-                        console.log('🔊 Audio context resumed');
+                        console.log(' Audio context resumed');
                     }, { once: true });
                 }
             }
 
-            console.log('✅ Enhanced SIP Service ready with Opus codec support');
+            console.log(' Enhanced SIP Service ready with Opus codec support');
             return true;
 
         } catch (error) {
-            console.error('❌ Enhanced SIP Service initialization failed:', error);
+            console.error(' Enhanced SIP Service initialization failed:', error);
             return false;
         }
     }
 
     async connect(config) {
         try {
-            console.log(`📞 Connecting to ${config.provider} with real SIP.js...`);
+            console.log(` Connecting to ${config.provider} with real SIP.js...`);
 
             // Validate configuration
             const validationResult = this.validateConfig(config);
@@ -133,12 +133,12 @@ class EnhancedSIPService extends EventEmitter {
                 logBuiltinEnabled: false,
                 delegate: {
                     onConnect: () => {
-                        console.log('🔗 SIP.js connected to WebSocket');
+                        console.log(' SIP.js connected to WebSocket');
                         this.isConnected = true;
                         this.emit('sip-connected');
                     },
                     onDisconnect: (error) => {
-                        console.log('🔌 SIP.js disconnected:', error ? error.message : 'Normal disconnect');
+                        console.log(' SIP.js disconnected:', error ? error.message : 'Normal disconnect');
                         this.isConnected = false;
                         this.isRegistered = false;
                         this.emit('sip-disconnected', { error });
@@ -168,22 +168,22 @@ class EnhancedSIPService extends EventEmitter {
             // Set up authentication
             this.simpleUser.delegate = {
                 onCallCreated: (call) => {
-                    console.log('📞 Call created:', call.id);
+                    console.log(' Call created:', call.id);
                     this.handleCallCreated(call);
                 },
                 onCallReceived: (call) => {
-                    console.log('📞 Incoming call received');
+                    console.log(' Incoming call received');
                     this.handleIncomingCall(call);
                 },
                 onCallHangup: (call) => {
-                    console.log('📞 Call ended:', call.id);
+                    console.log(' Call ended:', call.id);
                     this.handleCallEnded(call);
                 },
                 onServerConnect: () => {
-                    console.log('🔗 Connected to SIP server');
+                    console.log(' Connected to SIP server');
                 },
                 onServerDisconnect: () => {
-                    console.log('🔌 Disconnected from SIP server');
+                    console.log(' Disconnected from SIP server');
                 }
             };
 
@@ -192,19 +192,19 @@ class EnhancedSIPService extends EventEmitter {
             await this.simpleUser.register({
                 requestDelegate: {
                     onAccept: () => {
-                        console.log('✅ SIP registration successful');
+                        console.log(' SIP registration successful');
                         this.isRegistered = true;
                         this.currentConfig = sipConfig;
                         this.emit('registered', sipConfig);
                     },
                     onReject: (response) => {
-                        console.error('❌ SIP registration failed:', response.message);
+                        console.error(' SIP registration failed:', response.message);
                         throw new Error(`Registration failed: ${response.message}`);
                     }
                 }
             });
 
-            console.log(`✅ Real SIP connection established to ${provider.name}`);
+            console.log(` Real SIP connection established to ${provider.name}`);
             console.log(`   Server: ${sipConfig.server}:${sipConfig.port}`);
             console.log(`   WebSocket: ${sipConfig.webSocketServer}`);
             console.log(`   Username: ${sipConfig.username}`);
@@ -217,7 +217,7 @@ class EnhancedSIPService extends EventEmitter {
             };
 
         } catch (error) {
-            console.error('❌ Real SIP connection failed:', error);
+            console.error(' Real SIP connection failed:', error);
             await this.cleanup();
 
             return {
@@ -229,7 +229,7 @@ class EnhancedSIPService extends EventEmitter {
 
     async disconnect() {
         try {
-            console.log('📞 Disconnecting from SIP server...');
+            console.log(' Disconnecting from SIP server...');
 
             // End all active calls
             for (const [callId, call] of this.activeCalls) {
@@ -248,7 +248,7 @@ class EnhancedSIPService extends EventEmitter {
 
             await this.cleanup();
 
-            console.log('✅ Disconnected from SIP server');
+            console.log(' Disconnected from SIP server');
 
             return {
                 success: true,
@@ -256,7 +256,7 @@ class EnhancedSIPService extends EventEmitter {
             };
 
         } catch (error) {
-            console.error('❌ SIP disconnect failed:', error);
+            console.error(' SIP disconnect failed:', error);
             return {
                 success: false,
                 error: error.message
@@ -270,7 +270,7 @@ class EnhancedSIPService extends EventEmitter {
                 throw new Error('Not registered with SIP server');
             }
 
-            console.log(`📞 Making real SIP call: ${this.currentConfig.username} → ${number}`);
+            console.log(` Making real SIP call: ${this.currentConfig.username} -> ${number}`);
 
             // Enhanced call options with Opus codec preference
             const callOptions = {
@@ -326,7 +326,7 @@ class EnhancedSIPService extends EventEmitter {
             };
 
         } catch (error) {
-            console.error('❌ Real SIP call failed:', error);
+            console.error(' Real SIP call failed:', error);
             return {
                 success: false,
                 error: error.message
@@ -346,7 +346,7 @@ class EnhancedSIPService extends EventEmitter {
                 throw new Error('No connected call for DTMF');
             }
 
-            console.log(`🔢 Sending real DTMF via SIP INFO: ${digits}`);
+            console.log(` Sending real DTMF via SIP INFO: ${digits}`);
 
             // Send DTMF using SIP.js with RFC 2833 method
             for (const digit of digits) {
@@ -354,10 +354,10 @@ class EnhancedSIPService extends EventEmitter {
                     await activeCall.sipCall.sendDTMF(digit, {
                         requestDelegate: {
                             onAccept: () => {
-                                console.log(`✅ DTMF '${digit}' sent successfully`);
+                                console.log(` DTMF '${digit}' sent successfully`);
                             },
                             onReject: (response) => {
-                                console.warn(`⚠️ DTMF '${digit}' rejected:`, response.message);
+                                console.warn(` DTMF '${digit}' rejected:`, response.message);
                             }
                         }
                     });
@@ -366,7 +366,7 @@ class EnhancedSIPService extends EventEmitter {
                     await new Promise(resolve => setTimeout(resolve, 100));
 
                 } catch (dtmfError) {
-                    console.warn(`⚠️ DTMF '${digit}' failed:`, dtmfError.message);
+                    console.warn(` DTMF '${digit}' failed:`, dtmfError.message);
                     // Continue with remaining digits
                 }
             }
@@ -383,7 +383,7 @@ class EnhancedSIPService extends EventEmitter {
             };
 
         } catch (error) {
-            console.error('❌ Real DTMF send failed:', error);
+            console.error(' Real DTMF send failed:', error);
             return {
                 success: false,
                 error: error.message
@@ -415,7 +415,7 @@ class EnhancedSIPService extends EventEmitter {
         this.activeCalls.set(callId, call);
         this.setupCallEventHandlers(call);
 
-        console.log(`📞 Real incoming call from: ${remoteName || remoteNumber}`);
+        console.log(` Real incoming call from: ${remoteName || remoteNumber}`);
         this.emit('incoming-call', call);
 
         return call;
@@ -425,7 +425,7 @@ class EnhancedSIPService extends EventEmitter {
         if (!call.sipCall) return;
 
         call.sipCall.stateChange.addListener((state) => {
-            console.log(`📞 Call ${call.id} state changed to: ${state}`);
+            console.log(` Call ${call.id} state changed to: ${state}`);
 
             switch (state) {
                 case 'Establishing':
@@ -454,7 +454,7 @@ class EnhancedSIPService extends EventEmitter {
         this.callHistory.push({ ...call });
         this.activeCalls.delete(call.id);
 
-        console.log(`✅ Real call ended: ${call.remoteNumber} (Duration: ${Math.round(call.duration / 1000)}s)`);
+        console.log(` Real call ended: ${call.remoteNumber} (Duration: ${Math.round(call.duration / 1000)}s)`);
         this.emit('call-ended', call);
     }
 
@@ -474,7 +474,7 @@ class EnhancedSIPService extends EventEmitter {
             source.connect(gainNode);
             gainNode.connect(this.audioContext.destination);
 
-            console.log('🔊 Remote audio configured with Opus optimization');
+            console.log(' Remote audio configured with Opus optimization');
         }
     }
 
@@ -496,10 +496,10 @@ class EnhancedSIPService extends EventEmitter {
             this.userAgent = null;
             this.simpleUser = null;
 
-            console.log('🧹 Enhanced SIP Service cleaned up');
+            console.log(' Enhanced SIP Service cleaned up');
 
         } catch (error) {
-            console.error('⚠️ Cleanup error:', error);
+            console.error(' Cleanup error:', error);
         }
     }
 

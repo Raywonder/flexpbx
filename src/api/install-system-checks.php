@@ -7,6 +7,8 @@
  * Based on GPT notes and user requirements for stable system after reboots
  */
 
+class FlexPBXSystemIntegrationEnhancements {
+
 /**
  * Enhanced directory structure creation with proper permissions
  * Creates all necessary directories for FlexPBX operation
@@ -40,7 +42,7 @@ private function createComprehensiveDirectoryStructure() {
     foreach ($directories as $dir => $config) {
         if (!is_dir($dir)) {
             if (@mkdir($dir, $config['perms'], true)) {
-                $this->logProgress("📁 Created directory: " . basename($dir));
+                $this->logProgress(" Created directory: " . basename($dir));
 
                 // Set proper ownership if running as root
                 if (function_exists('posix_getuid') && posix_getuid() === 0) {
@@ -53,7 +55,7 @@ private function createComprehensiveDirectoryStructure() {
         } else {
             // Directory exists, fix permissions
             chmod($dir, $config['perms']);
-            $this->logProgress("✓ Verified directory: " . basename($dir));
+            $this->logProgress(" Verified directory: " . basename($dir));
         }
     }
 
@@ -96,10 +98,10 @@ private function checkSystemServices() {
         ];
 
         if ($isRunning) {
-            $this->logProgress("✅ {$config['name']}: Running");
+            $this->logProgress(" {$config['name']}: Running");
         } else if ($config['critical']) {
             $this->warnings[] = "{$config['name']} is not running. Status: $status";
-            $this->logProgress("⚠️ {$config['name']}: Not running");
+            $this->logProgress(" {$config['name']}: Not running");
         }
     }
 
@@ -126,7 +128,7 @@ private function checkMusicOnHoldServer() {
         $results['file_count'] = count($files);
 
         if ($results['file_count'] > 0) {
-            $this->logProgress("♪ Music on Hold: {$results['file_count']} files found");
+            $this->logProgress(" Music on Hold: {$results['file_count']} files found");
         } else {
             $this->warnings[] = "No music on hold files found in $mohPath";
         }
@@ -153,10 +155,10 @@ private function verifyServiceAutostart() {
         $results[$service] = $isEnabled;
 
         if ($isEnabled) {
-            $this->logProgress("🚀 $service: Enabled for autostart");
+            $this->logProgress(" $service: Enabled for autostart");
         } else {
             $this->warnings[] = "$service is not enabled for autostart. Run: systemctl enable $service";
-            $this->logProgress("⚠️ $service: Not enabled for autostart");
+            $this->logProgress(" $service: Not enabled for autostart");
         }
     }
 
@@ -177,7 +179,7 @@ private function checkAsteriskShutdownConfig() {
         $hasGracefulStop = (strpos($content, 'core stop gracefully') !== false);
 
         if ($hasTimeout && $hasGracefulStop) {
-            $this->logProgress("✅ Asterisk graceful shutdown: Configured");
+            $this->logProgress(" Asterisk graceful shutdown: Configured");
             return true;
         } else {
             $this->warnings[] = "Asterisk shutdown configuration incomplete. See GPT notes for fix.";
@@ -185,7 +187,7 @@ private function checkAsteriskShutdownConfig() {
         }
     } else {
         $this->warnings[] = "Asterisk systemd override not found. System may hang during reboots.";
-        $this->logProgress("⚠️ Asterisk graceful shutdown: Not configured");
+        $this->logProgress(" Asterisk graceful shutdown: Not configured");
         return false;
     }
 }
@@ -195,11 +197,11 @@ private function checkAsteriskShutdownConfig() {
  * Comprehensive checks after installation completes
  */
 private function performPostInstallValidation() {
-    $this->logProgress("🔍 Performing post-installation validation...");
+    $this->logProgress(" Performing post-installation validation...");
 
     // 1. Check config file was created
     if (file_exists('../config/config.php')) {
-        $this->logProgress("✅ Configuration file: Created");
+        $this->logProgress(" Configuration file: Created");
     } else {
         $this->errors[] = "Configuration file not created!";
         return false;
@@ -213,7 +215,7 @@ private function performPostInstallValidation() {
             return false;
         }
     }
-    $this->logProgress("✅ Directory structure: Complete");
+    $this->logProgress(" Directory structure: Complete");
 
     // 3. Check system services
     $services = $this->checkSystemServices();
@@ -226,7 +228,7 @@ private function performPostInstallValidation() {
     }
 
     if ($criticalServicesRunning) {
-        $this->logProgress("✅ Critical services: Running");
+        $this->logProgress(" Critical services: Running");
     }
 
     // 4. Check FlexPBX management scripts exist
@@ -245,7 +247,7 @@ private function performPostInstallValidation() {
     }
 
     if ($scriptsExist) {
-        $this->logProgress("✅ Management scripts: Installed");
+        $this->logProgress(" Management scripts: Installed");
     }
 
     // 5. Check Music on Hold
@@ -257,7 +259,7 @@ private function performPostInstallValidation() {
     // 7. Check Asterisk shutdown configuration
     $this->checkAsteriskShutdownConfig();
 
-    $this->logProgress("✅ Post-installation validation complete");
+    $this->logProgress(" Post-installation validation complete");
 
     return count($this->errors) === 0;
 }
@@ -278,7 +280,7 @@ private function generatePostInstallReport() {
     $report .= "## System Services Status\n";
     $services = $this->checkSystemServices();
     foreach ($services as $service => $status) {
-        $icon = $status['running'] ? '✅' : '❌';
+        $icon = $status['running'] ? '' : '';
         $report .= "- $icon {$status['name']}: " . ($status['running'] ? 'Running' : 'Not Running') . "\n";
     }
     $report .= "\n";
@@ -286,7 +288,7 @@ private function generatePostInstallReport() {
     $report .= "## Autostart Configuration\n";
     $autostart = $this->verifyServiceAutostart();
     foreach ($autostart as $service => $enabled) {
-        $icon = $enabled ? '✅' : '⚠️';
+        $icon = $enabled ? '' : '';
         $report .= "- $icon $service: " . ($enabled ? 'Enabled' : 'Not Enabled') . "\n";
     }
     $report .= "\n";
@@ -294,7 +296,7 @@ private function generatePostInstallReport() {
     if (!empty($this->warnings)) {
         $report .= "## Warnings\n";
         foreach ($this->warnings as $warning) {
-            $report .= "- ⚠️ $warning\n";
+            $report .= "-  $warning\n";
         }
         $report .= "\n";
     }
@@ -316,9 +318,11 @@ private function generatePostInstallReport() {
     $reportPath = '/home/flexpbxuser/logs/installation_report_' . date('Y-m-d_His') . '.txt';
     file_put_contents($reportPath, $report);
 
-    $this->logProgress("📄 Installation report saved: $reportPath");
+    $this->logProgress(" Installation report saved: $reportPath");
 
     return $report;
+}
+
 }
 
 ?>

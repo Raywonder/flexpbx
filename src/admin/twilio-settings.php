@@ -405,7 +405,7 @@ if (!$is_admin) {
                 <h1>External Integrations</h1>
                 <p style="color: #666; margin-top: 5px;">Manage Twilio, Google Voice, and other third-party integrations</p>
             </div>
-            <a href="/admin/dashboard.php" class="back-link">← Back to Dashboard</a>
+            <a href="/admin/dashboard.php" class="back-link"><- Back to Dashboard</a>
         </div>
 
         <div class="nav">
@@ -424,7 +424,7 @@ if (!$is_admin) {
                 <div id="config-alert"></div>
 
                 <div class="card">
-                    <h3>🔑 Twilio API Credentials</h3>
+                    <h3> Twilio API Credentials</h3>
                     <form id="config-form">
                         <div class="form-group">
                             <label>Account SID *</label>
@@ -464,15 +464,15 @@ if (!$is_admin) {
                         </div>
 
                         <div class="button-group">
-                            <button type="submit" class="btn btn-primary">💾 Save Configuration</button>
-                            <button type="button" class="btn btn-success" onclick="testConnection()">🔌 Test Connection</button>
-                            <button type="button" class="btn btn-secondary" onclick="loadConfig()">🔄 Reload</button>
+                            <button type="submit" class="btn btn-primary"> Save Configuration</button>
+                            <button type="button" class="btn btn-success" onclick="testConnection()"> Test Connection</button>
+                            <button type="button" class="btn btn-secondary" onclick="loadConfig()"> Reload</button>
                         </div>
                     </form>
                 </div>
 
                 <div class="card">
-                    <h3>📊 Connection Status</h3>
+                    <h3> Connection Status</h3>
                     <div id="connection-status">
                         <p style="color: #666;">Click "Test Connection" to verify your Twilio credentials</p>
                     </div>
@@ -484,7 +484,7 @@ if (!$is_admin) {
                 <div id="numbers-alert"></div>
 
                 <div class="card">
-                    <h3>🔍 Search Available Numbers</h3>
+                    <h3> Search Available Numbers</h3>
                     <div class="form-row">
                         <div class="form-group">
                             <label>Area Code</label>
@@ -495,15 +495,15 @@ if (!$is_admin) {
                             <input type="text" id="search_contains" placeholder="555">
                         </div>
                         <div class="form-group" style="display: flex; align-items: flex-end;">
-                            <button class="btn btn-primary" onclick="searchNumbers()" style="width: 100%;">🔍 Search Numbers</button>
+                            <button class="btn btn-primary" onclick="searchNumbers()" style="width: 100%;"> Search Numbers</button>
                         </div>
                     </div>
                     <div id="available-numbers"></div>
                 </div>
 
                 <div class="card">
-                    <h3>📱 Your Phone Numbers</h3>
-                    <button class="btn btn-secondary" onclick="loadPhoneNumbers()">🔄 Refresh</button>
+                    <h3> Your Phone Numbers</h3>
+                    <button class="btn btn-secondary" onclick="loadPhoneNumbers()"> Refresh</button>
                     <div id="owned-numbers"></div>
                 </div>
             </div>
@@ -513,7 +513,7 @@ if (!$is_admin) {
                 <div id="calls-alert"></div>
 
                 <div class="card">
-                    <h3>📞 Make Test Call</h3>
+                    <h3> Make Test Call</h3>
                     <form id="make-call-form">
                         <div class="form-row">
                             <div class="form-group">
@@ -525,12 +525,12 @@ if (!$is_admin) {
                                 <input type="tel" id="call_from" name="from" placeholder="Leave empty for default">
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-success">📞 Make Call</button>
+                        <button type="submit" class="btn btn-success"> Make Call</button>
                     </form>
                 </div>
 
                 <div class="card">
-                    <h3>📋 Recent Calls</h3>
+                    <h3> Recent Calls</h3>
                     <div class="form-row">
                         <div class="form-group">
                             <label>Filter by Status</label>
@@ -544,7 +544,7 @@ if (!$is_admin) {
                             </select>
                         </div>
                         <div class="form-group" style="display: flex; align-items: flex-end;">
-                            <button class="btn btn-secondary" onclick="loadCalls()" style="width: 100%;">🔄 Refresh</button>
+                            <button class="btn btn-secondary" onclick="loadCalls()" style="width: 100%;"> Refresh</button>
                         </div>
                     </div>
                     <div id="calls-list"></div>
@@ -556,7 +556,7 @@ if (!$is_admin) {
                 <div id="sms-alert"></div>
 
                 <div class="card">
-                    <h3>✉️ Send Test SMS</h3>
+                    <h3> Send Test SMS</h3>
                     <form id="send-sms-form">
                         <div class="form-row">
                             <div class="form-group">
@@ -572,13 +572,13 @@ if (!$is_admin) {
                             <label>Message *</label>
                             <textarea id="sms_body" name="body" rows="3" placeholder="Your message here..." required></textarea>
                         </div>
-                        <button type="submit" class="btn btn-success">📤 Send SMS</button>
+                        <button type="submit" class="btn btn-success"> Send SMS</button>
                     </form>
                 </div>
 
                 <div class="card">
-                    <h3>💬 Recent Messages</h3>
-                    <button class="btn btn-secondary" onclick="loadMessages()">🔄 Refresh</button>
+                    <h3> Recent Messages</h3>
+                    <button class="btn btn-secondary" onclick="loadMessages()"> Refresh</button>
                     <div id="messages-list"></div>
                 </div>
             </div>
@@ -586,7 +586,7 @@ if (!$is_admin) {
             <!-- Webhooks Tab -->
             <div id="webhooks" class="tab-content">
                 <div class="card">
-                    <h3>🔗 Webhook Configuration</h3>
+                    <h3> Webhook Configuration</h3>
                     <p style="margin-bottom: 20px; color: #666;">Configure these URLs in your Twilio Console for each phone number:</p>
 
                     <div class="form-group">
@@ -615,8 +615,8 @@ if (!$is_admin) {
                 </div>
 
                 <div class="card">
-                    <h3>📜 Recent Webhook Logs</h3>
-                    <button class="btn btn-secondary" onclick="loadWebhookLogs()">🔄 Refresh</button>
+                    <h3> Recent Webhook Logs</h3>
+                    <button class="btn btn-secondary" onclick="loadWebhookLogs()"> Refresh</button>
                     <div id="webhook-logs"></div>
                 </div>
             </div>
@@ -641,7 +641,7 @@ if (!$is_admin) {
                 </div>
 
                 <div class="card">
-                    <h3>📊 Usage Statistics</h3>
+                    <h3> Usage Statistics</h3>
                     <div class="form-group">
                         <label>Period</label>
                         <select id="usage-period" onchange="loadUsage()">
@@ -655,7 +655,7 @@ if (!$is_admin) {
                 </div>
 
                 <div class="card">
-                    <h3>ℹ️ Account Details</h3>
+                    <h3>ℹ Account Details</h3>
                     <div id="account-details"></div>
                 </div>
             </div>
@@ -665,7 +665,7 @@ if (!$is_admin) {
                 <div id="gv-alert"></div>
 
                 <div class="card">
-                    <h3>☁️ Google Voice Configuration</h3>
+                    <h3> Google Voice Configuration</h3>
                     <form id="gv-config-form">
                         <div class="form-row">
                             <div class="form-group">
@@ -801,15 +801,15 @@ if (!$is_admin) {
                         </div>
 
                         <div class="button-group">
-                            <button type="submit" class="btn btn-primary">💾 Save Configuration</button>
-                            <button type="button" class="btn btn-success" onclick="testGoogleVoice()">🔌 Test Connection</button>
-                            <button type="button" class="btn btn-secondary" onclick="loadGoogleVoiceConfig()">🔄 Reload</button>
+                            <button type="submit" class="btn btn-primary"> Save Configuration</button>
+                            <button type="button" class="btn btn-success" onclick="testGoogleVoice()"> Test Connection</button>
+                            <button type="button" class="btn btn-secondary" onclick="loadGoogleVoiceConfig()"> Reload</button>
                         </div>
                     </form>
                 </div>
 
                 <div class="card">
-                    <h3>🔐 OAuth2 Setup</h3>
+                    <h3> OAuth2 Setup</h3>
                     <p style="margin-bottom: 15px; color: #666;">
                         Google Voice requires OAuth2 authentication. Follow these steps to set up:
                     </p>
@@ -834,14 +834,14 @@ if (!$is_admin) {
                         </div>
 
                         <div class="button-group">
-                            <button type="submit" class="btn btn-primary">💾 Save OAuth Credentials</button>
-                            <button type="button" class="btn btn-success" onclick="authorizeGoogleVoice()">🔐 Authorize Access</button>
+                            <button type="submit" class="btn btn-primary"> Save OAuth Credentials</button>
+                            <button type="button" class="btn btn-success" onclick="authorizeGoogleVoice()"> Authorize Access</button>
                         </div>
                     </form>
                 </div>
 
                 <div class="card">
-                    <h3>📊 Google Voice Status</h3>
+                    <h3> Google Voice Status</h3>
                     <div id="gv-status">
                         <p style="color: #666;">Configuration not loaded yet. Click "Reload" or save your settings.</p>
                     </div>
@@ -953,7 +953,7 @@ if (!$is_admin) {
                 if (data.success) {
                     statusDiv.innerHTML = `
                         <div class="alert alert-success">
-                            ✅ Connection successful!<br>
+                             Connection successful!<br>
                             <strong>Account:</strong> ${data.account}<br>
                             <strong>Status:</strong> ${data.status}
                         </div>
@@ -961,14 +961,14 @@ if (!$is_admin) {
                 } else {
                     statusDiv.innerHTML = `
                         <div class="alert alert-error">
-                            ❌ Connection failed: ${data.error}
+                             Connection failed: ${data.error}
                         </div>
                     `;
                 }
             } catch (error) {
                 statusDiv.innerHTML = `
                     <div class="alert alert-error">
-                        ❌ Error testing connection: ${error.message}
+                         Error testing connection: ${error.message}
                     </div>
                 `;
             }
@@ -1001,7 +1001,7 @@ if (!$is_admin) {
                                 <td>${number.region || '-'}</td>
                                 <td>
                                     <button class="btn btn-success" onclick="purchaseNumber('${number.phone_number}')">
-                                        💳 Purchase
+                                         Purchase
                                     </button>
                                 </td>
                             </tr>
@@ -1062,9 +1062,9 @@ if (!$is_admin) {
 
                     data.numbers.forEach(number => {
                         const capabilities = [];
-                        if (number.capabilities.voice) capabilities.push('📞 Voice');
-                        if (number.capabilities.SMS) capabilities.push('💬 SMS');
-                        if (number.capabilities.MMS) capabilities.push('📷 MMS');
+                        if (number.capabilities.voice) capabilities.push(' Voice');
+                        if (number.capabilities.SMS) capabilities.push(' SMS');
+                        if (number.capabilities.MMS) capabilities.push(' MMS');
 
                         html += `
                             <tr>
@@ -1073,10 +1073,10 @@ if (!$is_admin) {
                                 <td>${capabilities.join(' ')}</td>
                                 <td>
                                     <button class="btn btn-secondary" onclick="configureNumber('${number.sid}', '${number.phone_number}')">
-                                        ⚙️ Configure
+                                         Configure
                                     </button>
                                     <button class="btn btn-danger" onclick="releaseNumber('${number.sid}', '${number.phone_number}')">
-                                        🗑️ Release
+                                         Release
                                     </button>
                                 </td>
                             </tr>
@@ -1150,7 +1150,7 @@ if (!$is_admin) {
                     </div>
 
                     <div class="button-group">
-                        <button type="submit" class="btn btn-primary">💾 Update</button>
+                        <button type="submit" class="btn btn-primary"> Update</button>
                         <button type="button" class="btn btn-secondary" onclick="closeModal('number-modal')">Cancel</button>
                     </div>
                 </form>
@@ -1540,7 +1540,7 @@ if (!$is_admin) {
                 if (data.success) {
                     statusDiv.innerHTML = `
                         <div class="alert alert-success">
-                            ✅ Connection successful!<br>
+                             Connection successful!<br>
                             <strong>Number:</strong> ${data.number || 'Not configured'}<br>
                             <strong>Status:</strong> ${data.status || 'Active'}
                         </div>
@@ -1548,14 +1548,14 @@ if (!$is_admin) {
                 } else {
                     statusDiv.innerHTML = `
                         <div class="alert alert-error">
-                            ❌ Connection failed: ${data.error || 'Unknown error'}
+                             Connection failed: ${data.error || 'Unknown error'}
                         </div>
                     `;
                 }
             } catch (error) {
                 statusDiv.innerHTML = `
                     <div class="alert alert-error">
-                        ❌ Error testing connection: ${error.message}
+                         Error testing connection: ${error.message}
                     </div>
                 `;
             }
@@ -1582,8 +1582,8 @@ if (!$is_admin) {
             html += `<tr><td><strong>Status:</strong></td><td><span class="badge badge-${config.enabled ? 'success' : 'error'}">${config.enabled ? 'Enabled' : 'Disabled'}</span></td></tr>`;
             html += `<tr><td><strong>Number:</strong></td><td>${config.primary_number || 'Not configured'}</td></tr>`;
             html += `<tr><td><strong>Display Name:</strong></td><td>${config.display_name || '-'}</td></tr>`;
-            html += `<tr><td><strong>SMS:</strong></td><td>${config.enable_sms ? '✅ Enabled' : '❌ Disabled'}</td></tr>`;
-            html += `<tr><td><strong>Voicemail:</strong></td><td>${config.enable_voicemail ? '✅ Enabled' : '❌ Disabled'}</td></tr>`;
+            html += `<tr><td><strong>SMS:</strong></td><td>${config.enable_sms ? ' Enabled' : ' Disabled'}</td></tr>`;
+            html += `<tr><td><strong>Voicemail:</strong></td><td>${config.enable_voicemail ? ' Enabled' : ' Disabled'}</td></tr>`;
             html += `<tr><td><strong>Business Hours:</strong></td><td>${config.business_start} - ${config.business_end}</td></tr>`;
             html += '</table>';
             statusDiv.innerHTML = html;

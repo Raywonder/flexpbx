@@ -38,7 +38,7 @@ $is_logged_in = isset($_SESSION['audio_admin_logged_in']) && $_SESSION['audio_ad
 
 // Define upload directories
 $upload_dirs = [
-    'unsorted' => '📥 Unsorted / Needs Review',
+    'unsorted' => ' Unsorted / Needs Review',
     'greetings' => 'Greetings & Welcome Messages',
     'queue' => 'Queue Management',
     'voicemail' => 'Voicemail Prompts',
@@ -392,7 +392,7 @@ function getFilesInCategory($category) {
         <?php if (!$is_logged_in): ?>
             <!-- Login Form -->
             <div class="login-box">
-                <h1>🎙️ Audio Upload Manager</h1>
+                <h1> Audio Upload Manager</h1>
                 <?php if ($login_error): ?>
                     <div class="error"><?php echo htmlspecialchars($login_error); ?></div>
                 <?php endif; ?>
@@ -412,15 +412,15 @@ function getFilesInCategory($category) {
             <!-- Upload Interface -->
             <div class="upload-box">
                 <div class="header">
-                    <h1>🎙️ Audio Upload Manager</h1>
+                    <h1> Audio Upload Manager</h1>
                     <div style="display: flex; gap: 10px;">
-                        <a href="dashboard.html" class="logout-btn" style="background: #6c757d;">← Dashboard</a>
+                        <a href="dashboard.html" class="logout-btn" style="background: #6c757d;"><- Dashboard</a>
                         <a href="?logout" class="logout-btn">Logout</a>
                     </div>
                 </div>
 
                 <div class="info-box">
-                    <h4>ℹ️ Supported Formats</h4>
+                    <h4>ℹ Supported Formats</h4>
                     <ul>
                         <li><strong>WAV:</strong> Recommended (8kHz, 16-bit, mono) - Ready for Asterisk</li>
                         <li><strong>MP3:</strong> Will be auto-converted to WAV</li>
@@ -429,11 +429,11 @@ function getFilesInCategory($category) {
                 </div>
 
                 <?php if ($upload_message): ?>
-                    <div class="success">✅ <?php echo htmlspecialchars($upload_message); ?></div>
+                    <div class="success"> <?php echo htmlspecialchars($upload_message); ?></div>
                 <?php endif; ?>
 
                 <?php if ($upload_error): ?>
-                    <div class="error">❌ <?php echo htmlspecialchars($upload_error); ?></div>
+                    <div class="error"> <?php echo htmlspecialchars($upload_error); ?></div>
                 <?php endif; ?>
 
                 <form method="POST" enctype="multipart/form-data">
@@ -463,7 +463,7 @@ function getFilesInCategory($category) {
                 </form>
 
                 <div class="info-box" style="margin-top: 30px;">
-                    <h4>📁 Upload Locations</h4>
+                    <h4> Upload Locations</h4>
                     <ul>
                         <li><strong>Web:</strong> /home/flexpbxuser/public_html/media/sounds/</li>
                         <li><strong>Asterisk:</strong> /var/lib/asterisk/sounds/en/custom/</li>
@@ -471,7 +471,7 @@ function getFilesInCategory($category) {
                 </div>
 
                 <!-- File List -->
-                <h2 style="margin-top: 40px; margin-bottom: 20px; color: #333;">📂 Existing Files</h2>
+                <h2 style="margin-top: 40px; margin-bottom: 20px; color: #333;"> Existing Files</h2>
                 <div class="file-list">
                     <?php foreach ($upload_dirs as $dir => $label): ?>
                         <?php $files = getFilesInCategory($dir); ?>

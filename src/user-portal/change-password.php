@@ -272,7 +272,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔐 Change Password</h1>
+            <h1> Change Password</h1>
             <p class="subtitle">Extension <?= htmlspecialchars($extension) ?></p>
         </div>
 
@@ -283,13 +283,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password'])) {
 
             <?php if ($error): ?>
             <div class="alert alert-error" role="alert">
-                ⚠️ <?= htmlspecialchars($error) ?>
+                 <?= htmlspecialchars($error) ?>
             </div>
             <?php endif; ?>
 
             <?php if ($success): ?>
             <div class="alert alert-success" role="alert">
-                ✓ <?= htmlspecialchars($success) ?>
+                 <?= htmlspecialchars($success) ?>
             </div>
             <?php endif; ?>
 

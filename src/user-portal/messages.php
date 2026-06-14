@@ -461,8 +461,8 @@ $username = $_SESSION['user_username'] ?? $extension;
         <!-- Sidebar with conversations -->
         <div class="sidebar">
             <div class="sidebar-header">
-                <h1>💬 Messages</h1>
-                <p class="subtitle">Extension <?= htmlspecialchars($extension) ?> • <?= htmlspecialchars($username) ?></p>
+                <h1> Messages</h1>
+                <p class="subtitle">Extension <?= htmlspecialchars($extension) ?> - <?= htmlspecialchars($username) ?></p>
 
                 <!-- Sound Toggle -->
                 <div class="sound-toggle-container">
@@ -471,26 +471,26 @@ $username = $_SESSION['user_username'] ?? $extension;
                         <span class="sound-slider"></span>
                     </label>
                     <label for="sound-enabled" class="sound-toggle-label">
-                        <span id="sound-status">🔇 Sounds Off</span>
+                        <span id="sound-status"> Sounds Off</span>
                     </label>
                 </div>
             </div>
 
             <button class="new-conversation-btn" onclick="openNewConversationModal()">
-                ➕ New Message
+                 New Message
             </button>
 
             <div class="conversations-list" id="conversations-list">
                 <p style="text-align: center; padding: 2rem; color: #999;">Loading conversations...</p>
             </div>
 
-            <a href="/user-portal/" class="back-link">← Back to Dashboard</a>
+            <a href="/user-portal/" class="back-link"><- Back to Dashboard</a>
         </div>
 
         <!-- Chat area -->
         <div class="chat-area">
             <div id="empty-state" class="empty-state">
-                <div class="empty-state-icon">💬</div>
+                <div class="empty-state-icon"></div>
                 <p><strong>Select a conversation to start messaging</strong></p>
                 <p>Send messages to extensions (2000-2999) or phone numbers</p>
             </div>
@@ -533,7 +533,7 @@ $username = $_SESSION['user_username'] ?? $extension;
                 autofocus
             >
             <p class="modal-hint">
-                💡 Enter an extension (4 digits) for internal messaging or a phone number for SMS
+                 Enter an extension (4 digits) for internal messaging or a phone number for SMS
             </p>
             <div class="modal-actions">
                 <button class="btn btn-secondary" onclick="closeNewConversationModal()">Cancel</button>
@@ -611,9 +611,9 @@ $username = $_SESSION['user_username'] ?? $extension;
         function updateSoundStatus() {
             const statusEl = document.getElementById('sound-status');
             if (soundEnabled) {
-                statusEl.textContent = '🔊 Sounds On';
+                statusEl.textContent = ' Sounds On';
             } else {
-                statusEl.textContent = '🔇 Sounds Off';
+                statusEl.textContent = ' Sounds Off';
             }
         }
 
@@ -660,7 +660,7 @@ $username = $_SESSION['user_username'] ?? $extension;
             let html = '';
             conversations.forEach(conv => {
                 const isActive = currentRecipient === conv.recipient;
-                const typeLabel = conv.recipient_type === 'extension' ? '📱 Extension' : '📞 Phone';
+                const typeLabel = conv.recipient_type === 'extension' ? ' Extension' : ' Phone';
                 const typeClass = conv.recipient_type === 'extension' ? 'extension' : 'phone';
                 const time = new Date(conv.last_message_time * 1000).toLocaleString();
 
@@ -692,8 +692,8 @@ $username = $_SESSION['user_username'] ?? $extension;
 
             // Update header
             document.getElementById('chat-recipient-name').textContent = name;
-            const typeLabel = type === 'extension' ? '📱 Extension' : '📞 Phone Number';
-            document.getElementById('chat-recipient-info').textContent = `${typeLabel} • ${recipient}`;
+            const typeLabel = type === 'extension' ? ' Extension' : ' Phone Number';
+            document.getElementById('chat-recipient-info').textContent = `${typeLabel} - ${recipient}`;
 
             // Load thread
             await loadThread(recipient);

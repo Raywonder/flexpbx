@@ -122,11 +122,11 @@ function parseUserAgent($ua) {
 // Helper function to get device icon
 function getDeviceIcon($ua) {
     if (preg_match('/mobile|android|iphone|ipad/i', $ua)) {
-        return '📱';
+        return '';
     } elseif (preg_match('/tablet|ipad/i', $ua)) {
-        return '📱';
+        return '';
     } else {
-        return '💻';
+        return '';
     }
 }
 ?>
@@ -390,7 +390,7 @@ function getDeviceIcon($ua) {
     <div class="container">
         <!-- Page Header -->
         <div class="page-header">
-            <h1>📱 Active Sessions</h1>
+            <h1> Active Sessions</h1>
             <p class="subtitle">
                 Extension <?= htmlspecialchars($user_extension) ?>
                 <span class="user-badge"><?= htmlspecialchars($user_username) ?></span>
@@ -399,26 +399,26 @@ function getDeviceIcon($ua) {
 
         <!-- Navigation -->
         <div class="nav-buttons">
-            <a href="/user-portal/" class="nav-button">🏠 Dashboard</a>
-            <a href="/user-portal/settings.php" class="nav-button">⚙️ Settings</a>
-            <a href="/user-portal/help.php" class="nav-button">❓ Help</a>
+            <a href="/user-portal/" class="nav-button"> Dashboard</a>
+            <a href="/user-portal/settings.php" class="nav-button"> Settings</a>
+            <a href="/user-portal/help.php" class="nav-button"> Help</a>
         </div>
 
         <?php if (isset($_GET['revoked'])): ?>
         <div class="alert alert-success">
-            ✅ Session revoked successfully
+             Session revoked successfully
         </div>
         <?php endif; ?>
 
         <?php if (isset($_GET['revoked_all'])): ?>
         <div class="alert alert-success">
-            ✅ All other sessions have been revoked
+             All other sessions have been revoked
         </div>
         <?php endif; ?>
 
         <!-- Info Card -->
         <div class="info-card">
-            <h3>🔒 Manage Your Sessions</h3>
+            <h3> Manage Your Sessions</h3>
             <p>View all devices and browsers currently logged into your FlexPBX account. You can revoke access from any session if you don't recognize the device or location.</p>
         </div>
 
@@ -472,7 +472,7 @@ function getDeviceIcon($ua) {
                         <input type="hidden" name="action" value="revoke">
                         <input type="hidden" name="session_id" value="<?= htmlspecialchars($session['id']) ?>">
                         <button type="submit" class="btn btn-danger btn-small">
-                            <?= $session['is_current'] ? '🚪 Logout' : '🔓 Revoke Access' ?>
+                            <?= $session['is_current'] ? ' Logout' : ' Revoke Access' ?>
                         </button>
                     </form>
                 </div>
@@ -482,9 +482,9 @@ function getDeviceIcon($ua) {
 
         <!-- Navigation (Bottom) -->
         <div class="nav-buttons" style="margin-top: 2rem;">
-            <a href="/user-portal/" class="nav-button">🏠 Dashboard</a>
-            <a href="/user-portal/settings.php" class="nav-button">⚙️ Settings</a>
-            <a href="/user-portal/help.php" class="nav-button">❓ Help</a>
+            <a href="/user-portal/" class="nav-button"> Dashboard</a>
+            <a href="/user-portal/settings.php" class="nav-button"> Settings</a>
+            <a href="/user-portal/help.php" class="nav-button"> Help</a>
         </div>
     </div>
 </body>

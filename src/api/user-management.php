@@ -106,7 +106,7 @@ function migrateUser() {
             // Migrate voicemail
             migrateVoicemail($oldExtension, $newExtension);
             
-            $changes[] = "Extension: $oldExtension → $newExtension";
+            $changes[] = "Extension: $oldExtension -> $newExtension";
         }
         
         // Handle department change
@@ -126,7 +126,7 @@ function migrateUser() {
             
             $oldDeptName = getDepartmentName($pdo, $oldDepartment);
             $newDeptName = getDepartmentName($pdo, $newDepartment);
-            $changes[] = "Department: $oldDeptName → $newDeptName";
+            $changes[] = "Department: $oldDeptName -> $newDeptName";
         }
         
         // Log migration
@@ -145,8 +145,8 @@ function migrateUser() {
         
         $message = "Migration completed successfully.\n" . implode("\n", $changes);
         if ($changeExtension) {
-            $message .= "\n\n⚠️ User must update third-party SIP clients with new extension: $newExtension";
-            $message .= "\n✅ FlexPhone and User Portal will auto-update";
+            $message .= "\n\n User must update third-party SIP clients with new extension: $newExtension";
+            $message .= "\n FlexPhone and User Portal will auto-update";
         }
         
         echo json_encode([
@@ -214,7 +214,7 @@ function changeExtension() {
         }
         
         // Log change
-        logMigration($pdo, $userId, $oldExtension, $newExtension, null, null, 'Extension change only', ["Extension: $oldExtension → $newExtension"]);
+        logMigration($pdo, $userId, $oldExtension, $newExtension, null, null, 'Extension change only', ["Extension: $oldExtension -> $newExtension"]);
         
         // Notify user
         if ($notifyUser) {
@@ -279,7 +279,7 @@ function moveDepartment() {
         $oldDeptName = getDepartmentName($pdo, $oldDepartment);
         $newDeptName = getDepartmentName($pdo, $newDepartment);
         
-        logMigration($pdo, $userId, $user['extension'], $user['extension'], $oldDepartment, $newDepartment, $reason, ["Department: $oldDeptName → $newDeptName"]);
+        logMigration($pdo, $userId, $user['extension'], $user['extension'], $oldDepartment, $newDepartment, $reason, ["Department: $oldDeptName -> $newDeptName"]);
         
         reloadAsteriskConfig();
         

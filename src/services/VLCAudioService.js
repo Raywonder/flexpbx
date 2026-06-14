@@ -1,5 +1,5 @@
 /**
- * 🎵 FlexPhone VLC Audio Service
+ *  FlexPhone VLC Audio Service
  * Handles audio playback using VLC for reliable cross-platform audio support
  */
 
@@ -36,12 +36,12 @@ class VLCAudioService extends EventEmitter {
             ]
         };
 
-        console.log('🎵 VLCAudioService initialized');
+        console.log(' VLCAudioService initialized');
     }
 
     async init() {
         try {
-            console.log('🎵 Initializing VLC Audio Service...');
+            console.log(' Initializing VLC Audio Service...');
 
             // Find VLC installation
             const vlcPath = await this.findVLCInstallation();
@@ -50,18 +50,18 @@ class VLCAudioService extends EventEmitter {
             }
 
             this.vlcExecutable = vlcPath;
-            console.log('✅ Found VLC at:', vlcPath);
+            console.log(' Found VLC at:', vlcPath);
 
             // Test VLC with a silent startup
             await this.testVLCConnection();
 
             this.isInitialized = true;
-            console.log('✅ VLC Audio Service initialized successfully');
+            console.log(' VLC Audio Service initialized successfully');
             this.emit('initialized');
 
             return true;
         } catch (error) {
-            console.error('❌ Failed to initialize VLC Audio Service:', error);
+            console.error(' Failed to initialize VLC Audio Service:', error);
             return false;
         }
     }
@@ -107,7 +107,7 @@ class VLCAudioService extends EventEmitter {
 
             testProcess.on('close', (code) => {
                 if (code === 0 && output.includes('VLC')) {
-                    console.log('✅ VLC version test successful');
+                    console.log(' VLC version test successful');
                     resolve();
                 } else {
                     reject(new Error('VLC version test failed'));
@@ -128,12 +128,12 @@ class VLCAudioService extends EventEmitter {
 
     async playWelcomeTones() {
         if (!this.isInitialized) {
-            console.warn('⚠️ VLC Audio Service not initialized');
+            console.warn(' VLC Audio Service not initialized');
             return false;
         }
 
         try {
-            console.log('🎵 Playing welcome tones with VLC...');
+            console.log(' Playing welcome tones with VLC...');
 
             // Generate welcome tone sequence as temporary audio files
             const toneFiles = await this.generateWelcomeToneFiles();
@@ -147,12 +147,12 @@ class VLCAudioService extends EventEmitter {
             // Clean up temporary files
             await this.cleanupToneFiles(toneFiles);
 
-            console.log('✅ Welcome tones completed');
+            console.log(' Welcome tones completed');
             this.emit('welcomeTonesCompleted');
             return true;
 
         } catch (error) {
-            console.error('❌ Failed to play welcome tones:', error);
+            console.error(' Failed to play welcome tones:', error);
             return false;
         }
     }
@@ -260,19 +260,19 @@ class VLCAudioService extends EventEmitter {
             try {
                 await fs.promises.unlink(toneFile);
             } catch (error) {
-                console.warn('⚠️ Failed to delete temp tone file:', toneFile);
+                console.warn(' Failed to delete temp tone file:', toneFile);
             }
         }
     }
 
     async playRingtone(ringtoneType = 'default') {
         if (!this.isInitialized) {
-            console.warn('⚠️ VLC Audio Service not initialized');
+            console.warn(' VLC Audio Service not initialized');
             return false;
         }
 
         try {
-            console.log(`🔔 Playing ringtone: ${ringtoneType}`);
+            console.log(` Playing ringtone: ${ringtoneType}`);
 
             // Generate ringtone based on type
             const ringtoneFile = await this.generateRingtoneFile(ringtoneType);
@@ -282,7 +282,7 @@ class VLCAudioService extends EventEmitter {
 
             return true;
         } catch (error) {
-            console.error('❌ Failed to play ringtone:', error);
+            console.error(' Failed to play ringtone:', error);
             return false;
         }
     }
@@ -291,7 +291,7 @@ class VLCAudioService extends EventEmitter {
         if (this.currentRingtone) {
             this.currentRingtone.kill();
             this.currentRingtone = null;
-            console.log('✅ Ringtone stopped');
+            console.log(' Ringtone stopped');
         }
     }
 
@@ -342,7 +342,7 @@ class VLCAudioService extends EventEmitter {
 
     setVolume(volume) {
         this.volume = Math.max(0, Math.min(1, volume));
-        console.log(`🔊 VLC Audio volume set to ${Math.round(this.volume * 100)}%`);
+        console.log(` VLC Audio volume set to ${Math.round(this.volume * 100)}%`);
         this.emit('volumeChanged', this.volume);
     }
 
@@ -355,7 +355,7 @@ class VLCAudioService extends EventEmitter {
     }
 
     async shutdown() {
-        console.log('🎵 Shutting down VLC Audio Service...');
+        console.log(' Shutting down VLC Audio Service...');
 
         if (this.currentRingtone) {
             await this.stopRingtone();
@@ -380,7 +380,7 @@ class VLCAudioService extends EventEmitter {
         }
 
         this.isInitialized = false;
-        console.log('✅ VLC Audio Service shutdown complete');
+        console.log(' VLC Audio Service shutdown complete');
     }
 }
 

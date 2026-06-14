@@ -347,7 +347,7 @@ $admin_role = $_SESSION['admin_role'] ?? 'admin';
 <body>
     <div class="container">
         <div class="header">
-            <h1>✉️ Invite Users & Admins</h1>
+            <h1> Invite Users & Admins</h1>
             <p class="subtitle">
                 Admin: <?= htmlspecialchars($admin_username) ?>
                 <span class="admin-badge"><?= strtoupper(htmlspecialchars($admin_role)) ?></span>
@@ -387,21 +387,21 @@ $admin_role = $_SESSION['admin_role'] ?? 'admin';
                         <div class="role-cards">
                             <label class="role-card selected">
                                 <input type="radio" name="role" value="user" checked>
-                                <div class="role-icon">👤</div>
+                                <div class="role-icon"></div>
                                 <div class="role-title">User</div>
                                 <div class="role-desc">Standard user with extension</div>
                             </label>
 
                             <label class="role-card">
                                 <input type="radio" name="role" value="agent">
-                                <div class="role-icon">📞</div>
+                                <div class="role-icon"></div>
                                 <div class="role-title">Agent</div>
                                 <div class="role-desc">Call center agent</div>
                             </label>
 
                             <label class="role-card">
                                 <input type="radio" name="role" value="supervisor">
-                                <div class="role-icon">👔</div>
+                                <div class="role-icon"></div>
                                 <div class="role-title">Supervisor</div>
                                 <div class="role-desc">Team supervisor</div>
                             </label>
@@ -453,7 +453,7 @@ $admin_role = $_SESSION['admin_role'] ?? 'admin';
                     <div class="actions">
                         <a href="/admin/dashboard.html" class="btn btn-secondary">Cancel</a>
                         <button type="submit" class="btn btn-primary" id="send-btn">
-                            📧 Send Invitation
+                             Send Invitation
                         </button>
                     </div>
                 </form>
@@ -536,7 +536,7 @@ $admin_role = $_SESSION['admin_role'] ?? 'admin';
                 const data = await response.json();
 
                 if (data.success) {
-                    showAlert(`✓ Invitation sent to ${email}! ${data.email_sent ? 'Email delivered.' : 'Email queued.'}`, 'success');
+                    showAlert(` Invitation sent to ${email}! ${data.email_sent ? 'Email delivered.' : 'Email queued.'}`, 'success');
 
                     // Show invite URL
                     showAlert(`Invite URL: <input type="text" value="${data.invite_url}" readonly style="width: 100%; padding: 0.5rem; margin-top: 0.5rem;" onclick="this.select()">`, 'success');
@@ -554,7 +554,7 @@ $admin_role = $_SESSION['admin_role'] ?? 'admin';
                 showAlert('Failed to send invitation. Please try again.', 'error');
             } finally {
                 sendBtn.disabled = false;
-                sendBtn.textContent = '📧 Send Invitation';
+                sendBtn.textContent = ' Send Invitation';
             }
         }
 
@@ -599,7 +599,7 @@ $admin_role = $_SESSION['admin_role'] ?? 'admin';
                                 <span class="status-badge ${statusClass}">${invite.status}</span>
                             </div>
                             <div class="invite-meta">
-                                Role: ${invite.role} • Created: ${created} • Expires: ${expires}
+                                Role: ${invite.role} - Created: ${created} - Expires: ${expires}
                             </div>
                         </div>
                         ${invite.status === 'pending' ? `<button class="btn btn-danger btn-sm" onclick="revokeInvite('${invite.id}')">Revoke</button>` : ''}
@@ -630,7 +630,7 @@ $admin_role = $_SESSION['admin_role'] ?? 'admin';
                 const data = await response.json();
 
                 if (data.success) {
-                    showAlert('✓ Invitation revoked', 'success');
+                    showAlert(' Invitation revoked', 'success');
                     loadInvitations();
                 } else {
                     showAlert('Failed to revoke invitation: ' + data.error, 'error');

@@ -425,7 +425,7 @@ function postLoginTarget() {
 </head>
 <body>
     <div class="login-container">
-        <div class="icon">📞</div>
+        <div class="icon"></div>
 
         <div class="header">
             <h1>FlexPBX User Portal</h1>
@@ -435,30 +435,30 @@ function postLoginTarget() {
 
         <!-- Login Form - Top Section -->
         <div class="info-box">
-            🔒 Secure login for FlexPBX extension users.
+             Secure login for FlexPBX extension users.
         </div>
 
         <?php if (isset($_GET['logout']) && $_GET['logout'] === 'success'): ?>
         <div style="background: #d4edda; color: #155724; padding: 1rem; border-radius: 6px; margin-bottom: 1rem; border: 1px solid #c3e6cb;">
-            ✓ You have been successfully logged out.
+             You have been successfully logged out.
         </div>
         <?php endif; ?>
 
         <?php if (isset($_GET['error']) && $_GET['error'] === 'session_expired'): ?>
         <div class="alert" role="alert">
-            ⚠️ Your session has expired. Please log in again.
+             Your session has expired. Please log in again.
         </div>
         <?php endif; ?>
 
         <?php if (isset($_GET['error']) && $_GET['error'] === 'account_not_found'): ?>
         <div class="alert" role="alert">
-            ⚠️ Your account could not be found. Please contact support.
+             Your account could not be found. Please contact support.
         </div>
         <?php endif; ?>
 
         <?php if ($login_error): ?>
         <div class="alert" role="alert">
-            ⚠️ <?= htmlspecialchars($login_error) ?>
+             <?= htmlspecialchars($login_error) ?>
         </div>
         <?php endif; ?>
 
@@ -500,7 +500,7 @@ function postLoginTarget() {
                         aria-label="Toggle password visibility"
                         tabindex="-1"
                     >
-                        <span id="toggleIcon">👁️</span>
+                        <span id="toggleIcon"></span>
                     </button>
                 </div>
             </div>
@@ -544,7 +544,7 @@ function postLoginTarget() {
         <hr style="margin: 2rem 0; border: none; border-top: 1px solid #e0e0e0;">
 
         <div class="temp-password-lookup">
-            <h3>🔐 Need a temporary password?</h3>
+            <h3> Need a temporary password?</h3>
             <p style="font-size: 0.9rem; color: #666; margin-bottom: 1rem;">
                 If you haven't set your email yet, enter your extension or username below to get a temporary password:
             </p>
@@ -562,13 +562,13 @@ function postLoginTarget() {
 
         <!-- Loading Box -->
         <div class="loading-box" id="loading-box" style="display: none;">
-            <strong>🔐 Generating secure temporary password...</strong><br>
+            <strong> Generating secure temporary password...</strong><br>
             <small>Please wait...</small>
         </div>
 
         <!-- Temporary Password Display -->
         <div class="temp-password-box" id="temp-password-box">
-            <strong>🔒 Temporary Password:</strong><br>
+            <strong> Temporary Password:</strong><br>
             Extension/Username: <code id="temp-identifier-display">-</code><br>
             Password: <code id="temp-password-display">-</code>
             <button type="button" onclick="copyPassword()" style="margin-left: 10px; padding: 4px 8px; font-size: 0.8rem; cursor: pointer;" aria-label="Copy temporary password to clipboard">Copy</button>
@@ -600,11 +600,11 @@ function postLoginTarget() {
 
             if (passwordInput.type === 'password') {
                 passwordInput.type = 'text';
-                toggleIcon.textContent = '🙈';
+                toggleIcon.textContent = '';
                 passwordInput.setAttribute('aria-label', 'Password visible');
             } else {
                 passwordInput.type = 'password';
-                toggleIcon.textContent = '👁️';
+                toggleIcon.textContent = '';
                 passwordInput.setAttribute('aria-label', 'Password hidden');
             }
         }
@@ -674,7 +674,7 @@ function postLoginTarget() {
 
                 if (remaining <= 0) {
                     clearInterval(countdownInterval);
-                    timerElement.textContent = '⚠️ Password expired! Get new password.';
+                    timerElement.textContent = ' Password expired! Get new password.';
                     timerElement.style.color = '#c33';
 
                     // Clear password field
@@ -683,7 +683,7 @@ function postLoginTarget() {
                 } else {
                     const minutes = Math.floor(remaining / 60);
                     const seconds = remaining % 60;
-                    timerElement.textContent = `⏱️ Expires in: ${minutes}m ${seconds}s`;
+                    timerElement.textContent = ` Expires in: ${minutes}m ${seconds}s`;
 
                     if (remaining < 120) {
                         timerElement.style.color = '#ff6b6b';
@@ -698,7 +698,7 @@ function postLoginTarget() {
             navigator.clipboard.writeText(password).then(() => {
                 const btn = event.target;
                 const originalText = btn.textContent;
-                btn.textContent = '✓ Copied!';
+                btn.textContent = ' Copied!';
                 setTimeout(() => {
                     btn.textContent = originalText;
                 }, 2000);
@@ -722,8 +722,8 @@ function postLoginTarget() {
     <!-- Footer with Support Links -->
     <div style="text-align: center; margin-top: 40px; padding: 20px;">
         <p style="color: white; opacity: 0.9; margin-bottom: 15px;">
-            <a href="/admin/bug-tracker.php" style="color: white; text-decoration: underline; margin: 0 10px;">🐛 Report a Bug</a> |
-            <a href="mailto:support@devine-creations.com" style="color: white; text-decoration: underline; margin: 0 10px;">📧 Support</a>
+            <a href="/admin/bug-tracker.php" style="color: white; text-decoration: underline; margin: 0 10px;"> Report a Bug</a> |
+            <a href="mailto:support@devine-creations.com" style="color: white; text-decoration: underline; margin: 0 10px;"> Support</a>
         </p>
         <p style="color: white; opacity: 0.7; font-size: 0.9em;">
             Powered by <a href="https://devine-creations.com" target="_blank" style="color: white; text-decoration: underline;">Devine Creations</a> |

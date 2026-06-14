@@ -1,5 +1,5 @@
 /**
- * 🔊 FlexPhone Ringtone Service
+ *  FlexPhone Ringtone Service
  * Manages ringtones and audio notifications for FlexPhone
  */
 
@@ -70,16 +70,16 @@ class RingtoneService extends EventEmitter {
             }
         };
 
-        console.log('🔊 RingtoneService initialized');
+        console.log(' RingtoneService initialized');
     }
 
     async initialize() {
         try {
             // Initialize Web Audio API when needed
-            console.log('✅ RingtoneService ready');
+            console.log(' RingtoneService ready');
             return true;
         } catch (error) {
-            console.error('❌ RingtoneService initialization failed:', error);
+            console.error(' RingtoneService initialization failed:', error);
             return false;
         }
     }
@@ -101,11 +101,11 @@ class RingtoneService extends EventEmitter {
                 await this.playBuiltInRingtone(this.selectedRingtone);
             }
 
-            console.log(`🔊 Started ringing with '${this.selectedRingtone}' ringtone`);
+            console.log(` Started ringing with '${this.selectedRingtone}' ringtone`);
             this.emit('ringStart', { ringtone: this.selectedRingtone });
 
         } catch (error) {
-            console.error('❌ Failed to start ringing:', error);
+            console.error(' Failed to start ringing:', error);
             this.isPlaying = false;
         }
     }
@@ -125,7 +125,7 @@ class RingtoneService extends EventEmitter {
             this.currentRingtone = null;
         }
 
-        console.log('🔇 Stopped ringing');
+        console.log(' Stopped ringing');
         this.emit('ringStop');
     }
 
@@ -163,7 +163,7 @@ class RingtoneService extends EventEmitter {
     async playCustomRingtone() {
         // Implementation for custom ringtone files
         // This would load and play a custom audio file
-        console.log(`🎵 Playing custom ringtone: ${this.customRingtonePath}`);
+        console.log(` Playing custom ringtone: ${this.customRingtonePath}`);
 
         // Fallback to default if custom fails
         await this.playBuiltInRingtone('default');
@@ -258,10 +258,10 @@ class RingtoneService extends EventEmitter {
                 this.selectedRingtone = wasSelected; // Restore original selection
             }, 3000);
 
-            console.log(`🔊 Testing ringtone: ${testRingtone}`);
+            console.log(` Testing ringtone: ${testRingtone}`);
 
         } catch (error) {
-            console.error('❌ Failed to test ringtone:', error);
+            console.error(' Failed to test ringtone:', error);
         }
     }
 
@@ -277,7 +277,7 @@ class RingtoneService extends EventEmitter {
             this.selectedRingtone = 'default';
         }
 
-        console.log(`🔊 Ringtone set to: ${this.selectedRingtone}`);
+        console.log(` Ringtone set to: ${this.selectedRingtone}`);
         this.emit('ringtoneChanged', { ringtone: this.selectedRingtone });
     }
 
@@ -288,7 +288,7 @@ class RingtoneService extends EventEmitter {
         this.customRingtonePath = filePath;
         this.selectedRingtone = 'custom';
 
-        console.log(`🎵 Custom ringtone set: ${filePath}`);
+        console.log(` Custom ringtone set: ${filePath}`);
         this.emit('customRingtoneSet', { path: filePath });
     }
 
@@ -297,7 +297,7 @@ class RingtoneService extends EventEmitter {
      */
     setVolume(volume) {
         this.volume = Math.max(0, Math.min(1, volume));
-        console.log(`🔊 Ringtone volume set to: ${this.volume * 100}%`);
+        console.log(` Ringtone volume set to: ${this.volume * 100}%`);
     }
 
     /**
@@ -327,7 +327,7 @@ class RingtoneService extends EventEmitter {
      */
     async syncRemoteRingtones(serverUrl, authToken = null) {
         try {
-            console.log(`🌐 Syncing ringtones from remote server: ${serverUrl}`);
+            console.log(` Syncing ringtones from remote server: ${serverUrl}`);
 
             const headers = {
                 'Content-Type': 'application/json'
@@ -350,7 +350,7 @@ class RingtoneService extends EventEmitter {
             this.remoteRingtones = data.ringtones || [];
             this.lastRemoteSync = new Date();
 
-            console.log(`✅ Synced ${this.remoteRingtones.length} ringtones from remote server`);
+            console.log(` Synced ${this.remoteRingtones.length} ringtones from remote server`);
             this.emit('remoteRingtonesSynced', {
                 count: this.remoteRingtones.length,
                 server: serverUrl
@@ -359,7 +359,7 @@ class RingtoneService extends EventEmitter {
             return this.remoteRingtones;
 
         } catch (error) {
-            console.error('❌ Failed to sync remote ringtones:', error);
+            console.error(' Failed to sync remote ringtones:', error);
             this.emit('remoteRingtoneSyncFailed', { error: error.message });
             return [];
         }
@@ -370,7 +370,7 @@ class RingtoneService extends EventEmitter {
      */
     async syncLocalServerRingtones(serverUrl = 'http://localhost:8080') {
         try {
-            console.log(`🏠 Syncing ringtones from local FlexPBX server: ${serverUrl}`);
+            console.log(` Syncing ringtones from local FlexPBX server: ${serverUrl}`);
 
             const response = await fetch(`${serverUrl}/api/ringtones/list`, {
                 method: 'GET',
@@ -386,7 +386,7 @@ class RingtoneService extends EventEmitter {
             const data = await response.json();
             this.localServerRingtones = data.ringtones || [];
 
-            console.log(`✅ Synced ${this.localServerRingtones.length} ringtones from local server`);
+            console.log(` Synced ${this.localServerRingtones.length} ringtones from local server`);
             this.emit('localRingtonesSynced', {
                 count: this.localServerRingtones.length,
                 server: serverUrl
@@ -395,7 +395,7 @@ class RingtoneService extends EventEmitter {
             return this.localServerRingtones;
 
         } catch (error) {
-            console.error('❌ Failed to sync local server ringtones:', error);
+            console.error(' Failed to sync local server ringtones:', error);
             this.emit('localRingtoneSyncFailed', { error: error.message });
             return [];
         }
@@ -406,7 +406,7 @@ class RingtoneService extends EventEmitter {
      */
     async downloadRemoteRingtone(ringtoneId, serverUrl, authToken = null) {
         try {
-            console.log(`⬇️ Downloading ringtone ${ringtoneId} from ${serverUrl}`);
+            console.log(`⬇ Downloading ringtone ${ringtoneId} from ${serverUrl}`);
 
             const headers = {};
             if (authToken) {
@@ -432,13 +432,13 @@ class RingtoneService extends EventEmitter {
                 server: serverUrl
             };
 
-            console.log(`✅ Downloaded ringtone ${ringtoneId}`);
+            console.log(` Downloaded ringtone ${ringtoneId}`);
             this.emit('ringtoneDownloaded', { ringtoneId, server: serverUrl });
 
             return cachedRingtone;
 
         } catch (error) {
-            console.error(`❌ Failed to download ringtone ${ringtoneId}:`, error);
+            console.error(` Failed to download ringtone ${ringtoneId}:`, error);
             return null;
         }
     }
@@ -471,10 +471,10 @@ class RingtoneService extends EventEmitter {
 
             this.currentRingtone = source;
 
-            console.log(`🔊 Playing remote ringtone: ${ringtoneId}`);
+            console.log(` Playing remote ringtone: ${ringtoneId}`);
 
         } catch (error) {
-            console.error('❌ Failed to play remote ringtone:', error);
+            console.error(' Failed to play remote ringtone:', error);
             // Fallback to default ringtone
             await this.playBuiltInRingtone('default');
         }
@@ -546,7 +546,7 @@ class RingtoneService extends EventEmitter {
         const successful = results.filter(r => r.status === 'fulfilled').length;
         const failed = results.filter(r => r.status === 'rejected').length;
 
-        console.log(`🔄 Ringtone sync complete: ${successful} successful, ${failed} failed`);
+        console.log(` Ringtone sync complete: ${successful} successful, ${failed} failed`);
 
         this.emit('autoSyncComplete', { successful, failed, total: results.length });
 

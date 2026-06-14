@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 /**
  * FlexPBX Notifications Dropdown Component
  * Real-time notification bell with dropdown
@@ -258,7 +258,7 @@ if (!$user_id) {
 
 <div class="notification-bell-container">
     <div class="notification-bell" onclick="toggleNotificationDropdown()">
-        🔔
+
         <span class="notification-badge" id="notification-badge" style="display: none;">0</span>
     </div>
 
@@ -273,7 +273,7 @@ if (!$user_id) {
         </div>
 
         <div class="notification-dropdown-footer">
-            <a href="/user-portal/notifications.php" class="view-all-link">View All Notifications →</a>
+            <a href="/user-portal/notifications.php" class="view-all-link">View All Notifications -></a>
         </div>
     </div>
 </div>
@@ -321,13 +321,13 @@ if (!$user_id) {
                     renderDropdownNotifications(data.notifications);
                 } else {
                     document.getElementById('notification-dropdown-list').innerHTML =
-                        '<div class="notification-empty"><div class="notification-empty-icon">⚠️</div><p>Error loading notifications</p></div>';
+                        '<div class="notification-empty"><div class="notification-empty-icon"></div><p>Error loading notifications</p></div>';
                 }
             })
             .catch(error => {
                 console.error('Error loading notifications:', error);
                 document.getElementById('notification-dropdown-list').innerHTML =
-                    '<div class="notification-empty"><div class="notification-empty-icon">⚠️</div><p>Error loading notifications</p></div>';
+                    '<div class="notification-empty"><div class="notification-empty-icon"></div><p>Error loading notifications</p></div>';
             });
     }
 
@@ -338,7 +338,7 @@ if (!$user_id) {
         if (notifications.length === 0) {
             container.innerHTML = `
                 <div class="notification-empty">
-                    <div class="notification-empty-icon">📭</div>
+                    <div class="notification-empty-icon"></div>
                     <p>No new notifications</p>
                 </div>
             `;
@@ -370,16 +370,16 @@ if (!$user_id) {
     // Get icon for notification type
     function getNotificationIcon(type) {
         const icons = {
-            'system': '⚙️',
-            'call': '📞',
-            'voicemail': '📧',
-            'sms': '💬',
-            'alert': '⚠️',
-            'message': '💌',
-            'task': '📋',
-            'announcement': '📢'
+            'system': '',
+            'call': '',
+            'voicemail': '',
+            'sms': '',
+            'alert': '',
+            'message': '',
+            'task': '',
+            'announcement': ''
         };
-        return icons[type] || '🔔';
+        return icons[type] || '';
     }
 
     // Format notification time

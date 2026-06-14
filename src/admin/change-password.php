@@ -305,25 +305,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password']) &&
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔐 Change Administrator Password</h1>
+            <h1> Change Administrator Password</h1>
             <p class="subtitle">User: <?= htmlspecialchars($admin_username) ?></p>
             <span class="admin-badge">ADMIN</span>
         </div>
 
         <div class="card">
             <div class="security-notice">
-                <strong>🔒 Administrator Security:</strong> As an admin, you must use a strong password. Your password protects critical system access and should be unique and complex.
+                <strong> Administrator Security:</strong> As an admin, you must use a strong password. Your password protects critical system access and should be unique and complex.
             </div>
 
             <?php if ($error): ?>
             <div class="alert alert-error" role="alert">
-                ⚠️ <?= htmlspecialchars($error) ?>
+                 <?= htmlspecialchars($error) ?>
             </div>
             <?php endif; ?>
 
             <?php if ($success): ?>
             <div class="alert alert-success" role="alert">
-                ✓ <?= htmlspecialchars($success) ?>
+                 <?= htmlspecialchars($success) ?>
             </div>
             <?php endif; ?>
 
@@ -403,13 +403,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['change_password']) &&
 
             if (strength <= 2) {
                 indicator.className += ' strength-weak';
-                indicator.textContent = '⚠️ Weak password - add more complexity';
+                indicator.textContent = ' Weak password - add more complexity';
             } else if (strength <= 4) {
                 indicator.className += ' strength-medium';
-                indicator.textContent = '⚡ Medium strength - consider adding special characters';
+                indicator.textContent = ' Medium strength - consider adding special characters';
             } else {
                 indicator.className += ' strength-strong';
-                indicator.textContent = '✓ Strong password';
+                indicator.textContent = ' Strong password';
             }
         });
 

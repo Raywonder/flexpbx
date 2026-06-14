@@ -67,10 +67,10 @@ try {
                 $config = json_decode(file_get_contents($configFile), true);
                 // Hide sensitive data
                 if (isset($config['api_key'])) {
-                    $config['api_key'] = '••••••••' . substr($config['api_key'], -4);
+                    $config['api_key'] = '--------' . substr($config['api_key'], -4);
                 }
                 if (isset($config['api_secret'])) {
-                    $config['api_secret'] = '••••••••';
+                    $config['api_secret'] = '--------';
                 }
                 echo json_encode([
                     'success' => true,

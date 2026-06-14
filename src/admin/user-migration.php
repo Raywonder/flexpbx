@@ -345,12 +345,12 @@ if (!in_array($admin_role, $allowed_roles)) {
 <body>
     <div class="container">
         <div class="header">
-            <h1>👥 User Migration & Re-Assignment</h1>
+            <h1> User Migration & Re-Assignment</h1>
             <p>Move users between extensions and departments with automatic queue and data updates</p>
         </div>
 
         <div class="nav-links">
-            <a href="/admin/dashboard.php">← Back to Dashboard</a>
+            <a href="/admin/dashboard.php"><- Back to Dashboard</a>
             <a href="/admin/department-management.php">Department Management</a>
             <a href="/admin/send-invite.php">Invite Users</a>
             <a href="/admin/admin-extensions-management.php">Extensions Management</a>
@@ -367,7 +367,7 @@ if (!in_array($admin_role, $allowed_roles)) {
         <!-- Tab 1: Migrate User (Combined) -->
         <div id="migrate-user" class="tab-content active">
             <div class="alert alert-info">
-                <strong>ℹ️ Complete User Migration</strong><br>
+                <strong>ℹ Complete User Migration</strong><br>
                 This tool migrates a user with options to change extension number, department, queue assignments, and more.
                 All user data (voicemail, call history, settings) will be preserved.
             </div>
@@ -406,11 +406,11 @@ if (!in_array($admin_role, $allowed_roles)) {
                     </div>
 
                     <div class="alert alert-warning">
-                        <strong>⚠️ Extension Change Impact:</strong><br>
-                        • User must update third-party SIP clients (softphones, desk phones)<br>
-                        • FlexPhone web client auto-updates (no action needed)<br>
-                        • User portal auto-updates (no action needed)<br>
-                        • All queue memberships will be updated automatically
+                        <strong> Extension Change Impact:</strong><br>
+                        - User must update third-party SIP clients (softphones, desk phones)<br>
+                        - FlexPhone web client auto-updates (no action needed)<br>
+                        - User portal auto-updates (no action needed)<br>
+                        - All queue memberships will be updated automatically
                     </div>
                 </div>
 
@@ -469,7 +469,7 @@ if (!in_array($admin_role, $allowed_roles)) {
         <!-- Tab 2: Quick Extension Change -->
         <div id="change-extension" class="tab-content">
             <div class="alert alert-info">
-                <strong>ℹ️ Quick Extension Change</strong><br>
+                <strong>ℹ Quick Extension Change</strong><br>
                 Change a user's extension number only. Department and queue memberships remain unchanged.
             </div>
 
@@ -508,7 +508,7 @@ if (!in_array($admin_role, $allowed_roles)) {
         <!-- Tab 3: Move Department -->
         <div id="move-department" class="tab-content">
             <div class="alert alert-info">
-                <strong>ℹ️ Department Transfer</strong><br>
+                <strong>ℹ Department Transfer</strong><br>
                 Move user to a different department. Extension number remains the same.
             </div>
 
@@ -547,7 +547,7 @@ if (!in_array($admin_role, $allowed_roles)) {
         <!-- Tab 4: Bulk Migration -->
         <div id="bulk-migration" class="tab-content">
             <div class="alert alert-info">
-                <strong>ℹ️ Bulk User Migration</strong><br>
+                <strong>ℹ Bulk User Migration</strong><br>
                 Move multiple users at once. Useful for department mergers or reorganization.
             </div>
 
@@ -581,7 +581,7 @@ if (!in_array($admin_role, $allowed_roles)) {
         <!-- Tab 5: Migration History -->
         <div id="history" class="tab-content">
             <div class="alert alert-info">
-                <strong>ℹ️ Migration History</strong><br>
+                <strong>ℹ Migration History</strong><br>
                 View all user migrations, extension changes, and department transfers.
             </div>
 
@@ -745,10 +745,10 @@ if (!in_array($admin_role, $allowed_roles)) {
             .then(r => r.json())
             .then(result => {
                 if (result.success) {
-                    alert('✅ Migration completed successfully!\n\n' + result.message);
+                    alert(' Migration completed successfully!\n\n' + result.message);
                     location.reload();
                 } else {
-                    alert('❌ Migration failed: ' + result.error);
+                    alert(' Migration failed: ' + result.error);
                 }
             });
         }

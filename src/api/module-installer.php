@@ -259,10 +259,10 @@ function downloadFile($url, $destination) {
         }
 
         if ($result) {
-            logMessage("✓ Download successful via {$protocol}");
+            logMessage(" Download successful via {$protocol}");
             return true;
         } else {
-            logMessage("✗ Failed via {$protocol}, trying next method...");
+            logMessage(" Failed via {$protocol}, trying next method...");
         }
     }
 

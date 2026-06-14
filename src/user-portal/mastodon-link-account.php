@@ -144,7 +144,7 @@ $instances = $instancesStmt->fetchAll(PDO::FETCH_ASSOC);
                                 <input type="url" class="form-control" id="customInstance"
                                        placeholder="https://mastodon.example.com">
                                 <small class="form-text text-muted">
-                                    ⚠️ Use at your own risk. Only trusted instances are recommended.
+                                     Use at your own risk. Only trusted instances are recommended.
                                 </small>
                             </div>
 

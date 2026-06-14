@@ -469,13 +469,13 @@ $current_admin_username = $_SESSION['admin_username'] ?? 'admin';
     <div class="container">
         <div class="header">
             <h1>
-                <span>🏢</span>
+                <span></span>
                 Department Management
             </h1>
             <div class="header-actions">
                 <button class="btn btn-primary" onclick="openCreateDepartmentModal()">+ New Department</button>
-                <button class="btn btn-secondary" onclick="refreshData()">🔄 Refresh</button>
-                <a href="/admin/dashboard.html" class="btn btn-secondary">← Dashboard</a>
+                <button class="btn btn-secondary" onclick="refreshData()"> Refresh</button>
+                <a href="/admin/dashboard.html" class="btn btn-secondary"><- Dashboard</a>
             </div>
         </div>
 

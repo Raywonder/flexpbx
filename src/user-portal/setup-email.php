@@ -326,7 +326,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['set_email'])) {
 </head>
 <body>
     <div class="setup-container">
-        <div class="icon">📧</div>
+        <div class="icon"></div>
 
         <div class="header">
             <h1>Setup Your Email Address</h1>
@@ -340,13 +340,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['set_email'])) {
 
         <?php if ($error): ?>
         <div class="alert alert-error" role="alert">
-            ⚠️ <?= htmlspecialchars($error) ?>
+             <?= htmlspecialchars($error) ?>
         </div>
         <?php endif; ?>
 
         <?php if ($success): ?>
         <div class="alert alert-success" role="alert">
-            ✓ <?= htmlspecialchars($success) ?>
+             <?= htmlspecialchars($success) ?>
             <br><small>Redirecting to dashboard...</small>
         </div>
         <?php else: ?>

@@ -288,7 +288,7 @@ function getInstallInstructions() {
             'automatic' => [
                 'description' => 'Automatic installation via FlexPBX module manager',
                 'steps' => [
-                    '1. Go to Admin → Modules → Available Modules',
+                    '1. Go to Admin -> Modules -> Available Modules',
                     '2. Search for "FlexPBX MOH Provider"',
                     '3. Click "Install"',
                     '4. Select desired streams',

@@ -797,7 +797,7 @@
                                                     </div>
                                                     <small class="text-muted">Oct 13, 2:23 PM</small>
                                                 </div>
-                                                <div class="text-muted">Duration: 12m 34s • Status: In Progress</div>
+                                                <div class="text-muted">Duration: 12m 34s - Status: In Progress</div>
                                             </div>
                                             <div class="call-history-item">
                                                 <div class="d-flex justify-content-between">
@@ -807,7 +807,7 @@
                                                     </div>
                                                     <small class="text-muted">Oct 13, 1:45 PM</small>
                                                 </div>
-                                                <div class="text-muted">Duration: 8m 22s • Status: Completed</div>
+                                                <div class="text-muted">Duration: 8m 22s - Status: Completed</div>
                                             </div>
                                             <div class="call-history-item">
                                                 <div class="d-flex justify-content-between">
@@ -817,7 +817,7 @@
                                                     </div>
                                                     <small class="text-muted">Oct 13, 1:20 PM</small>
                                                 </div>
-                                                <div class="text-muted">Duration: 3m 45s • Status: Completed</div>
+                                                <div class="text-muted">Duration: 3m 45s - Status: Completed</div>
                                             </div>
                                         </div>
                                     </div>

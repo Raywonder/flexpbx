@@ -1,5 +1,5 @@
 /**
- * 🔒 FlexPhone Preload Script
+ *  FlexPhone Preload Script
  * Secure bridge between main and renderer processes
  */
 
@@ -113,4 +113,4 @@ contextBridge.exposeInMainWorld('flexPhoneAPI', {
     }
 });
 
-console.log('🔒 FlexPhone preload script loaded');
+console.log(' FlexPhone preload script loaded');

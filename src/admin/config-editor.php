@@ -284,11 +284,11 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>⚙️ Configuration Editor</h1>
+            <h1> Configuration Editor</h1>
             <p class="tagline">A system you can help build to be the best it can be. Accessible by default.</p>
 
             <div class="nav-buttons">
-                <a href="dashboard.html" class="nav-button">← Back to Dashboard</a>
+                <a href="dashboard.html" class="nav-button"><- Back to Dashboard</a>
                 <a href="payment-management.html" class="nav-button">Payment Management</a>
                 <a href="bug-tracker.php" class="nav-button">Bug Tracker</a>
             </div>
@@ -299,7 +299,7 @@
         <div class="config-grid" id="config-grid">
             <div class="config-card">
                 <h3>
-                    <span class="icon">💳</span>
+                    <span class="icon"></span>
                     Payment Config
                     <span class="config-status status-missing" id="status-payment">Loading...</span>
                 </h3>
@@ -309,7 +309,7 @@
 
             <div class="config-card">
                 <h3>
-                    <span class="icon">🔑</span>
+                    <span class="icon"></span>
                     Licensing Config
                     <span class="config-status status-missing" id="status-licensing">Loading...</span>
                 </h3>
@@ -319,7 +319,7 @@
 
             <div class="config-card">
                 <h3>
-                    <span class="icon">👥</span>
+                    <span class="icon"></span>
                     Extensions Config
                     <span class="config-status status-missing" id="status-extensions">Loading...</span>
                 </h3>
@@ -329,7 +329,7 @@
 
             <div class="config-card">
                 <h3>
-                    <span class="icon">📞</span>
+                    <span class="icon"></span>
                     Trunk Config (CallCentric)
                     <span class="config-status status-missing" id="status-callcentric">Loading...</span>
                 </h3>
@@ -339,7 +339,7 @@
 
             <div class="config-card">
                 <h3>
-                    <span class="icon">☁️</span>
+                    <span class="icon"></span>
                     Google Voice Config
                     <span class="config-status status-missing" id="status-google-voice">Loading...</span>
                 </h3>
@@ -349,7 +349,7 @@
 
             <div class="config-card">
                 <h3>
-                    <span class="icon">🎬</span>
+                    <span class="icon"></span>
                     Jellyfin Integration
                     <span class="config-status status-missing" id="status-jellyfin">Loading...</span>
                 </h3>
@@ -359,7 +359,7 @@
 
             <div class="config-card">
                 <h3>
-                    <span class="icon">🎵</span>
+                    <span class="icon"></span>
                     Conference Music
                     <span class="config-status status-missing" id="status-conference-music">Loading...</span>
                 </h3>
@@ -369,7 +369,7 @@
 
             <div class="config-card">
                 <h3>
-                    <span class="icon">🟢</span>
+                    <span class="icon"></span>
                     Presence Status
                     <span class="config-status status-missing" id="status-presence">Loading...</span>
                 </h3>
@@ -398,9 +398,9 @@
             <textarea id="config-editor" placeholder="Loading configuration..."></textarea>
 
             <div class="button-group">
-                <button class="button" onclick="saveConfig()">💾 Save Configuration</button>
-                <button class="button button-secondary" onclick="validateJSON()">✓ Validate JSON</button>
-                <button class="button button-danger" onclick="closeEditor()">✕ Cancel</button>
+                <button class="button" onclick="saveConfig()"> Save Configuration</button>
+                <button class="button button-secondary" onclick="validateJSON()"> Validate JSON</button>
+                <button class="button button-danger" onclick="closeEditor()"> Cancel</button>
             </div>
         </div>
     </div>
@@ -556,7 +556,7 @@
 
             try {
                 const parsed = JSON.parse(content);
-                showEditorAlert('success', '✓ Valid JSON! ' + Object.keys(parsed).length + ' keys found.');
+                showEditorAlert('success', ' Valid JSON! ' + Object.keys(parsed).length + ' keys found.');
             } catch (error) {
                 showEditorAlert('error', 'Invalid JSON: ' + error.message);
             }

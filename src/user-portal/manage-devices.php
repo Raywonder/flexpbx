@@ -197,15 +197,15 @@ $username = $_SESSION['user_username'] ?? $extension;
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔐 Manage Remembered Devices</h1>
-            <p class="subtitle">Extension <?= htmlspecialchars($extension) ?> • <?= htmlspecialchars($username) ?></p>
+            <h1> Manage Remembered Devices</h1>
+            <p class="subtitle">Extension <?= htmlspecialchars($extension) ?> - <?= htmlspecialchars($username) ?></p>
         </div>
 
         <div class="card">
             <h2>Your Remembered Devices</h2>
 
             <div class="alert alert-info">
-                ℹ️ These are devices where you've selected "Remember me" during login. You'll stay logged in on these devices for 30 days.
+                ℹ These are devices where you've selected "Remember me" during login. You'll stay logged in on these devices for 30 days.
             </div>
 
             <div id="devices-list">
@@ -214,10 +214,10 @@ $username = $_SESSION['user_username'] ?? $extension;
 
             <div class="actions">
                 <button onclick="revokeAllDevices()" class="btn btn-warning" id="revoke-all-btn" style="display: none;">
-                    🚫 Forget All Devices
+                     Forget All Devices
                 </button>
                 <a href="/user-portal/" class="btn btn-secondary" style="margin-left: 1rem;">
-                    ← Back to Dashboard
+                    <- Back to Dashboard
                 </a>
             </div>
         </div>
@@ -243,7 +243,7 @@ $username = $_SESSION['user_username'] ?? $extension;
                 } else {
                     document.getElementById('devices-list').innerHTML = `
                         <div class="empty-state">
-                            <div class="empty-state-icon">⚠️</div>
+                            <div class="empty-state-icon"></div>
                             <p>Error loading devices: ${data.error}</p>
                         </div>
                     `;
@@ -252,7 +252,7 @@ $username = $_SESSION['user_username'] ?? $extension;
                 console.error('Failed to load devices:', error);
                 document.getElementById('devices-list').innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-state-icon">⚠️</div>
+                        <div class="empty-state-icon"></div>
                         <p>Failed to load devices. Please try again.</p>
                     </div>
                 `;
@@ -266,7 +266,7 @@ $username = $_SESSION['user_username'] ?? $extension;
             if (devices.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-state-icon">📱</div>
+                        <div class="empty-state-icon"></div>
                         <p><strong>No remembered devices</strong></p>
                         <p>When you check "Remember me" during login, devices will appear here.</p>
                     </div>
@@ -309,15 +309,15 @@ $username = $_SESSION['user_username'] ?? $extension;
 
         // Parse browser from user agent
         function parseBrowser(userAgent) {
-            if (!userAgent) return { name: 'Unknown Browser', icon: '🌐' };
+            if (!userAgent) return { name: 'Unknown Browser', icon: '' };
 
-            if (userAgent.includes('Firefox')) return { name: 'Firefox', icon: '🦊' };
-            if (userAgent.includes('Chrome') && !userAgent.includes('Edg')) return { name: 'Chrome', icon: '🔵' };
-            if (userAgent.includes('Safari') && !userAgent.includes('Chrome')) return { name: 'Safari', icon: '🧭' };
-            if (userAgent.includes('Edg')) return { name: 'Edge', icon: '🌊' };
-            if (userAgent.includes('Opera') || userAgent.includes('OPR')) return { name: 'Opera', icon: '🎭' };
+            if (userAgent.includes('Firefox')) return { name: 'Firefox', icon: '' };
+            if (userAgent.includes('Chrome') && !userAgent.includes('Edg')) return { name: 'Chrome', icon: '' };
+            if (userAgent.includes('Safari') && !userAgent.includes('Chrome')) return { name: 'Safari', icon: '' };
+            if (userAgent.includes('Edg')) return { name: 'Edge', icon: '' };
+            if (userAgent.includes('Opera') || userAgent.includes('OPR')) return { name: 'Opera', icon: '' };
 
-            return { name: 'Unknown Browser', icon: '🌐' };
+            return { name: 'Unknown Browser', icon: '' };
         }
 
         // Revoke a specific device
@@ -327,7 +327,7 @@ $username = $_SESSION['user_username'] ?? $extension;
             let message = `Are you sure you want to forget this device?\n\nIP: ${device.ip}\nBrowser: ${parseBrowser(device.user_agent).name}`;
 
             if (device.is_current) {
-                message += '\n\n⚠️ This is your current device. You will be logged out.';
+                message += '\n\n This is your current device. You will be logged out.';
             }
 
             if (!confirm(message)) {
@@ -345,24 +345,24 @@ $username = $_SESSION['user_username'] ?? $extension;
 
                 if (data.success) {
                     if (device.is_current) {
-                        alert('✓ Device forgotten. You will be logged out.');
+                        alert(' Device forgotten. You will be logged out.');
                         window.location.href = '/user-portal/login.php';
                     } else {
-                        alert('✓ Device forgotten successfully');
+                        alert(' Device forgotten successfully');
                         loadDevices();
                     }
                 } else {
-                    alert('⚠️ Error: ' + data.error);
+                    alert(' Error: ' + data.error);
                 }
             } catch (error) {
                 console.error('Failed to revoke device:', error);
-                alert('⚠️ Failed to revoke device. Please try again.');
+                alert(' Failed to revoke device. Please try again.');
             }
         }
 
         // Revoke all devices
         async function revokeAllDevices() {
-            if (!confirm('⚠️ Are you sure you want to forget ALL devices?\n\nYou will be logged out and will need to login again on all devices.')) {
+            if (!confirm(' Are you sure you want to forget ALL devices?\n\nYou will be logged out and will need to login again on all devices.')) {
                 return;
             }
 
@@ -376,14 +376,14 @@ $username = $_SESSION['user_username'] ?? $extension;
                 const data = await response.json();
 
                 if (data.success) {
-                    alert('✓ All devices forgotten. You will be logged out.');
+                    alert(' All devices forgotten. You will be logged out.');
                     window.location.href = '/user-portal/login.php';
                 } else {
-                    alert('⚠️ Error: ' + data.error);
+                    alert(' Error: ' + data.error);
                 }
             } catch (error) {
                 console.error('Failed to revoke all devices:', error);
-                alert('⚠️ Failed to revoke devices. Please try again.');
+                alert(' Failed to revoke devices. Please try again.');
             }
         }
     </script>

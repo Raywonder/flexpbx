@@ -39,34 +39,34 @@ try {
         $config['db_password'],
         [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
     );
-    echo "[✓] Database connected\n";
+    echo "[] Database connected\n";
 } catch (PDOException $e) {
-    die("[✗] Database connection failed: " . $e->getMessage() . "\n");
+    die("[] Database connection failed: " . $e->getMessage() . "\n");
 }
 
 // Initialize SMS Provider Manager
 $manager = new SMSProviderManager($pdo);
-echo "[✓] SMS Provider Manager initialized\n\n";
+echo "[] SMS Provider Manager initialized\n\n";
 
 // Check TextNow provider status
 echo "--- Checking TextNow Provider Status ---\n";
 $provider = $manager->getProvider('textnow');
 
 if (!$provider) {
-    die("[✗] TextNow provider not found in database\n");
+    die("[] TextNow provider not found in database\n");
 }
 
-echo "[✓] Provider ID: " . $provider['id'] . "\n";
-echo "[✓] Provider Name: " . $provider['provider_name'] . "\n";
-echo "[✓] Phone Number: " . ($provider['phone_number'] ?? 'Not set') . "\n";
-echo "[✓] Enabled: " . ($provider['enabled'] ? 'Yes' : 'No') . "\n";
-echo "[✓] Priority: " . $provider['priority'] . "\n\n";
+echo "[] Provider ID: " . $provider['id'] . "\n";
+echo "[] Provider Name: " . $provider['provider_name'] . "\n";
+echo "[] Phone Number: " . ($provider['phone_number'] ?? 'Not set') . "\n";
+echo "[] Enabled: " . ($provider['enabled'] ? 'Yes' : 'No') . "\n";
+echo "[] Priority: " . $provider['priority'] . "\n\n";
 
 if (!$provider['enabled']) {
     echo "[!] WARNING: Provider is disabled. Enabling it now...\n";
     $stmt = $pdo->prepare("UPDATE sms_providers SET enabled = 1 WHERE id = ?");
     $stmt->execute([$provider['id']]);
-    echo "[✓] Provider enabled\n\n";
+    echo "[] Provider enabled\n\n";
 }
 
 // Test 1: Send SMS
@@ -91,7 +91,7 @@ try {
     $emailToSMS = sendViaEmailGateway($testNumber, $testMessage);
 
     if ($emailToSMS) {
-        echo "[✓] SMS sent successfully via email gateway\n";
+        echo "[] SMS sent successfully via email gateway\n";
 
         // Log to database
         $messageId = $manager->logMessage(
@@ -108,13 +108,13 @@ try {
             ]
         );
 
-        echo "[✓] Message logged to database (ID: $messageId)\n";
+        echo "[] Message logged to database (ID: $messageId)\n";
     } else {
-        echo "[✗] Failed to send SMS\n";
+        echo "[] Failed to send SMS\n";
     }
 
 } catch (Exception $e) {
-    echo "[✗] Error: " . $e->getMessage() . "\n";
+    echo "[] Error: " . $e->getMessage() . "\n";
 }
 
 echo "\n";
@@ -150,7 +150,7 @@ try {
     $messages = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     if (count($messages) > 0) {
-        echo "[✓] Found " . count($messages) . " recent message(s) from test number:\n\n";
+        echo "[] Found " . count($messages) . " recent message(s) from test number:\n\n";
 
         foreach ($messages as $msg) {
             echo "  Message ID: " . $msg['id'] . "\n";
@@ -168,7 +168,7 @@ try {
     }
 
 } catch (PDOException $e) {
-    echo "[✗] Error checking messages: " . $e->getMessage() . "\n";
+    echo "[] Error checking messages: " . $e->getMessage() . "\n";
 }
 
 // Test 4: Get all recent TextNow activity
@@ -186,19 +186,19 @@ try {
     $stmt->execute();
     $recentMessages = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    echo "[✓] Found " . count($recentMessages) . " TextNow message(s) in the last hour\n\n";
+    echo "[] Found " . count($recentMessages) . " TextNow message(s) in the last hour\n\n";
 
     if (count($recentMessages) > 0) {
         echo "Recent Activity:\n";
         foreach ($recentMessages as $msg) {
-            $direction = $msg['direction'] === 'outbound' ? '→' : '←';
-            echo "  {$direction} {$msg['created_at']} | {$msg['from_number']} → {$msg['to_number']}\n";
+            $direction = $msg['direction'] === 'outbound' ? '->' : '<-';
+            echo "  {$direction} {$msg['created_at']} | {$msg['from_number']} -> {$msg['to_number']}\n";
             echo "     " . substr($msg['message_body'], 0, 60) . "...\n";
         }
     }
 
 } catch (PDOException $e) {
-    echo "[✗] Error: " . $e->getMessage() . "\n";
+    echo "[] Error: " . $e->getMessage() . "\n";
 }
 
 echo "\n";

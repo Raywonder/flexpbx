@@ -1,11 +1,11 @@
 #!/bin/bash
 
-# 📞 FlexPBX Complete Test Suite
+#  FlexPBX Complete Test Suite
 # Comprehensive testing script for FlexPBX server functionality
 # Version: 2.1.0
 # Author: Devine Creations LLC
 
-echo "🚀 FlexPBX Server Test Suite v2.1.0"
+echo " FlexPBX Server Test Suite v2.1.0"
 echo "===================================="
 echo ""
 
@@ -392,7 +392,7 @@ main() {
 
     # Summary
     echo "=========================================="
-    echo "🏁 TEST SUMMARY"
+    echo " TEST SUMMARY"
     echo "=========================================="
     echo "Total Tests: $TOTAL_TESTS"
     echo -e "Passed: ${GREEN}$TESTS_PASSED${NC}"
@@ -400,22 +400,22 @@ main() {
     echo ""
 
     if [ $TESTS_FAILED -eq 0 ]; then
-        echo -e "${GREEN}✅ ALL TESTS PASSED!${NC}"
+        echo -e "${GREEN} ALL TESTS PASSED!${NC}"
         echo "FlexPBX system appears ready for production use."
     else
-        echo -e "${YELLOW}⚠️  SOME TESTS FAILED${NC}"
+        echo -e "${YELLOW}  SOME TESTS FAILED${NC}"
         echo "Review failed tests before production deployment."
     fi
 
     echo ""
-    echo "📋 Next Steps:"
+    echo " Next Steps:"
     echo "1. Upload organized files to server using file manager"
     echo "2. Start FlexPBX service on server"
     echo "3. Configure extensions and trunks via admin interface"
     echo "4. Test SIP client registration with extension 2001"
     echo "5. Test inbound calls from Callcentric network"
     echo ""
-    echo "🎯 Quick Test: Try calling sip:101@flexpbx.devinecreations.net"
+    echo " Quick Test: Try calling sip:101@flexpbx.devinecreations.net"
     echo ""
 }
 

@@ -443,7 +443,7 @@ require_once __DIR__ . '/user_auth_check.php';
 <body>
     <div class="container">
         <div class="header">
-            <h1>💬 SMS Messaging</h1>
+            <h1> SMS Messaging</h1>
             <div class="phone-info">
                 <strong>Your Number:</strong> <span id="myPhoneNumber">Loading...</span>
             </div>
@@ -458,7 +458,7 @@ require_once __DIR__ . '/user_auth_check.php';
                 </div>
                 <div class="conversations-list" id="conversationsList">
                     <div class="empty-state">
-                        <div class="empty-state-icon">💬</div>
+                        <div class="empty-state-icon"></div>
                         <p>No conversations yet</p>
                         <p style="font-size: 14px; margin-top: 10px;">Start a new message to begin</p>
                     </div>
@@ -468,7 +468,7 @@ require_once __DIR__ . '/user_auth_check.php';
             <!-- Chat Panel -->
             <div class="chat-panel">
                 <div id="chatEmpty" class="empty-state" style="height: 100%;">
-                    <div class="empty-state-icon">📱</div>
+                    <div class="empty-state-icon"></div>
                     <p>Select a conversation to view messages</p>
                     <p style="font-size: 14px; margin-top: 10px;">or start a new conversation</p>
                 </div>
@@ -484,7 +484,7 @@ require_once __DIR__ . '/user_auth_check.php';
                     </div>
 
                     <div class="compose-area">
-                        <button class="templates-btn" onclick="showTemplatesModal()">📝 Templates</button>
+                        <button class="templates-btn" onclick="showTemplatesModal()"> Templates</button>
                         <div class="compose-row" style="margin-top: 10px;">
                             <textarea
                                 id="messageInput"
@@ -633,7 +633,7 @@ require_once __DIR__ . '/user_auth_check.php';
             if (Object.keys(conversations).length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-state-icon">💬</div>
+                        <div class="empty-state-icon"></div>
                         <p>No conversations yet</p>
                         <p style="font-size: 14px; margin-top: 10px;">Start a new message to begin</p>
                     </div>

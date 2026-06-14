@@ -161,17 +161,17 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>💬 XMPP Configuration</h1>
+            <h1> XMPP Configuration</h1>
             <p class="subtitle">Real-time Messaging & Presence for FlexPBX</p>
         </div>
 
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('overview')">📊 Overview</button>
-            <button class="tab" onclick="switchTab('server')">🖥️ Server Settings</button>
-            <button class="tab" onclick="switchTab('users')">👥 XMPP Users</button>
-            <button class="tab" onclick="switchTab('presence')">📡 Presence Status</button>
-            <button class="tab" onclick="switchTab('advanced')">⚙️ Advanced</button>
-            <button class="tab" onclick="switchTab('help')">❓ Help</button>
+            <button class="tab active" onclick="switchTab('overview')"> Overview</button>
+            <button class="tab" onclick="switchTab('server')"> Server Settings</button>
+            <button class="tab" onclick="switchTab('users')"> XMPP Users</button>
+            <button class="tab" onclick="switchTab('presence')"> Presence Status</button>
+            <button class="tab" onclick="switchTab('advanced')"> Advanced</button>
+            <button class="tab" onclick="switchTab('help')"> Help</button>
         </div>
 
         <!-- Overview Tab -->
@@ -184,7 +184,7 @@
                     <span class="status-indicator status-offline"></span>
                     Checking server status...
                 </p>
-                <button class="btn" onclick="checkServerStatus()">🔄 Refresh Status</button>
+                <button class="btn" onclick="checkServerStatus()"> Refresh Status</button>
             </div>
 
             <div class="two-col">
@@ -199,7 +199,7 @@
             </div>
 
             <div class="alert alert-info">
-                <strong>💡 Quick Setup:</strong>
+                <strong> Quick Setup:</strong>
                 <ol style="margin-left: 20px; margin-top: 10px;">
                     <li>Install Prosody XMPP server (Server Settings tab)</li>
                     <li>Configure Asterisk XMPP module (Advanced tab)</li>
@@ -214,7 +214,7 @@
             <h2>XMPP Server Configuration</h2>
 
             <div class="alert alert-warning">
-                <strong>⚠️ Prerequisites:</strong> Prosody XMPP server must be installed. Run: <code>yum install prosody</code> or <code>apt-get install prosody</code>
+                <strong> Prerequisites:</strong> Prosody XMPP server must be installed. Run: <code>yum install prosody</code> or <code>apt-get install prosody</code>
             </div>
 
             <div class="form-group">
@@ -258,8 +258,8 @@
                 </label>
             </div>
 
-            <button class="btn" onclick="saveServerSettings()">💾 Save Server Settings</button>
-            <button class="btn btn-success" onclick="testConnection()">🔌 Test Connection</button>
+            <button class="btn" onclick="saveServerSettings()"> Save Server Settings</button>
+            <button class="btn btn-success" onclick="testConnection()"> Test Connection</button>
 
             <h3 style="margin-top: 30px;">Prosody Installation</h3>
 
@@ -278,7 +278,7 @@ systemctl start prosody
 systemctl status prosody
             </div>
 
-            <button class="btn" onclick="generateProsodyConfig()">📄 Generate Prosody Config</button>
+            <button class="btn" onclick="generateProsodyConfig()"> Generate Prosody Config</button>
         </div>
 
         <!-- XMPP Users Tab -->
@@ -286,8 +286,8 @@ systemctl status prosody
             <h2>XMPP User Accounts</h2>
 
             <div style="margin-bottom: 20px;">
-                <button class="btn" onclick="autoProvisionAll()">🔄 Auto-Provision All Extensions</button>
-                <button class="btn btn-success" onclick="showAddUserModal()">➕ Add Manual Account</button>
+                <button class="btn" onclick="autoProvisionAll()"> Auto-Provision All Extensions</button>
+                <button class="btn btn-success" onclick="showAddUserModal()"> Add Manual Account</button>
             </div>
 
             <div id="xmpp-users-list">
@@ -315,7 +315,7 @@ systemctl status prosody
             <h2>Real-Time Presence Status</h2>
 
             <div style="margin-bottom: 20px;">
-                <button class="btn" onclick="refreshPresence()">🔄 Refresh</button>
+                <button class="btn" onclick="refreshPresence()"> Refresh</button>
             </div>
 
             <div id="presence-list"></div>
@@ -396,8 +396,8 @@ systemctl status prosody
                 </select>
             </div>
 
-            <button class="btn" onclick="saveAdvancedSettings()">💾 Save Advanced Settings</button>
-            <button class="btn btn-danger" onclick="resetToDefaults()">🔄 Reset to Defaults</button>
+            <button class="btn" onclick="saveAdvancedSettings()"> Save Advanced Settings</button>
+            <button class="btn btn-danger" onclick="resetToDefaults()"> Reset to Defaults</button>
         </div>
 
         <!-- Help Tab -->

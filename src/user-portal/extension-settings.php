@@ -161,10 +161,10 @@ $user_username = $_SESSION['user_username'] ?? 'User';
 </head>
 <body>
     <div class="container">
-        <a href="index.php" class="back-link">← Back to Dashboard</a>
+        <a href="index.php" class="back-link"><- Back to Dashboard</a>
 
         <div class="card">
-            <h1>⚙️ SIP User Details & Extension Settings</h1>
+            <h1> SIP User Details & Extension Settings</h1>
             <p class="subtitle">Manage your SIP account and extension preferences - changes sync automatically</p>
 
             <div id="alert" class="alert"></div>

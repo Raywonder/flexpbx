@@ -239,14 +239,14 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎵 Music on Hold Manager</h1>
-            <a href="dashboard.html" class="back-btn">← Dashboard</a>
+            <h1> Music on Hold Manager</h1>
+            <a href="dashboard.html" class="back-btn"><- Dashboard</a>
         </div>
 
         <div class="grid">
             <!-- Stream Configuration -->
             <div class="card">
-                <h2>🌐 Add Stream Source</h2>
+                <h2> Add Stream Source</h2>
 
                 <div class="form-group">
                     <label>Stream Name</label>
@@ -273,10 +273,10 @@
                     </select>
                 </div>
 
-                <button onclick="addStream()">➕ Add Stream</button>
+                <button onclick="addStream()"> Add Stream</button>
 
                 <div class="info-box">
-                    <h4>ℹ️ Popular Free Streams</h4>
+                    <h4>ℹ Popular Free Streams</h4>
                     <ul>
                         <li>SomaFM: ice1.somafm.com/groovesalad-128-mp3</li>
                         <li>Radio Paradise: stream.radioparadise.com/aac-320</li>
@@ -287,12 +287,12 @@
 
             <!-- Active Streams -->
             <div class="card">
-                <h2>📻 Active Streams</h2>
+                <h2> Active Streams</h2>
 
                 <div class="stream-list" id="stream-list">
                     <div class="stream-item">
                         <div>
-                            <div class="stream-name">🎵 SomaFM Groove Salad</div>
+                            <div class="stream-name"> SomaFM Groove Salad</div>
                             <div class="stream-url">http://ice1.somafm.com/groovesalad-128-mp3</div>
                             <div style="margin-top: 5px;">
                                 <span class="moh-class-badge">icecast-soma-fm</span>
@@ -301,13 +301,13 @@
                         </div>
                         <div class="btn-group">
                             <button class="btn-small success" onclick="testStream('icecast-soma-fm')">▶ Test</button>
-                            <button class="btn-small danger" onclick="removeStream('icecast-soma-fm')">✕</button>
+                            <button class="btn-small danger" onclick="removeStream('icecast-soma-fm')"></button>
                         </div>
                     </div>
 
                     <div class="stream-item">
                         <div>
-                            <div class="stream-name">📁 Local Files (Default)</div>
+                            <div class="stream-name"> Local Files (Default)</div>
                             <div class="stream-url">/var/lib/asterisk/moh/</div>
                             <div style="margin-top: 5px;">
                                 <span class="moh-class-badge">default</span>
@@ -320,12 +320,12 @@
                     </div>
                 </div>
 
-                <button onclick="applyChanges()" style="margin-top: 20px;" class="success">✓ Apply & Reload MOH</button>
+                <button onclick="applyChanges()" style="margin-top: 20px;" class="success"> Apply & Reload MOH</button>
             </div>
 
             <!-- Volume Controls -->
             <div class="card">
-                <h2>🔊 Master Volume Control</h2>
+                <h2> Master Volume Control</h2>
 
                 <div class="form-group">
                     <label>Queue Volume <span class="range-value" id="queue-volume-display">80%</span></label>
@@ -342,11 +342,11 @@
                     <input type="range" id="announcement-volume" min="0" max="100" value="90" oninput="document.getElementById('announcement-volume-display').textContent = this.value + '%'">
                 </div>
 
-                <button onclick="applyVolume()">🔊 Apply Volume Settings</button>
+                <button onclick="applyVolume()"> Apply Volume Settings</button>
 
                 <div class="monitoring-controls">
-                    <button class="secondary" onclick="monitorMOH()">🎧 Listen Locally</button>
-                    <button class="danger" onclick="stopMonitoring()">⏹ Stop</button>
+                    <button class="secondary" onclick="monitorMOH()"> Listen Locally</button>
+                    <button class="danger" onclick="stopMonitoring()"> Stop</button>
                 </div>
 
                 <div id="volume-status" class="status"></div>
@@ -354,7 +354,7 @@
 
             <!-- Queue Assignment -->
             <div class="card">
-                <h2>📞 Queue MOH Assignment</h2>
+                <h2> Queue MOH Assignment</h2>
 
                 <div class="form-group">
                     <label>Support Queue</label>
@@ -384,10 +384,10 @@
                     </select>
                 </div>
 
-                <button onclick="assignQueues()">📋 Assign to Queues</button>
+                <button onclick="assignQueues()"> Assign to Queues</button>
 
                 <div class="info-box">
-                    <h4>💡 Tips</h4>
+                    <h4> Tips</h4>
                     <ul>
                         <li>Use quieter volumes for hold music</li>
                         <li>Test streams before assigning to queues</li>
@@ -398,7 +398,7 @@
 
             <!-- File Upload -->
             <div class="card">
-                <h2>📁 Upload MOH Files</h2>
+                <h2> Upload MOH Files</h2>
 
                 <div class="form-group">
                     <label>Category</label>
@@ -414,12 +414,12 @@
                     <input type="file" id="moh-file" accept=".wav,.mp3,.gsm,.m4a">
                 </div>
 
-                <button onclick="uploadMOH()">📤 Upload MOH File</button>
+                <button onclick="uploadMOH()"> Upload MOH File</button>
 
                 <div id="upload-status" class="status"></div>
 
                 <div class="info-box">
-                    <h4>📝 File Requirements</h4>
+                    <h4> File Requirements</h4>
                     <ul>
                         <li>Format: WAV (8kHz, mono) or MP3</li>
                         <li>Length: 30-180 seconds recommended</li>
@@ -430,17 +430,17 @@
 
             <!-- System Status -->
             <div class="card">
-                <h2>⚙️ System Controls</h2>
+                <h2> System Controls</h2>
 
-                <button onclick="reloadMOH()">🔄 Reload MOH Configuration</button>
-                <button onclick="showMOHClasses()" class="secondary" style="margin-top: 10px;">📋 Show MOH Classes</button>
-                <button onclick="showMOHFiles()" class="secondary" style="margin-top: 10px;">📂 Show MOH Files</button>
-                <button onclick="testAudio()" class="secondary" style="margin-top: 10px;">🧪 Test Audio System</button>
+                <button onclick="reloadMOH()"> Reload MOH Configuration</button>
+                <button onclick="showMOHClasses()" class="secondary" style="margin-top: 10px;"> Show MOH Classes</button>
+                <button onclick="showMOHFiles()" class="secondary" style="margin-top: 10px;"> Show MOH Files</button>
+                <button onclick="testAudio()" class="secondary" style="margin-top: 10px;"> Test Audio System</button>
 
                 <div id="system-status" class="status"></div>
 
                 <div class="info-box" style="margin-top: 20px;">
-                    <h4>🔧 Quick Actions</h4>
+                    <h4> Quick Actions</h4>
                     <ul>
                         <li>Click "Reload" after making changes</li>
                         <li>Use "Show MOH Classes" to verify</li>
@@ -477,7 +477,7 @@
 
             // In production: API call to update musiconhold.conf and reload
             setTimeout(() => {
-                showStatus('system-status', '✓ MOH configuration reloaded successfully!', 'success');
+                showStatus('system-status', ' MOH configuration reloaded successfully!', 'success');
             }, 1500);
         }
 
@@ -490,12 +490,12 @@
         }
 
         function monitorMOH() {
-            showStatus('volume-status', '🎧 Streaming MOH to local audio output... Click Stop to end.', 'success');
+            showStatus('volume-status', ' Streaming MOH to local audio output... Click Stop to end.', 'success');
             // In production: Start mpg123 with ALSA output
         }
 
         function stopMonitoring() {
-            showStatus('volume-status', '⏹ Monitoring stopped.', 'success');
+            showStatus('volume-status', ' Monitoring stopped.', 'success');
             // In production: Kill monitoring process
         }
 
@@ -531,7 +531,7 @@
 
             // In production: FormData upload to API
             setTimeout(() => {
-                showStatus('upload-status', '✓ File uploaded and converted successfully!', 'success');
+                showStatus('upload-status', ' File uploaded and converted successfully!', 'success');
             }, 1500);
         }
 
@@ -540,7 +540,7 @@
 
             // API call to execute: asterisk -rx "module reload res_musiconhold.so"
             setTimeout(() => {
-                showStatus('system-status', '✓ MOH configuration reloaded!', 'success');
+                showStatus('system-status', ' MOH configuration reloaded!', 'success');
             }, 1000);
         }
 

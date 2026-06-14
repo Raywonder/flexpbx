@@ -43,27 +43,27 @@ EXISTING_DB_SERVER=false
 
 # Function to print colored output with icons
 print_status() {
-    echo -e "${BLUE}ℹ️  [INFO]${NC} $1"
+    echo -e "${BLUE}ℹ  [INFO]${NC} $1"
 }
 
 print_success() {
-    echo -e "${GREEN}✅ [SUCCESS]${NC} $1"
+    echo -e "${GREEN} [SUCCESS]${NC} $1"
 }
 
 print_warning() {
-    echo -e "${YELLOW}⚠️  [WARNING]${NC} $1"
+    echo -e "${YELLOW}  [WARNING]${NC} $1"
 }
 
 print_error() {
-    echo -e "${RED}❌ [ERROR]${NC} $1"
+    echo -e "${RED} [ERROR]${NC} $1"
 }
 
 print_detection() {
-    echo -e "${PURPLE}🔍 [DETECT]${NC} $1"
+    echo -e "${PURPLE} [DETECT]${NC} $1"
 }
 
 print_integration() {
-    echo -e "${CYAN}🔗 [INTEGRATE]${NC} $1"
+    echo -e "${CYAN} [INTEGRATE]${NC} $1"
 }
 
 # Function to check if running as root
@@ -634,12 +634,12 @@ EOF
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔧 FlexPBX Installation Wizard</h1>
+            <h1> FlexPBX Installation Wizard</h1>
             <p>Automatically detecting your server environment...</p>
         </div>
 
         <div id="loading" class="loading">
-            <p>🔍 Scanning server environment...</p>
+            <p> Scanning server environment...</p>
         </div>
 
         <div id="detection-results" style="display: none;">
@@ -647,30 +647,30 @@ EOF
 
             <div class="grid">
                 <div class="detection-panel">
-                    <h3>📋 Server Information</h3>
+                    <h3> Server Information</h3>
                     <div id="server-info"></div>
                 </div>
 
                 <div class="detection-panel">
-                    <h3>🖥️ Hosting Panels</h3>
+                    <h3> Hosting Panels</h3>
                     <div id="hosting-panels"></div>
                 </div>
 
                 <div class="detection-panel">
-                    <h3>🌐 Web Servers</h3>
+                    <h3> Web Servers</h3>
                     <div id="web-servers"></div>
                 </div>
 
                 <div class="detection-panel">
-                    <h3>🗄️ Databases</h3>
+                    <h3> Databases</h3>
                     <div id="databases"></div>
                 </div>
             </div>
 
-            <h2>📋 Installation Options</h2>
+            <h2> Installation Options</h2>
             <div id="installation-options"></div>
 
-            <h2>🚀 Recommended Installation</h2>
+            <h2> Recommended Installation</h2>
             <div id="recommended-install"></div>
         </div>
     </div>
@@ -687,7 +687,7 @@ EOF
             })
             .catch(error => {
                 document.getElementById('loading').innerHTML =
-                    '<p style="color: red;">❌ Detection failed. Please run manual installation.</p>';
+                    '<p style="color: red;"> Detection failed. Please run manual installation.</p>';
             });
 
         function displayDetectionResults(data) {
@@ -706,26 +706,26 @@ EOF
             let panelsHtml = '';
 
             if (data.hosting_panels.cpanel) {
-                panelsHtml += `<p class="detected">✅ cPanel ${data.hosting_panels.cpanel.version}</p>`;
+                panelsHtml += `<p class="detected"> cPanel ${data.hosting_panels.cpanel.version}</p>`;
                 if (data.hosting_panels.cpanel.whm_available) {
-                    panelsHtml += `<p class="detected">✅ WHM Available</p>`;
+                    panelsHtml += `<p class="detected"> WHM Available</p>`;
                 }
             }
 
             if (data.hosting_panels.plesk) {
-                panelsHtml += `<p class="detected">✅ Plesk ${data.hosting_panels.plesk.version}</p>`;
+                panelsHtml += `<p class="detected"> Plesk ${data.hosting_panels.plesk.version}</p>`;
             }
 
             if (data.hosting_panels.directadmin) {
-                panelsHtml += `<p class="detected">✅ DirectAdmin</p>`;
+                panelsHtml += `<p class="detected"> DirectAdmin</p>`;
             }
 
             if (data.hosting_panels.cyberpanel) {
-                panelsHtml += `<p class="detected">✅ CyberPanel</p>`;
+                panelsHtml += `<p class="detected"> CyberPanel</p>`;
             }
 
             if (data.hosting_panels.whmcs) {
-                panelsHtml += `<p class="detected">✅ WHMCS</p>`;
+                panelsHtml += `<p class="detected"> WHMCS</p>`;
             }
 
             if (!panelsHtml) {
@@ -739,11 +739,11 @@ EOF
             let webHtml = '';
 
             if (data.web_servers.apache) {
-                webHtml += `<p class="detected">✅ Apache ${data.web_servers.apache.version}</p>`;
+                webHtml += `<p class="detected"> Apache ${data.web_servers.apache.version}</p>`;
             }
 
             if (data.web_servers.nginx) {
-                webHtml += `<p class="detected">✅ Nginx ${data.web_servers.nginx.version}</p>`;
+                webHtml += `<p class="detected"> Nginx ${data.web_servers.nginx.version}</p>`;
             }
 
             if (!webHtml) {
@@ -757,11 +757,11 @@ EOF
             let dbHtml = '';
 
             if (data.databases.mysql) {
-                dbHtml += `<p class="detected">✅ MySQL ${data.databases.mysql.version}</p>`;
+                dbHtml += `<p class="detected"> MySQL ${data.databases.mysql.version}</p>`;
             }
 
             if (data.databases.mariadb) {
-                dbHtml += `<p class="detected">✅ MariaDB ${data.databases.mariadb.version}</p>`;
+                dbHtml += `<p class="detected"> MariaDB ${data.databases.mariadb.version}</p>`;
             }
 
             if (!dbHtml) {
@@ -793,7 +793,7 @@ EOF
                     <h4>⭐ ${getOptionTitle(data.recommended_install)}</h4>
                     <p>${getOptionDescription(data.recommended_install)}</p>
                     <button class="btn" onclick="proceedWithInstallation('${data.recommended_install}')">
-                        🚀 Proceed with Recommended Installation
+                         Proceed with Recommended Installation
                     </button>
                 </div>
             `;
@@ -954,7 +954,7 @@ create_user_with_compatibility() {
 # Main installation function
 main() {
     echo "========================================"
-    echo "🚀 FlexPBX Enhanced Server Installer v$FLEXPBX_VERSION"
+    echo " FlexPBX Enhanced Server Installer v$FLEXPBX_VERSION"
     echo "========================================"
     echo
 
@@ -1025,9 +1025,9 @@ main() {
     # Continue with standard FlexPBX installation...
     print_success "Enhanced FlexPBX installation with hosting panel integration completed!"
     echo
-    echo "🌐 Access the web-based installer at: http://yourdomain.com/installer/"
-    echo "🔧 Integration mode: $INTEGRATION_MODE"
-    echo "📋 Detected panels: $(if $CPANEL_DETECTED; then echo -n "cPanel "; fi)$(if $WHM_DETECTED; then echo -n "WHM "; fi)$(if $WHMCS_DETECTED; then echo -n "WHMCS "; fi)$(if $PLESK_DETECTED; then echo -n "Plesk "; fi)"
+    echo " Access the web-based installer at: http://yourdomain.com/installer/"
+    echo " Integration mode: $INTEGRATION_MODE"
+    echo " Detected panels: $(if $CPANEL_DETECTED; then echo -n "cPanel "; fi)$(if $WHM_DETECTED; then echo -n "WHM "; fi)$(if $WHMCS_DETECTED; then echo -n "WHMCS "; fi)$(if $PLESK_DETECTED; then echo -n "Plesk "; fi)"
 }
 
 # Run main function

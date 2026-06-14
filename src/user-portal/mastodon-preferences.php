@@ -265,7 +265,7 @@ $extension = $_SESSION['user_extension'] ?? '';
 <body>
     <div class="container">
         <div class="header">
-            <h1><span class="mastodon-logo">🐘</span> Mastodon Preferences</h1>
+            <h1><span class="mastodon-logo"></span> Mastodon Preferences</h1>
             <p class="subtitle">Extension <?= htmlspecialchars($extension) ?></p>
         </div>
 
@@ -297,14 +297,14 @@ $extension = $_SESSION['user_extension'] ?? '';
             <div class="instance-type-selector">
                 <label class="instance-type-option" id="local-option">
                     <input type="radio" name="instance-type" value="local" checked>
-                    <div class="instance-type-icon">🏠</div>
+                    <div class="instance-type-icon"></div>
                     <div class="setting-title">Local Instance</div>
                     <div class="setting-description">md.tappedin.fm</div>
                 </label>
 
                 <label class="instance-type-option" id="third-party-option">
                     <input type="radio" name="instance-type" value="third-party">
-                    <div class="instance-type-icon">🌐</div>
+                    <div class="instance-type-icon"></div>
                     <div class="setting-title">Third-Party Instance</div>
                     <div class="setting-description">Use your own Mastodon server</div>
                 </label>
@@ -395,25 +395,25 @@ $extension = $_SESSION['user_extension'] ?? '';
             <div class="visibility-options">
                 <label class="visibility-option" data-value="public">
                     <input type="radio" name="visibility" value="public">
-                    <div class="setting-title">🌍 Public</div>
+                    <div class="setting-title"> Public</div>
                     <div class="setting-description">Visible to everyone</div>
                 </label>
 
                 <label class="visibility-option selected" data-value="unlisted">
                     <input type="radio" name="visibility" value="unlisted" checked>
-                    <div class="setting-title">🔓 Unlisted</div>
+                    <div class="setting-title"> Unlisted</div>
                     <div class="setting-description">Not on public timelines</div>
                 </label>
 
                 <label class="visibility-option" data-value="private">
                     <input type="radio" name="visibility" value="private">
-                    <div class="setting-title">🔒 Followers-only</div>
+                    <div class="setting-title"> Followers-only</div>
                     <div class="setting-description">Only your followers</div>
                 </label>
 
                 <label class="visibility-option" data-value="direct">
                     <input type="radio" name="visibility" value="direct">
-                    <div class="setting-title">✉️ Direct</div>
+                    <div class="setting-title"> Direct</div>
                     <div class="setting-description">Only mentioned users</div>
                 </label>
             </div>

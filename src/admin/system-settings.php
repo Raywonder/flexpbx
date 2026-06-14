@@ -338,7 +338,7 @@ $is_writable = (($asterisk_conf_perms & 0x0080) || ($asterisk_conf_perms & 0x001
 <body>
     <div class="container">
         <div class="header">
-            <h1>⚙️ System Settings</h1>
+            <h1> System Settings</h1>
             <p class="subtitle">Configure Asterisk integration mode and system behavior</p>
         </div>
 
@@ -365,7 +365,7 @@ $is_writable = (($asterisk_conf_perms & 0x0080) || ($asterisk_conf_perms & 0x001
                     <input type="radio" name="asterisk_mode" value="secure" <?php echo $config['asterisk_mode'] === 'secure' ? 'checked' : ''; ?>>
                     <div>
                         <div class="mode-title">
-                            🔒 Secure Mode (Recommended)
+                             Secure Mode (Recommended)
                             <span class="mode-badge badge-secure">DEFAULT</span>
                         </div>
                         <div class="mode-description">
@@ -386,7 +386,7 @@ $is_writable = (($asterisk_conf_perms & 0x0080) || ($asterisk_conf_perms & 0x001
                     <input type="radio" name="asterisk_mode" value="power_user" <?php echo $config['asterisk_mode'] === 'power_user' ? 'checked' : ''; ?>>
                     <div>
                         <div class="mode-title">
-                            ⚡ Power User Mode
+                             Power User Mode
                             <span class="mode-badge badge-advanced">ADVANCED</span>
                         </div>
                         <div class="mode-description">
@@ -405,7 +405,7 @@ $is_writable = (($asterisk_conf_perms & 0x0080) || ($asterisk_conf_perms & 0x001
 
                 <div id="warningBox" style="display: <?php echo $config['asterisk_mode'] === 'secure' ? 'none' : 'block'; ?>;">
                     <div class="warning-box">
-                        <h3>⚠️ Warning: Power User Mode</h3>
+                        <h3> Warning: Power User Mode</h3>
                         <p>Enabling this mode will:</p>
                         <ul>
                             <li>Grant <strong>write access</strong> to Asterisk configuration files</li>
@@ -472,7 +472,7 @@ $is_writable = (($asterisk_conf_perms & 0x0080) || ($asterisk_conf_perms & 0x001
         </div>
 
         <div class="back-link">
-            <a href="dashboard.html">← Back to Admin Dashboard</a>
+            <a href="dashboard.html"><- Back to Admin Dashboard</a>
         </div>
     </div>
 

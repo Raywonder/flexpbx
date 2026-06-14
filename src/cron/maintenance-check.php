@@ -48,7 +48,7 @@ try {
                     maintenance_message = 'Setup completed - system operational'
                 WHERE maintenance_mode_type = 'auto'
             ");
-            logMessage("✓ Setup complete - Disabled auto maintenance mode");
+            logMessage(" Setup complete - Disabled auto maintenance mode");
 
         } elseif (!$setup_complete && $maintenance['is_active'] == 0) {
             // Setup incomplete but maintenance disabled - re-enable it
@@ -59,7 +59,7 @@ try {
                     maintenance_message = 'Setup in progress'
                 WHERE maintenance_mode_type = 'auto'
             ");
-            logMessage("✓ Setup incomplete - Re-enabled auto maintenance mode");
+            logMessage(" Setup incomplete - Re-enabled auto maintenance mode");
         }
     }
 

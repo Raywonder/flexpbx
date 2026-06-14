@@ -108,14 +108,14 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>📁 FlexPBX Media Manager</h1>
+            <h1> FlexPBX Media Manager</h1>
             <p>Upload and manage IVR greetings, music on hold, and system sounds</p>
         </div>
 
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('sounds')">🔊 IVR & Sounds</button>
-            <button class="tab" onclick="switchTab('moh')">🎵 Music on Hold</button>
-            <button class="tab" onclick="switchTab('recordings')">📞 Recordings</button>
+            <button class="tab active" onclick="switchTab('sounds')"> IVR & Sounds</button>
+            <button class="tab" onclick="switchTab('moh')"> Music on Hold</button>
+            <button class="tab" onclick="switchTab('recordings')"> Recordings</button>
         </div>
 
         <!-- Sounds Tab -->
@@ -125,7 +125,7 @@
                 <p class="info">Recommended: 16-bit PCM WAV, 8kHz or 16kHz, Mono</p>
 
                 <div class="upload-area" id="sounds-upload" onclick="document.getElementById('sounds-file').click()">
-                    <h3>📤 Drop files here or click to browse</h3>
+                    <h3> Drop files here or click to browse</h3>
                     <p>Supported: .wav, .mp3, .gsm</p>
                     <input type="file" id="sounds-file" multiple accept=".wav,.mp3,.gsm" style="display:none" onchange="handleFileSelect(event, 'sounds')">
                 </div>
@@ -149,7 +149,7 @@
                 <p class="info">Recommended: WAV or MP3, high quality audio</p>
 
                 <div class="upload-area" id="moh-upload" onclick="document.getElementById('moh-file').click()">
-                    <h3>📤 Drop music files here or click to browse</h3>
+                    <h3> Drop music files here or click to browse</h3>
                     <p>Supported: .wav, .mp3</p>
                     <input type="file" id="moh-file" multiple accept=".wav,.mp3" style="display:none" onchange="handleFileSelect(event, 'moh')">
                 </div>
@@ -181,9 +181,9 @@
 
         <div class="section">
             <h3>Quick Actions</h3>
-            <button onclick="refreshAllLists()">🔄 Refresh All Lists</button>
-            <button onclick="testAudio()">🎧 Test Audio System</button>
-            <button onclick="window.location.href='dashboard.html'">← Back to Admin</button>
+            <button onclick="refreshAllLists()"> Refresh All Lists</button>
+            <button onclick="testAudio()"> Test Audio System</button>
+            <button onclick="window.location.href='dashboard.html'"><- Back to Admin</button>
         </div>
     </div>
 
@@ -245,7 +245,7 @@
             }
 
             status.className = 'status success';
-            status.innerHTML = `✅ Upload complete! Uploaded ${files.length} file(s).`;
+            status.innerHTML = ` Upload complete! Uploaded ${files.length} file(s).`;
 
             loadFileList(type);
         }
@@ -277,7 +277,7 @@
                 console.error('Upload error:', error);
                 const status = document.getElementById(type + '-status');
                 status.className = 'status error';
-                status.innerHTML = `❌ Error: ${error.message}`;
+                status.innerHTML = ` Error: ${error.message}`;
             }
         }
 
@@ -301,11 +301,11 @@
                 listEl.innerHTML = result.files.map(file => `
                     <div class="file-item">
                         <strong>${file.name}</strong>
-                        <div class="file-info">${formatFileSize(file.size)} • ${file.modified || ''}</div>
+                        <div class="file-info">${formatFileSize(file.size)} - ${file.modified || ''}</div>
                         ${file.name.endsWith('.wav') || file.name.endsWith('.mp3') ?
                             `<audio controls><source src="${MEDIA_BASE}/${type}/${file.name}"></audio>` : ''}
                         <div style="margin-top:10px;">
-                            <button onclick="deleteFile('${type}', '${file.name}')">🗑️ Delete</button>
+                            <button onclick="deleteFile('${type}', '${file.name}')"> Delete</button>
                         </div>
                     </div>
                 `).join('');
@@ -349,7 +349,7 @@
         }
 
         function testAudio() {
-            alert('Audio system test:\n\n✅ Media directories: Configured\n✅ Upload API: Active\n✅ File Manager: Ready\n\nTest a file by uploading and playing it in the list below.');
+            alert('Audio system test:\n\n Media directories: Configured\n Upload API: Active\n File Manager: Ready\n\nTest a file by uploading and playing it in the list below.');
         }
 
         // Load initial list

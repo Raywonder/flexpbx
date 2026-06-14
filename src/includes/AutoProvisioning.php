@@ -735,11 +735,11 @@ class AutoProvisioning {
 
             <div class='features'>
                 <h3>Enabled Features</h3>
-                <div class='feature-item'>✓ <strong>Voicemail</strong> - Check voicemail from any phone by dialing *97</div>
-                <div class='feature-item'>✓ <strong>Email Notifications</strong> - Receive voicemail and call notifications via email</div>
-                <div class='feature-item'>✓ <strong>Call Recording</strong> - All calls can be recorded for quality assurance</div>
-                <div class='feature-item'>✓ <strong>Accessibility Features</strong> - Full support for accessibility tools</div>
-                <div class='feature-item'>✓ <strong>Web Portal Access</strong> - Manage your account online</div>
+                <div class='feature-item'> <strong>Voicemail</strong> - Check voicemail from any phone by dialing *97</div>
+                <div class='feature-item'> <strong>Email Notifications</strong> - Receive voicemail and call notifications via email</div>
+                <div class='feature-item'> <strong>Call Recording</strong> - All calls can be recorded for quality assurance</div>
+                <div class='feature-item'> <strong>Accessibility Features</strong> - Full support for accessibility tools</div>
+                <div class='feature-item'> <strong>Web Portal Access</strong> - Manage your account online</div>
             </div>
 
             <h3>Getting Started</h3>
@@ -799,11 +799,11 @@ Server:          {$credentials['server']}
 
 ENABLED FEATURES
 ----------------
-✓ Voicemail - Check voicemail from any phone by dialing *97
-✓ Email Notifications - Receive voicemail and call notifications via email
-✓ Call Recording - All calls can be recorded for quality assurance
-✓ Accessibility Features - Full support for accessibility tools
-✓ Web Portal Access - Manage your account online
+ Voicemail - Check voicemail from any phone by dialing *97
+ Email Notifications - Receive voicemail and call notifications via email
+ Call Recording - All calls can be recorded for quality assurance
+ Accessibility Features - Full support for accessibility tools
+ Web Portal Access - Manage your account online
 
 GETTING STARTED
 ---------------
@@ -822,7 +822,7 @@ IMPORTANT NOTES
 
 If you have any questions or need assistance, please contact support.
 
-© 2025 FlexPBX. All rights reserved.
+ 2025 FlexPBX. All rights reserved.
         ";
     }
 

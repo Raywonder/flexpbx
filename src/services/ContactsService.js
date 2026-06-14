@@ -1,5 +1,5 @@
 /**
- * 👥 FlexPhone Contacts Service
+ *  FlexPhone Contacts Service
  * Manages contacts for the SIP phone
  */
 
@@ -15,16 +15,16 @@ class ContactsService extends EventEmitter {
         this.contacts = new Map();
         this.contactsPath = path.join(process.cwd(), 'data', 'contacts.json');
 
-        console.log('👥 FlexPhone Contacts Service initialized');
+        console.log(' FlexPhone Contacts Service initialized');
     }
 
     async initialize() {
         try {
             await this.loadContacts();
-            console.log('✅ Contacts Service ready');
+            console.log(' Contacts Service ready');
             return true;
         } catch (error) {
-            console.error('❌ Contacts Service initialization failed:', error);
+            console.error(' Contacts Service initialization failed:', error);
             return false;
         }
     }
@@ -53,7 +53,7 @@ class ContactsService extends EventEmitter {
             this.contacts.set(contactId, contact);
             await this.saveContacts();
 
-            console.log(`👤 Contact added: ${contact.displayName}`);
+            console.log(` Contact added: ${contact.displayName}`);
             this.emit('contact-added', contact);
 
             return {
@@ -63,7 +63,7 @@ class ContactsService extends EventEmitter {
             };
 
         } catch (error) {
-            console.error('❌ Add contact failed:', error);
+            console.error(' Add contact failed:', error);
             return {
                 success: false,
                 error: error.message
@@ -89,7 +89,7 @@ class ContactsService extends EventEmitter {
 
             await this.saveContacts();
 
-            console.log(`👤 Contact updated: ${contact.displayName}`);
+            console.log(` Contact updated: ${contact.displayName}`);
             this.emit('contact-updated', contact);
 
             return {
@@ -98,7 +98,7 @@ class ContactsService extends EventEmitter {
             };
 
         } catch (error) {
-            console.error('❌ Update contact failed:', error);
+            console.error(' Update contact failed:', error);
             return {
                 success: false,
                 error: error.message
@@ -116,7 +116,7 @@ class ContactsService extends EventEmitter {
             this.contacts.delete(contactId);
             await this.saveContacts();
 
-            console.log(`🗑️ Contact deleted: ${contact.displayName}`);
+            console.log(` Contact deleted: ${contact.displayName}`);
             this.emit('contact-deleted', { contactId, contact });
 
             return {
@@ -125,7 +125,7 @@ class ContactsService extends EventEmitter {
             };
 
         } catch (error) {
-            console.error('❌ Delete contact failed:', error);
+            console.error(' Delete contact failed:', error);
             return {
                 success: false,
                 error: error.message
@@ -189,11 +189,11 @@ class ContactsService extends EventEmitter {
                 this.contacts.set(contact.id, contact);
             });
 
-            console.log(`📥 Loaded ${this.contacts.size} contacts`);
+            console.log(` Loaded ${this.contacts.size} contacts`);
 
         } catch (error) {
             this.contacts = new Map();
-            console.log('📝 Starting with empty contacts');
+            console.log(' Starting with empty contacts');
         }
     }
 
@@ -211,7 +211,7 @@ class ContactsService extends EventEmitter {
             await fs.writeFile(this.contactsPath, JSON.stringify(contactsArray, null, 2));
 
         } catch (error) {
-            console.error('❌ Failed to save contacts:', error);
+            console.error(' Failed to save contacts:', error);
         }
     }
 }

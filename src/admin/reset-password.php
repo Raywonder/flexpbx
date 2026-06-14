@@ -366,7 +366,7 @@ function updatePjsipPassword($extension, $new_password) {
                 <?php echo htmlspecialchars($success_message); ?>
             </div>
             <div class="login-link">
-                <a href="index.html">→ Go to Admin Login</a>
+                <a href="index.html">-> Go to Admin Login</a>
             </div>
         <?php endif; ?>
 
@@ -389,7 +389,7 @@ function updatePjsipPassword($extension, $new_password) {
             </div>
 
             <div class="security-note">
-                <strong>⚠️ Admin Security:</strong> Use a strong password that you don't use anywhere else.
+                <strong> Admin Security:</strong> Use a strong password that you don't use anywhere else.
             </div>
 
             <div class="password-requirements">
@@ -433,7 +433,7 @@ function updatePjsipPassword($extension, $new_password) {
             </form>
 
             <div class="login-link">
-                <a href="index.html">← Back to Admin Login</a>
+                <a href="index.html"><- Back to Admin Login</a>
             </div>
         <?php endif; ?>
     </div>

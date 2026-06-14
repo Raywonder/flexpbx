@@ -544,12 +544,12 @@ $current_admin_username = $_SESSION['admin_username'] ?? 'admin';
     <div class="container">
         <div class="header">
             <h1>
-                <span>👥</span>
+                <span></span>
                 Role Management System
             </h1>
             <div class="header-actions">
-                <button class="btn btn-secondary" onclick="refreshData()">🔄 Refresh</button>
-                <a href="/admin/dashboard.html" class="btn btn-secondary">← Dashboard</a>
+                <button class="btn btn-secondary" onclick="refreshData()"> Refresh</button>
+                <a href="/admin/dashboard.html" class="btn btn-secondary"><- Dashboard</a>
             </div>
         </div>
 
@@ -566,7 +566,7 @@ $current_admin_username = $_SESSION['admin_username'] ?? 'admin';
             <!-- Users & Roles Tab -->
             <div id="tab-users" class="tab-content active">
                 <div class="search-filter">
-                    <input type="text" id="search-users" placeholder="🔍 Search by username, email, or extension...">
+                    <input type="text" id="search-users" placeholder=" Search by username, email, or extension...">
                     <select id="filter-role">
                         <option value="">All Roles</option>
                         <option value="superadmin">SuperAdmin</option>
@@ -602,7 +602,7 @@ $current_admin_username = $_SESSION['admin_username'] ?? 'admin';
                 <h2>Role Change Audit Log</h2>
                 <p style="margin-bottom: 1.5rem; color: #666;">Track all role and permission changes made by administrators.</p>
                 <div class="search-filter">
-                    <input type="text" id="search-audit" placeholder="🔍 Search audit logs...">
+                    <input type="text" id="search-audit" placeholder=" Search audit logs...">
                     <select id="filter-audit-action">
                         <option value="">All Actions</option>
                         <option value="role_changed">Role Changed</option>
@@ -687,13 +687,13 @@ $current_admin_username = $_SESSION['admin_username'] ?? 'admin';
 
                 <div class="form-group">
                     <div class="alert alert-info">
-                        <strong>⚠️ Important:</strong> Changing a user's role will update their system permissions immediately. The user may need to log out and back in for changes to take full effect.
+                        <strong> Important:</strong> Changing a user's role will update their system permissions immediately. The user may need to log out and back in for changes to take full effect.
                     </div>
                 </div>
 
                 <div style="display: flex; gap: 10px; justify-content: flex-end;">
                     <button type="button" class="btn btn-secondary" onclick="closeModal('modal-change-role')">Cancel</button>
-                    <button type="submit" class="btn btn-primary">💾 Save Changes</button>
+                    <button type="submit" class="btn btn-primary"> Save Changes</button>
                 </div>
             </form>
         </div>
@@ -869,8 +869,8 @@ $current_admin_username = $_SESSION['admin_username'] ?? 'admin';
 
                 for (const [perm, hasPermission] of Object.entries(roleData.permissions)) {
                     const checkIcon = hasPermission ?
-                        '<span class="permission-check check-yes">✓</span>' :
-                        '<span class="permission-check check-no">✗</span>';
+                        '<span class="permission-check check-yes"></span>' :
+                        '<span class="permission-check check-no"></span>';
                     const permName = perm.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
 
                     html += `
@@ -919,7 +919,7 @@ $current_admin_username = $_SESSION['admin_username'] ?? 'admin';
             logEntries.forEach(entry => {
                 html += `
                     <div class="audit-entry">
-                        <div class="timestamp">📅 ${escapeHtml(entry.timestamp)}</div>
+                        <div class="timestamp"> ${escapeHtml(entry.timestamp)}</div>
                         <div class="action">${escapeHtml(entry.action)}</div>
                         <div class="details">
                             <strong>User:</strong> ${escapeHtml(entry.target_user)}<br>

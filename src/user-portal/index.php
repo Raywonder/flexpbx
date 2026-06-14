@@ -281,7 +281,7 @@ $current_extension = $_SESSION['user_extension'] ?? null;
 <body>
     <div class="container">
         <div class="header">
-            <h1>📞 FlexPBX User Portal</h1>
+            <h1> FlexPBX User Portal</h1>
             <p>Manage Your Extension Settings</p>
         </div>
 
@@ -292,7 +292,7 @@ $current_extension = $_SESSION['user_extension'] ?? null;
 
             <?php if (isset($login_error)): ?>
             <div style="background: #f8d7da; color: #721c24; padding: 1rem; border-radius: 6px; margin-bottom: 1rem; border: 1px solid #f5c6cb;">
-                ⚠️ <?= htmlspecialchars($login_error) ?>
+                 <?= htmlspecialchars($login_error) ?>
             </div>
             <?php endif; ?>
 
@@ -312,7 +312,7 @@ $current_extension = $_SESSION['user_extension'] ?? null;
             </form>
 
             <div class="back-link">
-                <a href="/">← Back to Home</a> |
+                <a href="/"><- Back to Home</a> |
                 <a href="signup.php">Sign Up for Account</a> |
                 <a href="forgot-password.php">Forgot Password?</a>
             </div>
@@ -334,14 +334,14 @@ $current_extension = $_SESSION['user_extension'] ?? null;
             <div class="dashboard-grid">
                 <!-- Connection Status -->
                 <div class="card">
-                    <h3><span class="card-icon">📱</span> Connection Status</h3>
+                    <h3><span class="card-icon"></span> Connection Status</h3>
                     <div class="info-row">
                         <span class="info-label">Extension:</span>
                         <span class="info-value"><?= htmlspecialchars($current_extension) ?></span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">Registration:</span>
-                        <span class="status-badge" id="sip-status-badge">⚪ Checking...</span>
+                        <span class="status-badge" id="sip-status-badge"> Checking...</span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">SIP Client:</span>
@@ -360,30 +360,30 @@ $current_extension = $_SESSION['user_extension'] ?? null;
                         <span class="info-value" id="last-checked" style="font-size: 0.85em;">-</span>
                     </div>
                     <div style="margin-top: 1rem; display: flex; gap: 0.5rem;">
-                        <a href="/flexphone/" class="btn" style="text-align: center; flex: 1;" aria-label="Open Flexphone web calling client">📞 Flexphone</a>
-                        <a href="/downloads/" class="btn secondary" style="text-align: center; flex: 1;" aria-label="Download SIP clients and desktop apps">📥 Downloads</a>
+                        <a href="/flexphone/" class="btn" style="text-align: center; flex: 1;" aria-label="Open Flexphone web calling client"> Flexphone</a>
+                        <a href="/downloads/" class="btn secondary" style="text-align: center; flex: 1;" aria-label="Download SIP clients and desktop apps"> Downloads</a>
                     </div>
                     <div style="margin-top: 0.5rem; display: flex; gap: 0.5rem;">
-                        <a href="sms-messaging.php" class="btn secondary" style="text-align: center; flex: 1;" aria-label="View SMS messages">💬 Messages</a>
-                        <a href="settings.php" class="btn secondary" style="text-align: center; flex: 1;" aria-label="Open unified settings page">⚙️ Settings</a>
+                        <a href="sms-messaging.php" class="btn secondary" style="text-align: center; flex: 1;" aria-label="View SMS messages"> Messages</a>
+                        <a href="settings.php" class="btn secondary" style="text-align: center; flex: 1;" aria-label="Open unified settings page"> Settings</a>
                     </div>
                 </div>
 
                 <!-- Main Company Number Card -->
                 <div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-                    <h3 style="color: white;"><span class="card-icon">📞</span> Main Company Number</h3>
+                    <h3 style="color: white;"><span class="card-icon"></span> Main Company Number</h3>
                     <div style="text-align: center; padding: 15px 0;">
                         <div style="font-size: 28px; font-weight: bold; margin: 10px 0; text-shadow: 0 2px 4px rgba(0,0,0,0.2);">
                             <a href="tel:+13023139555" style="color: white; text-decoration: none;">(302) 313-9555</a>
                         </div>
                     </div>
                     <div style="background: rgba(255,255,255,0.15); padding: 12px; border-radius: 6px; font-size: 14px; line-height: 1.6;">
-                        <p style="margin-bottom: 8px;"><strong>💡 Share this number with outside callers</strong></p>
+                        <p style="margin-bottom: 8px;"><strong> Share this number with outside callers</strong></p>
                         <p style="margin: 0; font-size: 13px;">If you don't have your own DID, tell callers to dial this number and enter your extension <strong><?= htmlspecialchars($current_extension) ?></strong> when prompted</p>
                     </div>
                     <div style="margin-top: 12px; text-align: center;">
                         <a href="my-did.php" style="color: white; text-decoration: none; font-size: 13px; opacity: 0.9; border-bottom: 1px dotted rgba(255,255,255,0.5);">
-                            Check if you have your own DID →
+                            Check if you have your own DID ->
                         </a>
                     </div>
                 </div>
@@ -433,7 +433,7 @@ $current_extension = $_SESSION['user_extension'] ?? null;
                                 // Update registration status and play sound on status change
                                 if (data.registered) {
                                     statusBadge.className = 'status-badge online';
-                                    statusBadge.textContent = '🟢 Registered';
+                                    statusBadge.textContent = ' Registered';
 
                                     // Play sound on status change
                                     if (previousRegistrationStatus === null) {
@@ -445,7 +445,7 @@ $current_extension = $_SESSION['user_extension'] ?? null;
                                     }
                                 } else {
                                     statusBadge.className = 'status-badge offline';
-                                    statusBadge.textContent = '🔴 Offline';
+                                    statusBadge.textContent = ' Offline';
 
                                     // Play disconnect sound if was previously connected
                                     if (previousRegistrationStatus === true) {
@@ -463,12 +463,12 @@ $current_extension = $_SESSION['user_extension'] ?? null;
                                         // Add OS icon
                                         let osIcon = '';
                                         switch(data.client_info.os) {
-                                            case 'iOS': osIcon = '📱'; break;
-                                            case 'Android': osIcon = '🤖'; break;
-                                            case 'Windows': osIcon = '🪟'; break;
-                                            case 'macOS': osIcon = '🍎'; break;
-                                            case 'Linux': osIcon = '🐧'; break;
-                                            default: osIcon = '💻';
+                                            case 'iOS': osIcon = ''; break;
+                                            case 'Android': osIcon = ''; break;
+                                            case 'Windows': osIcon = ''; break;
+                                            case 'macOS': osIcon = ''; break;
+                                            case 'Linux': osIcon = ''; break;
+                                            default: osIcon = '';
                                         }
                                         clientText = `${clientText} ${osIcon} ${data.client_info.os}`;
                                     }
@@ -479,10 +479,10 @@ $current_extension = $_SESSION['user_extension'] ?? null;
 
                                 // Update network type
                                 if (data.network && data.network.type) {
-                                    let networkIcon = '🌐';
-                                    if (data.network.type === 'Tailscale') networkIcon = '🔐';
-                                    else if (data.network.type.includes('WireGuard')) networkIcon = '🔒';
-                                    else if (data.network.type.includes('Private')) networkIcon = '🏠';
+                                    let networkIcon = '';
+                                    if (data.network.type === 'Tailscale') networkIcon = '';
+                                    else if (data.network.type.includes('WireGuard')) networkIcon = '';
+                                    else if (data.network.type.includes('Private')) networkIcon = '';
 
                                     networkType.textContent = `${networkIcon} ${data.network.type}`;
                                 } else {
@@ -491,7 +491,7 @@ $current_extension = $_SESSION['user_extension'] ?? null;
 
                                 // Update call status
                                 if (data.in_call && data.call_info.active_calls > 0) {
-                                    callStatus.innerHTML = `<span style="color: #28a745; font-weight: 600;">📞 ${data.call_info.active_calls} active call(s)</span>`;
+                                    callStatus.innerHTML = `<span style="color: #28a745; font-weight: 600;"> ${data.call_info.active_calls} active call(s)</span>`;
                                 } else {
                                     callStatus.textContent = 'No active calls';
                                 }
@@ -501,7 +501,7 @@ $current_extension = $_SESSION['user_extension'] ?? null;
                             }
                         } catch (error) {
                             console.error('Failed to check connection status:', error);
-                            document.getElementById('sip-status-badge').textContent = '⚠️ Error';
+                            document.getElementById('sip-status-badge').textContent = ' Error';
                         }
                     }
 
@@ -521,7 +521,7 @@ $current_extension = $_SESSION['user_extension'] ?? null;
 
                 <!-- SIP Settings -->
                 <div class="card">
-                    <h3><span class="card-icon">🔧</span> SIP Settings</h3>
+                    <h3><span class="card-icon"></span> SIP Settings</h3>
                     <div class="info-row">
                         <span class="info-label">Server:</span>
                         <span class="info-value">flexpbx.devinecreations.net</span>
@@ -543,7 +543,7 @@ $current_extension = $_SESSION['user_extension'] ?? null;
 
                 <!-- Queue Management -->
                 <div class="card">
-                    <h3><span class="card-icon">🎧</span> Queue Management</h3>
+                    <h3><span class="card-icon"></span> Queue Management</h3>
                     <div class="info-row">
                         <span class="info-label">Queue Status:</span>
                         <span class="status-badge offline">Logged Out</span>
@@ -563,7 +563,7 @@ $current_extension = $_SESSION['user_extension'] ?? null;
 
                 <!-- My Recordings -->
                 <div class="card">
-                    <h3><span class="card-icon">🎙️</span> Call Recordings</h3>
+                    <h3><span class="card-icon"></span> Call Recordings</h3>
                     <div class="info-row">
                         <span class="info-label">Total Recordings:</span>
                         <span class="info-value" id="recordings-count">-</span>
@@ -573,8 +573,8 @@ $current_extension = $_SESSION['user_extension'] ?? null;
                         <span class="info-value" id="recent-calls-count">-</span>
                     </div>
                     <div class="action-buttons">
-                        <a href="recordings.php" class="btn" style="text-align: center;" aria-label="View all call recordings">📼 Recordings</a>
-                        <a href="call-history.php" class="btn secondary" style="text-align: center;" aria-label="View call history">📞 History</a>
+                        <a href="recordings.php" class="btn" style="text-align: center;" aria-label="View all call recordings"> Recordings</a>
+                        <a href="call-history.php" class="btn secondary" style="text-align: center;" aria-label="View call history"> History</a>
                     </div>
                 </div>
 
@@ -607,17 +607,17 @@ $current_extension = $_SESSION['user_extension'] ?? null;
 
                 <!-- Call Center Agent -->
                 <div class="card">
-                    <h3><span class="card-icon">📞</span> Call Center</h3>
+                    <h3><span class="card-icon"></span> Call Center</h3>
                     <div class="info-row">
                         <span class="info-label">Queue Status:</span>
-                        <span class="status-badge" id="queue-status-badge">⚪ Offline</span>
+                        <span class="status-badge" id="queue-status-badge"> Offline</span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">Calls Today:</span>
                         <span class="info-value" id="agent-calls-today">-</span>
                     </div>
                     <div class="action-buttons">
-                        <a href="callcenter-agent.php" class="btn" style="text-align: center;" aria-label="Open call center agent dashboard">🎧 Agent Dashboard</a>
+                        <a href="callcenter-agent.php" class="btn" style="text-align: center;" aria-label="Open call center agent dashboard"> Agent Dashboard</a>
                     </div>
                 </div>
 
@@ -634,21 +634,21 @@ $current_extension = $_SESSION['user_extension'] ?? null;
                                 statusBadge.className = 'status-badge';
                                 statusBadge.style.background = '#f44336';
                                 statusBadge.style.color = 'white';
-                                statusBadge.textContent = '📞 In Call';
+                                statusBadge.textContent = ' In Call';
                             } else if (data.paused) {
                                 statusBadge.className = 'status-badge';
                                 statusBadge.style.background = '#ff9800';
                                 statusBadge.style.color = 'white';
-                                statusBadge.textContent = '⏸️ Paused';
+                                statusBadge.textContent = ' Paused';
                             } else if (data.available) {
                                 statusBadge.className = 'status-badge online';
-                                statusBadge.textContent = '✓ Available';
+                                statusBadge.textContent = ' Available';
                             } else if (data.logged_in) {
                                 statusBadge.className = 'status-badge offline';
                                 statusBadge.textContent = '○ Logged In';
                             } else {
                                 statusBadge.className = 'status-badge offline';
-                                statusBadge.textContent = '⚪ Offline';
+                                statusBadge.textContent = ' Offline';
                             }
 
                             // Load today's stats
@@ -667,10 +667,10 @@ $current_extension = $_SESSION['user_extension'] ?? null;
 
                 <!-- Voicemail Settings -->
                 <div class="card">
-                    <h3><span class="card-icon">📬</span> Voicemail Settings</h3>
+                    <h3><span class="card-icon"></span> Voicemail Settings</h3>
                     <div class="info-row">
                         <span class="info-label">Status:</span>
-                        <span class="status-badge online">✓ Enabled</span>
+                        <span class="status-badge online"> Enabled</span>
                     </div>
                     <div class="info-row">
                         <span class="info-label">New Messages:</span>
@@ -687,7 +687,7 @@ $current_extension = $_SESSION['user_extension'] ?? null;
 
                 <!-- SMS Messages -->
                 <div class="card">
-                    <h3><span class="card-icon">💬</span> SMS Messages</h3>
+                    <h3><span class="card-icon"></span> SMS Messages</h3>
                     <div class="info-row">
                         <span class="info-label">New Messages:</span>
                         <span class="info-value" id="sms-count">-</span>
@@ -718,7 +718,7 @@ $current_extension = $_SESSION['user_extension'] ?? null;
 
                 <!-- Forwarded Numbers -->
                 <div class="card">
-                    <h3><span class="card-icon">📞</span> Forwarded Numbers</h3>
+                    <h3><span class="card-icon"></span> Forwarded Numbers</h3>
                     <div class="info-row">
                         <span class="info-label">Active Numbers:</span>
                         <span class="info-value" id="forwarded-count">-</span>
@@ -754,7 +754,7 @@ $current_extension = $_SESSION['user_extension'] ?? null;
 
                 <!-- Call Statistics -->
                 <div class="card">
-                    <h3><span class="card-icon">📊</span> Call Statistics</h3>
+                    <h3><span class="card-icon"></span> Call Statistics</h3>
                     <div class="info-row">
                         <span class="info-label">Calls Today:</span>
                         <span class="info-value">0</span>
@@ -772,27 +772,27 @@ $current_extension = $_SESSION['user_extension'] ?? null;
 
                 <!-- Quick Actions -->
                 <div class="card">
-                    <h3><span class="card-icon">⚡</span> Quick Actions</h3>
+                    <h3><span class="card-icon"></span> Quick Actions</h3>
                     <div style="display: flex; flex-direction: column; gap: 0.8rem;">
-                        <a href="/flexphone/" class="btn" style="text-align: center;" aria-label="Open Flexphone web calling client">📞 Flexphone</a>
-                        <a href="sms-messaging.php" class="btn secondary" style="text-align: center;" aria-label="View SMS messages">💬 Messages</a>
-                        <a href="/downloads/" class="btn secondary" style="text-align: center;" aria-label="Download SIP clients and desktop apps">📥 Downloads</a>
-                        <a href="settings.php" class="btn secondary" style="text-align: center;" aria-label="Open unified settings page">⚙️ Settings</a>
-                        <a href="help.php" class="btn secondary" style="text-align: center;" aria-label="Get help and support">❓ Help</a>
+                        <a href="/flexphone/" class="btn" style="text-align: center;" aria-label="Open Flexphone web calling client"> Flexphone</a>
+                        <a href="sms-messaging.php" class="btn secondary" style="text-align: center;" aria-label="View SMS messages"> Messages</a>
+                        <a href="/downloads/" class="btn secondary" style="text-align: center;" aria-label="Download SIP clients and desktop apps"> Downloads</a>
+                        <a href="settings.php" class="btn secondary" style="text-align: center;" aria-label="Open unified settings page"> Settings</a>
+                        <a href="help.php" class="btn secondary" style="text-align: center;" aria-label="Get help and support"> Help</a>
                     </div>
                 </div>
 
                 <!-- Help & Support -->
                 <div class="card">
-                    <h3><span class="card-icon">❓</span> Quick Dial Codes</h3>
+                    <h3><span class="card-icon"></span> Quick Dial Codes</h3>
                     <div style="line-height: 1.8; color: #666;">
                         <p><strong>Queue Management:</strong></p>
-                        <p>• Login to queue: Dial *45</p>
-                        <p>• Logout from queue: Dial *46</p>
-                        <p>• Queue status: Dial *47</p>
+                        <p>- Login to queue: Dial *45</p>
+                        <p>- Logout from queue: Dial *46</p>
+                        <p>- Queue status: Dial *47</p>
                         <p style="margin-top: 1rem;"><strong>Testing & Other:</strong></p>
-                        <p>• Echo test: Dial 9196</p>
-                        <p>• Extensions: Dial 2000-2003</p>
+                        <p>- Echo test: Dial 9196</p>
+                        <p>- Extensions: Dial 2000-2003</p>
                     </div>
                     <a href="/queue-manager.php" class="btn" style="margin-top: 1rem; text-align: center;" aria-label="View queue manager guide and documentation">Queue Manager Guide</a>
                 </div>
@@ -804,9 +804,9 @@ $current_extension = $_SESSION['user_extension'] ?? null;
     <!-- Footer -->
     <div style="text-align: center; margin-top: 40px; padding: 20px; border-top: 1px solid #e0e0e0;">
         <p style="color: #666; margin-bottom: 15px;">
-            <a href="/admin/bug-tracker.php" style="color: #667eea; text-decoration: underline; margin: 0 10px;">🐛 Report a Bug</a> |
-            <a href="mailto:support@devine-creations.com" style="color: #667eea; text-decoration: underline; margin: 0 10px;">📧 Support</a> |
-            <a href="/user-portal/help.php" style="color: #667eea; text-decoration: underline; margin: 0 10px;">❓ Help</a>
+            <a href="/admin/bug-tracker.php" style="color: #667eea; text-decoration: underline; margin: 0 10px;"> Report a Bug</a> |
+            <a href="mailto:support@devine-creations.com" style="color: #667eea; text-decoration: underline; margin: 0 10px;"> Support</a> |
+            <a href="/user-portal/help.php" style="color: #667eea; text-decoration: underline; margin: 0 10px;"> Help</a>
         </p>
         <p style="color: #999; font-size: 0.9em;">
             Powered by <a href="https://devine-creations.com" target="_blank" style="color: #667eea; text-decoration: underline;">Devine Creations</a> |

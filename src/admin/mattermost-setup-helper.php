@@ -276,7 +276,7 @@ if (!isset($_SESSION['admin_username'])) {
                     <code>5</code> seconds (recommended)
 
                     <strong style="margin-top: 15px;">Enable Notifications:</strong>
-                    <code>✓ Checked</code>
+                    <code> Checked</code>
                 </div>
 
                 <div class="info-box">

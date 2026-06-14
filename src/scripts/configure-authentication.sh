@@ -57,27 +57,27 @@ DETECTED_DATABASES=()
 
 # Function to print colored output
 print_status() {
-    echo -e "${BLUE}ℹ️  [INFO]${NC} $1"
+    echo -e "${BLUE}ℹ  [INFO]${NC} $1"
 }
 
 print_success() {
-    echo -e "${GREEN}✅ [SUCCESS]${NC} $1"
+    echo -e "${GREEN} [SUCCESS]${NC} $1"
 }
 
 print_warning() {
-    echo -e "${YELLOW}⚠️  [WARNING]${NC} $1"
+    echo -e "${YELLOW}  [WARNING]${NC} $1"
 }
 
 print_error() {
-    echo -e "${RED}❌ [ERROR]${NC} $1"
+    echo -e "${RED} [ERROR]${NC} $1"
 }
 
 print_config() {
-    echo -e "${PURPLE}🔧 [CONFIG]${NC} $1"
+    echo -e "${PURPLE} [CONFIG]${NC} $1"
 }
 
 print_auth() {
-    echo -e "${CYAN}🔐 [AUTH]${NC} $1"
+    echo -e "${CYAN} [AUTH]${NC} $1"
 }
 
 # Function to detect existing authentication systems
@@ -241,29 +241,29 @@ detect_mysql_databases() {
 show_authentication_menu() {
     clear
     echo "========================================"
-    echo "🔐 FlexPBX Authentication Configuration"
+    echo " FlexPBX Authentication Configuration"
     echo "========================================"
     echo
 
     # Show detected applications
     if [ ${#WHMCS_PATHS[@]} -gt 0 ] || [ ${#WORDPRESS_PATHS[@]} -gt 0 ] || [ ${#MAGENTO_PATHS[@]} -gt 0 ]; then
-        echo "🔍 Detected Applications:"
+        echo " Detected Applications:"
         if [ ${#WHMCS_PATHS[@]} -gt 0 ]; then
-            echo "  📊 WHMCS (${#WHMCS_PATHS[@]} installations):"
+            echo "   WHMCS (${#WHMCS_PATHS[@]} installations):"
             for whmcs_path in "${WHMCS_PATHS[@]}"; do
                 whmcs_owner=$(stat -c %U "$whmcs_path" 2>/dev/null || stat -f %Su "$whmcs_path" 2>/dev/null)
                 echo "     └─ $whmcs_path (user: $whmcs_owner)"
             done
         fi
         if [ ${#WORDPRESS_PATHS[@]} -gt 0 ]; then
-            echo "  🌐 WordPress (${#WORDPRESS_PATHS[@]} installations):"
+            echo "   WordPress (${#WORDPRESS_PATHS[@]} installations):"
             for wp_path in "${WORDPRESS_PATHS[@]}"; do
                 wp_owner=$(stat -c %U "$wp_path" 2>/dev/null || stat -f %Su "$wp_path" 2>/dev/null)
                 echo "     └─ $wp_path (user: $wp_owner)"
             done
         fi
         if [ ${#MAGENTO_PATHS[@]} -gt 0 ]; then
-            echo "  🛒 Magento (${#MAGENTO_PATHS[@]} installations):"
+            echo "   Magento (${#MAGENTO_PATHS[@]} installations):"
             for magento_path in "${MAGENTO_PATHS[@]}"; do
                 magento_owner=$(stat -c %U "$magento_path" 2>/dev/null || stat -f %Su "$magento_path" 2>/dev/null)
                 echo "     └─ $magento_path (user: $magento_owner)"
@@ -274,23 +274,23 @@ show_authentication_menu() {
 
     echo "Select authentication methods to enable:"
     echo
-    echo "📱 Desktop Client Compatible (Recommended):"
-    echo "  [$(if $PINCODE_AUTH; then echo "✅"; else echo "  "; fi)] 1. Pincode Authentication (Default)"
-    echo "  [$(if $JWT_AUTH; then echo "✅"; else echo "  "; fi)] 2. JWT Token Authentication"
-    echo "  [$(if $APIKEY_AUTH; then echo "✅"; else echo "  "; fi)] 3. API Key Authentication"
+    echo " Desktop Client Compatible (Recommended):"
+    echo "  [$(if $PINCODE_AUTH; then echo ""; else echo "  "; fi)] 1. Pincode Authentication (Default)"
+    echo "  [$(if $JWT_AUTH; then echo ""; else echo "  "; fi)] 2. JWT Token Authentication"
+    echo "  [$(if $APIKEY_AUTH; then echo ""; else echo "  "; fi)] 3. API Key Authentication"
     echo
-    echo "🌐 Web-Based Authentication:"
-    echo "  [$(if $DATABASE_AUTH; then echo "✅"; else echo "  "; fi)] 4. Database Authentication (Local Users)"
-    echo "  [$(if $WHM_AUTH; then echo "✅"; else echo "  "; fi)] 5. WHM Authentication $(if ! $WHM_DETECTED; then echo "(Not Available)"; fi)"
-    echo "  [$(if $CPANEL_AUTH; then echo "✅"; else echo "  "; fi)] 6. cPanel Authentication $(if ! $CPANEL_DETECTED; then echo "(Not Available)"; fi)"
+    echo " Web-Based Authentication:"
+    echo "  [$(if $DATABASE_AUTH; then echo ""; else echo "  "; fi)] 4. Database Authentication (Local Users)"
+    echo "  [$(if $WHM_AUTH; then echo ""; else echo "  "; fi)] 5. WHM Authentication $(if ! $WHM_DETECTED; then echo "(Not Available)"; fi)"
+    echo "  [$(if $CPANEL_AUTH; then echo ""; else echo "  "; fi)] 6. cPanel Authentication $(if ! $CPANEL_DETECTED; then echo "(Not Available)"; fi)"
     echo
-    echo "🏢 Enterprise Authentication:"
-    echo "  [$(if $LDAP_AUTH; then echo "✅"; else echo "  "; fi)] 7. LDAP/Active Directory"
-    echo "  [$(if $OAUTH_AUTH; then echo "✅"; else echo "  "; fi)] 8. OAuth/SSO (Google, Microsoft, etc.)"
-    echo "  [$(if $RADIUS_AUTH; then echo "✅"; else echo "  "; fi)] 9. RADIUS Authentication"
-    echo "  [$(if $EXTERNAL_API_AUTH; then echo "✅"; else echo "  "; fi)]10. External API Authentication"
+    echo " Enterprise Authentication:"
+    echo "  [$(if $LDAP_AUTH; then echo ""; else echo "  "; fi)] 7. LDAP/Active Directory"
+    echo "  [$(if $OAUTH_AUTH; then echo ""; else echo "  "; fi)] 8. OAuth/SSO (Google, Microsoft, etc.)"
+    echo "  [$(if $RADIUS_AUTH; then echo ""; else echo "  "; fi)] 9. RADIUS Authentication"
+    echo "  [$(if $EXTERNAL_API_AUTH; then echo ""; else echo "  "; fi)]10. External API Authentication"
     echo
-    echo "🔗 Application Integration:"
+    echo " Application Integration:"
     if [ ${#WHMCS_PATHS[@]} -gt 0 ]; then
         echo "  15. Configure WHMCS Integration (${#WHMCS_PATHS[@]} detected)"
     fi
@@ -298,7 +298,7 @@ show_authentication_menu() {
         echo "  16. Configure WordPress SSO (${#WORDPRESS_PATHS[@]} detected)"
     fi
     echo
-    echo "📋 Configuration Options:"
+    echo " Configuration Options:"
     echo "  11. Configure Authentication Settings"
     echo "  12. Test Authentication Methods"
     echo "  13. Save and Apply Configuration"
@@ -370,7 +370,7 @@ toggle_auth_method() {
 # Function to configure authentication settings
 configure_auth_settings() {
     clear
-    echo "🔧 Authentication Settings Configuration"
+    echo " Authentication Settings Configuration"
     echo "========================================"
     echo
 
@@ -688,45 +688,45 @@ test_authentication() {
     echo "Testing enabled authentication methods:"
 
     if $PINCODE_AUTH; then
-        echo "✅ Pincode Authentication - Desktop Compatible"
+        echo " Pincode Authentication - Desktop Compatible"
         # Generate test pincode
         test_pincode=$(printf "%0${PINCODE_LENGTH}d" $((RANDOM % $((10**$PINCODE_LENGTH)))))
         echo "   Sample pincode: $test_pincode (expires in $(($PINCODE_EXPIRY / 60)) minutes)"
     fi
 
     if $JWT_AUTH; then
-        echo "✅ JWT Authentication - Desktop Compatible"
+        echo " JWT Authentication - Desktop Compatible"
         echo "   Token expiry: $(($SESSION_TIMEOUT / 3600)) hours"
     fi
 
     if $APIKEY_AUTH; then
-        echo "✅ API Key Authentication - Desktop Compatible"
+        echo " API Key Authentication - Desktop Compatible"
         test_api_key="flx_$(openssl rand -hex 16)"
         echo "   Sample API key: $test_api_key"
     fi
 
     if $DATABASE_AUTH; then
-        echo "✅ Database Authentication - Web Interface"
+        echo " Database Authentication - Web Interface"
         echo "   User table: flexpbx_users"
     fi
 
     if $WHM_AUTH; then
-        echo "✅ WHM Authentication - Web Interface"
+        echo " WHM Authentication - Web Interface"
         echo "   WHM API: https://$(hostname):2087/json-api/"
     fi
 
     if $CPANEL_AUTH; then
-        echo "✅ cPanel Authentication - Web Interface"
+        echo " cPanel Authentication - Web Interface"
         echo "   cPanel API: https://$(hostname):2083/execute/"
     fi
 
     if $LDAP_AUTH; then
-        echo "✅ LDAP Authentication - Enterprise"
+        echo " LDAP Authentication - Enterprise"
         echo "   LDAP Server: $LDAP_SERVER"
     fi
 
     if $OAUTH_AUTH; then
-        echo "✅ OAuth Authentication - SSO"
+        echo " OAuth Authentication - SSO"
         echo "   Provider: $OAUTH_PROVIDER"
     fi
 
@@ -788,7 +788,7 @@ apply_configuration() {
 # Main function
 main() {
     echo "========================================"
-    echo "🔐 FlexPBX Authentication Configurator v$FLEXPBX_VERSION"
+    echo " FlexPBX Authentication Configurator v$FLEXPBX_VERSION"
     echo "========================================"
     echo
 
@@ -862,7 +862,7 @@ main() {
 # Function to configure WHMCS integration
 configure_whmcs_integration() {
     clear
-    echo "🔗 WHMCS Integration Configuration"
+    echo " WHMCS Integration Configuration"
     echo "================================="
     echo
 
@@ -1184,7 +1184,7 @@ EOFTEMPLATE
 # Function to configure WordPress SSO
 configure_wordpress_sso() {
     clear
-    echo "🌐 WordPress SSO Configuration"
+    echo " WordPress SSO Configuration"
     echo "=============================="
     echo
 

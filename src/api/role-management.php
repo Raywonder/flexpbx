@@ -396,7 +396,7 @@ function changeRole() {
             'target_user' => $username,
             'admin_user' => $auth['username'],
             'details' => "Changed from {$old_role} to {$new_role}" .
-                        ($new_extension && $new_extension !== $old_extension ? " | Extension: {$old_extension} → {$new_extension}" : ''),
+                        ($new_extension && $new_extension !== $old_extension ? " | Extension: {$old_extension} -> {$new_extension}" : ''),
             'reason' => $reason,
             'timestamp' => date('Y-m-d H:i:s'),
             'ip' => $_SERVER['REMOTE_ADDR'] ?? 'unknown'

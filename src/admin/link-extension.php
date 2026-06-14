@@ -220,22 +220,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['unlink_extension'])) 
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔗 Link Extension to Admin Account</h1>
+            <h1> Link Extension to Admin Account</h1>
             <p class="subtitle">Admin: <?= htmlspecialchars($admin_username) ?></p>
         </div>
 
         <div class="card">
             <?php if ($error): ?>
-            <div class="alert alert-error">⚠️ <?= htmlspecialchars($error) ?></div>
+            <div class="alert alert-error"> <?= htmlspecialchars($error) ?></div>
             <?php endif; ?>
 
             <?php if ($success): ?>
-            <div class="alert alert-success">✓ <?= htmlspecialchars($success) ?></div>
+            <div class="alert alert-success"> <?= htmlspecialchars($success) ?></div>
             <?php endif; ?>
 
             <?php if ($linked_extension): ?>
             <div class="linked-info">
-                <h3>✓ Extension Linked</h3>
+                <h3> Extension Linked</h3>
                 <p><strong>Extension:</strong> <?= htmlspecialchars($linked_extension) ?></p>
                 <p><strong>Linked:</strong> <?= htmlspecialchars($admin_data['linked_date'] ?? 'Unknown') ?></p>
                 <p style="margin-top: 1rem;">

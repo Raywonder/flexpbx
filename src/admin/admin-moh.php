@@ -323,7 +323,7 @@
                             <i class="fas fa-file-audio file-icon"></i>
                             <div>
                                 <strong>${file.name}</strong><br>
-                                <small class="text-muted">${file.size_formatted} • ${file.modified}</small>
+                                <small class="text-muted">${file.size_formatted} - ${file.modified}</small>
                             </div>
                         </div>
                         <div>

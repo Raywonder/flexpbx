@@ -419,7 +419,7 @@
 </head>
 <body>
     <div class="container">
-        <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+        <a href="dashboard.html" class="back-link"><- Back to Dashboard</a>
 
         <div class="header">
             <div class="header-left">
@@ -431,7 +431,7 @@
                     <span class="status-indicator offline"></span>
                     Connecting...
                 </div>
-                <button class="btn btn-secondary" onclick="refreshData()">🔄 Refresh</button>
+                <button class="btn btn-secondary" onclick="refreshData()"> Refresh</button>
             </div>
         </div>
 
@@ -470,9 +470,9 @@
                     <h2 class="feed-title">Event Feed</h2>
                     <div class="filter-buttons">
                         <button class="filter-btn active" data-filter="all" onclick="filterEvents('all')">All</button>
-                        <button class="filter-btn" data-filter="backup" onclick="filterEvents('backup')">📦 Backup</button>
-                        <button class="filter-btn" data-filter="module" onclick="filterEvents('module')">🔌 Modules</button>
-                        <button class="filter-btn" data-filter="system" onclick="filterEvents('system')">⚙️ System</button>
+                        <button class="filter-btn" data-filter="backup" onclick="filterEvents('backup')"> Backup</button>
+                        <button class="filter-btn" data-filter="module" onclick="filterEvents('module')"> Modules</button>
+                        <button class="filter-btn" data-filter="system" onclick="filterEvents('system')"> System</button>
                     </div>
                 </div>
 
@@ -495,10 +495,10 @@
                     <div class="form-group">
                         <label for="notification-target">Target</label>
                         <select id="notification-target" required>
-                            <option value="global">🌐 Global Broadcast</option>
-                            <option value="extension:2000">📞 Extension 2000 (Admin)</option>
-                            <option value="extension:2001">📞 Extension 2001</option>
-                            <option value="discord">💬 Discord Only</option>
+                            <option value="global"> Global Broadcast</option>
+                            <option value="extension:2000"> Extension 2000 (Admin)</option>
+                            <option value="extension:2001"> Extension 2001</option>
+                            <option value="discord"> Discord Only</option>
                         </select>
                     </div>
 
@@ -517,8 +517,8 @@
                     </div>
 
                     <div class="button-group">
-                        <button type="submit" class="btn btn-success">📤 Send Notification</button>
-                        <button type="button" class="btn btn-secondary" onclick="testDiscordWebhook()">🧪 Test Discord</button>
+                        <button type="submit" class="btn btn-success"> Send Notification</button>
+                        <button type="button" class="btn btn-secondary" onclick="testDiscordWebhook()"> Test Discord</button>
                     </div>
                 </form>
 
@@ -664,7 +664,7 @@
             eventList.innerHTML = filteredEvents.map(event => {
                 const icon = getEventIcon(event.type);
                 const successClass = event.success ? 'success-badge' : 'failure-badge';
-                const successText = event.success ? '✓ Success' : '✗ Failed';
+                const successText = event.success ? ' Success' : ' Failed';
 
                 let dataText = '';
                 if (event.data) {
@@ -692,11 +692,11 @@
 
         function getEventIcon(type) {
             const icons = {
-                'backup': '📦',
-                'module': '🔌',
-                'system': '⚙️'
+                'backup': '',
+                'module': '',
+                'system': ''
             };
-            return icons[type] || '📝';
+            return icons[type] || '';
         }
 
         async function sendNotification(event) {
@@ -726,12 +726,12 @@
                 const result = await response.json();
 
                 if (result.success) {
-                    messageDiv.innerHTML = '<div class="success-message">✓ Notification sent successfully!</div>';
+                    messageDiv.innerHTML = '<div class="success-message"> Notification sent successfully!</div>';
                     document.getElementById('notification-message-text').value = '';
                     // Refresh events to show the new notification event
                     setTimeout(loadEvents, 1000);
                 } else {
-                    messageDiv.innerHTML = `<div class="error-message">✗ Failed: ${result.message || 'Unknown error'}</div>`;
+                    messageDiv.innerHTML = `<div class="error-message"> Failed: ${result.message || 'Unknown error'}</div>`;
                 }
 
                 // Clear message after 5 seconds
@@ -741,7 +741,7 @@
 
             } catch (error) {
                 console.error('Error sending notification:', error);
-                messageDiv.innerHTML = '<div class="error-message">✗ Failed to send notification. Check console for details.</div>';
+                messageDiv.innerHTML = '<div class="error-message"> Failed to send notification. Check console for details.</div>';
             }
         }
 
@@ -757,9 +757,9 @@
                 const result = await response.json();
 
                 if (result.success) {
-                    messageDiv.innerHTML = '<div class="success-message">✓ Discord webhook test successful! Check your Discord channel.</div>';
+                    messageDiv.innerHTML = '<div class="success-message"> Discord webhook test successful! Check your Discord channel.</div>';
                 } else {
-                    messageDiv.innerHTML = `<div class="error-message">✗ Discord test failed: ${result.message || 'Unknown error'}</div>`;
+                    messageDiv.innerHTML = `<div class="error-message"> Discord test failed: ${result.message || 'Unknown error'}</div>`;
                 }
 
                 setTimeout(() => {
@@ -768,7 +768,7 @@
 
             } catch (error) {
                 console.error('Error testing Discord:', error);
-                messageDiv.innerHTML = '<div class="error-message">✗ Failed to test Discord webhook. Make sure HubNode service is running.</div>';
+                messageDiv.innerHTML = '<div class="error-message"> Failed to test Discord webhook. Make sure HubNode service is running.</div>';
             }
         }
 

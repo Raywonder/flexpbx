@@ -424,7 +424,7 @@ function savePreferences($user_id, $data) {
 </head>
 <body>
     <div class="container">
-        <a href="index.php" class="back-link">← Back to Dashboard</a>
+        <a href="index.php" class="back-link"><- Back to Dashboard</a>
 
         <div class="header">
             <h1>Email Notification Settings</h1>

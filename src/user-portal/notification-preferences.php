@@ -254,14 +254,14 @@ require_once __DIR__ . '/user_header.php';
 
 <div class="container">
     <div class="header">
-        <h1>⚙️ Notification Preferences</h1>
+        <h1> Notification Preferences</h1>
         <p class="subtitle">Customize how and when you receive notifications</p>
     </div>
 
     <div id="alert-container"></div>
 
     <div class="preferences-card">
-        <h2>🔔 Notification Settings</h2>
+        <h2> Notification Settings</h2>
 
         <form id="preferences-form">
             <!-- Notification Types -->

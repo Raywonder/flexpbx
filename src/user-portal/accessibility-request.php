@@ -233,7 +233,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <body>
     <div class="container">
         <div class="header">
-            <h1>♿ Accessibility Request</h1>
+            <h1> Accessibility Request</h1>
             <p>Request accessibility accommodations for your FlexPBX account</p>
         </div>
 
@@ -247,13 +247,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <?php if ($success_message): ?>
             <div class="alert alert-success">
-                ✓ <?= $success_message ?>
+                 <?= $success_message ?>
             </div>
             <?php endif; ?>
 
             <?php if ($error_message): ?>
             <div class="alert alert-error">
-                ⚠️ <?= $error_message ?>
+                 <?= $error_message ?>
             </div>
             <?php endif; ?>
 
@@ -357,7 +357,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </form>
 
             <div class="back-link">
-                <a href="../admin/dashboard.html">← Back to Dashboard</a> |
+                <a href="../admin/dashboard.html"><- Back to Dashboard</a> |
                 <a href="signup.php">User Sign-Up</a>
             </div>
         </div>

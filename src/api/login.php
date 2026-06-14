@@ -289,8 +289,11 @@ function flexPhoneSipSettings() {
             'transport' => 'UDP',
             'route_type' => 'public',
             'preferred' => true
-        ],
-        [
+        ]
+    ];
+
+    if (flexPhoneRequestIsTailnet()) {
+        $routes[] = [
             'label' => 'Secure Headscale server',
             'server' => '100.64.0.2',
             'host' => '100.64.0.2',
@@ -298,8 +301,8 @@ function flexPhoneSipSettings() {
             'transport' => 'UDP',
             'route_type' => 'headscale',
             'preferred' => false
-        ],
-        [
+        ];
+        $routes[] = [
             'label' => 'Secure Headscale PBX node',
             'server' => '100.64.0.3',
             'host' => '100.64.0.3',
@@ -307,8 +310,8 @@ function flexPhoneSipSettings() {
             'transport' => 'UDP',
             'route_type' => 'headscale',
             'preferred' => false
-        ]
-    ];
+        ];
+    }
 
     return [
         'server' => $publicHost,
@@ -318,6 +321,25 @@ function flexPhoneSipSettings() {
         'routes' => $routes,
         'fallbacks' => array_slice($routes, 1)
     ];
+}
+
+function flexPhoneRequestIsTailnet() {
+    $candidates = [
+        $_SERVER['HTTP_X_FORWARDED_FOR'] ?? '',
+        $_SERVER['HTTP_X_REAL_IP'] ?? '',
+        $_SERVER['REMOTE_ADDR'] ?? ''
+    ];
+
+    foreach ($candidates as $candidate) {
+        foreach (explode(',', (string)$candidate) as $ip) {
+            $ip = trim($ip);
+            if (preg_match('/^100\.(6[4-9]|[7-9][0-9]|1[01][0-9]|12[0-7])\./', $ip)) {
+                return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 function flexPhonePublicSipHost() {

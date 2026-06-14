@@ -1,5 +1,5 @@
 /**
- * 💬 FlexPhone SMS Service
+ *  FlexPhone SMS Service
  * Handles SMS messaging through SIP providers
  */
 
@@ -50,16 +50,16 @@ class SMSService extends EventEmitter {
             }
         };
 
-        console.log('💬 FlexPhone SMS Service initialized');
+        console.log(' FlexPhone SMS Service initialized');
     }
 
     async initialize() {
         try {
             await this.loadMessages();
-            console.log('✅ SMS Service ready');
+            console.log(' SMS Service ready');
             return true;
         } catch (error) {
-            console.error('❌ SMS Service initialization failed:', error);
+            console.error(' SMS Service initialization failed:', error);
             return false;
         }
     }
@@ -105,7 +105,7 @@ class SMSService extends EventEmitter {
             await this.updateConversation(to, smsMessage);
             await this.saveMessages();
 
-            console.log(`💬 Sending SMS: ${options.from || 'You'} → ${to}`);
+            console.log(` Sending SMS: ${options.from || 'You'} -> ${to}`);
             console.log(`   Message: "${message.substring(0, 50)}${message.length > 50 ? '...' : ''}"`);
 
             // Simulate SMS sending
@@ -120,7 +120,7 @@ class SMSService extends EventEmitter {
             };
 
         } catch (error) {
-            console.error('❌ SMS send failed:', error);
+            console.error(' SMS send failed:', error);
             return {
                 success: false,
                 error: error.message
@@ -156,7 +156,7 @@ class SMSService extends EventEmitter {
             await this.updateConversation(from, smsMessage);
             await this.saveMessages();
 
-            console.log(`💬 SMS received from: ${from}`);
+            console.log(` SMS received from: ${from}`);
             console.log(`   Message: "${message.substring(0, 50)}${message.length > 50 ? '...' : ''}"`);
 
             this.emit('message-received', smsMessage);
@@ -167,7 +167,7 @@ class SMSService extends EventEmitter {
             };
 
         } catch (error) {
-            console.error('❌ SMS receive failed:', error);
+            console.error(' SMS receive failed:', error);
             return {
                 success: false,
                 error: error.message
@@ -183,13 +183,13 @@ class SMSService extends EventEmitter {
         message.status = 'sent';
         message.sentAt = new Date().toISOString();
 
-        console.log(`✅ SMS sent: ${message.id}`);
+        console.log(` SMS sent: ${message.id}`);
 
         // Simulate delivery receipt
         setTimeout(() => {
             message.status = 'delivered';
             message.deliveredAt = new Date().toISOString();
-            console.log(`📬 SMS delivered: ${message.id}`);
+            console.log(` SMS delivered: ${message.id}`);
             this.emit('message-delivered', message);
         }, 2000);
     }
@@ -207,7 +207,7 @@ class SMSService extends EventEmitter {
 
                 await this.saveMessages();
 
-                console.log(`👁️ Message marked as read: ${messageId}`);
+                console.log(` Message marked as read: ${messageId}`);
 
                 this.emit('message-read', message);
 
@@ -224,7 +224,7 @@ class SMSService extends EventEmitter {
             };
 
         } catch (error) {
-            console.error('❌ Mark as read failed:', error);
+            console.error(' Mark as read failed:', error);
             return {
                 success: false,
                 error: error.message
@@ -263,7 +263,7 @@ class SMSService extends EventEmitter {
 
             await this.saveMessages();
 
-            console.log(`🗑️ Message deleted: ${messageId}`);
+            console.log(` Message deleted: ${messageId}`);
 
             this.emit('message-deleted', { messageId, conversationId: message.conversationId });
 
@@ -273,7 +273,7 @@ class SMSService extends EventEmitter {
             };
 
         } catch (error) {
-            console.error('❌ Delete message failed:', error);
+            console.error(' Delete message failed:', error);
             return {
                 success: false,
                 error: error.message
@@ -298,7 +298,7 @@ class SMSService extends EventEmitter {
 
             await this.saveMessages();
 
-            console.log(`🗑️ Conversation deleted: ${conversationId}`);
+            console.log(` Conversation deleted: ${conversationId}`);
 
             this.emit('conversation-deleted', conversationId);
 
@@ -308,7 +308,7 @@ class SMSService extends EventEmitter {
             };
 
         } catch (error) {
-            console.error('❌ Delete conversation failed:', error);
+            console.error(' Delete conversation failed:', error);
             return {
                 success: false,
                 error: error.message
@@ -422,13 +422,13 @@ class SMSService extends EventEmitter {
                 });
             }
 
-            console.log(`📥 Loaded ${this.messages.size} messages in ${this.conversations.size} conversations`);
+            console.log(` Loaded ${this.messages.size} messages in ${this.conversations.size} conversations`);
 
         } catch (error) {
             // File doesn't exist or is corrupted, start fresh
             this.messages = new Map();
             this.conversations = new Map();
-            console.log('📝 Starting with empty message history');
+            console.log(' Starting with empty message history');
         }
     }
 
@@ -453,7 +453,7 @@ class SMSService extends EventEmitter {
             await fs.writeFile(this.messagesPath, JSON.stringify(saveData, null, 2));
 
         } catch (error) {
-            console.error('❌ Failed to save messages:', error);
+            console.error(' Failed to save messages:', error);
         }
     }
 
@@ -512,8 +512,8 @@ class SMSService extends EventEmitter {
         const testMessages = [
             'Hello from FlexPhone!',
             'This is a test SMS message.',
-            'How are you doing today? 😊',
-            'Testing emoji support: 🚀📱💬'
+            'How are you doing today? ',
+            'Testing emoji support: '
         ];
 
         const randomMessage = testMessages[Math.floor(Math.random() * testMessages.length)];

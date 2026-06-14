@@ -219,27 +219,27 @@ function processAction($action) {
             $handoffMarkdown .= "**Generated:** {$handoffData['timestamp']}  \n";
             $handoffMarkdown .= "**Server:** {$handoffData['server']}  \n\n";
 
-            $handoffMarkdown .= "## ✅ Completed Tasks\n\n";
+            $handoffMarkdown .= "##  Completed Tasks\n\n";
             foreach ($handoffData['current_tasks'] as $task) {
-                $handoffMarkdown .= "- ✅ $task\n";
+                $handoffMarkdown .= "-  $task\n";
             }
 
-            $handoffMarkdown .= "\n## 🔄 Pending Actions\n\n";
+            $handoffMarkdown .= "\n##  Pending Actions\n\n";
             foreach ($handoffData['pending_actions'] as $action) {
-                $handoffMarkdown .= "- ⏳ $action\n";
+                $handoffMarkdown .= "-  $action\n";
             }
 
-            $handoffMarkdown .= "\n## 📁 Key File Locations\n\n";
+            $handoffMarkdown .= "\n##  Key File Locations\n\n";
             foreach ($handoffData['file_locations'] as $label => $path) {
                 $handoffMarkdown .= "- **$label:** `$path`\n";
             }
 
-            $handoffMarkdown .= "\n## 🚀 Next Steps\n\n";
+            $handoffMarkdown .= "\n##  Next Steps\n\n";
             foreach ($handoffData['next_steps'] as $step) {
                 $handoffMarkdown .= "$step\n";
             }
 
-            $handoffMarkdown .= "\n## 🛠 Enhanced File Manager Commands\n\n";
+            $handoffMarkdown .= "\n##  Enhanced File Manager Commands\n\n";
             $handoffMarkdown .= "```bash\n";
             $handoffMarkdown .= "# Upload files\n";
             $handoffMarkdown .= "curl -X POST https://{$_SERVER['HTTP_HOST']}/enhanced-file-manager.php -F \"action=upload\" -F \"file=@localfile.txt\"\n\n";

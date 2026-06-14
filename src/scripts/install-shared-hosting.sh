@@ -562,23 +562,23 @@ create_installation_instructions() {
     cat > "$APPS_DIR/flexpbx/SHARED-HOSTING-SETUP.md" << EOF
 # FlexPBX Shared Hosting Setup Instructions
 
-## 🎉 Installation Complete!
+##  Installation Complete!
 
 Your FlexPBX files have been deployed to your shared hosting account.
 
-### 📁 **File Locations**
+###  **File Locations**
 - **Web Files**: $WEB_DIR
 - **App Files**: $APPS_DIR/flexpbx
 - **Configuration**: $CONFIG_DIR
 - **Logs**: $LOG_DIR
 
-### 🌐 **Web Access**
+###  **Web Access**
 - **Main Interface**: https://yourdomain.com/$SUBDIRECTORY/
 - **Admin Panel**: https://yourdomain.com/$SUBDIRECTORY/admin/
 - **Phone App**: https://yourdomain.com/$SUBDIRECTORY/phone/
 - **API**: https://yourdomain.com/$SUBDIRECTORY/api/
 
-### 🔧 **Next Steps**
+###  **Next Steps**
 
 #### 1. **Database Setup**
 1. Access your hosting control panel (cPanel/DirectAdmin)
@@ -615,9 +615,9 @@ Visit: https://yourdomain.com/$SUBDIRECTORY/
 #### 5. **Default Login**
 - **Username**: admin
 - **Password**: admin123
-- **⚠️ CHANGE THIS IMMEDIATELY!**
+- ** CHANGE THIS IMMEDIATELY!**
 
-### 🔌 **Node.js Setup (Optional)**
+###  **Node.js Setup (Optional)**
 
 If your hosting supports Node.js:
 
@@ -639,7 +639,7 @@ If your hosting supports Node.js:
    node app.js
    \`\`\`
 
-### 🛠️ **cPanel-Specific Instructions**
+###  **cPanel-Specific Instructions**
 
 #### **File Manager**
 1. Upload FlexPBX files to \`public_html/$SUBDIRECTORY/\`
@@ -657,7 +657,7 @@ If your hosting supports Node.js:
 2. Point to \`public_html/flexpbx\`
 3. Update configuration accordingly
 
-### 🔧 **DirectAdmin-Specific Instructions**
+###  **DirectAdmin-Specific Instructions**
 
 #### **File Manager**
 1. Upload to \`domains/yourdomain.com/public_html/$SUBDIRECTORY/\`
@@ -669,7 +669,7 @@ If your hosting supports Node.js:
 2. Import SQL file
 3. Update config.php with connection details
 
-### 📞 **Support**
+###  **Support**
 
 #### **Troubleshooting**
 - Check error logs in \`$LOG_DIR/error.log\`
@@ -690,7 +690,7 @@ If your hosting supports Node.js:
 
 ---
 
-## 🎉 **Your FlexPBX is Ready!**
+##  **Your FlexPBX is Ready!**
 
 Access your FlexPBX installation at:
 **https://yourdomain.com/$SUBDIRECTORY/**

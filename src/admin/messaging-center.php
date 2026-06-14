@@ -224,23 +224,23 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>💬 Messaging Center</h1>
+            <h1> Messaging Center</h1>
             <p class="subtitle">Unified SMS, XMPP, and Internal Messaging Platform</p>
             <div class="nav-links">
-                <a href="dashboard.php" class="nav-link">🏠 Dashboard</a>
-                <a href="extensions.php" class="nav-link">📞 Extensions</a>
-                <a href="ivr-builder.php" class="nav-link">📱 IVR Builder</a>
+                <a href="dashboard.php" class="nav-link"> Dashboard</a>
+                <a href="extensions.php" class="nav-link"> Extensions</a>
+                <a href="ivr-builder.php" class="nav-link"> IVR Builder</a>
             </div>
         </div>
 
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('overview')">📊 Overview</button>
-            <button class="tab" onclick="switchTab('sms')">📱 SMS</button>
-            <button class="tab" onclick="switchTab('xmpp')">💬 XMPP Chat</button>
-            <button class="tab" onclick="switchTab('compose')">✉️ Compose</button>
-            <button class="tab" onclick="switchTab('history')">📜 Message History</button>
-            <button class="tab" onclick="switchTab('providers')">🔧 Providers</button>
-            <button class="tab" onclick="switchTab('settings')">⚙️ Settings</button>
+            <button class="tab active" onclick="switchTab('overview')"> Overview</button>
+            <button class="tab" onclick="switchTab('sms')"> SMS</button>
+            <button class="tab" onclick="switchTab('xmpp')"> XMPP Chat</button>
+            <button class="tab" onclick="switchTab('compose')"> Compose</button>
+            <button class="tab" onclick="switchTab('history')"> Message History</button>
+            <button class="tab" onclick="switchTab('providers')"> Providers</button>
+            <button class="tab" onclick="switchTab('settings')"> Settings</button>
         </div>
 
         <!-- Overview Tab -->
@@ -286,11 +286,11 @@
             </div>
 
             <div class="alert alert-info" style="margin-top: 20px;">
-                <strong>💡 Quick Actions:</strong>
+                <strong> Quick Actions:</strong>
                 <div style="margin-top: 10px; display: flex; gap: 10px; flex-wrap: wrap;">
-                    <button class="btn" onclick="switchTab('compose')">✉️ Send New Message</button>
-                    <button class="btn btn-success" onclick="refreshOverview()">🔄 Refresh Stats</button>
-                    <button class="btn btn-warning" onclick="switchTab('providers')">🔧 Configure Providers</button>
+                    <button class="btn" onclick="switchTab('compose')"> Send New Message</button>
+                    <button class="btn btn-success" onclick="refreshOverview()"> Refresh Stats</button>
+                    <button class="btn btn-warning" onclick="switchTab('providers')"> Configure Providers</button>
                 </div>
             </div>
         </div>
@@ -300,8 +300,8 @@
             <h2>SMS Messaging</h2>
 
             <div style="margin-bottom: 20px;">
-                <button class="btn" onclick="showSendSMSModal()">📱 Send SMS</button>
-                <button class="btn btn-success" onclick="refreshSMSList()">🔄 Refresh</button>
+                <button class="btn" onclick="showSendSMSModal()"> Send SMS</button>
+                <button class="btn btn-success" onclick="refreshSMSList()"> Refresh</button>
             </div>
 
             <div class="two-col" style="margin-bottom: 20px;">
@@ -352,9 +352,9 @@
             <h2>XMPP Internal Chat</h2>
 
             <div class="alert alert-info">
-                <strong>ℹ️ XMPP Status:</strong>
+                <strong>ℹ XMPP Status:</strong>
                 <span id="xmpp-connection-status">Not connected</span>
-                <button class="btn" onclick="connectXMPP()" style="margin-left: 10px;">🔌 Connect</button>
+                <button class="btn" onclick="connectXMPP()" style="margin-left: 10px;"> Connect</button>
             </div>
 
             <div class="two-col">
@@ -424,8 +424,8 @@
             </div>
 
             <div style="display: flex; gap: 10px;">
-                <button class="btn" onclick="sendComposedMessage()">📤 Send Message</button>
-                <button class="btn btn-danger" onclick="clearCompose()">🗑️ Clear</button>
+                <button class="btn" onclick="sendComposedMessage()"> Send Message</button>
+                <button class="btn btn-danger" onclick="clearCompose()"> Clear</button>
             </div>
         </div>
 
@@ -450,8 +450,8 @@
             </div>
 
             <div style="margin-bottom: 20px;">
-                <button class="btn" onclick="loadHistory()">🔍 Search</button>
-                <button class="btn btn-success" onclick="exportHistory()">📊 Export to CSV</button>
+                <button class="btn" onclick="loadHistory()"> Search</button>
+                <button class="btn btn-success" onclick="exportHistory()"> Export to CSV</button>
             </div>
 
             <div id="history-results"></div>
@@ -462,7 +462,7 @@
             <h2>Messaging Providers Configuration</h2>
 
             <div class="alert alert-warning">
-                <strong>⚠️ Note:</strong> Provider configurations are stored securely. Test connections after making changes.
+                <strong> Note:</strong> Provider configurations are stored securely. Test connections after making changes.
             </div>
 
             <h3>SMS Providers</h3>
@@ -483,8 +483,8 @@
                     <label>From Number</label>
                     <input type="text" id="twilio-from" placeholder="+15555551234">
                 </div>
-                <button class="btn" onclick="saveProvider('twilio')">💾 Save Twilio</button>
-                <button class="btn btn-success" onclick="testProvider('twilio')">✅ Test Connection</button>
+                <button class="btn" onclick="saveProvider('twilio')"> Save Twilio</button>
+                <button class="btn btn-success" onclick="testProvider('twilio')"> Test Connection</button>
             </div>
 
             <div class="card" style="margin-bottom: 20px;">
@@ -499,8 +499,8 @@
                         <input type="text" id="textnow-from" placeholder="+15555551234">
                     </div>
                 </div>
-                <button class="btn" onclick="saveProvider('textnow')">💾 Save TextNow</button>
-                <button class="btn btn-success" onclick="testProvider('textnow')">✅ Test Connection</button>
+                <button class="btn" onclick="saveProvider('textnow')"> Save TextNow</button>
+                <button class="btn btn-success" onclick="testProvider('textnow')"> Test Connection</button>
             </div>
 
             <div class="card" style="margin-bottom: 20px;">
@@ -509,8 +509,8 @@
                     <label>OAuth Credentials JSON</label>
                     <textarea id="googlevoice-creds" placeholder="Paste OAuth credentials JSON..." style="min-height: 100px;"></textarea>
                 </div>
-                <button class="btn" onclick="saveProvider('googlevoice')">💾 Save Google Voice</button>
-                <button class="btn btn-success" onclick="testProvider('googlevoice')">✅ Test Connection</button>
+                <button class="btn" onclick="saveProvider('googlevoice')"> Save Google Voice</button>
+                <button class="btn btn-success" onclick="testProvider('googlevoice')"> Test Connection</button>
             </div>
 
             <h3 style="margin-top: 30px;">XMPP Configuration</h3>
@@ -531,9 +531,9 @@
                         <input type="text" id="xmpp-bosh-url" value="http://localhost:5280/http-bind" placeholder="http://localhost:5280/http-bind">
                     </div>
                 </div>
-                <button class="btn" onclick="saveProvider('xmpp')">💾 Save XMPP Settings</button>
-                <button class="btn btn-success" onclick="testXMPPConnection()">✅ Test Connection</button>
-                <button class="btn btn-warning" onclick="window.location.href='xmpp-configuration.php'">⚙️ Advanced XMPP Settings</button>
+                <button class="btn" onclick="saveProvider('xmpp')"> Save XMPP Settings</button>
+                <button class="btn btn-success" onclick="testXMPPConnection()"> Test Connection</button>
+                <button class="btn btn-warning" onclick="window.location.href='xmpp-configuration.php'"> Advanced XMPP Settings</button>
             </div>
         </div>
 
@@ -584,7 +584,7 @@
             </div>
 
             <div style="margin-top: 20px;">
-                <button class="btn" onclick="saveSettings()">💾 Save Settings</button>
+                <button class="btn" onclick="saveSettings()"> Save Settings</button>
             </div>
         </div>
     </div>

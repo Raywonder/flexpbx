@@ -14,9 +14,11 @@
  *    if ($_GET['install_mcp'] ?? false) {
  *        $this->installMCPServer($dbConfig);
  *    } else {
- *        $this->logProgress("⏭️  Step 9/9: MCP Server installation skipped (optional)");
+ *        $this->logProgress("  Step 9/9: MCP Server installation skipped (optional)");
  *    }
  */
+
+class FlexPBXMcpServerInstallerPatch {
 
 /**
  * Check if Node.js is installed and meets version requirements
@@ -62,26 +64,26 @@ private function checkNodeJs() {
  */
 private function installMCPServer($dbConfig) {
     try {
-        $this->logProgress("🤖 Step 9/9: Installing MCP Server (Optional AI Integration)...");
+        $this->logProgress(" Step 9/9: Installing MCP Server (Optional AI Integration)...");
 
         // Check Node.js first
         $nodeStatus = $this->checkNodeJs();
 
         if (!$nodeStatus['installed']) {
-            $this->logProgress("⚠️ Node.js not found - skipping MCP server installation");
-            $this->logProgress("💡 Install Node.js 18+ to enable AI-assisted PBX management");
+            $this->logProgress(" Node.js not found - skipping MCP server installation");
+            $this->logProgress(" Install Node.js 18+ to enable AI-assisted PBX management");
             $this->logProgress("   Run: curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash");
             return false;
         }
 
         if (!$nodeStatus['meets_requirement']) {
-            $this->logProgress("⚠️ Node.js version {$nodeStatus['version']} is too old (requires 18+)");
-            $this->logProgress("💡 Upgrade Node.js: nvm install 18 && nvm use 18");
+            $this->logProgress(" Node.js version {$nodeStatus['version']} is too old (requires 18+)");
+            $this->logProgress(" Upgrade Node.js: nvm install 18 && nvm use 18");
             return false;
         }
 
-        $this->logProgress("✅ Node.js {$nodeStatus['version']} detected at {$nodeStatus['path']}");
-        $this->logProgress("✅ npm installed and ready");
+        $this->logProgress(" Node.js {$nodeStatus['version']} detected at {$nodeStatus['path']}");
+        $this->logProgress(" npm installed and ready");
 
         // Create MCP server directory
         $this->downloadMCPServerFiles();
@@ -104,16 +106,16 @@ private function installMCPServer($dbConfig) {
         // Verify installation
         $this->verifyMCPInstallation();
 
-        $this->logProgress("🎉 MCP Server installed successfully!");
-        $this->logProgress("💡 Configure Claude Desktop to use: /home/flexpbxuser/mcp-server/server.js");
-        $this->logProgress("💡 Documentation: /home/flexpbxuser/documentation/MCP_SERVER_INSTALLER_INTEGRATION.md");
+        $this->logProgress(" MCP Server installed successfully!");
+        $this->logProgress(" Configure Claude Desktop to use: /home/flexpbxuser/mcp-server/server.js");
+        $this->logProgress(" Documentation: /home/flexpbxuser/documentation/MCP_SERVER_INSTALLER_INTEGRATION.md");
 
         return true;
 
     } catch (Exception $e) {
-        $this->logProgress("⚠️ MCP Server installation failed: " . $e->getMessage());
-        $this->logProgress("💡 MCP server is optional - FlexPBX will work without it");
-        $this->logProgress("💡 You can install it later from Admin → System → MCP Server Setup");
+        $this->logProgress(" MCP Server installation failed: " . $e->getMessage());
+        $this->logProgress(" MCP server is optional - FlexPBX will work without it");
+        $this->logProgress(" You can install it later from Admin -> System -> MCP Server Setup");
         return false;
     }
 }
@@ -129,7 +131,7 @@ private function downloadMCPServerFiles() {
         mkdir("{$mcpDir}/logs", 0755, true);
     }
 
-    $this->logProgress("📦 Creating MCP server directory: {$mcpDir}");
+    $this->logProgress(" Creating MCP server directory: {$mcpDir}");
 
     // Create package.json
     $packageJson = [
@@ -152,7 +154,7 @@ private function downloadMCPServerFiles() {
     ];
 
     file_put_contents("{$mcpDir}/package.json", json_encode($packageJson, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-    $this->logProgress("📝 Created package.json");
+    $this->logProgress(" Created package.json");
 
     // Create basic server.js
     $serverJs = <<<'JS'
@@ -418,7 +420,7 @@ JS;
 
     file_put_contents("{$mcpDir}/server.js", $serverJs);
     chmod("{$mcpDir}/server.js", 0755);
-    $this->logProgress("📝 Created server.js with 5 AI tools");
+    $this->logProgress(" Created server.js with 5 AI tools");
 
     // Create README
     $readme = <<<'MD'
@@ -477,7 +479,7 @@ Full documentation: `/home/flexpbxuser/documentation/MCP_SERVER_INSTALLER_INTEGR
 MD;
 
     file_put_contents("{$mcpDir}/README.md", $readme);
-    $this->logProgress("📝 Created README.md");
+    $this->logProgress(" Created README.md");
 }
 
 /**
@@ -486,7 +488,7 @@ MD;
 private function installMCPDependencies() {
     $mcpDir = '/home/flexpbxuser/mcp-server';
 
-    $this->logProgress("📦 Installing npm dependencies (this may take 2-3 minutes)...");
+    $this->logProgress(" Installing npm dependencies (this may take 2-3 minutes)...");
 
     // Run npm install
     $output = [];
@@ -499,7 +501,7 @@ private function installMCPDependencies() {
         throw new Exception("npm install failed: " . implode("\n", array_slice($output, -5)));
     }
 
-    $this->logProgress("✅ npm dependencies installed (@modelcontextprotocol/sdk, asterisk-manager, dotenv)");
+    $this->logProgress(" npm dependencies installed (@modelcontextprotocol/sdk, asterisk-manager, dotenv)");
 }
 
 /**
@@ -535,10 +537,10 @@ private function configureMCPEnv($dbConfig) {
             $amiPort = $matches[1];
         }
 
-        $this->logProgress("📖 Read AMI credentials from manager.conf");
+        $this->logProgress(" Read AMI credentials from manager.conf");
     } else {
-        $this->logProgress("⚠️ Cannot read manager.conf - using default AMI credentials");
-        $this->logProgress("💡 Update .env file manually if AMI connection fails");
+        $this->logProgress(" Cannot read manager.conf - using default AMI credentials");
+        $this->logProgress(" Update .env file manually if AMI connection fails");
     }
 
     $envContent = "# FlexPBX MCP Server Configuration\n";
@@ -555,11 +557,11 @@ private function configureMCPEnv($dbConfig) {
     $envContent .= "LOG_LEVEL=info\n";
 
     file_put_contents("{$mcpDir}/.env", $envContent);
-    $this->logProgress("⚙️ Created .env configuration");
-    $this->logProgress("💡 AMI credentials: {$amiUser}@{$amiHost}:{$amiPort}");
+    $this->logProgress(" Created .env configuration");
+    $this->logProgress(" AMI credentials: {$amiUser}@{$amiHost}:{$amiPort}");
 
     if (empty($amiSecret)) {
-        $this->logProgress("⚠️ AMI secret is empty - update .env file with correct credentials");
+        $this->logProgress(" AMI secret is empty - update .env file with correct credentials");
     }
 }
 
@@ -593,8 +595,8 @@ private function createMCPSystemdService() {
 
     file_put_contents("{$mcpDir}/flexpbx-mcp.service", $serviceContent);
 
-    $this->logProgress("📝 Created systemd service file");
-    $this->logProgress("💡 To enable auto-start on boot, run as root:");
+    $this->logProgress(" Created systemd service file");
+    $this->logProgress(" To enable auto-start on boot, run as root:");
     $this->logProgress("   sudo cp {$mcpDir}/flexpbx-mcp.service /etc/systemd/system/");
     $this->logProgress("   sudo systemctl daemon-reload");
     $this->logProgress("   sudo systemctl enable flexpbx-mcp");
@@ -617,7 +619,7 @@ private function createMCPStartupScript() {
     file_put_contents("{$mcpDir}/start.sh", $script);
     chmod("{$mcpDir}/start.sh", 0755);
 
-    $this->logProgress("📝 Created start.sh script");
+    $this->logProgress(" Created start.sh script");
 }
 
 /**
@@ -631,7 +633,7 @@ private function startMCPServer() {
     if (file_exists($pidFile)) {
         $pid = trim(file_get_contents($pidFile));
         if (!empty($pid) && posix_kill((int)$pid, 0)) {
-            $this->logProgress("⚠️ MCP server already running (PID: {$pid})");
+            $this->logProgress(" MCP server already running (PID: {$pid})");
             return;
         }
     }
@@ -642,7 +644,7 @@ private function startMCPServer() {
 
     if ($pid && is_numeric($pid)) {
         file_put_contents($pidFile, $pid);
-        $this->logProgress("🚀 MCP server started (PID: {$pid})");
+        $this->logProgress(" MCP server started (PID: {$pid})");
 
         // Give it time to start and connect to AMI
         sleep(3);
@@ -672,7 +674,7 @@ private function verifyMCPInstallation() {
         throw new Exception("MCP server process not running");
     }
 
-    $this->logProgress("✅ MCP server process verified (PID: {$pid})");
+    $this->logProgress(" MCP server process verified (PID: {$pid})");
 
     // Check log file for connection status
     $logFile = "{$mcpDir}/logs/mcp.log";
@@ -680,21 +682,23 @@ private function verifyMCPInstallation() {
         $logContent = file_get_contents($logFile);
 
         if (strpos($logContent, 'Connected to Asterisk AMI') !== false) {
-            $this->logProgress("✅ MCP server connected to Asterisk AMI successfully");
+            $this->logProgress(" MCP server connected to Asterisk AMI successfully");
         } else if (strpos($logContent, 'running on stdio') !== false) {
-            $this->logProgress("✅ MCP server running and waiting for stdio connections");
+            $this->logProgress(" MCP server running and waiting for stdio connections");
         } else if (strpos($logContent, 'error') !== false || strpos($logContent, 'Error') !== false) {
-            $this->logProgress("⚠️ Check logs for connection issues: {$logFile}");
-            $this->logProgress("💡 Common issue: Verify AMI credentials in .env file");
+            $this->logProgress(" Check logs for connection issues: {$logFile}");
+            $this->logProgress(" Common issue: Verify AMI credentials in .env file");
         }
     }
 
     // Check if dependencies are installed
     if (file_exists("{$mcpDir}/node_modules")) {
-        $this->logProgress("✅ npm dependencies verified");
+        $this->logProgress(" npm dependencies verified");
     }
 
-    $this->logProgress("✅ MCP server installation verified and operational");
+    $this->logProgress(" MCP server installation verified and operational");
+}
+
 }
 
 ?>

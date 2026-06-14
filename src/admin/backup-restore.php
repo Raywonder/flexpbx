@@ -529,8 +529,8 @@
                                     ${isPrimary ? '<span class="badge bg-success">Primary Backup Drive</span>' : ''}
                                 </h6>
                                 <small class="text-muted">
-                                    ${drive.mountpoint} • ${sizeGB} GB • ${drive.fstype}
-                                    ${drive.label ? ' • ' + drive.label : ''}
+                                    ${drive.mountpoint} - ${sizeGB} GB - ${drive.fstype}
+                                    ${drive.label ? ' - ' + drive.label : ''}
                                 </small>
                             </div>
                         </div>

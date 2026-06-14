@@ -467,23 +467,23 @@ $extension = $user_extension;
 <body>
     <div class="container">
         <div class="header">
-            <h1>📇 Contact Manager</h1>
+            <h1> Contact Manager</h1>
             <div class="header-actions">
                 <button class="btn btn-primary" onclick="showNewContactModal()">
-                    ➕ New Contact
+                     New Contact
                 </button>
                 <a href="/user-portal/dashboard.php?extension=<?php echo $extension; ?>" class="btn btn-secondary">
-                    🏠 Dashboard
+                     Dashboard
                 </a>
             </div>
         </div>
 
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('contacts')">📇 Contacts</button>
-            <button class="tab" onclick="switchTab('recent')">📞 Recent Calls</button>
+            <button class="tab active" onclick="switchTab('contacts')"> Contacts</button>
+            <button class="tab" onclick="switchTab('recent')"> Recent Calls</button>
             <button class="tab" onclick="switchTab('favorites')">⭐ Favorites</button>
-            <button class="tab" onclick="switchTab('blacklist')">🚫 Blacklist</button>
-            <button class="tab" onclick="switchTab('stats')">📊 Statistics</button>
+            <button class="tab" onclick="switchTab('blacklist')"> Blacklist</button>
+            <button class="tab" onclick="switchTab('stats')"> Statistics</button>
         </div>
 
         <!-- Contacts Tab -->
@@ -491,7 +491,7 @@ $extension = $user_extension;
             <div class="toolbar">
                 <div class="search-box">
                     <input type="text" id="search-input" placeholder="Search contacts..." onkeyup="searchContacts()">
-                    <span class="search-icon">🔍</span>
+                    <span class="search-icon"></span>
                 </div>
                 <div class="filter-group">
                     <select id="contact-type-filter" onchange="filterContacts()">
@@ -500,8 +500,8 @@ $extension = $user_extension;
                         <option value="business">Business</option>
                         <option value="emergency">Emergency</option>
                     </select>
-                    <button class="btn btn-secondary" onclick="showImportModal()">📥 Import</button>
-                    <button class="btn btn-secondary" onclick="exportContacts()">📤 Export</button>
+                    <button class="btn btn-secondary" onclick="showImportModal()"> Import</button>
+                    <button class="btn btn-secondary" onclick="exportContacts()"> Export</button>
                 </div>
             </div>
 
@@ -535,7 +535,7 @@ $extension = $user_extension;
         <!-- Blacklist Tab -->
         <div id="blacklist-tab" class="tab-content">
             <div class="toolbar">
-                <button class="btn btn-danger" onclick="showAddBlacklistModal()">🚫 Add to Blacklist</button>
+                <button class="btn btn-danger" onclick="showAddBlacklistModal()"> Add to Blacklist</button>
             </div>
             <div id="blacklist-container">
                 <!-- Blacklist will be loaded here -->
@@ -692,7 +692,7 @@ $extension = $user_extension;
             if (contacts.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
-                        <div class="empty-state-icon">📇</div>
+                        <div class="empty-state-icon"></div>
                         <h3>No contacts found</h3>
                         <p>Create your first contact to get started</p>
                     </div>
@@ -710,27 +710,27 @@ $extension = $user_extension;
                         <div class="contact-info">
                             ${contact.primary_phone ? `
                                 <div class="contact-info-item">
-                                    📞 ${formatPhone(contact.primary_phone)}
+                                     ${formatPhone(contact.primary_phone)}
                                 </div>
                             ` : ''}
                             ${contact.email ? `
                                 <div class="contact-info-item">
-                                    ✉️ ${contact.email}
+                                     ${contact.email}
                                 </div>
                             ` : ''}
                             ${contact.total_calls > 0 ? `
                                 <div class="contact-info-item">
-                                    📊 ${contact.total_calls} calls
+                                     ${contact.total_calls} calls
                                 </div>
                             ` : ''}
                         </div>
                         <div class="contact-actions" onclick="event.stopPropagation()">
-                            <button class="icon-btn" onclick="callContact('${contact.primary_phone}')" title="Call">📞</button>
-                            <button class="icon-btn" onclick="editContact(${contact.id})" title="Edit">✏️</button>
+                            <button class="icon-btn" onclick="callContact('${contact.primary_phone}')" title="Call"></button>
+                            <button class="icon-btn" onclick="editContact(${contact.id})" title="Edit"></button>
                             <button class="icon-btn" onclick="toggleFavorite(${contact.id}, ${contact.favorite})" title="Favorite">
-                                ${contact.favorite ? '⭐' : '☆'}
+                                ${contact.favorite ? '⭐' : ''}
                             </button>
-                            <button class="icon-btn" onclick="deleteContact(${contact.id})" title="Delete">🗑️</button>
+                            <button class="icon-btn" onclick="deleteContact(${contact.id})" title="Delete"></button>
                         </div>
                     </div>
                 `;
@@ -840,7 +840,7 @@ $extension = $user_extension;
             const container = document.getElementById('recent-calls-container');
 
             if (calls.length === 0) {
-                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📞</div><h3>No recent calls</h3></div>';
+                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon"></div><h3>No recent calls</h3></div>';
                 return;
             }
 

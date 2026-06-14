@@ -288,10 +288,10 @@
 </head>
 <body>
     <div class="container">
-        <a href="dashboard.php" class="back-link">← Back to Dashboard</a>
+        <a href="dashboard.php" class="back-link"><- Back to Dashboard</a>
 
         <div class="header">
-            <h1>🎵 Media Stream Control Center</h1>
+            <h1> Media Stream Control Center</h1>
             <p>Manage Icecast and Jellyfin streaming services</p>
         </div>
 
@@ -343,16 +343,16 @@
                     <span class="stat-value" id="stream-processes">0</span>
                 </div>
                 <div class="button-group">
-                    <button class="btn btn-primary" onclick="startStream()">▶️ Start</button>
-                    <button class="btn btn-danger" onclick="stopStream()">⏹️ Stop</button>
-                    <button class="btn btn-warning" onclick="restartStream()">🔄 Restart</button>
-                    <button class="btn btn-info" onclick="skipTrack()">⏭️ Skip</button>
+                    <button class="btn btn-primary" onclick="startStream()">▶ Start</button>
+                    <button class="btn btn-danger" onclick="stopStream()"> Stop</button>
+                    <button class="btn btn-warning" onclick="restartStream()"> Restart</button>
+                    <button class="btn btn-info" onclick="skipTrack()"> Skip</button>
                 </div>
             </div>
 
             <!-- Media Library Stats -->
             <div class="card">
-                <h2>📚 Media Library</h2>
+                <h2> Media Library</h2>
                 <div class="stat-row">
                     <span class="stat-label">Music Tracks:</span>
                     <span class="stat-value" id="lib-music">-</span>
@@ -378,7 +378,7 @@
 
         <!-- Now Playing -->
         <div class="card">
-            <h2>🎧 Now Playing</h2>
+            <h2> Now Playing</h2>
             <div id="now-playing-container">
                 <div class="spinner"></div>
             </div>
@@ -387,7 +387,7 @@
         <!-- Queue Management -->
         <div class="grid">
             <div class="card">
-                <h2>📋 Stream Queue</h2>
+                <h2> Stream Queue</h2>
                 <div id="queue-container">
                     <div class="spinner"></div>
                 </div>
@@ -398,7 +398,7 @@
 
             <!-- Add to Queue -->
             <div class="card">
-                <h2>➕ Add to Queue</h2>
+                <h2> Add to Queue</h2>
                 <div class="form-group">
                     <label>Content Type:</label>
                     <select id="queue-type" onchange="toggleQueueFields()">
@@ -422,7 +422,7 @@
 
         <!-- Stream Log -->
         <div class="card">
-            <h2>📋 Stream Log (Last 50 lines)</h2>
+            <h2> Stream Log (Last 50 lines)</h2>
             <div id="log-container" class="log-container">
                 Loading log...
             </div>

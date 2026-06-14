@@ -469,7 +469,7 @@ $username = $_SESSION['username'] ?? 'admin';
         <!-- Header -->
         <div class="header">
             <h1>
-                <span role="img" aria-label="Accessibility">♿</span>
+                <span role="img" aria-label="Accessibility"></span>
                 Accessibility Categories Management
             </h1>
             <p>Manage accessibility features, categories, and user assignments for WCAG compliance</p>

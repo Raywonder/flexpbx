@@ -272,14 +272,14 @@ $manageQuery = $isAdmin && $extension !== '' ? '?extension=' . rawurlencode($ext
 <body>
     <div class="container">
         <div class="header">
-            <h1>📞 Forwarded Numbers</h1>
+            <h1> Forwarded Numbers</h1>
             <p class="subtitle">Extension <?= htmlspecialchars($extension) ?> - Manage external numbers forwarded to your extension</p>
         </div>
 
         <div id="alert-container"></div>
 
         <div class="card">
-            <h2>⚙️ No-Answer Forwarding</h2>
+            <h2> No-Answer Forwarding</h2>
             <form id="forwarding-settings-form">
                 <div class="settings-grid">
                     <div class="form-group">
@@ -312,7 +312,7 @@ $manageQuery = $isAdmin && $extension !== '' ? '?extension=' . rawurlencode($ext
 
         <!-- Add Number Card -->
         <div class="card">
-            <h2>➕ Add Forwarded Number</h2>
+            <h2> Add Forwarded Number</h2>
             <form id="add-number-form">
                 <div class="form-row">
                     <div class="form-group">
@@ -366,7 +366,7 @@ $manageQuery = $isAdmin && $extension !== '' ? '?extension=' . rawurlencode($ext
 
         <!-- Current Numbers Card -->
         <div class="card">
-            <h2>📋 Your Forwarded Numbers</h2>
+            <h2> Your Forwarded Numbers</h2>
             <div id="loading-message" style="text-align: center; padding: 2rem; color: #666;">
                 Loading forwarded numbers...
             </div>
@@ -386,7 +386,7 @@ $manageQuery = $isAdmin && $extension !== '' ? '?extension=' . rawurlencode($ext
     <!-- Edit Modal -->
     <div class="modal" id="edit-modal">
         <div class="modal-content">
-            <div class="modal-header">✏️ Edit Forwarded Number</div>
+            <div class="modal-header"> Edit Forwarded Number</div>
             <form id="edit-number-form">
                 <input type="hidden" id="edit-number-original">
                 <div class="form-group">
@@ -572,8 +572,8 @@ $manageQuery = $isAdmin && $extension !== '' ? '?extension=' . rawurlencode($ext
                     <div class="number-details">
                         ${number.description ? `<div><strong>Description:</strong> ${escapeHtml(number.description)}</div>` : ''}
                         <div><strong>Ring Time:</strong> ${number.ring_time} seconds</div>
-                        <div><strong>Status:</strong> ${number.enabled ? '✓ Enabled' : '✗ Disabled'}</div>
-                        <div><strong>No-Answer Forward:</strong> ${isActiveForward ? '✓ Active target' : 'Not selected'}</div>
+                        <div><strong>Status:</strong> ${number.enabled ? ' Enabled' : ' Disabled'}</div>
+                        <div><strong>No-Answer Forward:</strong> ${isActiveForward ? ' Active target' : 'Not selected'}</div>
                         <div><strong>Added:</strong> ${addedDate}</div>
                     </div>
                 `;

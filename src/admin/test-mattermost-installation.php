@@ -30,7 +30,7 @@ echo "<tr><th>File</th><th>Status</th><th>Size</th></tr>";
 foreach ($required_files as $file => $description) {
     $exists = file_exists($file);
     $size = $exists ? filesize($file) : 0;
-    $status = $exists ? '✓ EXISTS' : '✗ MISSING';
+    $status = $exists ? ' EXISTS' : ' MISSING';
     $color = $exists ? 'green' : 'red';
 
     echo "<tr>";
@@ -73,12 +73,12 @@ try {
         try {
             $stmt = $db->query("SELECT COUNT(*) as count FROM {$table}");
             $count = $stmt->fetch()['count'];
-            $status = '✓ EXISTS';
+            $status = ' EXISTS';
             $color = 'green';
             $results['database'][$table] = true;
         } catch (PDOException $e) {
             $count = 'N/A';
-            $status = '✗ MISSING';
+            $status = ' MISSING';
             $color = 'red';
             $results['database'][$table] = false;
             $results['overall'] = false;
@@ -102,17 +102,17 @@ try {
         echo "<table border='1' cellpadding='10' style='border-collapse: collapse; width: 100%;'>";
         echo "<tr><th>Setting</th><th>Value</th></tr>";
         echo "<tr><td>Server URL</td><td>{$config_row['server_url']}</td></tr>";
-        echo "<tr><td>Access Token</td><td>" . ($config_row['access_token'] ? '✓ Set (hidden)' : '✗ Not set') . "</td></tr>";
+        echo "<tr><td>Access Token</td><td>" . ($config_row['access_token'] ? ' Set (hidden)' : ' Not set') . "</td></tr>";
         echo "<tr><td>Poll Interval</td><td>{$config_row['poll_interval']} seconds</td></tr>";
         echo "<tr><td>Notifications</td><td>" . ($config_row['enable_notifications'] ? 'Enabled' : 'Disabled') . "</td></tr>";
         echo "<tr><td>Last Updated</td><td>{$config_row['updated_at']}</td></tr>";
         echo "</table>";
     } else {
-        echo "<p style='color: orange;'>⚠ No configuration found. Complete setup using the admin page.</p>";
+        echo "<p style='color: orange;'> No configuration found. Complete setup using the admin page.</p>";
     }
 
 } catch (PDOException $e) {
-    echo "<p style='color: red;'>✗ Database connection failed: " . htmlspecialchars($e->getMessage()) . "</p>";
+    echo "<p style='color: red;'> Database connection failed: " . htmlspecialchars($e->getMessage()) . "</p>";
     $results['overall'] = false;
 }
 
@@ -123,8 +123,8 @@ echo "<tr><th>File</th><th>Readable</th><th>Writable</th><th>Permissions</th></t
 
 foreach (array_keys($required_files) as $file) {
     if (file_exists($file)) {
-        $readable = is_readable($file) ? '✓' : '✗';
-        $writable = is_writable($file) ? '✓' : '✗';
+        $readable = is_readable($file) ? '' : '';
+        $writable = is_writable($file) ? '' : '';
         $perms = substr(sprintf('%o', fileperms($file)), -4);
 
         $read_color = is_readable($file) ? 'green' : 'red';
@@ -154,7 +154,7 @@ $passed_checks = count(array_filter($results['files'])) +
 $percentage = round(($passed_checks / $total_checks) * 100);
 
 echo "<div style='padding: 20px; background: " . ($results['overall'] ? '#d4edda' : '#f8d7da') . "; border-radius: 8px; margin: 20px 0;'>";
-echo "<h3 style='margin: 0 0 10px 0;'>" . ($results['overall'] ? '✓ Installation Complete' : '⚠ Installation Incomplete') . "</h3>";
+echo "<h3 style='margin: 0 0 10px 0;'>" . ($results['overall'] ? ' Installation Complete' : ' Installation Incomplete') . "</h3>";
 echo "<p>Passed {$passed_checks}/{$total_checks} checks ({$percentage}%)</p>";
 
 if ($results['overall']) {

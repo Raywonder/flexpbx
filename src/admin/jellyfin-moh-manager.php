@@ -245,7 +245,7 @@
                             <label class="form-label">Jellyfin API Key</label>
                             <input type="password" class="form-control" id="config-api-key"
                                    placeholder="Enter Jellyfin API key">
-                            <small class="text-muted">Get API key from Jellyfin Dashboard → API Keys</small>
+                            <small class="text-muted">Get API key from Jellyfin Dashboard -> API Keys</small>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Jellyfin User ID (optional)</label>
@@ -481,12 +481,12 @@
             try {
                 const response = await fetch(`http://${host}:${port}/System/Info/Public`);
                 if (response.ok) {
-                    alert('✅ Jellyfin connection successful!');
+                    alert(' Jellyfin connection successful!');
                 } else {
-                    alert('❌ Jellyfin server responded with error: ' + response.status);
+                    alert(' Jellyfin server responded with error: ' + response.status);
                 }
             } catch (error) {
-                alert('❌ Cannot connect to Jellyfin: ' + error.message);
+                alert(' Cannot connect to Jellyfin: ' + error.message);
             }
         }
 

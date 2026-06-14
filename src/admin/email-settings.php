@@ -548,7 +548,7 @@ function getTemplates() {
 </head>
 <body>
     <div class="container">
-        <a href="index.php" class="back-link">← Back to Admin Dashboard</a>
+        <a href="index.php" class="back-link"><- Back to Admin Dashboard</a>
 
         <h1>Email System Configuration</h1>
 

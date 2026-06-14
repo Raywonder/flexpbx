@@ -21,13 +21,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Check if help system components are loaded
     if (typeof FlexPBXHelp !== 'undefined') {
-        console.log('✓ Help Widget loaded');
+        console.log(' Help Widget loaded');
     }
     if (typeof FlexPBXTooltips !== 'undefined') {
-        console.log('✓ Tooltips loaded');
+        console.log(' Tooltips loaded');
     }
     if (typeof KeyboardShortcuts !== 'undefined') {
-        console.log('✓ Keyboard Shortcuts loaded');
+        console.log(' Keyboard Shortcuts loaded');
     }
 });
 </script>

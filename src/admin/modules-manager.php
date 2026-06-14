@@ -374,7 +374,7 @@
             container.innerHTML = modules.map(module => `
                 <div class="col-md-6 col-lg-4 module-item" data-category="${module.category}" data-status="${module.status}">
                     <div class="module-card">
-                        <div class="module-icon">${module.icon || '📦'}</div>
+                        <div class="module-icon">${module.icon || ''}</div>
                         <h5>
                             ${module.display_name}
                             <span class="module-status status-${module.status}">${module.status === 'installed' ? 'Installed' : 'Available'}</span>
@@ -624,7 +624,7 @@
             document.getElementById('moduleDetailsBody').innerHTML = `
                 <div class="row">
                     <div class="col-md-12 text-center mb-3">
-                        <div style="font-size: 4rem;">${module.icon || '📦'}</div>
+                        <div style="font-size: 4rem;">${module.icon || ''}</div>
                     </div>
                 </div>
                 <div class="row">

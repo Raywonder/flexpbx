@@ -322,7 +322,7 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>🔒 Security & IP Management</h1>
+            <h1> Security & IP Management</h1>
             <p>Monitor and manage firewall rules, banned IPs, and security settings</p>
         </div>
 
@@ -350,7 +350,7 @@
         <div class="content-section">
             <div class="section-header">
                 <h2>Your IP Status</h2>
-                <button class="btn btn-primary btn-sm" onclick="checkCurrentIP()">🔄 Refresh</button>
+                <button class="btn btn-primary btn-sm" onclick="checkCurrentIP()"> Refresh</button>
             </div>
             <div class="ip-check-box" id="current-ip-box">
                 <div class="loading">
@@ -364,7 +364,7 @@
         <div class="content-section">
             <div class="section-header">
                 <h2>Banned IP Addresses</h2>
-                <button class="btn btn-primary" onclick="refreshBannedIPs()">🔄 Refresh</button>
+                <button class="btn btn-primary" onclick="refreshBannedIPs()"> Refresh</button>
             </div>
             <div id="banned-alert" style="display:none;"></div>
             <div class="table-container">
@@ -394,7 +394,7 @@
         <div class="content-section">
             <div class="section-header">
                 <h2>Whitelisted IP Addresses</h2>
-                <button class="btn btn-success" onclick="showAddWhitelistModal()">➕ Add IP</button>
+                <button class="btn btn-success" onclick="showAddWhitelistModal()"> Add IP</button>
             </div>
             <div id="whitelist-alert" style="display:none;"></div>
             <div class="table-container">
@@ -423,7 +423,7 @@
         <div class="content-section">
             <div class="section-header">
                 <h2>Recent Security Events</h2>
-                <button class="btn btn-primary" onclick="refreshSecurityLog()">🔄 Refresh</button>
+                <button class="btn btn-primary" onclick="refreshSecurityLog()"> Refresh</button>
             </div>
             <div class="table-container">
                 <table id="log-table">
@@ -515,7 +515,7 @@
                     if (result.banned) {
                         html += `
                             <div class="alert alert-danger">
-                                <strong>⚠️ Your IP is BANNED!</strong><br>
+                                <strong> Your IP is BANNED!</strong><br>
                                 ${result.details.map(d => `${d.source} (${d.service})`).join(', ')}<br>
                                 <button class="btn btn-danger" style="margin-top:10px;" onclick="unbanCurrentIP()">Request Unban</button>
                             </div>
@@ -523,14 +523,14 @@
                     } else if (result.whitelisted) {
                         html += `
                             <div class="alert alert-success">
-                                <strong>✅ Your IP is WHITELISTED</strong><br>
+                                <strong> Your IP is WHITELISTED</strong><br>
                                 You have full access to the system.
                             </div>
                         `;
                     } else {
                         html += `
                             <div class="alert alert-info">
-                                <strong>ℹ️ Your IP is not banned or whitelisted</strong><br>
+                                <strong>ℹ Your IP is not banned or whitelisted</strong><br>
                                 You can add it to the whitelist for permanent access.
                                 <button class="btn btn-success btn-sm" style="margin-top:10px;" onclick="whitelistCurrentIP()">Add to Whitelist</button>
                             </div>

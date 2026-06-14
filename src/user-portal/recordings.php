@@ -384,13 +384,13 @@ $username = $_SESSION['user_username'] ?? $extension;
 <body>
     <div class="container">
         <div class="header">
-            <h1>🎙️ Call Recordings</h1>
+            <h1> Call Recordings</h1>
             <p>Extension <?= htmlspecialchars($extension) ?> - <?= htmlspecialchars($username) ?></p>
         </div>
 
         <div class="nav-buttons">
-            <a href="/user-portal/" class="btn">← Back to Dashboard</a>
-            <a href="/user-portal/call-history.php" class="btn">📞 Call History</a>
+            <a href="/user-portal/" class="btn"><- Back to Dashboard</a>
+            <a href="/user-portal/call-history.php" class="btn"> Call History</a>
         </div>
 
         <!-- Statistics -->
@@ -465,13 +465,13 @@ $username = $_SESSION['user_username'] ?? $extension;
                     loadStats();
                 } else {
                     document.getElementById('recordings-grid').innerHTML = `
-                        <div class="no-data">❌ ${recordingsData.error || 'Failed to load recordings'}</div>
+                        <div class="no-data"> ${recordingsData.error || 'Failed to load recordings'}</div>
                     `;
                 }
             } catch (error) {
                 console.error('Failed to load recordings:', error);
                 document.getElementById('recordings-grid').innerHTML = `
-                    <div class="no-data">❌ Failed to load recordings</div>
+                    <div class="no-data"> Failed to load recordings</div>
                 `;
             }
         }

@@ -1,5 +1,5 @@
 /**
- * 📞 FlexPhone Call History Service
+ *  FlexPhone Call History Service
  * Manages call logs and history
  */
 
@@ -14,16 +14,16 @@ class CallHistoryService extends EventEmitter {
         this.callHistory = [];
         this.historyPath = path.join(process.cwd(), 'data', 'call-history.json');
 
-        console.log('📞 FlexPhone Call History Service initialized');
+        console.log(' FlexPhone Call History Service initialized');
     }
 
     async initialize() {
         try {
             await this.loadHistory();
-            console.log('✅ Call History Service ready');
+            console.log(' Call History Service ready');
             return true;
         } catch (error) {
-            console.error('❌ Call History Service initialization failed:', error);
+            console.error(' Call History Service initialization failed:', error);
             return false;
         }
     }
@@ -50,7 +50,7 @@ class CallHistoryService extends EventEmitter {
             this.callHistory.unshift(call); // Add to beginning
             await this.saveHistory();
 
-            console.log(`📞 Call logged: ${call.direction} ${call.remoteNumber} (${call.status})`);
+            console.log(` Call logged: ${call.direction} ${call.remoteNumber} (${call.status})`);
             this.emit('call-logged', call);
 
             return {
@@ -59,7 +59,7 @@ class CallHistoryService extends EventEmitter {
             };
 
         } catch (error) {
-            console.error('❌ Add call to history failed:', error);
+            console.error(' Add call to history failed:', error);
             return {
                 success: false,
                 error: error.message
@@ -155,7 +155,7 @@ class CallHistoryService extends EventEmitter {
             this.callHistory = [];
             await this.saveHistory();
 
-            console.log('🗑️ Call history cleared');
+            console.log(' Call history cleared');
             this.emit('history-cleared');
 
             return {
@@ -164,7 +164,7 @@ class CallHistoryService extends EventEmitter {
             };
 
         } catch (error) {
-            console.error('❌ Clear history failed:', error);
+            console.error(' Clear history failed:', error);
             return {
                 success: false,
                 error: error.message
@@ -177,11 +177,11 @@ class CallHistoryService extends EventEmitter {
             const data = await fs.readFile(this.historyPath, 'utf8');
             this.callHistory = JSON.parse(data);
 
-            console.log(`📥 Loaded ${this.callHistory.length} call records`);
+            console.log(` Loaded ${this.callHistory.length} call records`);
 
         } catch (error) {
             this.callHistory = [];
-            console.log('📝 Starting with empty call history');
+            console.log(' Starting with empty call history');
         }
     }
 
@@ -198,7 +198,7 @@ class CallHistoryService extends EventEmitter {
             await fs.writeFile(this.historyPath, JSON.stringify(this.callHistory, null, 2));
 
         } catch (error) {
-            console.error('❌ Failed to save call history:', error);
+            console.error(' Failed to save call history:', error);
         }
     }
 }

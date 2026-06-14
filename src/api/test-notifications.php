@@ -196,7 +196,7 @@ $notifier = new NotificationHelper();
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔔 FlexPBX Notifications System Test</h1>
+            <h1> FlexPBX Notifications System Test</h1>
             <p class="subtitle">Test and demonstrate all notification features</p>
         </div>
 
@@ -214,7 +214,7 @@ $notifier = new NotificationHelper();
         <div class="grid">
             <!-- Test 1: Missed Call -->
             <div class="card">
-                <h2>📞 Missed Call</h2>
+                <h2> Missed Call</h2>
                 <p>Send a missed call notification</p>
                 <form id="test-missed-call">
                     <div class="form-group">
@@ -232,7 +232,7 @@ $notifier = new NotificationHelper();
 
             <!-- Test 2: Voicemail -->
             <div class="card">
-                <h2>📧 Voicemail</h2>
+                <h2> Voicemail</h2>
                 <p>Send a voicemail notification</p>
                 <form id="test-voicemail">
                     <div class="form-group">
@@ -250,7 +250,7 @@ $notifier = new NotificationHelper();
 
             <!-- Test 3: SMS -->
             <div class="card">
-                <h2>💬 SMS Message</h2>
+                <h2> SMS Message</h2>
                 <p>Send an SMS notification</p>
                 <form id="test-sms">
                     <div class="form-group">
@@ -272,7 +272,7 @@ $notifier = new NotificationHelper();
 
             <!-- Test 4: System Alert -->
             <div class="card">
-                <h2>⚠️ System Alert</h2>
+                <h2> System Alert</h2>
                 <p>Send a system alert (urgent)</p>
                 <form id="test-alert">
                     <div class="form-group">
@@ -290,7 +290,7 @@ $notifier = new NotificationHelper();
 
             <!-- Test 5: Announcement -->
             <div class="card">
-                <h2>📢 Announcement</h2>
+                <h2> Announcement</h2>
                 <p>Send announcement to all users</p>
                 <form id="test-announcement">
                     <div class="form-group">
@@ -317,7 +317,7 @@ $notifier = new NotificationHelper();
 
             <!-- Test 6: Task Assignment -->
             <div class="card">
-                <h2>📋 Task Assignment</h2>
+                <h2> Task Assignment</h2>
                 <p>Assign a task to a user</p>
                 <form id="test-task">
                     <div class="form-group">
@@ -339,7 +339,7 @@ $notifier = new NotificationHelper();
 
             <!-- Test 7: Custom Notification -->
             <div class="card">
-                <h2>🔔 Custom Notification</h2>
+                <h2> Custom Notification</h2>
                 <p>Send a custom notification</p>
                 <form id="test-custom">
                     <div class="form-group">
@@ -383,7 +383,7 @@ $notifier = new NotificationHelper();
 
             <!-- Test 8: Role-Based -->
             <div class="card">
-                <h2>👥 Role-Based Notification</h2>
+                <h2> Role-Based Notification</h2>
                 <p>Send to all users with specific role</p>
                 <form id="test-role">
                     <div class="form-group">
@@ -410,7 +410,7 @@ $notifier = new NotificationHelper();
 
         <!-- API Documentation -->
         <div class="card">
-            <h2>📖 API Documentation</h2>
+            <h2> API Documentation</h2>
             <p>For complete documentation, see: <code>/home/flexpbxuser/NOTIFICATIONS_SYSTEM_COMPLETE.md</code></p>
 
             <h3 style="margin-top: 20px; margin-bottom: 10px;">Quick API Examples:</h3>
@@ -537,14 +537,14 @@ $notifier->sendAnnouncement('System Update', 'Maintenance tonight', 'high');<br>
 
                     if (result.success) {
                         resultDiv.className = 'result success';
-                        resultDiv.textContent = `✓ Success! Sent to ${result.recipients_count} recipient(s). Notification ID: ${result.notification_id}`;
+                        resultDiv.textContent = ` Success! Sent to ${result.recipients_count} recipient(s). Notification ID: ${result.notification_id}`;
                     } else {
                         resultDiv.className = 'result error';
-                        resultDiv.textContent = `✗ Error: ${result.error}`;
+                        resultDiv.textContent = ` Error: ${result.error}`;
                     }
                 } catch (error) {
                     resultDiv.className = 'result error';
-                    resultDiv.textContent = `✗ Error: ${error.message}`;
+                    resultDiv.textContent = ` Error: ${error.message}`;
                 }
             });
         });

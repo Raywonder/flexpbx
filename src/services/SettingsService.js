@@ -1,5 +1,5 @@
 /**
- * ⚙️ FlexPhone Settings Service
+ *  FlexPhone Settings Service
  * Manages app settings and preferences
  */
 
@@ -85,16 +85,16 @@ class SettingsService extends EventEmitter {
             'app.lastVersion': '1.0.0'
         };
 
-        console.log('⚙️ FlexPhone Settings Service initialized');
+        console.log(' FlexPhone Settings Service initialized');
     }
 
     async initialize() {
         try {
             await this.loadSettings();
-            console.log('✅ Settings Service ready');
+            console.log(' Settings Service ready');
             return true;
         } catch (error) {
-            console.error('❌ Settings Service initialization failed:', error);
+            console.error(' Settings Service initialization failed:', error);
             return false;
         }
     }
@@ -112,7 +112,7 @@ class SettingsService extends EventEmitter {
             return null;
 
         } catch (error) {
-            console.error(`❌ Get setting failed for key: ${key}`, error);
+            console.error(` Get setting failed for key: ${key}`, error);
             return null;
         }
     }
@@ -124,7 +124,7 @@ class SettingsService extends EventEmitter {
 
             await this.saveSettings();
 
-            console.log(`⚙️ Setting updated: ${key} = ${value}`);
+            console.log(` Setting updated: ${key} = ${value}`);
 
             this.emit('setting-changed', {
                 key,
@@ -139,7 +139,7 @@ class SettingsService extends EventEmitter {
             };
 
         } catch (error) {
-            console.error(`❌ Set setting failed for key: ${key}`, error);
+            console.error(` Set setting failed for key: ${key}`, error);
             return {
                 success: false,
                 error: error.message
@@ -164,7 +164,7 @@ class SettingsService extends EventEmitter {
             return allSettings;
 
         } catch (error) {
-            console.error('❌ Get all settings failed:', error);
+            console.error(' Get all settings failed:', error);
             return {};
         }
     }
@@ -177,7 +177,7 @@ class SettingsService extends EventEmitter {
                     this.settings.set(key, this.defaultSettings[key]);
                     await this.saveSettings();
 
-                    console.log(`⚙️ Setting reset: ${key}`);
+                    console.log(` Setting reset: ${key}`);
 
                     this.emit('setting-reset', { key });
 
@@ -193,7 +193,7 @@ class SettingsService extends EventEmitter {
                 this.settings.clear();
                 await this.saveSettings();
 
-                console.log('⚙️ All settings reset to defaults');
+                console.log(' All settings reset to defaults');
 
                 this.emit('settings-reset');
 
@@ -204,7 +204,7 @@ class SettingsService extends EventEmitter {
             }
 
         } catch (error) {
-            console.error('❌ Reset settings failed:', error);
+            console.error(' Reset settings failed:', error);
             return {
                 success: false,
                 error: error.message
@@ -225,7 +225,7 @@ class SettingsService extends EventEmitter {
             const exportPath = path.join(process.cwd(), 'data', `flexphone-settings-${Date.now()}.json`);
             await fs.writeFile(exportPath, JSON.stringify(exportData, null, 2));
 
-            console.log(`📤 Settings exported: ${exportPath}`);
+            console.log(` Settings exported: ${exportPath}`);
 
             return {
                 success: true,
@@ -233,7 +233,7 @@ class SettingsService extends EventEmitter {
             };
 
         } catch (error) {
-            console.error('❌ Export settings failed:', error);
+            console.error(' Export settings failed:', error);
             return {
                 success: false,
                 error: error.message
@@ -259,7 +259,7 @@ class SettingsService extends EventEmitter {
 
             await this.saveSettings();
 
-            console.log(`📥 Settings imported: ${importPath}`);
+            console.log(` Settings imported: ${importPath}`);
 
             this.emit('settings-imported', { importPath });
 
@@ -269,7 +269,7 @@ class SettingsService extends EventEmitter {
             };
 
         } catch (error) {
-            console.error('❌ Import settings failed:', error);
+            console.error(' Import settings failed:', error);
             return {
                 success: false,
                 error: error.message
@@ -350,11 +350,11 @@ class SettingsService extends EventEmitter {
                 this.settings.set(key, savedSettings[key]);
             });
 
-            console.log(`📥 Loaded ${this.settings.size} settings`);
+            console.log(` Loaded ${this.settings.size} settings`);
 
         } catch (error) {
             this.settings = new Map();
-            console.log('📝 Starting with default settings');
+            console.log(' Starting with default settings');
         }
     }
 
@@ -376,7 +376,7 @@ class SettingsService extends EventEmitter {
             await fs.writeFile(this.settingsPath, JSON.stringify(settingsObject, null, 2));
 
         } catch (error) {
-            console.error('❌ Failed to save settings:', error);
+            console.error(' Failed to save settings:', error);
         }
     }
 }

@@ -513,9 +513,9 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>📞 Call Queue Management</h1>
+            <h1> Call Queue Management</h1>
             <p class="subtitle">Manage call queues, agents, and monitor real-time queue performance</p>
-            <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+            <a href="dashboard.html" class="back-link"><- Back to Dashboard</a>
         </div>
 
         <div class="main-content">
@@ -534,7 +534,7 @@
             <div id="overview-tab" class="tab-content active">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h2>Active Queues</h2>
-                    <button class="btn" onclick="refreshQueues()">🔄 Refresh</button>
+                    <button class="btn" onclick="refreshQueues()"> Refresh</button>
                 </div>
 
                 <div id="queues-list">
@@ -546,7 +546,7 @@
             <div id="manage-tab" class="tab-content">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                     <h2>Queue Configuration</h2>
-                    <button class="btn" onclick="showCreateQueueModal()">➕ Create New Queue</button>
+                    <button class="btn" onclick="showCreateQueueModal()"> Create New Queue</button>
                 </div>
 
                 <div id="manage-queues-list">
@@ -567,7 +567,7 @@
                 </div>
 
                 <div id="queue-members-content" style="display: none;">
-                    <button class="btn btn-success" style="margin-bottom: 20px;" onclick="showAddMemberModal()">➕ Add Agent to Queue</button>
+                    <button class="btn btn-success" style="margin-bottom: 20px;" onclick="showAddMemberModal()"> Add Agent to Queue</button>
 
                     <div id="members-list">
                         <div class="loading">Loading members</div>
@@ -579,10 +579,10 @@
             <div id="wallboard-tab" class="tab-content">
                 <div class="wallboard">
                     <div class="wallboard-header">
-                        <h2 style="margin: 0; color: white;">📊 Live Queue Wallboard</h2>
+                        <h2 style="margin: 0; color: white;"> Live Queue Wallboard</h2>
                         <div>
                             <span id="wallboard-time" style="font-size: 18px; margin-right: 20px;"></span>
-                            <button class="btn btn-small" onclick="refreshWallboard()">🔄 Refresh</button>
+                            <button class="btn btn-small" onclick="refreshWallboard()"> Refresh</button>
                         </div>
                     </div>
 
@@ -677,7 +677,7 @@
 
             <!-- How to Use Tab -->
             <div id="help-tab" class="tab-content">
-                <h2>📚 Call Queue Management Guide</h2>
+                <h2> Call Queue Management Guide</h2>
 
                 <div class="help-section">
                     <h3>What are Call Queues?</h3>
@@ -923,7 +923,7 @@
                 </div>
 
                 <div class="alert alert-info" style="margin-top: 30px;">
-                    <strong>💡 Pro Tip:</strong> For high-volume call centers, consider setting up multiple queues by department or expertise level. Use penalties to create skill-based routing where specialized agents get calls first, with overflow to general agents.
+                    <strong> Pro Tip:</strong> For high-volume call centers, consider setting up multiple queues by department or expertise level. Use penalties to create skill-based routing where specialized agents get calls first, with overflow to general agents.
                 </div>
             </div>
         </div>
@@ -941,7 +941,7 @@
                     <div class="form-group">
                         <label>
                             Queue Number *
-                            <span class="tooltip">❔
+                            <span class="tooltip">
                                 <span class="tooltiptext">The extension number to dial to reach this queue. Typically 5000-5999. Must be unique.</span>
                             </span>
                         </label>
@@ -951,7 +951,7 @@
                     <div class="form-group">
                         <label>
                             Queue Name *
-                            <span class="tooltip">❔
+                            <span class="tooltip">
                                 <span class="tooltiptext">Descriptive name for this queue. E.g., "Sales Department", "Customer Support", "Technical Help Desk"</span>
                             </span>
                         </label>
@@ -963,7 +963,7 @@
                     <div class="form-group">
                         <label>
                             Ring Strategy *
-                            <span class="tooltip">❔
+                            <span class="tooltip">
                                 <span class="tooltiptext">
                                     <strong>ringall:</strong> All agents ring at once<br>
                                     <strong>leastrecent:</strong> Agent who hasn't taken call longest<br>
@@ -988,7 +988,7 @@
                     <div class="form-group">
                         <label>
                             Music on Hold Class
-                            <span class="tooltip">❔
+                            <span class="tooltip">
                                 <span class="tooltiptext">Music played to callers while waiting. "default" uses system default MOH. You can create custom MOH classes in Music on Hold Manager.</span>
                             </span>
                         </label>
@@ -1000,7 +1000,7 @@
                     <div class="form-group">
                         <label>
                             Agent Timeout (seconds) *
-                            <span class="tooltip">❔
+                            <span class="tooltip">
                                 <span class="tooltiptext">How long to ring each agent before trying the next. 15 seconds is standard. Lower = faster rotation, higher = agents have more time to answer.</span>
                             </span>
                         </label>
@@ -1010,7 +1010,7 @@
                     <div class="form-group">
                         <label>
                             Retry Delay (seconds)
-                            <span class="tooltip">❔
+                            <span class="tooltip">
                                 <span class="tooltiptext">How long to wait before retrying all agents after everyone has been tried. 5 seconds prevents excessive ringing.</span>
                             </span>
                         </label>
@@ -1022,7 +1022,7 @@
                     <div class="form-group">
                         <label>
                             Max Wait Time (seconds)
-                            <span class="tooltip">❔
+                            <span class="tooltip">
                                 <span class="tooltiptext">Maximum time a caller can wait in queue. 0 = unlimited. Set to 300 (5 min) to prevent excessive waits. After timeout, call follows no-answer destination.</span>
                             </span>
                         </label>
@@ -1032,7 +1032,7 @@
                     <div class="form-group">
                         <label>
                             Max Callers
-                            <span class="tooltip">❔
+                            <span class="tooltip">
                                 <span class="tooltiptext">Maximum number of callers allowed in queue. 0 = unlimited. Set a limit to prevent queue overload and provide alternative routing.</span>
                             </span>
                         </label>
@@ -1044,7 +1044,7 @@
                     <div class="form-group">
                         <label>
                             Announcement Frequency (seconds)
-                            <span class="tooltip">❔
+                            <span class="tooltip">
                                 <span class="tooltiptext">How often to play periodic announcements to waiting callers. 90 seconds is common. 0 = no periodic announcements.</span>
                             </span>
                         </label>
@@ -1054,7 +1054,7 @@
                     <div class="form-group">
                         <label>
                             Wrap-up Time (seconds)
-                            <span class="tooltip">❔
+                            <span class="tooltip">
                                 <span class="tooltiptext">Time given to agent after finishing a call before receiving the next call. Allows time for notes. 30-60 seconds is typical. 0 = immediate next call.</span>
                             </span>
                         </label>
@@ -1066,7 +1066,7 @@
                     <div class="form-group">
                         <label>
                             Announce Position
-                            <span class="tooltip">❔
+                            <span class="tooltip">
                                 <span class="tooltiptext">
                                     <strong>yes:</strong> Tell caller their position ("You are number 3")<br>
                                     <strong>no:</strong> Don't announce position<br>
@@ -1086,7 +1086,7 @@
                     <div class="form-group">
                         <label>
                             Announce Hold Time
-                            <span class="tooltip">❔
+                            <span class="tooltip">
                                 <span class="tooltiptext">
                                     <strong>yes:</strong> Announce estimated wait time periodically<br>
                                     <strong>no:</strong> Never announce wait time<br>
@@ -1106,7 +1106,7 @@
                     <div class="form-group">
                         <label>
                             Service Level (seconds)
-                            <span class="tooltip">❔
+                            <span class="tooltip">
                                 <span class="tooltiptext">Target time to answer calls for SLA reporting. 60 = "percentage of calls answered within 1 minute". Used for statistics only, doesn't affect call behavior.</span>
                             </span>
                         </label>
@@ -1116,7 +1116,7 @@
                     <div class="form-group">
                         <label>
                             Auto Pause
-                            <span class="tooltip">❔
+                            <span class="tooltip">
                                 <span class="tooltiptext">
                                     <strong>no:</strong> Never auto-pause agents<br>
                                     <strong>yes:</strong> Pause agent if they don't answer<br>
@@ -1135,7 +1135,7 @@
                 <div class="form-group">
                     <label>
                         Join Announcement
-                        <span class="tooltip">❔
+                        <span class="tooltip">
                             <span class="tooltiptext">Audio file to play when caller enters queue. Leave blank for no announcement. E.g., "Thank you for calling. Please hold for the next available agent."</span>
                         </span>
                     </label>
@@ -1145,7 +1145,7 @@
                 <div class="form-group">
                     <label>
                         Periodic Announcements
-                        <span class="tooltip">❔
+                        <span class="tooltip">
                             <span class="tooltiptext">Comma-separated list of audio files to play periodically to waiting callers. E.g., "custom/still-waiting,custom/your-call-important". Rotates through list.</span>
                         </span>
                     </label>
@@ -1157,7 +1157,7 @@
                         <input type="checkbox" id="queue-enabled" name="enabled" checked style="width: auto;">
                         <span>
                             Queue Enabled
-                            <span class="tooltip">❔
+                            <span class="tooltip">
                                 <span class="tooltiptext">Enable or disable this queue. Disabled queues won't accept calls but configuration is preserved.</span>
                             </span>
                         </span>
@@ -1165,7 +1165,7 @@
                 </div>
 
                 <div style="display: flex; gap: 10px; margin-top: 30px;">
-                    <button type="submit" class="btn btn-success">💾 Save Queue</button>
+                    <button type="submit" class="btn btn-success"> Save Queue</button>
                     <button type="button" class="btn btn-secondary" onclick="closeQueueModal()">Cancel</button>
                 </div>
             </form>
@@ -1183,7 +1183,7 @@
                 <div class="form-group">
                     <label>
                         Extension Number *
-                        <span class="tooltip">❔
+                        <span class="tooltip">
                             <span class="tooltiptext">The extension number of the agent. E.g., 2000, 2001, 2002. Extension must exist in the system.</span>
                         </span>
                     </label>
@@ -1193,7 +1193,7 @@
                 <div class="form-group">
                     <label>
                         Display Name
-                        <span class="tooltip">❔
+                        <span class="tooltip">
                             <span class="tooltiptext">Optional friendly name for this agent. E.g., "John Smith", "Support Team A". Makes monitoring easier.</span>
                         </span>
                     </label>
@@ -1203,7 +1203,7 @@
                 <div class="form-group">
                     <label>
                         Penalty
-                        <span class="tooltip">❔
+                        <span class="tooltip">
                             <span class="tooltiptext">
                                 Agent priority level. Lower = higher priority.<br>
                                 <strong>0:</strong> Highest priority (senior agents)<br>
@@ -1217,7 +1217,7 @@
                 </div>
 
                 <div style="display: flex; gap: 10px; margin-top: 30px;">
-                    <button type="submit" class="btn btn-success">➕ Add Agent</button>
+                    <button type="submit" class="btn btn-success"> Add Agent</button>
                     <button type="button" class="btn btn-secondary" onclick="closeMemberModal()">Cancel</button>
                 </div>
             </form>
@@ -1412,14 +1412,14 @@
                     </td>
                     <td>${statusBadge}</td>
                     <td>
-                        <button class="btn btn-small btn-secondary" onclick='editQueue(${JSON.stringify(queue)})'>✏️ Edit</button>
-                        <button class="btn btn-small btn-danger" onclick="deleteQueue(${queue.id}, '${queue.queue_name}')">🗑️ Delete</button>
+                        <button class="btn btn-small btn-secondary" onclick='editQueue(${JSON.stringify(queue)})'> Edit</button>
+                        <button class="btn btn-small btn-danger" onclick="deleteQueue(${queue.id}, '${queue.queue_name}')"> Delete</button>
                     </td>
                 </tr>`;
             });
 
             html += '</tbody></table>';
-            html += '<div style="margin-top: 20px;"><button class="btn btn-success" onclick="applyConfiguration()">✅ Apply Configuration to Asterisk</button></div>';
+            html += '<div style="margin-top: 20px;"><button class="btn btn-success" onclick="applyConfiguration()"> Apply Configuration to Asterisk</button></div>';
             container.innerHTML = html;
         }
 
@@ -1630,10 +1630,10 @@
                     <td>${statusBadge}${pauseReason}</td>
                     <td>
                         ${member.paused == 1
-                            ? `<button class="btn btn-small btn-success" onclick="unpauseMember(${member.id}, ${queueId})">▶️ Unpause</button>`
-                            : `<button class="btn btn-small btn-warning" onclick="pauseMember(${member.id}, ${queueId})">⏸️ Pause</button>`
+                            ? `<button class="btn btn-small btn-success" onclick="unpauseMember(${member.id}, ${queueId})">▶ Unpause</button>`
+                            : `<button class="btn btn-small btn-warning" onclick="pauseMember(${member.id}, ${queueId})"> Pause</button>`
                         }
-                        <button class="btn btn-small btn-danger" onclick="removeMember(${member.id}, ${queueId}, '${member.member_extension}')">🗑️ Remove</button>
+                        <button class="btn btn-small btn-danger" onclick="removeMember(${member.id}, ${queueId}, '${member.member_extension}')"> Remove</button>
                     </td>
                 </tr>`;
             });
@@ -1854,21 +1854,21 @@
 
                     if (member.sip_registered !== undefined) {
                         if (member.sip_registered) {
-                            sipBadge = '<span style="color: #22c55e; font-size: 0.75rem;">🟢 Registered</span>';
+                            sipBadge = '<span style="color: #22c55e; font-size: 0.75rem;"> Registered</span>';
                         } else {
-                            sipBadge = '<span style="color: #ef4444; font-size: 0.75rem;">🔴 Offline</span>';
+                            sipBadge = '<span style="color: #ef4444; font-size: 0.75rem;"> Offline</span>';
                         }
                     }
 
                     if (member.client && member.client !== 'Unknown') {
                         let osIcon = '';
                         switch(member.os) {
-                            case 'iOS': osIcon = '📱'; break;
-                            case 'Android': osIcon = '🤖'; break;
-                            case 'Windows': osIcon = '🪟'; break;
-                            case 'macOS': osIcon = '🍎'; break;
-                            case 'Linux': osIcon = '🐧'; break;
-                            default: osIcon = '💻';
+                            case 'iOS': osIcon = ''; break;
+                            case 'Android': osIcon = ''; break;
+                            case 'Windows': osIcon = ''; break;
+                            case 'macOS': osIcon = ''; break;
+                            case 'Linux': osIcon = ''; break;
+                            default: osIcon = '';
                         }
                         clientInfo = `<div style="font-size: 0.75rem; color: #94a3b8; margin-top: 0.25rem;">${member.client} ${osIcon} ${member.os || ''}</div>`;
                     }

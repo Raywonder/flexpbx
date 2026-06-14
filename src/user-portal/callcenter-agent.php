@@ -351,7 +351,7 @@ $user_role = $_SESSION['user_role'] ?? 'user';
     <div class="container">
         <div class="header">
             <div>
-                <h1>📞 Call Center Agent Dashboard</h1>
+                <h1> Call Center Agent Dashboard</h1>
                 <p>Extension <?= htmlspecialchars($extension) ?> - <?= htmlspecialchars($username) ?></p>
             </div>
             <div class="status-indicator">
@@ -364,9 +364,9 @@ $user_role = $_SESSION['user_role'] ?? 'user';
         </div>
 
         <div class="nav-buttons">
-            <a href="/user-portal/" class="btn-nav">← Back to Dashboard</a>
-            <a href="call-history.php" class="btn-nav">📞 Call History</a>
-            <a href="recordings.php" class="btn-nav">🎙️ Recordings</a>
+            <a href="/user-portal/" class="btn-nav"><- Back to Dashboard</a>
+            <a href="call-history.php" class="btn-nav"> Call History</a>
+            <a href="recordings.php" class="btn-nav"> Recordings</a>
         </div>
 
         <div class="grid">
@@ -786,7 +786,7 @@ $user_role = $_SESSION['user_role'] ?? 'user';
                 <div class="directory-item">
                     <div class="directory-info">
                         <div class="directory-name">${ext.name || 'Extension ' + ext.extension}</div>
-                        <div class="directory-ext">Ext: ${ext.extension}${ext.email ? ' • ' + ext.email : ''}</div>
+                        <div class="directory-ext">Ext: ${ext.extension}${ext.email ? ' - ' + ext.email : ''}</div>
                     </div>
                     <div class="directory-actions">
                         <button class="icon-btn icon-btn-call" onclick="callExtension('${ext.extension}')" title="Call">

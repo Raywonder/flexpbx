@@ -774,7 +774,7 @@ if (!$is_admin) {
                             <div class="call-header">
                                 <span>
                                     <span class="direction-badge ${call.direction}">${call.direction}</span>
-                                    ${call.from} → ${call.to}
+                                    ${call.from} -> ${call.to}
                                 </span>
                                 <span class="status-badge status-${call.status}">${call.status}</span>
                             </div>
@@ -821,7 +821,7 @@ if (!$is_admin) {
                             <div class="message-header">
                                 <span>
                                     <span class="direction-badge ${msg.direction}">${msg.direction}</span>
-                                    ${msg.from} → ${msg.to}
+                                    ${msg.from} -> ${msg.to}
                                 </span>
                                 ${msg.type === 'mms' ? '<span style="color: #667eea;">MMS</span>' : '<span>SMS</span>'}
                             </div>

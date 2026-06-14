@@ -85,7 +85,7 @@ try {
             $next_run = calculateNextRun($job['schedule_type'], $job['schedule_value']);
             updateJobStatus($pdo, $job['id'], 'success', null, $next_run);
 
-            logMessage("✓ Job executed: {$job['job_name']} - Next run: {$next_run}");
+            logMessage(" Job executed: {$job['job_name']} - Next run: {$next_run}");
 
         } catch (Exception $e) {
             logMessage("ERROR executing {$job['job_name']}: " . $e->getMessage());

@@ -162,14 +162,14 @@ $linked_extension = $_SESSION['linked_extension'] ?? null;
 <body>
     <div class="container">
         <div class="header">
-            <h1>🔔 Admin Notification Settings</h1>
+            <h1> Admin Notification Settings</h1>
             <p class="subtitle">Admin: <?= htmlspecialchars($admin_username) ?></p>
         </div>
 
         <?php if ($linked_extension): ?>
         <!-- SIP Status Card (only if extension linked) -->
         <div class="card">
-            <h2>📱 SIP Registration Status</h2>
+            <h2> SIP Registration Status</h2>
             <div class="status-box" id="sip-status-box" aria-live="polite" aria-atomic="true">
                 <div style="display: flex; align-items: center; justify-content: space-between;">
                     <div>
@@ -185,14 +185,14 @@ $linked_extension = $_SESSION['linked_extension'] ?? null;
 
         <!-- Push Notifications Card -->
         <div class="card">
-            <h2>📲 Push Notifications</h2>
+            <h2> Push Notifications</h2>
 
             <div id="push-not-supported" class="alert alert-warning" style="display: none;">
-                ⚠️ Push notifications are not supported on this device/browser.
+                 Push notifications are not supported on this device/browser.
             </div>
 
             <div id="push-permission-denied" class="alert alert-warning" style="display: none;">
-                ⚠️ Notification permission denied. Please enable notifications in your browser settings.
+                 Notification permission denied. Please enable notifications in your browser settings.
             </div>
 
             <div class="setting-group">
@@ -211,7 +211,7 @@ $linked_extension = $_SESSION['linked_extension'] ?? null;
 
         <!-- Email Notifications Card -->
         <div class="card">
-            <h2>📧 Email Notifications</h2>
+            <h2> Email Notifications</h2>
 
             <div class="setting-group">
                 <div class="setting-header">
@@ -308,7 +308,7 @@ $linked_extension = $_SESSION['linked_extension'] ?? null;
 
             <?php if (!$linked_extension): ?>
             <div class="alert alert-info">
-                ℹ️ <strong>Link an extension</strong> to receive voicemail and call notifications. <a href="link-extension.php" style="color: #0c5460; text-decoration: underline;">Link Extension</a>
+                ℹ <strong>Link an extension</strong> to receive voicemail and call notifications. <a href="link-extension.php" style="color: #0c5460; text-decoration: underline;">Link Extension</a>
             </div>
             <?php endif; ?>
         </div>
@@ -377,7 +377,7 @@ $linked_extension = $_SESSION['linked_extension'] ?? null;
             // Check push notification support
             if (!pushSupported) {
                 const warningDiv = document.getElementById('push-not-supported');
-                warningDiv.innerHTML = '⚠️ Push notifications are not supported on this device/browser.';
+                warningDiv.innerHTML = ' Push notifications are not supported on this device/browser.';
                 warningDiv.style.display = 'block';
                 document.getElementById('push-enabled').disabled = true;
             }
@@ -460,7 +460,7 @@ $linked_extension = $_SESSION['linked_extension'] ?? null;
                 } catch (error) {
                     console.error('Permission request failed:', error);
                     document.getElementById('push-enabled').checked = false;
-                    alert('⚠️ Failed to request notification permission. Please check your browser settings and ensure notifications are allowed.');
+                    alert(' Failed to request notification permission. Please check your browser settings and ensure notifications are allowed.');
                     return;
                 }
 
@@ -496,7 +496,7 @@ $linked_extension = $_SESSION['linked_extension'] ?? null;
 
                     const result = await response.json();
                     if (result.success) {
-                        alert('✓ Push notifications enabled!');
+                        alert(' Push notifications enabled!');
                     } else {
                         throw new Error(result.error || 'Server error');
                     }
@@ -532,7 +532,7 @@ $linked_extension = $_SESSION['linked_extension'] ?? null;
                         })
                     });
 
-                    alert('✓ Push notifications disabled');
+                    alert(' Push notifications disabled');
                 } catch (error) {
                     console.error('Failed to disable push notifications:', error);
                 }

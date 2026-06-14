@@ -146,7 +146,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
     <div class="container">
-        <h1>🤖 MCP Server Setup</h1>
+        <h1> MCP Server Setup</h1>
         <p class="subtitle">AI-Assisted PBX Management via Asterisk Manager Interface</p>
 
         <div class="status-card">
@@ -155,38 +155,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="status-item">
                 <strong>Node.js:</strong>
                 <?php if ($status['node_installed']): ?>
-                    <span class="badge badge-success">✓ Installed (v<?= htmlspecialchars($status['node_version']) ?>)</span>
+                    <span class="badge badge-success"> Installed (v<?= htmlspecialchars($status['node_version']) ?>)</span>
                 <?php else: ?>
-                    <span class="badge badge-danger">✗ Not Installed</span>
+                    <span class="badge badge-danger"> Not Installed</span>
                 <?php endif; ?>
             </div>
 
             <div class="status-item">
                 <strong>MCP Server:</strong>
                 <?php if ($status['installed']): ?>
-                    <span class="badge badge-success">✓ Installed</span>
+                    <span class="badge badge-success"> Installed</span>
                 <?php else: ?>
-                    <span class="badge badge-danger">✗ Not Installed</span>
+                    <span class="badge badge-danger"> Not Installed</span>
                 <?php endif; ?>
             </div>
 
             <div class="status-item">
                 <strong>Server Status:</strong>
                 <?php if ($status['running']): ?>
-                    <span class="badge badge-success">✓ Running (PID: <?= htmlspecialchars($status['pid']) ?>)</span>
+                    <span class="badge badge-success"> Running (PID: <?= htmlspecialchars($status['pid']) ?>)</span>
                 <?php elseif ($status['installed']): ?>
-                    <span class="badge badge-warning">⚠ Stopped</span>
+                    <span class="badge badge-warning"> Stopped</span>
                 <?php else: ?>
-                    <span class="badge badge-danger">✗ Not Running</span>
+                    <span class="badge badge-danger"> Not Running</span>
                 <?php endif; ?>
             </div>
 
             <div class="status-item">
                 <strong>AMI Configuration:</strong>
                 <?php if ($status['ami_configured']): ?>
-                    <span class="badge badge-success">✓ Configured</span>
+                    <span class="badge badge-success"> Configured</span>
                 <?php else: ?>
-                    <span class="badge badge-warning">⚠ Not Configured</span>
+                    <span class="badge badge-warning"> Not Configured</span>
                 <?php endif; ?>
             </div>
         </div>
@@ -209,27 +209,27 @@ nvm use 18</div>
                     <form method="post" style="display: inline;">
                         <input type="hidden" name="action" value="install">
                         <button type="submit" class="btn btn-success" <?= !$status['node_installed'] ? 'disabled title="Node.js required"' : '' ?>>
-                            📦 Install MCP Server
+                             Install MCP Server
                         </button>
                     </form>
                 <?php else: ?>
                     <?php if ($status['running']): ?>
                         <form method="post" style="display: inline;">
                             <input type="hidden" name="action" value="stop">
-                            <button type="submit" class="btn btn-danger">⏹ Stop Server</button>
+                            <button type="submit" class="btn btn-danger"> Stop Server</button>
                         </form>
                         <form method="post" style="display: inline;">
                             <input type="hidden" name="action" value="restart">
-                            <button type="submit" class="btn btn-secondary">🔄 Restart Server</button>
+                            <button type="submit" class="btn btn-secondary"> Restart Server</button>
                         </form>
                     <?php else: ?>
                         <form method="post" style="display: inline;">
                             <input type="hidden" name="action" value="start">
-                            <button type="submit" class="btn btn-success">▶️ Start Server</button>
+                            <button type="submit" class="btn btn-success">▶ Start Server</button>
                         </form>
                     <?php endif; ?>
 
-                    <button onclick="window.location.reload()" class="btn btn-secondary">🔄 Refresh Status</button>
+                    <button onclick="window.location.reload()" class="btn btn-secondary"> Refresh Status</button>
                 <?php endif; ?>
             </div>
         </div>
@@ -305,14 +305,14 @@ echo htmlspecialchars(implode("\n", $recentLines));
         </div>
 
         <div class="alert alert-info">
-            <h4>📚 Documentation</h4>
+            <h4> Documentation</h4>
             <p>Full documentation: <code>/home/flexpbxuser/documentation/MCP_SERVER_INSTALLER_INTEGRATION.md</code></p>
             <p>README: <code><?= htmlspecialchars($mcpDir) ?>/README.md</code></p>
         </div>
 
         <div style="text-align: center; margin-top: 30px;">
-            <a href="/admin/setup-wizard.php" class="btn btn-secondary">← Back to Setup Wizard</a>
-            <a href="/admin/dashboard.php" class="btn btn-secondary">Go to Dashboard →</a>
+            <a href="/admin/setup-wizard.php" class="btn btn-secondary"><- Back to Setup Wizard</a>
+            <a href="/admin/dashboard.php" class="btn btn-secondary">Go to Dashboard -></a>
         </div>
     </div>
 </body>

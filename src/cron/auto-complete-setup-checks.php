@@ -211,7 +211,7 @@ try {
             ");
             $update_stmt->execute(['check_key' => $item['check_key']]);
             $completed_count++;
-            logMessage("✓ Auto-completed: {$item['check_name']} - {$detection_method}");
+            logMessage(" Auto-completed: {$item['check_name']} - {$detection_method}");
         }
     }
 
@@ -234,7 +234,7 @@ try {
                     maintenance_message = 'Setup completed successfully (auto-detected)'
                 WHERE maintenance_mode_type = 'auto'
             ");
-            logMessage("✓ All required items complete - Maintenance mode disabled");
+            logMessage(" All required items complete - Maintenance mode disabled");
         }
     }
 

@@ -466,15 +466,15 @@ require_once __DIR__ . '/includes/admin_header.php';
     <!-- Header -->
     <div class="announcements-header">
         <div>
-            <h1>📢 Announcements Manager</h1>
+            <h1> Announcements Manager</h1>
             <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">Create and manage system-wide announcements</p>
         </div>
         <div class="header-actions">
             <button class="btn-primary" onclick="showCreateModal()">
-                ➕ New Announcement
+                 New Announcement
             </button>
             <button class="btn-secondary" onclick="loadAnnouncements()">
-                🔄 Refresh
+                 Refresh
             </button>
         </div>
     </div>
@@ -777,7 +777,7 @@ function renderAnnouncements(announcements) {
     if (announcements.length === 0) {
         container.innerHTML = `
             <div class="empty-state">
-                <div class="empty-state-icon">📭</div>
+                <div class="empty-state-icon"></div>
                 <h3>No announcements found</h3>
                 <p>Create your first announcement to get started</p>
             </div>
@@ -816,20 +816,20 @@ function renderAnnouncements(announcements) {
                 </div>
 
                 <div class="announcement-stats">
-                    <span>👁️ ${ann.view_count || 0} views</span>
-                    <span>❌ ${ann.dismiss_count || 0} dismissed</span>
-                    <span>📅 Created: ${formatDate(ann.created_at)}</span>
-                    ${ann.start_date ? `<span>⏰ Start: ${formatDate(ann.start_date)}</span>` : ''}
-                    ${ann.end_date ? `<span>⏰ End: ${formatDate(ann.end_date)}</span>` : ''}
+                    <span> ${ann.view_count || 0} views</span>
+                    <span> ${ann.dismiss_count || 0} dismissed</span>
+                    <span> Created: ${formatDate(ann.created_at)}</span>
+                    ${ann.start_date ? `<span> Start: ${formatDate(ann.start_date)}</span>` : ''}
+                    ${ann.end_date ? `<span> End: ${formatDate(ann.end_date)}</span>` : ''}
                 </div>
 
                 <div class="announcement-actions">
-                    <button class="btn-primary" onclick="editAnnouncement(${ann.id})">✏️ Edit</button>
-                    <button class="btn-success" onclick="viewAnalytics(${ann.id})">📊 Analytics</button>
+                    <button class="btn-primary" onclick="editAnnouncement(${ann.id})"> Edit</button>
+                    <button class="btn-success" onclick="viewAnalytics(${ann.id})"> Analytics</button>
                     <button class="btn-warning" onclick="toggleStatus(${ann.id}, ${ann.is_active})">
-                        ${ann.is_active ? '⏸️ Deactivate' : '▶️ Activate'}
+                        ${ann.is_active ? ' Deactivate' : '▶ Activate'}
                     </button>
-                    <button class="btn-danger" onclick="deleteAnnouncement(${ann.id})">🗑️ Delete</button>
+                    <button class="btn-danger" onclick="deleteAnnouncement(${ann.id})"> Delete</button>
                 </div>
             </div>
         `;
@@ -1056,11 +1056,11 @@ function formatDateTimeLocal(dateStr) {
 }
 
 function showSuccess(message) {
-    alert('✓ ' + message);
+    alert(' ' + message);
 }
 
 function showError(message) {
-    alert('✗ ' + message);
+    alert(' ' + message);
 }
 
 // Close modal when clicking outside

@@ -356,16 +356,16 @@
 </head>
 <body>
     <div class="container">
-        <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+        <a href="dashboard.html" class="back-link"><- Back to Dashboard</a>
 
         <div class="header">
             <div>
-                <h1>📬 Voicemail Manager</h1>
+                <h1> Voicemail Manager</h1>
                 <p style="color: #666; margin-top: 5px;">System-wide voicemail configuration and management</p>
             </div>
             <div class="header-actions">
-                <button class="btn btn-warning" onclick="backupConfig()">💾 Backup Config</button>
-                <button class="btn btn-success" onclick="reloadVoicemail()" id="reloadBtn">🔄 Reload Voicemail</button>
+                <button class="btn btn-warning" onclick="backupConfig()"> Backup Config</button>
+                <button class="btn btn-success" onclick="reloadVoicemail()" id="reloadBtn"> Reload Voicemail</button>
             </div>
         </div>
 
@@ -382,7 +382,7 @@
 
             <!-- Mailboxes Tab -->
             <div id="mailboxes" class="tab-content active">
-                <h2>📋 Mailbox Management</h2>
+                <h2> Mailbox Management</h2>
 
                 <div class="stats-summary">
                     <div class="stat-card">
@@ -477,7 +477,7 @@
 
             <!-- Global Features Tab -->
             <div id="features" class="tab-content">
-                <h2>⚙️ Global Voicemail Features</h2>
+                <h2> Global Voicemail Features</h2>
                 <p style="color: #666; margin-bottom: 20px;">These settings apply to all mailboxes by default (can be overridden per mailbox)</p>
 
                 <div class="settings-grid">
@@ -619,7 +619,7 @@
 
             <!-- System Settings Tab -->
             <div id="settings" class="tab-content">
-                <h2>🔧 System Settings</h2>
+                <h2> System Settings</h2>
 
                 <div class="form-group">
                     <label>Audio Format</label>
@@ -679,7 +679,7 @@
 
             <!-- Email Templates Tab -->
             <div id="templates" class="tab-content">
-                <h2>📧 Email Templates</h2>
+                <h2> Email Templates</h2>
 
                 <div class="form-group">
                     <label>Email Subject</label>
@@ -716,7 +716,7 @@ Please check your voicemail by dialing *97 from your extension.
 
         <!-- Instructions -->
         <div class="card">
-            <h2>ℹ️ Instructions</h2>
+            <h2>ℹ Instructions</h2>
             <ul style="line-height: 1.8; color: #666;">
                 <li><strong>Enable/Disable Features:</strong> Use toggles to control voicemail features globally</li>
                 <li><strong>Manage Mailboxes:</strong> Add, edit, or delete user mailboxes from the Mailboxes tab</li>
@@ -803,7 +803,7 @@ Please check your voicemail by dialing *97 from your extension.
         function reloadVoicemail() {
             const btn = document.getElementById('reloadBtn');
             btn.disabled = true;
-            btn.textContent = '⏳ Reloading...';
+            btn.textContent = ' Reloading...';
 
             // Reload voicemail using new comprehensive API
             fetch('/api/voicemail.php?path=reload', {
@@ -812,17 +812,17 @@ Please check your voicemail by dialing *97 from your extension.
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    showAlert('success', '✓ Voicemail module reloaded successfully!');
+                    showAlert('success', ' Voicemail module reloaded successfully!');
                 } else {
                     showAlert('error', 'Failed to reload voicemail: ' + data.error);
                 }
                 btn.disabled = false;
-                btn.textContent = '🔄 Reload Voicemail';
+                btn.textContent = ' Reload Voicemail';
             })
             .catch(error => {
                 showAlert('error', 'Error reloading voicemail: ' + error.message);
                 btn.disabled = false;
-                btn.textContent = '🔄 Reload Voicemail';
+                btn.textContent = ' Reload Voicemail';
             });
         }
 
@@ -834,7 +834,7 @@ Please check your voicemail by dialing *97 from your extension.
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        showAlert('success', '✓ Configuration backed up to: ' + data.backup_file);
+                        showAlert('success', ' Configuration backed up to: ' + data.backup_file);
                     } else {
                         showAlert('error', 'Backup failed: ' + data.error);
                     }

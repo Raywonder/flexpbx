@@ -59,7 +59,7 @@ try {
                 $config = json_decode(file_get_contents($configFile), true);
                 // Hide sensitive data
                 if (isset($config['auth_token'])) {
-                    $config['auth_token'] = '••••••••' . substr($config['auth_token'], -4);
+                    $config['auth_token'] = '--------' . substr($config['auth_token'], -4);
                 }
                 echo json_encode([
                     'success' => true,

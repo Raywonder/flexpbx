@@ -184,12 +184,12 @@ $extension = $user['extension'] ?? '';
 <body>
     <div class="container">
         <div class="header">
-            <h1>📚 FlexPBX Help & Documentation</h1>
+            <h1> FlexPBX Help & Documentation</h1>
             <p class="subtitle">A system you can help build to be the best it can be. Accessible by default.</p>
             <p>Welcome, <?php echo htmlspecialchars($user['name'] ?? 'User'); ?> (Extension: <?php echo htmlspecialchars($extension); ?>)</p>
 
             <div class="nav-links">
-                <a href="index.php" class="nav-btn">← Back to Portal</a>
+                <a href="index.php" class="nav-btn"><- Back to Portal</a>
                 <a href="#quick-start" class="nav-btn">Quick Start</a>
                 <a href="#connection-settings" class="nav-btn">Connection Settings</a>
                 <a href="#feature-codes" class="nav-btn">Feature Codes</a>
@@ -198,7 +198,7 @@ $extension = $user['extension'] ?? '';
             </div>
 
             <div class="support-box">
-                <div style="font-weight: 600; color: #1976d2;">📞 Need Help?</div>
+                <div style="font-weight: 600; color: #1976d2;"> Need Help?</div>
                 <div class="phone">
                     <a href="tel:+13023139555" style="color: #1976d2; text-decoration: none;">(302) 313-9555</a>
                 </div>
@@ -209,7 +209,7 @@ $extension = $user['extension'] ?? '';
         <div class="content">
             <!-- Quick Start -->
             <div class="section" id="quick-start">
-                <h2>🚀 Quick Start Guide</h2>
+                <h2> Quick Start Guide</h2>
 
                 <h3>Calling the Main Number</h3>
                 <p>When you call <strong>(302) 313-9555</strong>, you'll hear our new professional IVR menu:</p>
@@ -230,7 +230,7 @@ $extension = $user['extension'] ?? '';
 
             <!-- Conference Rooms -->
             <div class="section" id="conference">
-                <h2>🎤 Conference Rooms</h2>
+                <h2> Conference Rooms</h2>
 
                 <h3>Main Conference Room</h3>
                 <p>Dial <strong>*80</strong> from any extension to join the main conference room.</p>
@@ -289,7 +289,7 @@ $extension = $user['extension'] ?? '';
 
             <!-- Feature Codes -->
             <div class="section" id="feature-codes">
-                <h2>📞 Feature Codes</h2>
+                <h2> Feature Codes</h2>
 
                 <h3>FreePBX Compatible Codes</h3>
                 <table>
@@ -358,26 +358,26 @@ $extension = $user['extension'] ?? '';
 
             <!-- New Features -->
             <div class="section">
-                <h2>✨ New Features</h2>
+                <h2> New Features</h2>
 
                 <div class="feature-grid">
                     <div class="feature-card">
-                        <h4>🎵 Conference Music Control</h4>
+                        <h4> Conference Music Control</h4>
                         <p>Admins can now control music playback in conference rooms with live radio streaming</p>
                     </div>
 
                     <div class="feature-card">
-                        <h4>🟢 Presence Status</h4>
+                        <h4> Presence Status</h4>
                         <p>Track your online/offline status across multiple devices with custom announcements</p>
                     </div>
 
                     <div class="feature-card">
-                        <h4>☎️ Professional IVR Menu</h4>
+                        <h4> Professional IVR Menu</h4>
                         <p>New auto-attendant on main DID with 4 menu options and direct extension dialing</p>
                     </div>
 
                     <div class="feature-card">
-                        <h4>🎬 Jellyfin MOH</h4>
+                        <h4> Jellyfin MOH</h4>
                         <p>Stream music from Jellyfin media server or internet radio for hold music</p>
                     </div>
                 </div>
@@ -385,7 +385,7 @@ $extension = $user['extension'] ?? '';
 
             <!-- Extensions -->
             <div class="section">
-                <h2>👥 Extension Directory</h2>
+                <h2> Extension Directory</h2>
 
                 <h3>Key Extensions</h3>
                 <table>
@@ -434,7 +434,7 @@ $extension = $user['extension'] ?? '';
 
             <!-- Support -->
             <div class="section" id="support">
-                <h2>🆘 Getting Support</h2>
+                <h2> Getting Support</h2>
 
                 <h3>Support Queue</h3>
                 <p><strong>Number:</strong> (302) 313-9555</p>
@@ -465,10 +465,10 @@ $extension = $user['extension'] ?? '';
 
             <!-- Connection Settings -->
             <div class="section" id="connection-settings">
-                <h2>⚙️ SIP Connection Settings</h2>
+                <h2> SIP Connection Settings</h2>
 
                 <div style="background: #fff3cd; border-left: 4px solid #ffc107; padding: 20px; border-radius: 6px; margin: 20px 0;">
-                    <h3 style="color: #856404; margin-top: 0;">🔐 Account Credentials</h3>
+                    <h3 style="color: #856404; margin-top: 0;"> Account Credentials</h3>
                     <p style="color: #856404;">Your extension number and SIP password are available in your <a href="index.php" style="color: #667eea;">User Portal Dashboard</a>.</p>
                 </div>
 
@@ -515,19 +515,19 @@ $extension = $user['extension'] ?? '';
                 <h3>Recommended SIP Clients</h3>
                 <div class="feature-grid">
                     <div class="feature-card">
-                        <h4>🖥️ Desktop</h4>
+                        <h4> Desktop</h4>
                         <p><strong>Zoiper:</strong> Windows, macOS, Linux</p>
                         <p><strong>Telephone:</strong> macOS</p>
                         <p><strong>Linphone:</strong> All platforms</p>
                     </div>
                     <div class="feature-card">
-                        <h4>📱 Mobile</h4>
+                        <h4> Mobile</h4>
                         <p><strong>Groundwire:</strong> iOS (Premium)</p>
                         <p><strong>Zoiper:</strong> iOS & Android</p>
                         <p><strong>Linphone:</strong> iOS & Android</p>
                     </div>
                     <div class="feature-card">
-                        <h4>🚀 Coming Soon</h4>
+                        <h4> Coming Soon</h4>
                         <p><strong>FlexPBX Desktop:</strong> Native app for Windows, macOS, and Linux with advanced features</p>
                     </div>
                 </div>
@@ -550,7 +550,7 @@ STUN Port: 3478
 
             <!-- Tips & Tricks -->
             <div class="section">
-                <h2>💡 Tips & Tricks</h2>
+                <h2> Tips & Tricks</h2>
 
                 <h3>Speed Dial</h3>
                 <p>Save time by creating speed dials on your phone for frequently called extensions.</p>
@@ -576,9 +576,9 @@ STUN Port: 3478
     <!-- Footer -->
     <div style="text-align: center; margin-top: 40px; padding: 30px 20px; background: rgba(102, 126, 234, 0.1); border-top: 2px solid rgba(102, 126, 234, 0.2);">
         <p style="color: #333; margin-bottom: 15px; font-size: 1.1em;">
-            <a href="/admin/bug-tracker.php" style="color: #667eea; text-decoration: underline; margin: 0 15px; font-weight: 500;">🐛 Report a Bug</a> |
-            <a href="mailto:support@devine-creations.com" style="color: #667eea; text-decoration: underline; margin: 0 15px; font-weight: 500;">📧 Support</a> |
-            <a href="/user-portal/" style="color: #667eea; text-decoration: underline; margin: 0 15px; font-weight: 500;">🏠 Back to Portal</a>
+            <a href="/admin/bug-tracker.php" style="color: #667eea; text-decoration: underline; margin: 0 15px; font-weight: 500;"> Report a Bug</a> |
+            <a href="mailto:support@devine-creations.com" style="color: #667eea; text-decoration: underline; margin: 0 15px; font-weight: 500;"> Support</a> |
+            <a href="/user-portal/" style="color: #667eea; text-decoration: underline; margin: 0 15px; font-weight: 500;"> Back to Portal</a>
         </p>
         <p style="color: #666; font-size: 0.95em; margin-top: 10px;">
             Powered by <a href="https://devine-creations.com" target="_blank" style="color: #667eea; text-decoration: underline;">Devine Creations</a> |
