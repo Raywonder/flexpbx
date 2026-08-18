@@ -3,7 +3,8 @@
  * Flex Phone control API.
  *
  * Server-backed actions for the native Flex Phone client: waiting calls,
- * voicemail, server recordings, presence, and device pairing codes.
+ * voicemail, server recordings, presence, device pairing codes, device
+ * inventory, and negotiated audio capability discovery.
  */
 
 header('Content-Type: application/json');
@@ -72,7 +73,13 @@ switch ($action) {
         deviceStatus($extension, $session, $input);
         break;
     case 'list_devices':
-        listDevices($session);
+        listDevices($session, false);
+        break;
+    case 'list_my_devices':
+        listDevices($session, true);
+        break;
+    case 'audio_capabilities':
+        audioCapabilities();
         break;
     default:
         respond(400, false, 'Unsupported Flex Phone action.');
@@ -207,6 +214,7 @@ function deviceStatus($extension, $session, $input) {
         'username' => (string)($session['username'] ?? $extension),
         'device_id' => $deviceId,
         'device_name' => safeText((string)($input['device_name'] ?? 'Unknown device'), 80),
+        'client_type' => safeText((string)($input['client_type'] ?? 'FlexPhone'), 40),
         'app_version' => safeText((string)($input['app_version'] ?? ''), 32),
         'os' => safeText((string)($input['os'] ?? ''), 120),
         'ip' => $remoteIp,
@@ -218,6 +226,7 @@ function deviceStatus($extension, $session, $input) {
         'line_count' => max(0, min(8, (int)($input['line_count'] ?? 0))),
         'active_line' => max(0, min(8, (int)($input['active_line'] ?? 0))),
         'active_call_count' => max(0, min(8, (int)($input['active_call_count'] ?? 0))),
+        'capabilities' => sanitizeCapabilities($input['capabilities'] ?? []),
         'registered_at' => safeText((string)($input['registered_at'] ?? ''), 40),
         'last_seen' => date('c'),
         'online' => true,
@@ -229,12 +238,55 @@ function deviceStatus($extension, $session, $input) {
     respond(200, true, 'Device status updated.');
 }
 
-function listDevices($session) {
-    if (!isAdminRole((string)($session['role'] ?? ''))) {
+function listDevices($session, $ownDevicesOnly) {
+    if (!$ownDevicesOnly && !isAdminRole((string)($session['role'] ?? ''))) {
         respond(403, false, 'Admin access is required.');
     }
 
-    respond(200, true, 'Devices loaded.', ['devices' => loadDeviceRecords()]);
+    $devices = loadDeviceRecords();
+    if ($ownDevicesOnly) {
+        $extension = (string)($session['extension'] ?? '');
+        $devices = array_values(array_filter($devices, static function ($device) use ($extension) {
+            return hash_equals($extension, (string)($device['extension'] ?? ''));
+        }));
+    }
+
+    foreach ($devices as &$device) {
+        $device['flexphone_capable'] = isFlexPhoneDevice($device);
+        $device['can_receive_named_transfer'] = $device['flexphone_capable'] && !empty($device['online']);
+    }
+    unset($device);
+
+    respond(200, true, 'Devices loaded.', [
+        'devices' => $devices,
+        'named_transfer' => [
+            'available' => false,
+            'reason' => 'The PBX contact-aware transfer adapter is not enabled on this server yet.',
+            'fallback' => 'Extension transfer remains available and may ring registered compatible devices.'
+        ]
+    ]);
+}
+
+function audioCapabilities() {
+    $configured = getenv('FLEXPBX_AUDIO_CODECS') ?: 'opus,g722,ulaw,alaw';
+    $supported = [];
+    foreach (explode(',', $configured) as $codec) {
+        $codec = strtolower(trim($codec));
+        if (in_array($codec, ['opus', 'g722', 'ulaw', 'alaw'], true) && !in_array($codec, $supported, true)) {
+            $supported[] = $codec;
+        }
+    }
+
+    if (!$supported) {
+        $supported = ['ulaw', 'alaw'];
+    }
+
+    respond(200, true, 'Audio capabilities loaded.', [
+        'preferred_codecs' => $supported,
+        'wideband_available' => in_array('opus', $supported, true) || in_array('g722', $supported, true),
+        'negotiation_required' => true,
+        'verification_note' => 'This describes the configured offer policy. The negotiated codec must still be checked on a real call.'
+    ]);
 }
 
 function requireSession() {
@@ -738,6 +790,30 @@ function sanitizeLines($lines) {
     return $clean;
 }
 
+function sanitizeCapabilities($capabilities) {
+    if (!is_array($capabilities)) {
+        return [];
+    }
+
+    $allowed = ['named_device_transfer', 'wideband_audio', 'opus', 'g722', 'headset_routing'];
+    $clean = [];
+    foreach ($capabilities as $capability) {
+        $capability = strtolower(trim((string)$capability));
+        if (in_array($capability, $allowed, true) && !in_array($capability, $clean, true)) {
+            $clean[] = $capability;
+        }
+    }
+    return $clean;
+}
+
+function isFlexPhoneDevice($device) {
+    $clientType = strtolower((string)($device['client_type'] ?? ''));
+    $capabilities = is_array($device['capabilities'] ?? null) ? $device['capabilities'] : [];
+    return in_array($clientType, ['flexphone', 'native'], true)
+        || in_array('named_device_transfer', $capabilities, true)
+        || stripos((string)($device['device_name'] ?? ''), 'flex phone') !== false;
+}
+
 function sanitizeDeviceId($deviceId) {
     $value = preg_replace('/[^A-Za-z0-9_.-]/', '-', $deviceId);
     return substr($value ?: 'unknown', 0, 96);
@@ -943,6 +1019,7 @@ function mailDomain() {
 
 function flexPhoneSipSettings() {
     $publicHost = flexPhonePublicSipHost();
+    $codecPolicy = flexPhoneAudioCodecPolicy();
     $routes = [
         [
             'label' => 'Public SIP',
@@ -978,9 +1055,22 @@ function flexPhoneSipSettings() {
         'host' => $publicHost,
         'port' => 5060,
         'transport' => 'UDP',
+        'audio_codecs' => $codecPolicy,
         'routes' => $routes,
         'fallbacks' => array_slice($routes, 1)
     ];
+}
+
+function flexPhoneAudioCodecPolicy() {
+    $configured = getenv('FLEXPBX_AUDIO_CODECS') ?: 'opus,g722,ulaw,alaw';
+    $codecs = [];
+    foreach (explode(',', $configured) as $codec) {
+        $codec = strtolower(trim($codec));
+        if (in_array($codec, ['opus', 'g722', 'ulaw', 'alaw'], true) && !in_array($codec, $codecs, true)) {
+            $codecs[] = $codec;
+        }
+    }
+    return $codecs ?: ['ulaw', 'alaw'];
 }
 
 function flexPhonePublicSipHost() {
