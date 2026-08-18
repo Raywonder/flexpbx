@@ -81,6 +81,9 @@ switch ($action) {
     case 'audio_capabilities':
         audioCapabilities();
         break;
+    case 'transfer_to_device':
+        transferToDevice($extension, $input);
+        break;
     default:
         respond(400, false, 'Unsupported Flex Phone action.');
 }
@@ -251,9 +254,13 @@ function listDevices($session, $ownDevicesOnly) {
         }));
     }
 
+    $contacts = loadSipContacts();
     foreach ($devices as &$device) {
         $device['flexphone_capable'] = isFlexPhoneDevice($device);
-        $device['can_receive_named_transfer'] = $device['flexphone_capable'] && !empty($device['online']);
+        $device['sip_contact'] = findSipContactForDevice($device, $contacts);
+        $device['can_receive_named_transfer'] = $device['flexphone_capable']
+            && !empty($device['online'])
+            && $device['sip_contact'] !== '';
     }
     unset($device);
 
@@ -265,6 +272,109 @@ function listDevices($session, $ownDevicesOnly) {
             'fallback' => 'Extension transfer remains available and may ring registered compatible devices.'
         ]
     ]);
+}
+
+function transferToDevice($extension, $input) {
+    $deviceId = sanitizeDeviceId((string)($input['device_id'] ?? ''));
+    if ($deviceId === '' || $deviceId === 'unknown') {
+        respond(400, false, 'Choose a registered device first.');
+    }
+
+    $devices = loadDeviceRecords();
+    $target = null;
+    foreach ($devices as $device) {
+        if ((string)($device['extension'] ?? '') !== $extension
+            || (string)($device['device_id'] ?? '') !== $deviceId) {
+            continue;
+        }
+        $target = $device;
+        break;
+    }
+
+    if (!is_array($target)) {
+        respond(404, false, 'That device is not registered to this extension.');
+    }
+    if (!isFlexPhoneDevice($target)) {
+        respond(409, false, 'That device does not advertise FlexPhone transfer support.');
+    }
+    if (strtotime((string)($target['last_seen'] ?? '')) < time() - 120) {
+        respond(409, false, 'That device is offline. Choose an online FlexPhone device.');
+    }
+
+    $contacts = loadSipContacts();
+    $sipContact = findSipContactForDevice($target, $contacts);
+    if ($sipContact === '') {
+        respond(409, false, 'The PBX cannot prove the registered SIP contact for that device. Use extension transfer instead.');
+    }
+
+    $channel = findActiveChannelForExtension($extension, (string)($input['channel'] ?? ''));
+    if ($channel === '') {
+        respond(409, false, 'There is no active call available to transfer.');
+    }
+
+    $token = (string)random_int(100000000000, 999999999999);
+    $destination = 'PJSIP/' . $extension . '/' . $sipContact;
+    $put = asterisk('database put FLEXPHONE_TRANSFER ' . $token . ' ' . $destination);
+    $redirect = asterisk('channel redirect ' . $channel . ' flexphone-device-transfer ' . $token . ' 1');
+    $joined = strtolower(implode("\n", array_merge($put, $redirect)));
+    if (str_contains($joined, 'error') || str_contains($joined, 'failed')) {
+        asterisk('database del FLEXPHONE_TRANSFER ' . $token);
+        respond(502, false, 'The PBX could not start the device transfer.');
+    }
+
+    respond(200, true, 'Call transfer sent to ' . safeText((string)($target['device_name'] ?? 'the selected device'), 80) . '.', [
+        'device_id' => $deviceId,
+        'device_name' => $target['device_name'] ?? 'Selected device',
+        'channel' => $channel,
+        'transfer_mode' => 'named_device'
+    ]);
+}
+
+function findActiveChannelForExtension($extension, $requestedChannel) {
+    $channels = asterisk('core show channels concise');
+    foreach ($channels as $line) {
+        $parts = explode('!', $line);
+        $channel = trim((string)($parts[0] ?? ''));
+        if ($channel === '' || !preg_match('/^PJSIP\/' . preg_quote($extension, '/') . '(?:-|\/)/', $channel)) {
+            continue;
+        }
+        if ($requestedChannel === '' || hash_equals($channel, $requestedChannel)) {
+            return $channel;
+        }
+    }
+    return '';
+}
+
+function loadSipContacts() {
+    $contacts = [];
+    foreach (asterisk('pjsip show contacts') as $line) {
+        if (!preg_match('/Contact:\s+(\d+)\/(sip:[^\s>]+)/i', $line, $matches)) {
+            continue;
+        }
+        $extension = (string)$matches[1];
+        $uri = rtrim($matches[2], ';');
+        $contacts[$extension][] = [
+            'uri' => $uri,
+            'target' => 'PJSIP/' . $extension . '/' . $uri
+        ];
+    }
+    return $contacts;
+}
+
+function findSipContactForDevice($device, $contacts) {
+    $extension = (string)($device['extension'] ?? '');
+    $ip = (string)($device['sip_ip'] ?? $device['ip'] ?? '');
+    if ($extension === '' || $ip === '' || empty($contacts[$extension])) {
+        return '';
+    }
+
+    foreach ($contacts[$extension] as $contact) {
+        if (preg_match('/@\[?([^\]:;>]+)\]?/i', $contact['uri'], $matches)
+            && hash_equals($ip, $matches[1])) {
+            return (string)$contact['uri'];
+        }
+    }
+    return '';
 }
 
 function audioCapabilities() {
